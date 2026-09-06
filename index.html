@@ -218,7 +218,7 @@
                 <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 flex flex-col items-center shadow-sm">
                     <i class="fa-solid fa-clock text-amber-600 text-2xl mb-1.5"></i>
                     <span class="text-xs text-slate-500 font-bold">زَمَنُ الِاخْتِبَارِ</span>
-                    <span id="display-exam-time-desc" class="text-amber-950 font-black text-2xl">2 دَقِيقَةٌ</span>
+                    <span id="display-exam-time-desc" class="text-amber-950 font-black text-2xl">20 دَقِيقَةٌ</span>
                 </div>
             </div>
 
@@ -246,7 +246,7 @@
                     </div>
                     <div class="bg-amber-50 text-amber-900 px-3 py-1 rounded-xl border border-amber-200 flex items-center gap-1.5">
                         <i class="fa-solid fa-stopwatch text-amber-600"></i>
-                        <span id="display-timer" class="font-black font-mono text-base">00:00</span>
+                        <span id="display-timer" class="font-black font-mono text-base">20:00</span>
                     </div>
                 </div>
             </div>
@@ -913,7 +913,7 @@
             "branch": "طَرِيقُ التَّفَوُّقِ فِي اللُّغَةِ العَرَبِيَّةِ",
             "pageTitle": "لَمَحَاتٌ وَقُطُوفٌ لُغَوِيَّةٌ | الْأُسْتَاذُ صَلَاحُ حَمْدِي يُوسُفُ",
             "examCount": 20,
-            "examDuration": 2,
+            "examDuration": 20,
             "footerYear": "2026",
             "platformTheme": "default",
             "platformFont": "IBM Plex Sans Arabic",
@@ -1224,7 +1224,12 @@
                 ((parseInt(appSettings.diffEasyCount)||0) + (parseInt(appSettings.diffMediumCount)||0) + (parseInt(appSettings.diffHardCount)||0) + (parseInt(appSettings.diffVeryHardCount)||0)) : 
                 (appSettings.examCount || 20);
             
-            document.getElementById('display-exam-time-desc').textContent = `${appSettings.examDuration || 15} دَقِيقَةٌ`;
+            const currentDuration = appSettings.examDuration || 20;
+            document.getElementById('display-exam-time-desc').textContent = `${currentDuration} دَقِيقَةٌ`;
+            const timerDisplay = document.getElementById('display-timer');
+            if (timerDisplay) {
+                timerDisplay.textContent = `${currentDuration.toString().padStart(2, '0')}:00`;
+            }
 
             setupStartScreenImages();
 
@@ -1450,7 +1455,7 @@
         }
 
         function startExamTimer() {
-            let durationMinutes = parseInt(appSettings.examDuration) || 15;
+            let durationMinutes = parseInt(appSettings.examDuration) || 20;
             let timerSeconds = durationMinutes * 60;
             const timerDisplay = document.getElementById('display-timer');
 
@@ -1785,7 +1790,7 @@
             document.getElementById('admin-pagetitle-input').value = appSettings.pageTitle;
             document.getElementById('admin-quickinfo-label-input').value = appSettings.quickInfoLabel || "";
             document.getElementById('admin-exam-count-input').value = appSettings.examCount;
-            document.getElementById('admin-exam-duration-input').value = appSettings.examDuration || 0;
+            document.getElementById('admin-exam-duration-input').value = appSettings.examDuration || 20;
             document.getElementById('admin-footer-year-input').value = appSettings.footerYear || "2026";
             document.getElementById('admin-logo-header-input').value = appSettings.logoHeader || '';
             document.getElementById('admin-logo-right-input').value = appSettings.logoRight || '';
@@ -1836,7 +1841,7 @@
             appSettings.pageTitle = document.getElementById('admin-pagetitle-input').value.trim();
             appSettings.quickInfoLabel = document.getElementById('admin-quickinfo-label-input').value.trim() || "مَعْلُومَةٌ سَرِيعَةٌ لِلدَّرْسِ";
             appSettings.examCount = parseInt(document.getElementById('admin-exam-count-input').value) || 20;
-            appSettings.examDuration = parseInt(document.getElementById('admin-exam-duration-input').value) || 0;
+            appSettings.examDuration = parseInt(document.getElementById('admin-exam-duration-input').value) || 20;
             appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
             appSettings.logoHeader = document.getElementById('admin-logo-header-input').value.trim();
             appSettings.logoRight = document.getElementById('admin-logo-right-input').value.trim();
