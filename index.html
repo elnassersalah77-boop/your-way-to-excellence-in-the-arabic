@@ -317,9 +317,28 @@
                     <span id="res-pct" class="text-lg font-black text-amber-600">100%</span>
                 </div>
             </div>
+
+            <!-- تفصيل الإجابات (يظهر أو يختفي حسب إعداد لوحة التحكم) -->
+            <div id="result-breakdown-container" class="hidden w-full max-w-2xl bg-slate-50 p-4 rounded-2xl border text-right space-y-3">
+                <h4 class="font-black text-sky-950 text-sm border-b pb-2"><i class="fa-solid fa-clipboard-list text-sky-600 ml-1"></i> تفصيل الإجابات:</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl">
+                        <span class="font-extrabold text-emerald-800 text-xs block mb-1">✓ الأسئلة الصحيحة (<span id="count-correct">0</span>):</span>
+                        <ul id="list-correct" class="text-xs text-slate-700 space-y-1 list-disc list-inside"></ul>
+                    </div>
+                    <div class="bg-rose-50 border border-rose-200 p-3 rounded-xl">
+                        <span class="font-extrabold text-rose-800 text-xs block mb-1">✗ الأسئلة الخاطئة أو غير المجابة (<span id="count-wrong">0</span>):</span>
+                        <ul id="list-wrong" class="text-xs text-slate-700 space-y-1 list-disc list-inside"></ul>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex flex-wrap gap-3 justify-center w-full max-w-md">
                 <button type="button" onclick="openReviewModal()" class="flex-1 min-w-[130px] bg-sky-600 hover:bg-sky-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer text-xs">
                     <i class="fa-solid fa-magnifying-glass ml-1"></i> مُرَاجَعَةُ الْإِجَابَاتِ
+                </button>
+                <button type="button" onclick="exportResultExcel()" class="flex-1 min-w-[130px] bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer text-xs">
+                    <i class="fa-solid fa-file-excel ml-1"></i> تصدير إكسل (CSV)
                 </button>
                 <button type="button" id="student-export-result-btn" onclick="exportStudentResultJson()" class="hidden flex-1 min-w-[130px] bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer text-xs">
                     <i class="fa-solid fa-file-arrow-down ml-1"></i> تَصْدِيرُ النَّتِيجَةِ
@@ -351,7 +370,7 @@
         </div>
     </div>
 
-    <!-- MODAL: PREVIEW ITEM (معاينة المعلومة السريعة - z-[70] لضمان ظهورها فوق الإدارة) -->
+    <!-- MODAL: PREVIEW ITEM (معاينة المعلومة السريعة - z-[70]) -->
     <div id="modal-preview-qi" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[70] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
@@ -365,7 +384,7 @@
         </div>
     </div>
 
-    <!-- MODAL: PREVIEW QUESTION (معاينة السؤال - z-[70] لضمان ظهورها فوق الإدارة) -->
+    <!-- MODAL: PREVIEW QUESTION (معاينة السؤال - z-[70]) -->
     <div id="modal-preview-q" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[70] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl border overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
@@ -379,7 +398,7 @@
         </div>
     </div>
 
-    <!-- MODAL: PREVIEW PARAGRAPH (معاينة الفقرة - z-[70] لضمان ظهورها فوق الإدارة) -->
+    <!-- MODAL: PREVIEW PARAGRAPH (معاينة الفقرة - z-[70]) -->
     <div id="modal-preview-para" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[70] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl border overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
@@ -389,6 +408,20 @@
             <div id="preview-para-body" class="p-6 overflow-y-auto space-y-4 flex-grow text-right"></div>
             <div class="p-4 bg-slate-50 border-t text-center">
                 <button type="button" onclick="document.getElementById('modal-preview-para').classList.add('hidden')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-5 py-2 rounded-xl text-xs cursor-pointer">إِغْلَاقُ الْمُعَايَنَةِ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADMIN RECORD DETAILS (نافذة تفصيل سجل الطالب للمعلم - z-[70]) -->
+    <div id="modal-admin-record-details" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border overflow-hidden modal-animate-in">
+            <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
+                <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-circle-info text-amber-400"></i> تقرير إجابات الطالب المفصل</h3>
+                <button type="button" onclick="document.getElementById('modal-admin-record-details').classList.add('hidden')" class="text-sky-200 hover:text-white text-xl cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="admin-record-details-body" class="p-6 overflow-y-auto space-y-4 flex-grow text-right"></div>
+            <div class="p-4 bg-slate-50 border-t text-center">
+                <button type="button" onclick="document.getElementById('modal-admin-record-details').classList.add('hidden')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-5 py-2 rounded-xl text-xs cursor-pointer">إِغْلَاقٌ</button>
             </div>
         </div>
     </div>
@@ -428,9 +461,13 @@
                                 <input type="checkbox" id="admin-shuffle-options" class="w-5 h-5 text-sky-600 rounded">
                                 <span>خلط الاختيارات عشوائياً داخل الأسئلة</span>
                             </label>
-                            <label class="flex items-center gap-2 bg-white p-3 rounded-xl border border-sky-200 cursor-pointer shadow-sm sm:col-span-2">
+                            <label class="flex items-center gap-2 bg-white p-3 rounded-xl border border-sky-200 cursor-pointer shadow-sm">
                                 <input type="checkbox" id="admin-allow-student-export" class="w-5 h-5 text-sky-600 rounded">
                                 <span>إتاحة زر (تصدير النتيجة) للطالب في شاشة النتائج</span>
+                            </label>
+                            <label class="flex items-center gap-2 bg-white p-3 rounded-xl border border-sky-200 cursor-pointer shadow-sm">
+                                <input type="checkbox" id="admin-show-student-breakdown" class="w-5 h-5 text-sky-600 rounded">
+                                <span>إظهار تفصيل الإجابات الصحيحة والخاطئة للطالب في شاشة النتيجة</span>
                             </label>
                         </div>
                         <div class="pt-2">
@@ -715,7 +752,7 @@
                 <!-- TAB 5: RECORDS -->
                 <div id="admin-tab-records" class="space-y-4 hidden">
                     <div class="flex justify-between items-center flex-wrap gap-2">
-                        <h3 class="font-bold text-slate-800">سجل نتائج الطلاب</h3>
+                        <h3 class="font-bold text-slate-800">سجل نتائج الطلاب ودخولهم</h3>
                         <div class="flex gap-2">
                             <button type="button" onclick="exportAllRecordsJson()" class="bg-indigo-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer"><i class="fa-solid fa-file-excel ml-1"></i> تصدير جميع النتائج (JSON)</button>
                             <button type="button" onclick="clearRecords()" class="bg-rose-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer">مسح السجل</button>
@@ -730,10 +767,12 @@
                                     <th class="p-3">المرحلة / الصف / الموضوع</th>
                                     <th class="p-3">الحالة</th>
                                     <th class="p-3">الدرجة</th>
-                                    <th class="p-3">التاريخ</th>
+                                    <th class="p-3">وقت الدخول</th>
+                                    <th class="p-3">الأسئلة المجاب عنها</th>
+                                    <th class="p-3">التفصيل للمعلم</th>
                                 </tr>
                             </thead>
-                            <tbody id="admin-tbody" class="divide-y text-sm"><tr><td colspan="6" class="p-4 text-center text-slate-500">لا توجد سجلات.</td></tr></tbody>
+                            <tbody id="admin-tbody" class="divide-y text-sm"><tr><td colspan="8" class="p-4 text-center text-slate-500">لا توجد سجلات.</td></tr></tbody>
                         </table>
                     </div>
                 </div>
@@ -939,7 +978,7 @@
             </div>
             <div class="mt-4 flex justify-center gap-3">
                 <button type="button" onclick="window.print()" class="bg-sky-600 text-white font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">طباعة الشهادة</button>
-                <button type="button" onclick="closeCertModal()" class="bg-slate-200 text-slate-800 font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">إغلاق</button>
+                <button type="button" onclick="closeCertModal()" class="bg-slate-200 text-slate-800 font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">إلغاء</button>
             </div>
         </div>
     </div>
@@ -999,6 +1038,7 @@
             "shuffleQuestions": false,
             "shuffleOptions": true,
             "allowStudentExport": true,
+            "showStudentBreakdown": true,
             "expiryDate": "",
             "stTitleSize": "text-3xl sm:text-5xl",
             "stTitleWeight": "font-black",
@@ -1115,6 +1155,33 @@
             document.body.appendChild(dlAnchor);
             dlAnchor.click();
             dlAnchor.remove();
+        }
+
+        function exportResultExcel() {
+            if (!quizState.name || quizState.questions.length === 0) { alert("لا توجد نتيجة لتصديرها."); return; }
+            let csvContent = "\uFEFF";
+            csvContent += "رقم السؤال,السؤال,إجابة الطالب,الإجابة الصحيحة,الحالة,التعليل\n";
+
+            quizState.questions.forEach((q, idx) => {
+                let userAns = quizState.answers[idx] || "لم يجب";
+                let isCorrect = userAns === q.ans;
+                let status = isCorrect ? "صحيح" : "خطأ/غير مجاب";
+                let qText = `"${q.q.replace(/"/g, '""')}"`;
+                let uAns = `"${userAns.replace(/"/g, '""')}"`;
+                let cAns = `"${q.ans.replace(/"/g, '""')}"`;
+                let exp = `"${(q.exp || "").replace(/"/g, '""')}"`;
+
+                csvContent += `${idx + 1},${qText},${uAns},${cAns},${status},${exp}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `exam_report_${quizState.name.replace(/\s+/g, '_')}_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
         }
 
         function exportAllRecordsJson() {
@@ -1402,7 +1469,7 @@
             } else { botLC.classList.add('hidden'); }
         }
 
-        // جعل القوائم المنسدلة تبدأ بخيار "اختر المرحلة" و"اختر الصف" طبيعياً دون تنشيط مسبق متكرر
+        // إبقاء القوائم المنسدلة تبدأ طبيعياً بـ "اختر المرحلة" و"اختر الصف" دون تخطي اختياري
         function populateStartStages() {
             const stageSel = document.getElementById('start-stage-select');
             if(!stageSel) return;
@@ -1475,6 +1542,27 @@
             }
         }
 
+        function getAnsweredQuestionsKey(topic) {
+            return "answered_questions_" + topic.replace(/\s+/g, '_');
+        }
+
+        function getAnsweredQuestionsSet(topic) {
+            try {
+                let saved = localStorage.getItem(getAnsweredQuestionsKey(topic));
+                return saved ? JSON.parse(saved) : [];
+            } catch(e) { return []; }
+        }
+
+        function markQuestionAsAnswered(topic, qText) {
+            try {
+                let answered = getAnsweredQuestionsSet(topic);
+                if (!answered.includes(qText)) {
+                    answered.push(qText);
+                    localStorage.setItem(getAnsweredQuestionsKey(topic), JSON.stringify(answered));
+                }
+            } catch(e) {}
+        }
+
         function startQuiz() {
             const nameInput = document.getElementById('student-name-input');
             const name = nameInput.value.trim();
@@ -1491,10 +1579,21 @@
 
             if (!stage || !grade || !topic) { alert("يرجى تحديد المرحلة والصف والموضوع!"); return; }
 
-            const pool = questionBank.filter(q => q.stage === stage && q.grade === grade && q.topic === topic && q.active !== false);
+            let pool = questionBank.filter(q => q.stage === stage && q.grade === grade && q.topic === topic && q.active !== false);
             if (pool.length === 0) { alert("لا توجد أسئلة مفعلة متاحة لهذا الموضوع حالياً."); return; }
 
+            // استبعاد الأسئلة التي أجاب عليها الطالب مسبقاً على هذا الجهاز
+            let answeredSet = getAnsweredQuestionsSet(topic);
+            let unassignedPool = pool.filter(q => !answeredSet.includes(q.q));
+
+            if (unassignedPool.length === 0) {
+                localStorage.removeItem(getAnsweredQuestionsKey(topic));
+                unassignedPool = pool;
+            }
+
             let sessionQuestions = [];
+            const targetExamCount = Math.min(appSettings.examCount || 20, unassignedPool.length);
+
             if (appSettings.useDifficultyFilter) {
                 let reqEasy = parseInt(appSettings.diffEasyCount) || 0;
                 let reqMed = parseInt(appSettings.diffMediumCount) || 0;
@@ -1506,10 +1605,10 @@
                     return shuffled.slice(0, count);
                 }
 
-                let easyPool = pool.filter(q => q.difficulty === "سهل");
-                let medPool = pool.filter(q => q.difficulty === "متوسط");
-                let hardPool = pool.filter(q => q.difficulty === "صعب");
-                let vhardPool = pool.filter(q => q.difficulty === "صعب جدا");
+                let easyPool = unassignedPool.filter(q => q.difficulty === "سهل");
+                let medPool = unassignedPool.filter(q => q.difficulty === "متوسط");
+                let hardPool = unassignedPool.filter(q => q.difficulty === "صعب");
+                let vhardPool = unassignedPool.filter(q => q.difficulty === "صعب جدا");
 
                 let chosenEasy = pickRandom(easyPool, reqEasy);
                 let chosenMed = pickRandom(medPool, reqMed);
@@ -1517,26 +1616,37 @@
                 let chosenVHard = pickRandom(vhardPool, reqVHard);
 
                 sessionQuestions = [...chosenEasy, ...chosenMed, ...chosenHard, ...chosenVHard];
+                sessionQuestions.sort(() => 0.5 - Math.random());
+            }
 
-                if (sessionQuestions.length === 0) {
-                    let indices = pool.map((_, i) => i);
-                    for (let i = indices.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [indices[i], indices[j]] = [indices[j], indices[i]];
+            // خوارزمية منع تداخل وتتالي الأسئلة المرتبطة المضافة خلف بعضها (مسافة 10 أسئلة على الأقل)
+            if (sessionQuestions.length === 0) {
+                let availableIndices = unassignedPool.map((_, i) => i);
+                availableIndices.sort(() => 0.5 - Math.random());
+
+                let selectedIndices = [];
+                let minGap = 10;
+
+                for (let i = 0; i < availableIndices.length && selectedIndices.length < targetExamCount; i++) {
+                    let candidate = availableIndices[i];
+                    let isTooClose = selectedIndices.some(sel => Math.abs(sel - candidate) < minGap);
+                    
+                    if (!isTooClose) {
+                        selectedIndices.push(candidate);
                     }
-                    const examCount = Math.min(appSettings.examCount || 20, indices.length);
-                    sessionQuestions = indices.slice(0, examCount).map(i => pool[i]);
-                } else {
-                    sessionQuestions.sort(() => 0.5 - Math.random());
                 }
-            } else {
-                let indices = pool.map((_, i) => i);
-                for (let i = indices.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [indices[i], indices[j]] = [indices[j], indices[i]];
+
+                if (selectedIndices.length < targetExamCount) {
+                    for (let i = 0; i < availableIndices.length && selectedIndices.length < targetExamCount; i++) {
+                        let candidate = availableIndices[i];
+                        if (!selectedIndices.includes(candidate)) {
+                            selectedIndices.push(candidate);
+                        }
+                    }
                 }
-                const examCount = Math.min(appSettings.examCount || 20, indices.length);
-                sessionQuestions = indices.slice(0, examCount).map(i => pool[i]);
+
+                selectedIndices.sort(() => 0.5 - Math.random());
+                sessionQuestions = selectedIndices.map(i => unassignedPool[i]);
             }
 
             // خلط خيارات الأسئلة عشوائياً بدقة لضمان عدم تركيز الإجابة في الخيار الأول
@@ -1670,17 +1780,65 @@
             if (quizState.timerInterval) clearInterval(quizState.timerInterval);
 
             let score = 0;
-            quizState.questions.forEach((q, idx) => { if (quizState.answers[idx] === q.ans) score++; });
+            let correctListHtml = "";
+            let wrongListHtml = "";
+            let correctCount = 0;
+            let wrongCount = 0;
+            let answeredCount = 0;
+            let breakdownDetails = [];
+
+            quizState.questions.forEach((q, idx) => { 
+                const userAns = quizState.answers[idx];
+                if (userAns !== null) answeredCount++;
+                const isCorrect = userAns === q.ans;
+                
+                breakdownDetails.push({
+                    qIndex: idx + 1,
+                    qText: q.q,
+                    userAnswer: userAns || "لم يجب",
+                    correctAnswer: q.ans,
+                    isCorrect: isCorrect,
+                    explanation: q.exp || ""
+                });
+
+                if (isCorrect) {
+                    score++;
+                    correctCount++;
+                    correctListHtml += `<li><strong>س${idx+1}:</strong> ${q.q}</li>`;
+                    markQuestionAsAnswered(quizState.topic, q.q);
+                } else {
+                    wrongCount++;
+                    let reasonText = userAns ? `إجابتك: (${userAns})` : `لم تتم الإجابة`;
+                    wrongListHtml += `<li><strong>س${idx+1}:</strong> ${q.q} <span class="text-rose-600">(${reasonText} - الصحيحة: ${q.ans})</span></li>`;
+                }
+            });
+
+            // التحكم في إظهار تفصيل الإجابات للطالب بناءً على إعداد لوحة الإدارة
+            const breakdownContainer = document.getElementById('result-breakdown-container');
+            if (appSettings.showStudentBreakdown !== false) {
+                document.getElementById('count-correct').textContent = correctCount;
+                document.getElementById('count-wrong').textContent = wrongCount;
+                document.getElementById('list-correct').innerHTML = correctListHtml || '<li class="text-slate-400">لا توجد أسئلة صحيحة</li>';
+                document.getElementById('list-wrong').innerHTML = wrongListHtml || '<li class="text-slate-400">لا توجد أسئلة خاطئة</li>';
+                breakdownContainer.classList.remove('hidden');
+            } else {
+                breakdownContainer.classList.add('hidden');
+            }
+
             const total = quizState.questions.length;
             const pct = Math.round((score / total) * 100);
             const isPassed = pct >= 50;
+
+            const loginTimeFormatted = new Date().toLocaleString('ar-EG');
 
             studentRecords.unshift({ 
                 name: quizState.name, 
                 stageGrade: `${quizState.stage} - ${quizState.grade} (${quizState.topic})`, 
                 score, total, pct, 
                 status: isPassed ? "ناجح" : "راسب",
-                date: new Date().toLocaleString('ar-EG') 
+                date: loginTimeFormatted,
+                answeredCount: `${answeredCount} من ${total}`,
+                breakdown: breakdownDetails
             });
             saveState();
 
@@ -1992,6 +2150,7 @@
             document.getElementById('admin-shuffle-questions').checked = !!appSettings.shuffleQuestions;
             document.getElementById('admin-shuffle-options').checked = !!appSettings.shuffleOptions;
             document.getElementById('admin-allow-student-export').checked = appSettings.allowStudentExport !== false;
+            document.getElementById('admin-show-student-breakdown').checked = appSettings.showStudentBreakdown !== false;
             document.getElementById('admin-expiry-input').value = appSettings.expiryDate || "";
             document.getElementById('admin-theme-select').value = appSettings.platformTheme || "default";
             document.getElementById('admin-font-select').value = appSettings.platformFont || "IBM Plex Sans Arabic";
@@ -2045,6 +2204,7 @@
             appSettings.shuffleQuestions = document.getElementById('admin-shuffle-questions').checked;
             appSettings.shuffleOptions = document.getElementById('admin-shuffle-options').checked;
             appSettings.allowStudentExport = document.getElementById('admin-allow-student-export').checked;
+            appSettings.showStudentBreakdown = document.getElementById('admin-show-student-breakdown').checked;
             appSettings.expiryDate = document.getElementById('admin-expiry-input').value;
             appSettings.platformTheme = document.getElementById('admin-theme-select').value;
             appSettings.platformFont = document.getElementById('admin-font-select').value;
@@ -2196,6 +2356,7 @@
 
         function openAddStageModal() {
             document.getElementById('new-stage-name-input').value = '';
+            document.getElementById('modal-add-stage').classList.add('hidden'); // تصحيح لضمان عدم التداخل
             document.getElementById('modal-add-stage').classList.remove('hidden');
         }
 
@@ -3037,7 +3198,6 @@
             document.getElementById('edit-qi-title').value = qi.title || "";
             document.getElementById('edit-qi-img').value = qi.img || "";
             
-            // تعبئة أزرار المرفقات
             const attContainer = document.getElementById('qi-attachments-container');
             attContainer.innerHTML = '';
             if (qi.attachments && Array.isArray(qi.attachments) && qi.attachments.length > 0) {
@@ -3048,7 +3208,6 @@
                 addQiAttachmentRow("اطّلع على", "");
             }
 
-            // تعبئة بنود المحتوى
             const container = document.getElementById('qi-items-container');
             container.innerHTML = '';
             if (qi.items && Array.isArray(qi.items)) {
@@ -3265,13 +3424,72 @@
 
         function deleteQuickInfo(idx) { quickInfoList.splice(idx, 1); saveState(); renderAdminQuickInfoList(); }
 
+        // عرض تفصيل إجابات الطالب للمعلم من جدول السجلات
+        function viewAdminRecordDetails(recordIdx) {
+            const rec = studentRecords[recordIdx];
+            if (!rec || !rec.breakdown) {
+                alert("لا توجد تفاصيل إجابات مسجلة لهذا الطالب.");
+                return;
+            }
+
+            let html = `<div class="space-y-3">
+                <div class="bg-sky-50 p-3 rounded-xl border text-xs font-bold text-sky-950">
+                    <p><strong>اسم الطالب:</strong> ${rec.name}</p>
+                    <p><strong>الدرس/القسم:</strong> ${rec.stageGrade}</p>
+                    <p><strong>وقت الدخول:</strong> ${rec.date}</p>
+                    <p><strong>الأسئلة المجاب عنها:</strong> ${rec.answeredCount || 'غير متوفر'}</p>
+                    <p><strong>النتيجة الإجمالية:</strong> ${rec.score} / ${rec.total} (${rec.pct}٪)</p>
+                </div>
+                <div class="space-y-2 max-h-[50vh] overflow-y-auto pr-1">`;
+
+            rec.breakdown.forEach(b => {
+                let badge = b.isCorrect ? 
+                    `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-[10px] font-bold">صحيح ✓</span>` : 
+                    `<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded text-[10px] font-bold">خطأ / لم يجب ✗</span>`;
+                
+                html += `
+                    <div class="p-3 rounded-xl border bg-slate-50 space-y-1">
+                        <div class="flex justify-between items-center text-xs font-black text-slate-700">
+                            <span>السؤال (${b.qIndex})</span>
+                            ${badge}
+                        </div>
+                        <p class="font-bold text-sky-950 text-sm">${b.qText}</p>
+                        <p class="text-xs text-slate-600">إجابة الطالب: <strong class="${b.isCorrect ? 'text-emerald-700' : 'text-rose-600'}">${b.userAnswer}</strong></p>
+                        ${!b.isCorrect ? `<p class="text-xs text-emerald-800">الإجابة الصحيحة: <strong>${b.correctAnswer}</strong></p>` : ''}
+                        ${b.explanation ? `<p class="text-xs text-indigo-900 bg-indigo-50 p-2 rounded-lg mt-1"><strong>التعليل:</strong> ${b.explanation}</p>` : ''}
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            document.getElementById('admin-record-details-body').innerHTML = html;
+            document.getElementById('modal-admin-record-details').classList.remove('hidden');
+        }
+
         function renderAdminRecordsTable() {
             const tbody = document.getElementById('admin-tbody');
             if(!tbody) return;
             tbody.innerHTML = '';
-            if (studentRecords.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">لا توجد سجلات.</td></tr>`; return; }
+            if (studentRecords.length === 0) { 
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500">لا توجد سجلات.</td></tr>`; 
+                return; 
+            }
             studentRecords.forEach((r, idx) => {
-                tbody.innerHTML += `<tr class="border-b"><td class="p-3">${idx+1}</td><td class="p-3 font-bold">${r.name}</td><td class="p-3 text-xs">${r.stageGrade}</td><td class="p-3">${r.status}</td><td class="p-3">${r.score}/${r.total}</td><td class="p-3 text-xs">${r.date}</td></tr>`;
+                let detailBtn = r.breakdown ? 
+                    `<button type="button" onclick="viewAdminRecordDetails(${idx})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs cursor-pointer shadow"><i class="fa-solid fa-list-check ml-1"></i> عرض التفصيل</button>` : 
+                    `<span class="text-slate-400 text-xs">غير متوفر</span>`;
+
+                tbody.innerHTML += `
+                    <tr class="border-b text-xs">
+                        <td class="p-3">${idx+1}</td>
+                        <td class="p-3 font-bold">${r.name}</td>
+                        <td class="p-3">${r.stageGrade}</td>
+                        <td class="p-3 font-bold">${r.status}</td>
+                        <td class="p-3">${r.score}/${r.total}</td>
+                        <td class="p-3">${r.date}</td>
+                        <td class="p-3 font-mono">${r.answeredCount || '-'}</td>
+                        <td class="p-3 text-center">${detailBtn}</td>
+                    </tr>`;
             });
         }
         function clearRecords() { studentRecords = []; saveState(); renderAdminRecordsTable(); }
