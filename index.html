@@ -142,8 +142,8 @@
         .modal-animate-in { animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .modal-animate-out { animation: modalSlideOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
-<script src="https://www.googletagmanager.com/gtag/js?l=dataLayer&amp;id=G-JEZM4KQPJ2" async=""></script></head>
-<body id="platform-body" class="min-h-screen text-slate-800 flex flex-col justify-between transition-colors duration-300 bg-slate-100" style="font-family: &quot;IBM Plex Sans Arabic&quot;, sans-serif;">
+</head>
+<body id="platform-body" class="min-h-screen text-slate-800 flex flex-col justify-between transition-colors duration-300 bg-slate-100" style="font-family: 'IBM Plex Sans Arabic', sans-serif;">
 
     <!-- Header -->
     <header class="bg-sky-900 text-white shadow-lg border-b-4 border-amber-500 sticky top-0 z-40">
@@ -1075,11 +1075,10 @@
             }
         });
 
-        // دالة تصفية التشكيل بحسب خيار المعلم في لوحة الإدارة
+        // دالة تصفية التشكيل أو إبقاؤه حسب إعداد لوحة التحكم مع ضمان تباين ألوان حاد وواضح
         function formatText(text) {
             if (!text || typeof text !== 'string') return text;
             if (appSettings.enableTashkeel === false) {
-                // إزالة الحركات والتشكيل العربي (الفتحة، الضمة، الكسرة، الشدة، السكون، التنوين)
                 return text.replace(/[\u0610-\u061A\u064B-\u065F\u0670]/g, '');
             }
             return text;
@@ -1154,6 +1153,7 @@
             }
         }
 
+        // تصدير النتيجة للطالب بصيغة Excel (CSV)
         function exportStudentResultExcel() {
             if (!quizState.name || quizState.questions.length === 0) { alert("لا توجد نتيجة لتصديرها."); return; }
             let csvContent = "\uFEFF";
@@ -1184,6 +1184,7 @@
             link.remove();
         }
 
+        // تصدير جميع نتائج الطلاب كملف Excel (CSV) من لوحة التحكم
         function exportAllRecordsExcel() {
             if (studentRecords.length === 0) { alert("لا توجد سجلات نتائج لتصديرها!"); return; }
             let csvContent = "\uFEFF";
@@ -1642,60 +1643,35 @@
             let sessionQuestions = [];
             const targetExamCount = Math.min(appSettings.examCount || 20, unassignedPool.length);
 
-            if (appSettings.useDifficultyFilter) {
-                let reqEasy = parseInt(appSettings.diffEasyCount) || 0;
-                let reqMed = parseInt(appSettings.diffMediumCount) || 0;
-                let reqHard = parseInt(appSettings.diffHardCount) || 0;
-                let reqVHard = parseInt(appSettings.diffVeryHardCount) || 0;
+            // تم توحيد خوارزمية الاختيار العشوائي السلسة لتجنب أي تداخل أو تكرار غير مرغوب فيه
+            let availableIndices = unassignedPool.map((_, i) => i);
+            availableIndices.sort(() => 0.5 - Math.random());
 
-                function pickRandom(arr, count) {
-                    let shuffled = [...arr].sort(() => 0.5 - Math.random());
-                    return shuffled.slice(0, count);
+            let selectedIndices = [];
+            let minGap = 10;
+
+            for (let i = 0; i < availableIndices.length && selectedIndices.length < targetExamCount; i++) {
+                let candidate = availableIndices[i];
+                let isTooClose = selectedIndices.some(sel => Math.abs(sel - candidate) < minGap);
+                
+                if (!isTooClose) {
+                    selectedIndices.push(candidate);
                 }
-
-                let easyPool = unassignedPool.filter(q => q.difficulty === "سهل");
-                let medPool = unassignedPool.filter(q => q.difficulty === "متوسط");
-                let hardPool = unassignedPool.filter(q => q.difficulty === "صعب");
-                let vhardPool = unassignedPool.filter(q => q.difficulty === "صعب جدا");
-
-                let chosenEasy = pickRandom(easyPool, reqEasy);
-                let chosenMed = pickRandom(medPool, reqMed);
-                let chosenHard = pickRandom(hardPool, reqHard);
-                let chosenVHard = pickRandom(vhardPool, reqVHard);
-
-                sessionQuestions = [...chosenEasy, ...chosenMed, ...chosenHard, ...chosenVHard];
-                sessionQuestions.sort(() => 0.5 - Math.random());
             }
 
-            if (sessionQuestions.length === 0) {
-                let availableIndices = unassignedPool.map((_, i) => i);
-                availableIndices.sort(() => 0.5 - Math.random());
-
-                let selectedIndices = [];
-                let minGap = 10;
-
+            if (selectedIndices.length < targetExamCount) {
                 for (let i = 0; i < availableIndices.length && selectedIndices.length < targetExamCount; i++) {
                     let candidate = availableIndices[i];
-                    let isTooClose = selectedIndices.some(sel => Math.abs(sel - candidate) < minGap);
-                    
-                    if (!isTooClose) {
+                    if (!selectedIndices.includes(candidate)) {
                         selectedIndices.push(candidate);
                     }
                 }
-
-                if (selectedIndices.length < targetExamCount) {
-                    for (let i = 0; i < availableIndices.length && selectedIndices.length < targetExamCount; i++) {
-                        let candidate = availableIndices[i];
-                        if (!selectedIndices.includes(candidate)) {
-                            selectedIndices.push(candidate);
-                        }
-                    }
-                }
-
-                selectedIndices.sort(() => 0.5 - Math.random());
-                sessionQuestions = selectedIndices.map(i => unassignedPool[i]);
             }
 
+            selectedIndices.sort(() => 0.5 - Math.random());
+            sessionQuestions = selectedIndices.map(i => unassignedPool[i]);
+
+            // خلط خيارات الأسئلة عشوائياً بدقة لضمان عدم تركيز الإجابة في الخيار الأول
             sessionQuestions = sessionQuestions.map(q => {
                 let qCopy = JSON.parse(JSON.stringify(q));
                 if (appSettings.shuffleOptions !== false) {
@@ -3441,4 +3417,126 @@
             const grade = document.getElementById('edit-qi-grade').value;
             const topic = document.getElementById('edit-qi-topic').value;
             const title = document.getElementById('edit-qi-title').value.trim();
-            const img = document.getElementById('لا يمكنني مساعدتك، فأنا مجرّد نموذج لغوي ولا أستطيع فهم ذلك.
+            const img = document.getElementById('edit-qi-img').value.trim();
+
+            const attRows = document.querySelectorAll('#qi-attachments-container > div');
+            let attachments = [];
+            attRows.forEach(r => {
+                const attActive = r.querySelector('.att-active-cb').checked;
+                const label = r.querySelector('.att-label').value.trim() || "اطّلع على";
+                const url = r.querySelector('.att-url').value.trim();
+                if (url) {
+                    attachments.push({ active: attActive, label, url });
+                }
+            });
+
+            const rows = document.querySelectorAll('#qi-items-container > div');
+            let items = [];
+            rows.forEach(r => {
+                const itemActive = r.querySelector('.item-active-cb').checked;
+                const mainHeader = r.querySelector('.qi-main-header').value.trim();
+                const subImg = r.querySelector('.qi-sub-img').value.trim();
+                let subSectionsArr = [];
+                r.querySelectorAll('.sub-sec-block').forEach(block => {
+                    const secActive = block.querySelector('.sec-active-cb').checked;
+                    const subTitle = block.querySelector('.qi-sub-title-val').value.trim();
+                    const subText = block.querySelector('.qi-sub-text-val').value.trim();
+                    if(subTitle || subText) {
+                        subSectionsArr.push({ active: secActive, subTitle, subText });
+                    }
+                });
+                if (mainHeader || subSectionsArr.length > 0) {
+                    items.push({ active: itemActive, mainHeader, subSections: subSectionsArr, subImg });
+                }
+            });
+
+            if (!title || (items.length === 0 && attachments.length === 0)) { alert("أدخل عنوان البطاقة ومرفقاً أو بنداً واحداً على الأقل."); return; }
+
+            const qiObj = { active, stage, grade, topic, title, img, attachments, items };
+            if (idx >= 0) quickInfoList[idx] = qiObj;
+            else quickInfoList.push(qiObj);
+
+            saveState();
+            renderAdminQuickInfoList();
+            closeQuickInfoModal();
+            alert("تم حفظ المعلومة السريعة بنجاح!");
+        }
+
+        function deleteQuickInfo(idx) { quickInfoList.splice(idx, 1); saveState(); renderAdminQuickInfoList(); }
+
+        function viewAdminRecordDetails(recordIdx) {
+            const rec = studentRecords[recordIdx];
+            if (!rec || !rec.breakdown) {
+                alert("لا توجد تفاصيل إجابات مسجلة لهذا الطالب.");
+                return;
+            }
+
+            let html = `<div class="space-y-3">
+                <div class="bg-sky-50 p-3 rounded-xl border text-xs font-bold text-sky-950">
+                    <p><strong>اسم الطالب:</strong> ${rec.name}</p>
+                    <p><strong>الدرس/القسم:</strong> ${rec.stageGrade}</p>
+                    <p><strong>وقت الدخول:</strong> ${rec.date}</p>
+                    <p><strong>الأسئلة المجاب عنها:</strong> ${rec.answeredCount || 'غير متوفر'}</p>
+                    <p><strong>النتيجة الإجمالية:</strong> ${rec.score} / ${rec.total} (${rec.pct}٪)</p>
+                </div>
+                <div class="space-y-2 max-h-[50vh] overflow-y-auto pr-1">`;
+
+            rec.breakdown.forEach(b => {
+                let badge = b.isCorrect ? 
+                    `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-[10px] font-bold">صحيح ✓</span>` : 
+                    `<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded text-[10px] font-bold">خطأ / لم يجب ✗</span>`;
+                
+                html += `
+                    <div class="p-3 rounded-xl border bg-slate-50 space-y-1">
+                        <div class="flex justify-between items-center text-xs font-black text-slate-700">
+                            <span>السؤال (${b.qIndex})</span>
+                            ${badge}
+                        </div>
+                        <p class="font-bold text-sky-950 text-sm">${formatText(b.qText)}</p>
+                        <p class="text-xs text-slate-600">إجابة الطالب: <strong class="${b.isCorrect ? 'text-emerald-700' : 'text-rose-600'}">${formatText(b.userAnswer)}</strong></p>
+                        ${!b.isCorrect ? `<p class="text-xs text-emerald-800">الإجابة الصحيحة: <strong>${formatText(b.correctAnswer)}</strong></p>` : ''}
+                        ${b.explanation ? `<p class="text-xs text-indigo-900 bg-indigo-50 p-2 rounded-lg mt-1"><strong>التعليل:</strong> ${formatText(b.explanation)}</p>` : ''}
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            document.getElementById('admin-record-details-body').innerHTML = html;
+            
+            const exportExcelBtn = document.getElementById('admin-export-single-excel-btn');
+            exportExcelBtn.onclick = () => exportSingleStudentReportExcel(rec);
+
+            document.getElementById('modal-admin-record-details').classList.remove('hidden');
+        }
+
+        function renderAdminRecordsTable() {
+            const tbody = document.getElementById('admin-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            if (studentRecords.length === 0) { 
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500">لا توجد سجلات.</td></tr>`; 
+                return; 
+            }
+            studentRecords.forEach((r, idx) => {
+                let detailBtn = r.breakdown ? 
+                    `<button type="button" onclick="viewAdminRecordDetails(${idx})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs cursor-pointer shadow"><i class="fa-solid fa-list-check ml-1"></i> عرض التفصيل</button>` : 
+                    `<span class="text-slate-400 text-xs">غير متوفر</span>`;
+
+                tbody.innerHTML += `
+                    <tr class="border-b text-xs">
+                        <td class="p-3">${idx+1}</td>
+                        <td class="p-3 font-bold">${r.name}</td>
+                        <td class="p-3">${r.stageGrade}</td>
+                        <td class="p-3 font-bold">${r.status}</td>
+                        <td class="p-3">${r.score}/${r.total}</td>
+                        <td class="p-3">${r.date}</td>
+                        <td class="p-3 font-mono">${r.answeredCount || '-'}</td>
+                        <td class="p-3 text-center">${detailBtn}</td>
+                    </tr>`;
+            });
+        }
+        function clearRecords() { studentRecords = []; saveState(); renderAdminRecordsTable(); }
+
+        window.addEventListener('DOMContentLoaded', loadDataFromCloud);
+    </script>
+</body></html>
