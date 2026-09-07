@@ -318,7 +318,7 @@
                 </div>
             </div>
 
-            <!-- تفصيل الإجابات (يظهر أو يختفي حسب إعداد لوحة التحكم) -->
+            <!-- تفصيل الإجابات (يظهر أو يختفي حسب إعداد لوحة التحكم للطالب) -->
             <div id="result-breakdown-container" class="hidden w-full max-w-2xl bg-slate-50 p-4 rounded-2xl border text-right space-y-3">
                 <h4 class="font-black text-sky-950 text-sm border-b pb-2"><i class="fa-solid fa-clipboard-list text-sky-600 ml-1"></i> تفصيل الإجابات:</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -337,9 +337,6 @@
                 <button type="button" onclick="openReviewModal()" class="flex-1 min-w-[130px] bg-sky-600 hover:bg-sky-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer text-xs">
                     <i class="fa-solid fa-magnifying-glass ml-1"></i> مُرَاجَعَةُ الْإِجَابَاتِ
                 </button>
-                <button type="button" onclick="exportResultExcel()" class="flex-1 min-w-[130px] bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer text-xs">
-                    <i class="fa-solid fa-file-excel ml-1"></i> تصدير إكسل (CSV)
-                </button>
                 <button type="button" id="student-export-result-btn" onclick="exportStudentResultJson()" class="hidden flex-1 min-w-[130px] bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer text-xs">
                     <i class="fa-solid fa-file-arrow-down ml-1"></i> تَصْدِيرُ النَّتِيجَةِ
                 </button>
@@ -354,7 +351,7 @@
 
     </main>
 
-    <!-- FLOATING MODAL: QUICK INFO (مع زر إغلاق مؤكد لمنع الخروج بالخطأ) -->
+    <!-- FLOATING MODAL: QUICK INFO -->
     <div id="view-quick-info" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div id="modal-content-quick-info" class="bg-white rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
@@ -412,7 +409,7 @@
         </div>
     </div>
 
-    <!-- MODAL: ADMIN RECORD DETAILS (نافذة تفصيل سجل الطالب للمعلم - z-[70]) -->
+    <!-- MODAL: ADMIN RECORD DETAILS (نافذة تفصيل سجل الطالب وزر تصدير الإكسل للمعلم - z-[70]) -->
     <div id="modal-admin-record-details" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[70] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
@@ -420,7 +417,8 @@
                 <button type="button" onclick="document.getElementById('modal-admin-record-details').classList.add('hidden')" class="text-sky-200 hover:text-white text-xl cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="admin-record-details-body" class="p-6 overflow-y-auto space-y-4 flex-grow text-right"></div>
-            <div class="p-4 bg-slate-50 border-t text-center">
+            <div class="p-4 bg-slate-50 border-t flex justify-between items-center">
+                <button type="button" id="admin-export-single-excel-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-file-excel ml-1"></i> تصدير تقرير الطالب (Excel)</button>
                 <button type="button" onclick="document.getElementById('modal-admin-record-details').classList.add('hidden')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-5 py-2 rounded-xl text-xs cursor-pointer">إِغْلَاقٌ</button>
             </div>
         </div>
@@ -463,7 +461,7 @@
                             </label>
                             <label class="flex items-center gap-2 bg-white p-3 rounded-xl border border-sky-200 cursor-pointer shadow-sm">
                                 <input type="checkbox" id="admin-allow-student-export" class="w-5 h-5 text-sky-600 rounded">
-                                <span>إتاحة زر (تصدير النتيجة) للطالب في شاشة النتائج</span>
+                                <span>إتاحة زر (تصدير النتيجة JSON) للطالب في شاشة النتائج</span>
                             </label>
                             <label class="flex items-center gap-2 bg-white p-3 rounded-xl border border-sky-200 cursor-pointer shadow-sm">
                                 <input type="checkbox" id="admin-show-student-breakdown" class="w-5 h-5 text-sky-600 rounded">
@@ -1037,7 +1035,7 @@
             "adminPass": "12300123",
             "shuffleQuestions": false,
             "shuffleOptions": true,
-            "allowStudentExport": true,
+            "allowStudentExport": false,
             "showStudentBreakdown": true,
             "expiryDate": "",
             "stTitleSize": "text-3xl sm:text-5xl",
@@ -1064,7 +1062,6 @@
 
         let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timer: null, timerInterval: null };
 
-        // نظام حماية الخروج العرضي (لمنع ضغط أزرار الهاتف أو الرجوع بالخطأ أثناء الاختبار)
         window.addEventListener('beforeunload', function (e) {
             if (quizState.questions.length > 0 && document.getElementById('view-quiz') && !document.getElementById('view-quiz').classList.contains('hidden')) {
                 e.preventDefault();
@@ -1165,28 +1162,31 @@
             dlAnchor.remove();
         }
 
-        function exportResultExcel() {
-            if (!quizState.name || quizState.questions.length === 0) { alert("لا توجد نتيجة لتصديرها."); return; }
+        // دالة تصدير تقرير الطالب الفردي بصيغة Excel (CSV) للمعلم
+        function exportSingleStudentReportExcel(rec) {
+            if (!rec || !rec.breakdown) { alert("لا توجد تفاصيل لتصديرها."); return; }
             let csvContent = "\uFEFF";
+            csvContent += `تقرير الطالب:,${rec.name}\n`;
+            csvContent += `القسم/الدرس:,${rec.stageGrade}\n`;
+            csvContent += `وقت الدخول:,${rec.date}\n`;
+            csvContent += `الدرجة:,${rec.score} من ${rec.total} (${rec.pct}%)\n\n`;
             csvContent += "رقم السؤال,السؤال,إجابة الطالب,الإجابة الصحيحة,الحالة,التعليل\n";
 
-            quizState.questions.forEach((q, idx) => {
-                let userAns = quizState.answers[idx] || "لم يجب";
-                let isCorrect = userAns === q.ans;
-                let status = isCorrect ? "صحيح" : "خطأ/غير مجاب";
-                let qText = `"${q.q.replace(/"/g, '""')}"`;
-                let uAns = `"${userAns.replace(/"/g, '""')}"`;
-                let cAns = `"${q.ans.replace(/"/g, '""')}"`;
-                let exp = `"${(q.exp || "").replace(/"/g, '""')}"`;
+            rec.breakdown.forEach((b) => {
+                let status = b.isCorrect ? "صحيح" : "خطأ/غير مجاب";
+                let qText = `"${b.qText.replace(/"/g, '""')}"`;
+                let uAns = `"${b.userAnswer.replace(/"/g, '""')}"`;
+                let cAns = `"${b.correctAnswer.replace(/"/g, '""')}"`;
+                let exp = `"${(b.explanation || "").replace(/"/g, '""')}"`;
 
-                csvContent += `${idx + 1},${qText},${uAns},${cAns},${status},${exp}\n`;
+                csvContent += `${b.qIndex},${qText},${uAns},${cAns},${status},${exp}\n`;
             });
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.setAttribute("href", url);
-            link.setAttribute("download", `exam_report_${quizState.name.replace(/\s+/g, '_')}_${Date.now()}.csv`);
+            link.setAttribute("download", `report_${rec.name.replace(/\s+/g, '_')}_${Date.now()}.csv`);
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -1780,21 +1780,18 @@
         function prevQuestion() { if (quizState.currentIndex > 0) { quizState.currentIndex--; renderQuestion(); } }
         function nextQuestion() { if (quizState.currentIndex < quizState.questions.length - 1) { quizState.currentIndex++; renderQuestion(); } }
 
-        // تأكيد تسليم الاختبار لمنع الخروج بالخطأ
         function confirmFinishQuiz() {
             if (confirm("هل أنت متأكد من رغبتك في تسليم الاختبار الآن؟")) {
                 finishQuizSubmission();
             }
         }
 
-        // تأكيد العودة للصفحة الرئيسية لمنع الخروج بالخطأ
         function confirmRestartHome() {
             if (confirm("هل أنت متأكد من رغبتك في الخروج والعودة للرئيسية؟")) {
                 restartHome();
             }
         }
 
-        // تأكيد إغلاق المعلومة السريعة لمنع الخروج بالخطأ
         function confirmCloseQuickInfo() {
             if (confirm("هل أنت متأكد من إغلاق نافذة المعلومة السريعة؟")) {
                 closeQuickInfo();
@@ -2173,7 +2170,7 @@
         function loadAdminData() {
             document.getElementById('admin-shuffle-questions').checked = !!appSettings.shuffleQuestions;
             document.getElementById('admin-shuffle-options').checked = !!appSettings.shuffleOptions;
-            document.getElementById('admin-allow-student-export').checked = appSettings.allowStudentExport !== false;
+            document.getElementById('admin-allow-student-export').checked = !!appSettings.allowStudentExport;
             document.getElementById('admin-show-student-breakdown').checked = appSettings.showStudentBreakdown !== false;
             document.getElementById('admin-expiry-input').value = appSettings.expiryDate || "";
             document.getElementById('admin-theme-select').value = appSettings.platformTheme || "default";
@@ -3447,7 +3444,7 @@
 
         function deleteQuickInfo(idx) { quickInfoList.splice(idx, 1); saveState(); renderAdminQuickInfoList(); }
 
-        // عرض تفصيل إجابات الطالب للمعلم من جدول السجلات
+        // عرض تفصيل إجابات الطالب للمعلم مع زر تصدير إكسل الخاص بالطالب
         function viewAdminRecordDetails(recordIdx) {
             const rec = studentRecords[recordIdx];
             if (!rec || !rec.breakdown) {
@@ -3486,6 +3483,11 @@
 
             html += `</div></div>`;
             document.getElementById('admin-record-details-body').innerHTML = html;
+            
+            // ربط زر تصدير إكسل الخاص بهذا الطالب في النافذة المنبثقة للمعلم
+            const exportExcelBtn = document.getElementById('admin-export-single-excel-btn');
+            exportExcelBtn.onclick = () => exportSingleStudentReportExcel(rec);
+
             document.getElementById('modal-admin-record-details').classList.remove('hidden');
         }
 
