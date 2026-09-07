@@ -194,7 +194,7 @@
             <div class="flex justify-between items-center border-b border-slate-100 pb-5">
                 <div id="start-logo-right-container" class="hidden"><img id="start-logo-right" src="" alt="" class="h-16 w-auto object-contain"></div>
                 <div class="mx-auto flex flex-wrap gap-4 justify-center items-center">
-                    <select id="start-stage-select" onchange="onStageChange()" class="bg-sky-100 text-sky-950 px-4 py-3.5 rounded-2xl border-3 border-sky-400 cursor-pointer focus:outline-none shadow-sm text-base sm:text-lg font-black"><option value="">اختر المرحلة</option><option value="ثانوية">ثانوية</option><option value="إعدادية">إعدادية</option></select>
+                    <select id="start-stage-select" onchange="onStageChange()" class="bg-sky-100 text-sky-950 px-4 py-3.5 rounded-2xl border-3 border-sky-400 cursor-pointer focus:outline-none shadow-sm text-base sm:text-lg font-black"><option value="">اختر المرحلة</option></select>
                     <select id="start-grade-select" onchange="onGradeChange()" class="bg-amber-100 text-amber-950 px-4 py-3.5 rounded-2xl border-3 border-amber-400 cursor-pointer focus:outline-none shadow-sm text-base sm:text-lg font-black"><option value="">اختر الصف</option></select>
                     <select id="start-topic-select" onchange="onTopicChange()" class="bg-emerald-100 text-emerald-950 px-4 py-3.5 rounded-2xl border-3 border-emerald-400 cursor-pointer focus:outline-none shadow-sm text-base sm:text-lg font-black"><option value="">اختر الموضوع</option></select>
                 </div>
@@ -347,6 +347,48 @@
             <div id="quick-info-content-container" class="p-6 overflow-y-auto space-y-6 flex-grow"></div>
             <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap gap-2 justify-center">
                 <button type="button" onclick="closeQuickInfo()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs cursor-pointer">إِغْلَاقٌ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PREVIEW ITEM (معاينة المعلومة السريعة - z-[70] لضمان ظهورها فوق الإدارة) -->
+    <div id="modal-preview-qi" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border overflow-hidden modal-animate-in">
+            <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
+                <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-eye text-amber-400"></i> معاينة شكل المعلومة السريعة (للطلاب)</h3>
+                <button type="button" onclick="document.getElementById('modal-preview-qi').classList.add('hidden')" class="text-sky-200 hover:text-white text-xl cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="preview-qi-body" class="p-6 overflow-y-auto space-y-4 flex-grow"></div>
+            <div class="p-4 bg-slate-50 border-t text-center">
+                <button type="button" onclick="document.getElementById('modal-preview-qi').classList.add('hidden')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-5 py-2 rounded-xl text-xs cursor-pointer">إِغْلَاقُ الْمُعَايَنَةِ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PREVIEW QUESTION (معاينة السؤال - z-[70] لضمان ظهورها فوق الإدارة) -->
+    <div id="modal-preview-q" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl border overflow-hidden modal-animate-in">
+            <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
+                <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-eye text-amber-400"></i> معاينة شكل السؤال (للطلاب)</h3>
+                <button type="button" onclick="document.getElementById('modal-preview-q').classList.add('hidden')" class="text-sky-200 hover:text-white text-xl cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="preview-q-body" class="p-6 overflow-y-auto space-y-4 flex-grow text-right"></div>
+            <div class="p-4 bg-slate-50 border-t text-center">
+                <button type="button" onclick="document.getElementById('modal-preview-q').classList.add('hidden')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-5 py-2 rounded-xl text-xs cursor-pointer">إِغْلَاقُ الْمُعَايَنَةِ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PREVIEW PARAGRAPH (معاينة الفقرة - z-[70] لضمان ظهورها فوق الإدارة) -->
+    <div id="modal-preview-para" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl border overflow-hidden modal-animate-in">
+            <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
+                <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-eye text-amber-400"></i> معاينة شكل الفقرة القرائية (للطلاب)</h3>
+                <button type="button" onclick="document.getElementById('modal-preview-para').classList.add('hidden')" class="text-sky-200 hover:text-white text-xl cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="preview-para-body" class="p-6 overflow-y-auto space-y-4 flex-grow text-right"></div>
+            <div class="p-4 bg-slate-50 border-t text-center">
+                <button type="button" onclick="document.getElementById('modal-preview-para').classList.add('hidden')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-5 py-2 rounded-xl text-xs cursor-pointer">إِغْلَاقُ الْمُعَايَنَةِ</button>
             </div>
         </div>
     </div>
@@ -595,7 +637,8 @@
 
                 <!-- TAB 2: QUESTIONS -->
                 <div id="admin-tab-questions" class="space-y-5 hidden">
-                    <div class="flex justify-end">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800 text-sm">إدارة الأسئلة واستيرادها وتصديرها</h3>
                         <button type="button" onclick="saveAppSettings()" class="bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-floppy-disk ml-1"></i> حفظ التغييرات في بنك الأسئلة</button>
                     </div>
 
@@ -628,11 +671,12 @@
 
                     <div class="flex flex-wrap justify-between items-center pt-2 border-t border-slate-200 gap-2">
                         <div class="flex items-center gap-2">
-                            <h3 class="font-bold text-slate-800 text-sm">قَائِمَةُ بَنْكِ الْأَسْئِلَةِ (مع إمكانية التفعيل/الإخفاء)</h3>
+                            <h3 class="font-bold text-slate-800 text-sm">قَائِمَةُ بَنْكِ الْأَسْئِلَةِ (مرقمة حسب القسم)</h3>
                             <button type="button" onclick="deleteSelectedQuestions()" class="bg-rose-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl cursor-pointer">حذف المحددة</button>
                         </div>
-                        <div class="flex gap-2">
-                            <button type="button" onclick="exportQuestionsJson()" class="bg-indigo-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer">تصدير (JSON)</button>
+                        <div class="flex gap-2 flex-wrap">
+                            <button type="button" onclick="exportQuestionsJson()" class="bg-indigo-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer"><i class="fa-solid fa-download ml-1"></i> تصدير (JSON)</button>
+                            <label class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد (JSON)<input type="file" id="import-questions-json-file" accept=".json" onchange="importQuestionsJsonFile(event)" class="hidden"></label>
                             <button type="button" onclick="openQuestionModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة سؤال فردي</button>
                         </div>
                     </div>
@@ -647,7 +691,7 @@
                 <!-- TAB 3: PARAGRAPHS -->
                 <div id="admin-tab-paragraphs" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800">إدارة الفقرات والنصوص القرائية (مع التفعيل/الإخفاء)</h3>
+                        <h3 class="font-bold text-slate-800">إدارة الفقرات والنصوص القرائية (مع التفعيل/الإخفاء والمعاينة)</h3>
                         <div class="flex gap-2">
                             <button type="button" onclick="saveAppSettings()" class="bg-emerald-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-floppy-disk ml-1"></i> حفظ التغييرات</button>
                             <button type="button" onclick="openParagraphModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة فقرة جديدة</button>
@@ -659,7 +703,7 @@
                 <!-- TAB 4: QUICK INFO -->
                 <div id="admin-tab-quickinfo" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800">بطاقات المعلومات السريعة (مع التفعيل/الإخفاء)</h3>
+                        <h3 class="font-bold text-slate-800">بطاقات المعلومات السريعة (مع زر المعاينة والمرفقات)</h3>
                         <div class="flex gap-2">
                             <button type="button" onclick="saveAppSettings()" class="bg-emerald-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-floppy-disk ml-1"></i> حفظ التغييرات</button>
                             <button type="button" onclick="openQuickInfoModalForAdd()" class="bg-amber-500 text-sky-950 font-bold text-xs px-3 py-2 rounded-xl cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة معلومة سريعة</button>
@@ -750,7 +794,10 @@
 
     <div id="modal-question-edit" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto modal-animate-in">
-            <h3 id="question-modal-title" class="font-black text-slate-900 text-lg border-b pb-2">إِضَافَةُ / تَعْدِيلُ سُؤَالٍ</h3>
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 id="question-modal-title" class="font-black text-slate-900 text-lg">إِضَافَةُ / تَعْدِيلُ سُؤَالٍ</h3>
+                <button type="button" onclick="previewCurrentQuestionModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-eye ml-1"></i> معاينة السؤال</button>
+            </div>
             <input type="hidden" id="edit-q-index" value="-1">
             <div class="space-y-3 text-sm font-bold">
                 <div class="flex items-center gap-2 bg-sky-50 p-2.5 rounded-xl border border-sky-200">
@@ -794,7 +841,10 @@
 
     <div id="modal-paragraph-edit" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl modal-animate-in max-h-[90vh] overflow-y-auto">
-            <h3 id="para-modal-title" class="font-black text-slate-900 text-lg border-b pb-2">تَعْدِيلُ الْفَقْرَةِ</h3>
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 id="para-modal-title" class="font-black text-slate-900 text-lg">تَعْدِيلُ الْفَقْرَةِ</h3>
+                <button type="button" onclick="previewCurrentParagraphModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-eye ml-1"></i> معاينة الفقرة</button>
+            </div>
             <input type="hidden" id="edit-para-id" value="para_1">
             <div class="space-y-3 text-sm font-bold">
                 <div class="flex items-center gap-2 bg-sky-50 p-2.5 rounded-xl border border-sky-200">
@@ -825,7 +875,10 @@
     <!-- MODAL: QUICK INFO EDIT -->
     <div id="modal-qi-edit" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-4 shadow-2xl modal-animate-in max-h-[95vh] overflow-y-auto">
-            <h3 id="qi-modal-title" class="font-black text-slate-900 text-lg border-b pb-2">إضافة / تعديل معلومة سريعة</h3>
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 id="qi-modal-title" class="font-black text-slate-900 text-lg">إضافة / تعديل معلومة سريعة</h3>
+                <button type="button" onclick="previewCurrentQiModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-eye ml-1"></i> معاينة المعلومة</button>
+            </div>
             <input type="hidden" id="edit-qi-index" value="-1">
             <div class="space-y-3 text-sm font-bold">
                 <div class="flex items-center gap-2 bg-sky-50 p-2.5 rounded-xl border border-sky-200">
@@ -886,7 +939,7 @@
             </div>
             <div class="mt-4 flex justify-center gap-3">
                 <button type="button" onclick="window.print()" class="bg-sky-600 text-white font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">طباعة الشهادة</button>
-                <button type="button" onclick="closeCertModal()" class="bg-slate-200 text-slate-800 font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">إلغاء</button>
+                <button type="button" onclick="closeCertModal()" class="bg-slate-200 text-slate-800 font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">إغلاق</button>
             </div>
         </div>
     </div>
@@ -1163,6 +1216,45 @@
             }
         }
 
+        function importQuestionsJsonFile(event) {
+            const fileReader = new FileReader();
+            if (event.target.files[0]) {
+                fileReader.readAsText(event.target.files[0], "UTF-8");
+                fileReader.onload = async (e) => {
+                    try {
+                        const importedQuestions = JSON.parse(e.target.result);
+                        if (Array.isArray(importedQuestions)) {
+                            let added = 0;
+                            importedQuestions.forEach(q => {
+                                if (q.q && q.opts && q.ans) {
+                                    questionBank.push({
+                                        stage: q.stage || document.getElementById('filter-q-stage').value || Object.keys(stagesData)[0] || "ثانوية",
+                                        grade: q.grade || document.getElementById('filter-q-grade').value || "",
+                                        topic: q.topic || document.getElementById('filter-q-topic').value || "",
+                                        active: q.active !== false,
+                                        difficulty: q.difficulty || "",
+                                        paragraphId: q.paragraphId || "",
+                                        q: q.q,
+                                        opts: q.opts,
+                                        ans: q.ans,
+                                        exp: q.exp || ""
+                                    });
+                                    added++;
+                                }
+                            });
+                            await saveState();
+                            renderAdminQuestionsList();
+                            alert(`تم استيراد وإضافة (${added}) سؤالاً بنجاح إلى البنك!`);
+                        } else {
+                            alert("ملف JSON غير صالح للأسئلة.");
+                        }
+                    } catch (err) {
+                        alert("حدث خطأ أثناء قراءة ملف الأسئلة.");
+                    }
+                };
+            }
+        }
+
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
@@ -1310,6 +1402,7 @@
             } else { botLC.classList.add('hidden'); }
         }
 
+        // جعل القوائم المنسدلة تبدأ بخيار "اختر المرحلة" و"اختر الصف" طبيعياً دون تنشيط مسبق متكرر
         function populateStartStages() {
             const stageSel = document.getElementById('start-stage-select');
             if(!stageSel) return;
@@ -1332,7 +1425,7 @@
             const gradeSel = document.getElementById('start-grade-select');
             if(!gradeSel) return;
             gradeSel.innerHTML = '<option value="">اختر الصف</option>';
-            if (stagesData[stage]) {
+            if (stage && stagesData[stage]) {
                 stagesData[stage].forEach(grade => {
                     const key = `${stage}_${grade}`;
                     const isVisible = gradeStatus[key] !== false;
@@ -1353,17 +1446,19 @@
             if(!topicSel) return;
             topicSel.innerHTML = '<option value="">اختر الموضوع</option>';
             
-            const filteredTopics = topicsData.filter(t => {
-                if (t.active === false) return false;
-                if (t.targetGrades) return t.targetGrades.some(tg => tg.stage === stage && tg.grade === grade);
-                return (t.stage === stage && (t.grade === grade || (t.grades && t.grades.includes(grade))));
-            });
+            if (stage && grade) {
+                const filteredTopics = topicsData.filter(t => {
+                    if (t.active === false) return false;
+                    if (t.targetGrades) return t.targetGrades.some(tg => tg.stage === stage && tg.grade === grade);
+                    return (t.stage === stage && (t.grade === grade || (t.grades && t.grades.includes(grade))));
+                });
 
-            filteredTopics.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t.topic; opt.textContent = t.topic;
-                topicSel.appendChild(opt);
-            });
+                filteredTopics.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.topic; opt.textContent = t.topic;
+                    topicSel.appendChild(opt);
+                });
+            }
             onTopicChange();
         }
 
@@ -1627,7 +1722,7 @@
             } else {
                 resMsg.textContent = "لا تتراجع! المحاولة البداية الحقيقية للتفوق، كرر الاختبار وسترى نتيجة أفضل.";
                 resMsg.className = "text-rose-700 font-extrabold text-base leading-relaxed";
-                resIcon.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-rose-100 text-rose-600 border-4 border-rose-300";
+                resIcon.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-rose-100 text-rose-600 border-4 border-emerald-300";
                 resIconI.className = "fa-solid fa-rotate-right text-rose-500";
                 certContainer.classList.add('hidden');
             }
@@ -1656,70 +1751,158 @@
                 container.innerHTML = '<p class="text-center text-slate-500 font-bold">لا توجد معلومات سريعة مخصصة لهذا الموضوع.</p>';
             } else {
                 filtered.forEach(qi => {
-                    let mainImgHtml = qi.img ? `<div class="my-3 text-center"><img src="${qi.img}" alt="صورة البطاقة" class="max-h-56 rounded-2xl mx-auto object-contain border shadow-sm" onerror="this.style.display='none';"></div>` : '';
-                    
-                    // توليد أزرار المرفقات والروابط (PDF / PowerPoint)
-                    let attachmentsHtml = '';
-                    if (qi.attachments && Array.isArray(qi.attachments) && qi.attachments.length > 0) {
-                        let btns = '';
-                        qi.attachments.forEach(att => {
-                            if (att.active !== false && att.url) {
-                                let btnLabel = att.label || "اطّلع على";
-                                btns += `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2 text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${btnLabel}</a>`;
-                            }
-                        });
-                        if (btns) {
-                            attachmentsHtml = `<div class="flex flex-wrap gap-2 my-3 justify-center">${btns}</div>`;
-                        }
-                    }
-
-                    let itemsHtml = '';
-                    if (qi.items && Array.isArray(qi.items)) {
-                        qi.items.forEach(it => {
-                            if (it.active === false) return;
-                            let itemImgHtml = it.subImg ? `<div class="my-2 text-center"><img src="${it.subImg}" alt="صورة البند" class="max-h-48 rounded-xl mx-auto object-contain border" onerror="this.style.display='none';"></div>` : '';
-                            
-                            let subDetailsBlocks = '';
-                            if (it.subSections && Array.isArray(it.subSections) && it.subSections.length > 0) {
-                                it.subSections.forEach(sec => {
-                                    if (sec.active === false) return;
-                                    if(sec.subTitle || sec.subText) {
-                                        subDetailsBlocks += `
-                                            <div class="mt-2.5 space-y-1.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
-                                                ${sec.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base flex items-center gap-1.5"><i class="fa-solid fa-angle-left text-sky-600 text-xs"></i> ${sec.subTitle}</h5>` : ''}
-                                                <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${sec.subText || ''}</p>
-                                            </div>
-                                        `;
-                                    }
-                                });
-                            } else if (it.subTitle || it.subText) {
-                                subDetailsBlocks += `
-                                    <div class="mt-2.5 space-y-1.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
-                                        ${it.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base">${it.subTitle}</h5>` : ''}
-                                        <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${it.subText || ''}</p>
-                                    </div>
-                                `;
-                            }
-
-                            itemsHtml += `
-                                <div class="bg-white p-4 sm:p-5 rounded-2xl border space-y-3 shadow-sm">
-                                    ${it.mainHeader ? `<h4 class="font-black text-amber-800 text-base sm:text-lg border-b-2 border-amber-200 pb-2 flex items-center gap-2"><i class="fa-solid fa-bookmark text-amber-600 text-sm"></i> ${it.mainHeader}</h4>` : ''}
-                                    ${itemImgHtml}
-                                    <div class="space-y-2">${subDetailsBlocks}</div>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        itemsHtml = `<p class="text-slate-700 text-sm whitespace-pre-line">${qi.text || ''}</p>`;
-                    }
-
+                    let htmlContent = generateQuickInfoCardHtml(qi);
                     const card = document.createElement('div');
-                    card.className = "bg-slate-100 p-6 rounded-3xl border space-y-4 shadow-md";
-                    card.innerHTML = `<h3 class="font-black text-sky-950 text-xl sm:text-2xl border-b-4 border-amber-500 pb-2">${qi.title}</h3>${mainImgHtml}${attachmentsHtml}<div class="space-y-4">${itemsHtml}</div>`;
-                    container.appendChild(card);
+                    card.innerHTML = htmlContent;
+                    container.appendChild(card.firstElementChild);
                 });
             }
             document.getElementById('view-quick-info').classList.remove('hidden');
+        }
+
+        function generateQuickInfoCardHtml(qi) {
+            let mainImgHtml = qi.img ? `<div class="my-3 text-center"><img src="${qi.img}" alt="صورة البطاقة" class="max-h-56 rounded-2xl mx-auto object-contain border shadow-sm" onerror="this.style.display='none';"></div>` : '';
+            
+            let attachmentsHtml = '';
+            if (qi.attachments && Array.isArray(qi.attachments) && qi.attachments.length > 0) {
+                let btns = '';
+                qi.attachments.forEach(att => {
+                    if (att.active !== false && att.url) {
+                        let btnLabel = att.label || "اطّلع على";
+                        btns += `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2 text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${btnLabel}</a>`;
+                    }
+                });
+                if (btns) {
+                    attachmentsHtml = `<div class="flex flex-wrap gap-2 my-3 justify-center">${btns}</div>`;
+                }
+            }
+
+            let itemsHtml = '';
+            if (qi.items && Array.isArray(qi.items)) {
+                qi.items.forEach(it => {
+                    if (it.active === false) return;
+                    let itemImgHtml = it.subImg ? `<div class="my-2 text-center"><img src="${it.subImg}" alt="صورة البند" class="max-h-48 rounded-xl mx-auto object-contain border" onerror="this.style.display='none';"></div>` : '';
+                    
+                    let subDetailsBlocks = '';
+                    if (it.subSections && Array.isArray(it.subSections) && it.subSections.length > 0) {
+                        it.subSections.forEach(sec => {
+                            if (sec.active === false) return;
+                            if(sec.subTitle || sec.subText) {
+                                subDetailsBlocks += `
+                                    <div class="mt-2.5 space-y-1.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
+                                        ${sec.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base flex items-center gap-1.5"><i class="fa-solid fa-angle-left text-sky-600 text-xs"></i> ${sec.subTitle}</h5>` : ''}
+                                        <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${sec.subText || ''}</p>
+                                    </div>
+                                `;
+                            }
+                        });
+                    } else if (it.subTitle || it.subText) {
+                        subDetailsBlocks += `
+                            <div class="mt-2.5 space-y-1.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
+                                ${it.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base">${it.subTitle}</h5>` : ''}
+                                <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${it.subText || ''}</p>
+                            </div>
+                        `;
+                    }
+
+                    itemsHtml += `
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl border space-y-3 shadow-sm">
+                            ${it.mainHeader ? `<h4 class="font-black text-amber-800 text-base sm:text-lg border-b-2 border-amber-200 pb-2 flex items-center gap-2"><i class="fa-solid fa-bookmark text-amber-600 text-sm"></i> ${it.mainHeader}</h4>` : ''}
+                            ${itemImgHtml}
+                            <div class="space-y-2">${subDetailsBlocks}</div>
+                        </div>
+                    `;
+                });
+            } else {
+                itemsHtml = `<p class="text-slate-700 text-sm whitespace-pre-line">${qi.text || ''}</p>`;
+            }
+
+            return `<div class="bg-slate-100 p-6 rounded-3xl border space-y-4 shadow-md"><h3 class="font-black text-sky-950 text-xl sm:text-2xl border-b-4 border-amber-500 pb-2">${qi.title}</h3>${mainImgHtml}${attachmentsHtml}<div class="space-y-4">${itemsHtml}</div></div>`;
+        }
+
+        function previewQiFromModal(qiObj) {
+            const container = document.getElementById('preview-qi-body');
+            container.innerHTML = generateQuickInfoCardHtml(qiObj);
+            document.getElementById('modal-preview-qi').classList.remove('hidden');
+        }
+
+        function previewCurrentQiModal() {
+            const title = document.getElementById('edit-qi-title').value.trim() || "عنوان معاينة المعلومة";
+            const img = document.getElementById('edit-qi-img').value.trim();
+            
+            const attRows = document.querySelectorAll('#qi-attachments-container > div');
+            let attachments = [];
+            attRows.forEach(r => {
+                const attActive = r.querySelector('.att-active-cb').checked;
+                const label = r.querySelector('.att-label').value.trim() || "اطّلع على";
+                const url = r.querySelector('.att-url').value.trim();
+                if (url) attachments.push({ active: attActive, label, url });
+            });
+
+            const rows = document.querySelectorAll('#qi-items-container > div');
+            let items = [];
+            rows.forEach(r => {
+                const itemActive = r.querySelector('.item-active-cb').checked;
+                const mainHeader = r.querySelector('.qi-main-header').value.trim();
+                const subImg = r.querySelector('.qi-sub-img').value.trim();
+                let subSectionsArr = [];
+                r.querySelectorAll('.sub-sec-block').forEach(block => {
+                    const secActive = block.querySelector('.sec-active-cb').checked;
+                    const subTitle = block.querySelector('.qi-sub-title-val').value.trim();
+                    const subText = block.querySelector('.qi-sub-text-val').value.trim();
+                    if(subTitle || subText) subSectionsArr.push({ active: secActive, subTitle, subText });
+                });
+                if (mainHeader || subSectionsArr.length > 0) {
+                    items.push({ active: itemActive, mainHeader, subSections: subSectionsArr, subImg });
+                }
+            });
+
+            previewQiFromModal({ title, img, attachments, items });
+        }
+
+        function previewCurrentParagraphModal() {
+            const pTitle = document.getElementById('edit-para-title').value.trim() || "اقْرَأْ ثُمَّ أَجِبْ:";
+            const pText = document.getElementById('edit-para-text').value.trim() || "نص الفقرة القرائية التجريبي هنا...";
+            const pImg = document.getElementById('edit-para-img').value.trim();
+
+            let imgHtml = pImg ? `<div class="my-2 text-center"><img src="${pImg}" alt="صورة الفقرة" class="max-h-48 rounded-xl mx-auto object-contain border" onerror="this.style.display='none';"></div>` : '';
+
+            const container = document.getElementById('preview-para-body');
+            container.innerHTML = `
+                <div class="bg-amber-50/70 p-4 rounded-2xl border-2 border-amber-200 space-y-2 text-right">
+                    <div class="flex items-center gap-2 text-amber-900 border-b border-amber-200/60 pb-1.5 font-black">
+                        <i class="fa-solid fa-book-open text-amber-600"></i>
+                        <span>${pTitle}</span>
+                    </div>
+                    ${imgHtml}
+                    <p class="whitespace-pre-line text-justify text-base font-semibold text-slate-800">${pText}</p>
+                </div>
+            `;
+            document.getElementById('modal-preview-para').classList.remove('hidden');
+        }
+
+        function previewCurrentQuestionModal() {
+            const qText = document.getElementById('edit-q-text').value.trim() || "نص السؤال التجريبي هنا...";
+            const opts = [0,1,2,3].map(i => document.getElementById(`edit-opt-${i}`).value.trim() || `الخيار ${i+1}`);
+            const ans = document.getElementById('edit-q-ans').value.trim() || opts[0];
+            const exp = document.getElementById('edit-q-exp').value.trim();
+
+            let optsHtml = '<div class="space-y-2 mt-3">';
+            opts.forEach(opt => {
+                let isAns = opt === ans;
+                optsHtml += `<div class="p-3 rounded-2xl border text-sm flex items-center justify-between ${isAns ? 'bg-emerald-100 border-emerald-500 text-emerald-950 font-black' : 'bg-white border-slate-200 text-slate-700'}"><span>${opt}</span>${isAns ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}</div>`;
+            });
+            optsHtml += '</div>';
+
+            const container = document.getElementById('preview-q-body');
+            container.innerHTML = `
+                <div class="space-y-3">
+                    <p class="font-black text-sky-950 text-lg leading-relaxed">${qText}</p>
+                    ${optsHtml}
+                    ${exp ? `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-sm mt-3"><strong>التعليل:</strong> ${exp}</div>` : ''}
+                </div>
+            `;
+            document.getElementById('modal-preview-q').classList.remove('hidden');
         }
 
         function closeQuickInfo() { document.getElementById('view-quick-info').classList.add('hidden'); }
@@ -2331,7 +2514,7 @@
                 return;
             }
 
-            displayedQuestions.forEach((q) => {
+            displayedQuestions.forEach((q, displayIdx) => {
                 const idx = q.originalIndex;
                 const isActive = q.active !== false;
                 const diffBadge = q.difficulty ? `<span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded text-[10px]">${q.difficulty}</span>` : '';
@@ -2347,13 +2530,14 @@
                         <button type="button" onclick="toggleQuestionVisibility(${idx})" class="px-2 py-0.5 rounded text-[10px] font-extrabold cursor-pointer shrink-0 ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
                             ${isActive ? 'مفعل' : 'مخفي'}
                         </button>
-                        <span class="text-sky-600 font-extrabold shrink-0">#${idx + 1}</span>
+                        <span class="text-sky-600 font-extrabold shrink-0">#${displayIdx + 1}</span>
                         <span class="bg-sky-100 text-sky-800 px-2 py-0.5 rounded text-[10px]">${q.stage} - ${q.grade} - ${q.topic || 'عام'}</span>
                         ${diffBadge}
                         ${paraBadge}
                         <span class="${isActive ? 'text-slate-800' : 'text-slate-400 line-through'} truncate">${q.q}</span>
                     </div>
                     <div class="flex gap-1.5 shrink-0 items-center">
+                        <button type="button" onclick="previewQuestionItem(${idx})" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer" title="معاينة السؤال"><i class="fa-solid fa-eye"></i></button>
                         <button type="button" onclick="moveQuestion(${idx}, -1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
                         <button type="button" onclick="moveQuestion(${idx}, 1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
                         <button type="button" onclick="duplicateQuestion(${idx})" class="bg-indigo-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer" title="تكرار"><i class="fa-solid fa-copy"></i></button>
@@ -2363,6 +2547,27 @@
                 `;
                 container.appendChild(item);
             });
+        }
+
+        function previewQuestionItem(idx) {
+            const q = questionBank[idx];
+            if(!q) return;
+            let optsHtml = '<div class="space-y-2 mt-3">';
+            q.opts.forEach(opt => {
+                let isAns = opt === q.ans;
+                optsHtml += `<div class="p-3 rounded-2xl border text-sm flex items-center justify-between ${isAns ? 'bg-emerald-100 border-emerald-500 text-emerald-950 font-black' : 'bg-white border-slate-200 text-slate-700'}"><span>${opt}</span>${isAns ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}</div>`;
+            });
+            optsHtml += '</div>';
+
+            const container = document.getElementById('preview-q-body');
+            container.innerHTML = `
+                <div class="space-y-3">
+                    <p class="font-black text-sky-950 text-lg leading-relaxed">${q.q}</p>
+                    ${optsHtml}
+                    ${q.exp ? `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-sm mt-3"><strong>التعليل:</strong> ${q.exp}</div>` : ''}
+                </div>
+            `;
+            document.getElementById('modal-preview-q').classList.remove('hidden');
         }
 
         function toggleQuestionVisibility(idx) {
@@ -2511,6 +2716,7 @@
                         <div>${linkedBadge}</div>
                     </div>
                     <div class="flex gap-1.5 shrink-0 items-center">
+                        <button type="button" onclick="previewParagraphItem('${p.id}')" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2.5 py-1 rounded cursor-pointer font-bold" title="معاينة الفقرة"><i class="fa-solid fa-eye"></i></button>
                         <button type="button" onclick="moveParagraph(${idx}, -1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
                         <button type="button" onclick="moveParagraph(${idx}, 1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
                         <button type="button" onclick="duplicateParagraph('${p.id}')" class="bg-indigo-600 text-white px-2.5 py-1 rounded cursor-pointer" title="تكرار"><i class="fa-solid fa-copy"></i></button>
@@ -2520,6 +2726,25 @@
                 `;
                 container.appendChild(item);
             });
+        }
+
+        function previewParagraphItem(paraId) {
+            const p = paragraphs.find(item => item.id === paraId);
+            if(!p) return;
+            let imgHtml = p.img ? `<div class="my-2 text-center"><img src="${p.img}" alt="صورة الفقرة" class="max-h-48 rounded-xl mx-auto object-contain border" onerror="this.style.display='none';"></div>` : '';
+
+            const container = document.getElementById('preview-para-body');
+            container.innerHTML = `
+                <div class="bg-amber-50/70 p-4 rounded-2xl border-2 border-amber-200 space-y-2 text-right">
+                    <div class="flex items-center gap-2 text-amber-900 border-b border-amber-200/60 pb-1.5 font-black">
+                        <i class="fa-solid fa-book-open text-amber-600"></i>
+                        <span>${p.title || "اقْرَأْ ثُمَّ أَجِبْ:"}</span>
+                    </div>
+                    ${imgHtml}
+                    <p class="whitespace-pre-line text-justify text-base font-semibold text-slate-800">${p.text}</p>
+                </div>
+            `;
+            document.getElementById('modal-preview-para').classList.remove('hidden');
         }
 
         function toggleParagraphVisibility(idx) {
@@ -2739,6 +2964,7 @@
                         <span class="truncate"><strong>[المرحلة: ${qi.stage || 'الكل'} | الصف: ${qi.grade || 'الكل'} | الموضوع: ${qi.topic || 'عام'}]</strong> <br><span class="${isActive ? 'text-sky-900 font-bold' : 'text-slate-400 line-through'} text-sm">${qi.title}</span></span>
                     </div>
                     <div class="flex gap-1.5 shrink-0 items-center">
+                        <button type="button" onclick="previewQuickInfoItem(${idx})" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2.5 py-1 rounded text-xs font-bold cursor-pointer" title="معاينة المعلومة"><i class="fa-solid fa-eye"></i></button>
                         <button type="button" onclick="moveQuickInfo(${idx}, -1)" class="bg-slate-200 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
                         <button type="button" onclick="moveQuickInfo(${idx}, 1)" class="bg-slate-200 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
                         <button type="button" onclick="duplicateQuickInfo(${idx})" class="bg-indigo-600 text-white px-2 py-1 rounded cursor-pointer" title="تكرار المعلومة"><i class="fa-solid fa-copy"></i></button>
@@ -2748,6 +2974,12 @@
                 `;
                 container.appendChild(item);
             });
+        }
+
+        function previewQuickInfoItem(idx) {
+            const qi = quickInfoList[idx];
+            if(!qi) return;
+            previewQiFromModal(qi);
         }
 
         function toggleQuickInfoVisibility(idx) {
@@ -2988,7 +3220,6 @@
             const title = document.getElementById('edit-qi-title').value.trim();
             const img = document.getElementById('edit-qi-img').value.trim();
 
-            // حفظ أزرار المرفقات
             const attRows = document.querySelectorAll('#qi-attachments-container > div');
             let attachments = [];
             attRows.forEach(r => {
