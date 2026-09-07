@@ -49,8 +49,8 @@
     </script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;family=Cairo:wght@400;600;700;800;900&amp;family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;family=Tajawal:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+    <!-- Google Fonts (مجموعة الخطوط العشرة الواضحة غير المزهرفة) -->
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;family=Amiri:wght@400;700&amp;family=Cairo:wght@400;600;700;800;900&amp;family=Changa:wght@400;600;700&amp;family=El+Messiri:wght@400;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;family=Lateef&amp;family=Readex+Pro:wght@300;400;500;600;700&amp;family=Scheherazade+New:wght@400;700&amp;family=Tajawal:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
     <!-- Canvas Confetti -->
     <script>
         window.confetti = window.confetti || function() {
@@ -96,25 +96,26 @@
     <style>
         body { font-family: 'IBM Plex Sans Arabic', sans-serif !important; }
         
+        /* الوضع المظلم الأسود النقي */
         body.dark-mode {
-            background-color: #0f172a !important;
-            color: #f8fafc !important;
+            background-color: #090d16 !important;
+            color: #f1f5f9 !important;
         }
         body.dark-mode .bg-white {
-            background-color: #1e293b !important;
-            color: #f8fafc !important;
-            border-color: #334155 !important;
+            background-color: #111827 !important;
+            color: #f1f5f9 !important;
+            border-color: #1f2937 !important;
         }
         body.dark-mode .bg-slate-100 {
-            background-color: #0b0f19 !important;
+            background-color: #05070b !important;
         }
         body.dark-mode .bg-slate-50, 
         body.dark-mode .bg-sky-50, 
         body.dark-mode .bg-amber-50, 
         body.dark-mode .bg-indigo-50 {
-            background-color: #334155 !important;
-            color: #f8fafc !important;
-            border-color: #475569 !important;
+            background-color: #1f2937 !important;
+            color: #f1f5f9 !important;
+            border-color: #374151 !important;
         }
         body.dark-mode .text-slate-800, 
         body.dark-mode .text-slate-900, 
@@ -122,12 +123,12 @@
         body.dark-mode .text-slate-600, 
         body.dark-mode .text-sky-950,
         body.dark-mode .text-sky-900 {
-            color: #f1f5f9 !important;
+            color: #f8fafc !important;
         }
         body.dark-mode input, body.dark-mode textarea, body.dark-mode select {
-            background-color: #0f172a !important;
+            background-color: #0b0f17 !important;
             color: #f8fafc !important;
-            border-color: #475569 !important;
+            border-color: #374151 !important;
         }
 
         @keyframes modalSlideIn {
@@ -515,12 +516,18 @@
                     </div>
 
                     <div class="bg-indigo-50 p-4 rounded-2xl border-2 border-indigo-200 space-y-2">
-                        <h3 class="font-black text-indigo-950 text-sm flex items-center gap-2"><i class="fa-solid fa-font text-indigo-600"></i> اختيار خط المنصة (Font Family)</h3>
+                        <h3 class="font-black text-indigo-950 text-sm flex items-center gap-2"><i class="fa-solid fa-font text-indigo-600"></i> اختيار خط المنصة (10 خطوط واضحة غير مزهرفة)</h3>
                         <select id="admin-font-select" class="w-full p-2.5 rounded-xl border border-indigo-300 bg-white text-sm font-bold">
-                            <option value="IBM Plex Sans Arabic">آي بي إم بلكس (IBM Plex Sans Arabic)</option>
-                            <option value="Cairo">كايرو (Cairo - أنيق وعصري)</option>
-                            <option value="Tajawal">تجوال (Tajawal - رسمي وواضح)</option>
-                            <option value="Almarai">المراعي (Almarai - سلس ومريح للقراءة)</option>
+                            <option value="IBM Plex Sans Arabic">1. آي بي إم بلكس (IBM Plex Sans Arabic)</option>
+                            <option value="Amiri">2. أميري / نسخ واضح (Amiri)</option>
+                            <option value="Cairo">3. كايرو (Cairo - أنيق وبارز)</option>
+                            <option value="Tajawal">4. تجوال (Tajawal - رسمي وواضح)</option>
+                            <option value="Almarai">5. المراعي (Almarai - سلس ومريح)</option>
+                            <option value="Readex Pro">6. ريدكس برو (Readex Pro - حديث وواضحة)</option>
+                            <option value="El Messiri">7. المسيري (El Messiri - حروف متناسقة)</option>
+                            <option value="Changa">8. شانجا (Changa - عريض وواضح)</option>
+                            <option value="Scheherazade New">9. شهرزاد (Scheherazade New - نسخ تقليدي رفيع)</option>
+                            <option value="Lateef">10. لطيف (Lateef - خط نسخ ناعم وواضح)</option>
                         </select>
                     </div>
 
@@ -928,7 +935,7 @@
             "expLabel": "التَّعْلِيلُ الإِعْرَابِيُّ",
             "adminPass": "12300123",
             "shuffleQuestions": false,
-            "shuffleOptions": false,
+            "shuffleOptions": true,
             "allowStudentExport": true,
             "expiryDate": "",
             "stTitleSize": "text-3xl sm:text-5xl",
@@ -1427,6 +1434,22 @@
                 const examCount = Math.min(appSettings.examCount || 20, indices.length);
                 sessionQuestions = indices.slice(0, examCount).map(i => pool[i]);
             }
+
+            // خلط خيارات الأسئلة عشوائياً وضمان عدم تركيز الإجابة في الخيار الأول
+            sessionQuestions = sessionQuestions.map(q => {
+                let qCopy = JSON.parse(JSON.stringify(q));
+                if (appSettings.shuffleOptions !== false) {
+                    let correctAns = qCopy.ans;
+                    let shuffledOpts = [...qCopy.opts];
+                    for (let i = shuffledOpts.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffledOpts[i], shuffledOpts[j]] = [shuffledOpts[j], shuffledOpts[i]];
+                    }
+                    qCopy.opts = shuffledOpts;
+                    qCopy.ans = correctAns;
+                }
+                return qCopy;
+            });
 
             quizState = { 
                 name, stage, grade, topic, 
