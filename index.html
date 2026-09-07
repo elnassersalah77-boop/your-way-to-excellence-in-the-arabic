@@ -284,7 +284,7 @@
                     <i class="fa-solid fa-arrow-right ml-2"></i> السَّابِقُ
                 </button>
                 <div class="flex items-center gap-2">
-                    <button type="button" onclick="finishQuizSubmission()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-5 rounded-2xl shadow transition cursor-pointer flex items-center gap-1.5 text-xs sm:text-sm">
+                    <button type="button" onclick="confirmFinishQuiz()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-5 rounded-2xl shadow transition cursor-pointer flex items-center gap-1.5 text-xs sm:text-sm">
                         <i class="fa-solid fa-check-double"></i> تَسْلِيمُ الِاخْتِبَارِ
                     </button>
                     <button type="button" id="next-btn" onclick="nextQuestion()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold py-3 px-8 rounded-2xl shadow transition cursor-pointer">
@@ -349,23 +349,23 @@
                     </button>
                 </div>
             </div>
-            <button type="button" onclick="restartHome()" class="text-slate-500 hover:text-slate-800 font-bold text-sm underline cursor-pointer pt-2">الْعَوْدَةُ لِلصَّفْحَةِ الرَّئِيسِيَّةِ</button>
+            <button type="button" onclick="confirmRestartHome()" class="text-slate-500 hover:text-slate-800 font-bold text-sm underline cursor-pointer pt-2">الْعَوْدَةُ لِلصَّفْحَةِ الرَّئِيسِيَّةِ</button>
         </div>
 
     </main>
 
-    <!-- FLOATING MODAL: QUICK INFO -->
+    <!-- FLOATING MODAL: QUICK INFO (مع زر إغلاق مؤكد لمنع الخروج بالخطأ) -->
     <div id="view-quick-info" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div id="modal-content-quick-info" class="bg-white rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
                 <h2 id="display-quickinfo-header-title" class="text-lg font-black text-white flex items-center gap-2">
                     <i class="fa-solid fa-lightbulb text-amber-500"></i> مَعْلُومَاتٌ سَرِيعَةٌ لِلدَّرْسِ
                 </h2>
-                <button type="button" onclick="closeQuickInfo()" class="text-sky-200 hover:text-white text-xl cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="confirmCloseQuickInfo()" class="text-sky-200 hover:text-white text-xl cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="quick-info-content-container" class="p-6 overflow-y-auto space-y-6 flex-grow"></div>
             <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap gap-2 justify-center">
-                <button type="button" onclick="closeQuickInfo()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs cursor-pointer">إِغْلَاقٌ</button>
+                <button type="button" onclick="confirmCloseQuickInfo()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs cursor-pointer">إِغْلَاقٌ</button>
             </div>
         </div>
     </div>
@@ -978,7 +978,7 @@
             </div>
             <div class="mt-4 flex justify-center gap-3">
                 <button type="button" onclick="window.print()" class="bg-sky-600 text-white font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">طباعة الشهادة</button>
-                <button type="button" onclick="closeCertModal()" class="bg-slate-200 text-slate-800 font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">إلغاء</button>
+                <button type="button" onclick="closeCertModal()" class="bg-slate-200 text-slate-800 font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">إغلاق</button>
             </div>
         </div>
     </div>
@@ -1063,6 +1063,14 @@
         /* -- DATA_END -- */
 
         let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timer: null, timerInterval: null };
+
+        // نظام حماية الخروج العرضي (لمنع ضغط أزرار الهاتف أو الرجوع بالخطأ أثناء الاختبار)
+        window.addEventListener('beforeunload', function (e) {
+            if (quizState.questions.length > 0 && document.getElementById('view-quiz') && !document.getElementById('view-quiz').classList.contains('hidden')) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
         async function loadDataFromCloud() {
             try {
@@ -1469,7 +1477,6 @@
             } else { botLC.classList.add('hidden'); }
         }
 
-        // إبقاء القوائم المنسدلة تبدأ طبيعياً بـ "اختر المرحلة" و"اختر الصف" دون تخطي اختياري
         function populateStartStages() {
             const stageSel = document.getElementById('start-stage-select');
             if(!stageSel) return;
@@ -1582,7 +1589,6 @@
             let pool = questionBank.filter(q => q.stage === stage && q.grade === grade && q.topic === topic && q.active !== false);
             if (pool.length === 0) { alert("لا توجد أسئلة مفعلة متاحة لهذا الموضوع حالياً."); return; }
 
-            // استبعاد الأسئلة التي أجاب عليها الطالب مسبقاً على هذا الجهاز
             let answeredSet = getAnsweredQuestionsSet(topic);
             let unassignedPool = pool.filter(q => !answeredSet.includes(q.q));
 
@@ -1619,7 +1625,6 @@
                 sessionQuestions.sort(() => 0.5 - Math.random());
             }
 
-            // خوارزمية منع تداخل وتتالي الأسئلة المرتبطة المضافة خلف بعضها (مسافة 10 أسئلة على الأقل)
             if (sessionQuestions.length === 0) {
                 let availableIndices = unassignedPool.map((_, i) => i);
                 availableIndices.sort(() => 0.5 - Math.random());
@@ -1649,7 +1654,6 @@
                 sessionQuestions = selectedIndices.map(i => unassignedPool[i]);
             }
 
-            // خلط خيارات الأسئلة عشوائياً بدقة لضمان عدم تركيز الإجابة في الخيار الأول
             sessionQuestions = sessionQuestions.map(q => {
                 let qCopy = JSON.parse(JSON.stringify(q));
                 if (appSettings.shuffleOptions !== false) {
@@ -1776,6 +1780,27 @@
         function prevQuestion() { if (quizState.currentIndex > 0) { quizState.currentIndex--; renderQuestion(); } }
         function nextQuestion() { if (quizState.currentIndex < quizState.questions.length - 1) { quizState.currentIndex++; renderQuestion(); } }
 
+        // تأكيد تسليم الاختبار لمنع الخروج بالخطأ
+        function confirmFinishQuiz() {
+            if (confirm("هل أنت متأكد من رغبتك في تسليم الاختبار الآن؟")) {
+                finishQuizSubmission();
+            }
+        }
+
+        // تأكيد العودة للصفحة الرئيسية لمنع الخروج بالخطأ
+        function confirmRestartHome() {
+            if (confirm("هل أنت متأكد من رغبتك في الخروج والعودة للرئيسية؟")) {
+                restartHome();
+            }
+        }
+
+        // تأكيد إغلاق المعلومة السريعة لمنع الخروج بالخطأ
+        function confirmCloseQuickInfo() {
+            if (confirm("هل أنت متأكد من إغلاق نافذة المعلومة السريعة؟")) {
+                closeQuickInfo();
+            }
+        }
+
         function finishQuizSubmission() {
             if (quizState.timerInterval) clearInterval(quizState.timerInterval);
 
@@ -1813,7 +1838,6 @@
                 }
             });
 
-            // التحكم في إظهار تفصيل الإجابات للطالب بناءً على إعداد لوحة الإدارة
             const breakdownContainer = document.getElementById('result-breakdown-container');
             if (appSettings.showStudentBreakdown !== false) {
                 document.getElementById('count-correct').textContent = correctCount;
@@ -2356,7 +2380,6 @@
 
         function openAddStageModal() {
             document.getElementById('new-stage-name-input').value = '';
-            document.getElementById('modal-add-stage').classList.add('hidden'); // تصحيح لضمان عدم التداخل
             document.getElementById('modal-add-stage').classList.remove('hidden');
         }
 
