@@ -49,7 +49,7 @@
     </script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts (مجموعة الخطوط العشرة الواضحة غير المزهرفة) -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;family=Amiri:wght@400;700&amp;family=Cairo:wght@400;600;700;800;900&amp;family=Changa:wght@400;600;700&amp;family=El+Messiri:wght@400;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;family=Lateef&amp;family=Readex+Pro:wght@300;400;500;600;700&amp;family=Scheherazade+New:wght@400;700&amp;family=Tajawal:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
     <!-- Canvas Confetti -->
     <script>
@@ -840,6 +840,15 @@
                 <div><label class="block text-slate-700 mb-1">عنوان البطاقة (الرئيسي العام):</label><input type="text" id="edit-qi-title" class="w-full p-2.5 rounded-xl border" placeholder="مثال: إضاءات بلاغية هامة"></div>
                 <div><label class="block text-slate-700 mb-1">رابط صورة رئيسية للبطاقة (اختياري):</label><input type="text" id="edit-qi-img" class="w-full p-2.5 rounded-xl border" placeholder="https://..."></div>
                 
+                <!-- قسم أزرار المرفقات والروابط (PDF / PowerPoint) -->
+                <div class="border-t pt-2 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-slate-700 font-black text-xs">أزرار المرفقات الخارجية (مثل روابط PDF أو PowerPoint):</label>
+                        <button type="button" onclick="addQiAttachmentRow()" class="bg-sky-600 text-white px-2.5 py-1 rounded-lg text-xs cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة زر مرفق جديد</button>
+                    </div>
+                    <div id="qi-attachments-container" class="space-y-2 p-2 bg-sky-50/50 border rounded-xl"></div>
+                </div>
+
                 <div class="border-t pt-2 space-y-3">
                     <div class="flex justify-between items-center">
                         <label class="block text-slate-700 font-black text-xs">البنود والعناوين المتعددة (عنوان فرعي + تفاصيله):</label>
@@ -877,7 +886,7 @@
             </div>
             <div class="mt-4 flex justify-center gap-3">
                 <button type="button" onclick="window.print()" class="bg-sky-600 text-white font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">طباعة الشهادة</button>
-                <button type="button" onclick="closeCertModal()" class="bg-slate-200 text-slate-800 font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">إغلاق</button>
+                <button type="button" onclick="closeCertModal()" class="bg-slate-200 text-slate-800 font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1435,7 +1444,7 @@
                 sessionQuestions = indices.slice(0, examCount).map(i => pool[i]);
             }
 
-            // خلط خيارات الأسئلة عشوائياً وضمان عدم تركيز الإجابة في الخيار الأول
+            // خلط خيارات الأسئلة عشوائياً بدقة لضمان عدم تركيز الإجابة في الخيار الأول
             sessionQuestions = sessionQuestions.map(q => {
                 let qCopy = JSON.parse(JSON.stringify(q));
                 if (appSettings.shuffleOptions !== false) {
@@ -1648,8 +1657,23 @@
             } else {
                 filtered.forEach(qi => {
                     let mainImgHtml = qi.img ? `<div class="my-3 text-center"><img src="${qi.img}" alt="صورة البطاقة" class="max-h-56 rounded-2xl mx-auto object-contain border shadow-sm" onerror="this.style.display='none';"></div>` : '';
-                    let itemsHtml = '';
                     
+                    // توليد أزرار المرفقات والروابط (PDF / PowerPoint)
+                    let attachmentsHtml = '';
+                    if (qi.attachments && Array.isArray(qi.attachments) && qi.attachments.length > 0) {
+                        let btns = '';
+                        qi.attachments.forEach(att => {
+                            if (att.active !== false && att.url) {
+                                let btnLabel = att.label || "اطّلع على";
+                                btns += `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2 text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${btnLabel}</a>`;
+                            }
+                        });
+                        if (btns) {
+                            attachmentsHtml = `<div class="flex flex-wrap gap-2 my-3 justify-center">${btns}</div>`;
+                        }
+                    }
+
+                    let itemsHtml = '';
                     if (qi.items && Array.isArray(qi.items)) {
                         qi.items.forEach(it => {
                             if (it.active === false) return;
@@ -1691,7 +1715,7 @@
 
                     const card = document.createElement('div');
                     card.className = "bg-slate-100 p-6 rounded-3xl border space-y-4 shadow-md";
-                    card.innerHTML = `<h3 class="font-black text-sky-950 text-xl sm:text-2xl border-b-4 border-amber-500 pb-2">${qi.title}</h3>${mainImgHtml}<div class="space-y-4">${itemsHtml}</div>`;
+                    card.innerHTML = `<h3 class="font-black text-sky-950 text-xl sm:text-2xl border-b-4 border-amber-500 pb-2">${qi.title}</h3>${mainImgHtml}${attachmentsHtml}<div class="space-y-4">${itemsHtml}</div>`;
                     container.appendChild(card);
                 });
             }
@@ -2759,7 +2783,9 @@
             document.getElementById('edit-qi-active').checked = true;
             document.getElementById('edit-qi-title').value = '';
             document.getElementById('edit-qi-img').value = '';
+            document.getElementById('qi-attachments-container').innerHTML = '';
             document.getElementById('qi-items-container').innerHTML = '';
+            addQiAttachmentRow("اطّلع على", "");
             addQiItemRow();
             document.getElementById('modal-qi-edit').classList.remove('hidden');
         }
@@ -2779,6 +2805,18 @@
             document.getElementById('edit-qi-title').value = qi.title || "";
             document.getElementById('edit-qi-img').value = qi.img || "";
             
+            // تعبئة أزرار المرفقات
+            const attContainer = document.getElementById('qi-attachments-container');
+            attContainer.innerHTML = '';
+            if (qi.attachments && Array.isArray(qi.attachments) && qi.attachments.length > 0) {
+                qi.attachments.forEach(att => {
+                    addQiAttachmentRow(att.label || "اطّلع على", att.url || "", att.active !== false);
+                });
+            } else {
+                addQiAttachmentRow("اطّلع على", "");
+            }
+
+            // تعبئة بنود المحتوى
             const container = document.getElementById('qi-items-container');
             container.innerHTML = '';
             if (qi.items && Array.isArray(qi.items)) {
@@ -2843,6 +2881,24 @@
                 opt.value = t.topic; opt.textContent = t.topic;
                 tSel.appendChild(opt);
             });
+        }
+
+        function addQiAttachmentRow(label = "اطّلع على", url = "", active = true) {
+            const container = document.getElementById('qi-attachments-container');
+            if(!container) return;
+            const rowId = "att_row_" + Date.now() + "_" + Math.floor(Math.random()*1000);
+            const row = document.createElement('div');
+            row.id = rowId;
+            row.className = "flex items-center gap-2 bg-white p-2 rounded-xl border";
+            row.innerHTML = `
+                <label class="flex items-center gap-1 cursor-pointer text-[11px] font-bold text-slate-700 shrink-0">
+                    <input type="checkbox" class="att-active-cb w-4 h-4 text-emerald-600 rounded" ${active ? 'checked' : ''}> مفعل
+                </label>
+                <input type="text" placeholder="مسمى الزر (مثال: اطّلع على)" value="${label}" class="att-label w-1/3 p-1.5 rounded-lg border text-xs font-bold bg-white">
+                <input type="text" placeholder="رابط الملف (Google Drive أو موقع آخر)..." value="${url}" class="att-url w-full p-1.5 rounded-lg border text-xs dir-ltr text-left bg-white">
+                <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-600 hover:text-rose-800 px-2 text-sm cursor-pointer shrink-0"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(row);
         }
 
         function addQiItemRow(mainHeader = "", subSections = [], subImg = "", itemActive = true) {
@@ -2932,6 +2988,18 @@
             const title = document.getElementById('edit-qi-title').value.trim();
             const img = document.getElementById('edit-qi-img').value.trim();
 
+            // حفظ أزرار المرفقات
+            const attRows = document.querySelectorAll('#qi-attachments-container > div');
+            let attachments = [];
+            attRows.forEach(r => {
+                const attActive = r.querySelector('.att-active-cb').checked;
+                const label = r.querySelector('.att-label').value.trim() || "اطّلع على";
+                const url = r.querySelector('.att-url').value.trim();
+                if (url) {
+                    attachments.push({ active: attActive, label, url });
+                }
+            });
+
             const rows = document.querySelectorAll('#qi-items-container > div');
             let items = [];
             rows.forEach(r => {
@@ -2952,9 +3020,9 @@
                 }
             });
 
-            if (!title || items.length === 0) { alert("أدخل عنوان البطاقة وبنداً واحداً على الأقل."); return; }
+            if (!title || (items.length === 0 && attachments.length === 0)) { alert("أدخل عنوان البطاقة ومرفقاً أو بنداً واحداً على الأقل."); return; }
 
-            const qiObj = { active, stage, grade, topic, title, img, items };
+            const qiObj = { active, stage, grade, topic, title, img, attachments, items };
             if (idx >= 0) quickInfoList[idx] = qiObj;
             else quickInfoList.push(qiObj);
 
