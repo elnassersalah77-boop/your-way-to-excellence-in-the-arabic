@@ -318,7 +318,7 @@
                 </div>
             </div>
 
-            <!-- تفصيل الإجابات (يظهر أو يختفي حسب إعداد لوحة التحكم للطالب) -->
+            <!-- تفصيل الإجابات للطالب (يظهر أو يختفي حسب إعداد لوحة التحكم) -->
             <div id="result-breakdown-container" class="hidden w-full max-w-2xl bg-slate-50 p-4 rounded-2xl border text-right space-y-3">
                 <h4 class="font-black text-sky-950 text-sm border-b pb-2"><i class="fa-solid fa-clipboard-list text-sky-600 ml-1"></i> تفصيل الإجابات:</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -337,8 +337,8 @@
                 <button type="button" onclick="openReviewModal()" class="flex-1 min-w-[130px] bg-sky-600 hover:bg-sky-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer text-xs">
                     <i class="fa-solid fa-magnifying-glass ml-1"></i> مُرَاجَعَةُ الْإِجَابَاتِ
                 </button>
-                <button type="button" id="student-export-result-btn" onclick="exportStudentResultJson()" class="hidden flex-1 min-w-[130px] bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer text-xs">
-                    <i class="fa-solid fa-file-arrow-down ml-1"></i> تَصْدِيرُ النَّتِيجَةِ
+                <button type="button" id="student-export-result-btn" onclick="exportStudentResultExcel()" class="hidden flex-1 min-w-[130px] bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer text-xs">
+                    <i class="fa-solid fa-file-excel ml-1"></i> تصدير النتيجة (Excel)
                 </button>
                 <div id="cert-btn-container" class="hidden w-full">
                     <button type="button" onclick="openCertModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-sky-950 font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer">
@@ -409,7 +409,7 @@
         </div>
     </div>
 
-    <!-- MODAL: ADMIN RECORD DETAILS (نافذة تفصيل سجل الطالب وزر تصدير الإكسل للمعلم - z-[70]) -->
+    <!-- MODAL: ADMIN RECORD DETAILS (نافذة تفصيل سجل الطالب وزر إكسل للمعلم - z-[70]) -->
     <div id="modal-admin-record-details" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[70] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
@@ -461,7 +461,7 @@
                             </label>
                             <label class="flex items-center gap-2 bg-white p-3 rounded-xl border border-sky-200 cursor-pointer shadow-sm">
                                 <input type="checkbox" id="admin-allow-student-export" class="w-5 h-5 text-sky-600 rounded">
-                                <span>إتاحة زر (تصدير النتيجة JSON) للطالب في شاشة النتائج</span>
+                                <span>إتاحة زر (تصدير النتيجة Excel) للطالب في شاشة النتائج</span>
                             </label>
                             <label class="flex items-center gap-2 bg-white p-3 rounded-xl border border-sky-200 cursor-pointer shadow-sm">
                                 <input type="checkbox" id="admin-show-student-breakdown" class="w-5 h-5 text-sky-600 rounded">
@@ -751,8 +751,9 @@
                 <div id="admin-tab-records" class="space-y-4 hidden">
                     <div class="flex justify-between items-center flex-wrap gap-2">
                         <h3 class="font-bold text-slate-800">سجل نتائج الطلاب ودخولهم</h3>
-                        <div class="flex gap-2">
-                            <button type="button" onclick="exportAllRecordsJson()" class="bg-indigo-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer"><i class="fa-solid fa-file-excel ml-1"></i> تصدير جميع النتائج (JSON)</button>
+                        <div class="flex gap-2 flex-wrap">
+                            <button type="button" onclick="exportAllRecordsExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-file-excel ml-1"></i> تصدير جميع النتائج (Excel)</button>
+                            <button type="button" onclick="exportAllRecordsJson()" class="bg-indigo-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer"><i class="fa-solid fa-download ml-1"></i> تصدير جميع النتائج (JSON)</button>
                             <button type="button" onclick="clearRecords()" class="bg-rose-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer">مسح السجل</button>
                         </div>
                     </div>
@@ -1138,31 +1139,60 @@
             }
         }
 
-        function exportStudentResultJson() {
-            if (!quizState.name) { alert("لا توجد نتيجة حالية لتصديرها."); return; }
-            let score = 0;
-            quizState.questions.forEach((q, idx) => { if (quizState.answers[idx] === q.ans) score++; });
-            const resultData = {
-                studentName: quizState.name,
-                stage: quizState.stage,
-                grade: quizState.grade,
-                topic: quizState.topic,
-                score: score,
-                total: quizState.questions.length,
-                percentage: Math.round((score / quizState.questions.length) * 100) + "%",
-                status: (score / quizState.questions.length) >= 0.5 ? "ناجح" : "راسب",
-                date: new Date().toLocaleString('ar-EG')
-            };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(resultData, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `result_${quizState.name.replace(/\s+/g, '_')}_${Date.now()}.json`);
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
+        // تصدير النتيجة الحالية للطالب بصيغة إكسل (CSV) من شاشة النتيجة (إذا أتاح المعلم ذلك)
+        function exportStudentResultExcel() {
+            if (!quizState.name || quizState.questions.length === 0) { alert("لا توجد نتيجة لتصديرها."); return; }
+            let csvContent = "\uFEFF";
+            csvContent += `اسم الطالب:,${quizState.name}\n`;
+            csvContent += `الموضوع:,${quizState.topic} (${quizState.grade})\n`;
+            csvContent += `التاريخ:,${new Date().toLocaleString('ar-EG')}\n\n`;
+            csvContent += "رقم السؤال,السؤال,إجابة الطالب,الإجابة الصحيحة,الحالة,التعليل\n";
+
+            quizState.questions.forEach((q, idx) => {
+                let userAns = quizState.answers[idx] || "لم يجب";
+                let isCorrect = userAns === q.ans;
+                let status = isCorrect ? "صحيح" : "خطأ/غير مجاب";
+                let qText = `"${q.q.replace(/"/g, '""')}"`;
+                let uAns = `"${userAns.replace(/"/g, '""')}"`;
+                let cAns = `"${q.ans.replace(/"/g, '""')}"`;
+                let exp = `"${(q.exp || "").replace(/"/g, '""')}"`;
+
+                csvContent += `${idx + 1},${qText},${uAns},${cAns},${status},${exp}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `student_result_${quizState.name.replace(/\s+/g, '_')}_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
         }
 
-        // دالة تصدير تقرير الطالب الفردي بصيغة Excel (CSV) للمعلم
+        // تصدير جميع نتائج الطلاب في لوحة الإدارة بملف Excel (CSV)
+        function exportAllRecordsExcel() {
+            if (studentRecords.length === 0) { alert("لا توجد سجلات نتائج لتصديرها!"); return; }
+            let csvContent = "\uFEFF";
+            csvContent += "م,اسم الطالب,المرحلة والصف والموضوع,الحالة,الدرجة,النسبة,وقت الدخول,الأسئلة المجاب عنها\n";
+
+            studentRecords.forEach((r, idx) => {
+                let name = `"${r.name.replace(/"/g, '""')}"`;
+                let sg = `"${r.stageGrade.replace(/"/g, '""')}"`;
+                csvContent += `${idx + 1},${name},${sg},${r.status},${r.score}/${r.total},${r.pct}%,${r.date},${r.answeredCount || '-'}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `all_students_records_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        // تصدير تقرير طالب واحد فردي من لوحة التحكم بصيغة Excel (CSV)
         function exportSingleStudentReportExcel(rec) {
             if (!rec || !rec.breakdown) { alert("لا توجد تفاصيل لتصديرها."); return; }
             let csvContent = "\uFEFF";
@@ -1879,7 +1909,7 @@
 
             const studentExportBtn = document.getElementById('student-export-result-btn');
             if (studentExportBtn) {
-                if (appSettings.allowStudentExport !== false) {
+                if (appSettings.allowStudentExport) {
                     studentExportBtn.classList.remove('hidden');
                 } else {
                     studentExportBtn.classList.add('hidden');
@@ -3444,7 +3474,7 @@
 
         function deleteQuickInfo(idx) { quickInfoList.splice(idx, 1); saveState(); renderAdminQuickInfoList(); }
 
-        // عرض تفصيل إجابات الطالب للمعلم مع زر تصدير إكسل الخاص بالطالب
+        // عرض تفصيل إجابات الطالب للمعلم من جدول السجلات مع زر التصدير
         function viewAdminRecordDetails(recordIdx) {
             const rec = studentRecords[recordIdx];
             if (!rec || !rec.breakdown) {
@@ -3484,7 +3514,6 @@
             html += `</div></div>`;
             document.getElementById('admin-record-details-body').innerHTML = html;
             
-            // ربط زر تصدير إكسل الخاص بهذا الطالب في النافذة المنبثقة للمعلم
             const exportExcelBtn = document.getElementById('admin-export-single-excel-btn');
             exportExcelBtn.onclick = () => exportSingleStudentReportExcel(rec);
 
