@@ -356,7 +356,7 @@
         <div id="modal-content-quick-info" class="bg-white rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
                 <h2 id="display-quickinfo-header-title" class="text-lg font-black text-white flex items-center gap-2">
-                    <i class="fa-solid fa-lightbulb text-amber-500"></i> مَعْلُومَاتٌ سَرِيعَةٌ لِلدَّرْسِ
+                    <i class="fa-solid fa-lightbulb text-amber-500"></i> مَعْلُومَةٌ سَرِيعَةٌ لِلدَّرْسِ
                 </h2>
                 <button type="button" onclick="confirmCloseQuickInfo()" class="text-sky-200 hover:text-white text-xl cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -714,7 +714,8 @@
                             <button type="button" onclick="deleteSelectedQuestions()" class="bg-rose-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl cursor-pointer">حذف المحددة</button>
                         </div>
                         <div class="flex gap-2 flex-wrap">
-                            <button type="button" onclick="exportQuestionsJson()" class="bg-indigo-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer"><i class="fa-solid fa-download ml-1"></i> تصدير (JSON)</button>
+                            <button type="button" onclick="exportTopicQuestionsJson()" class="bg-emerald-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-download ml-1"></i> تصدير أسئلة الموضوع المحدد (JSON)</button>
+                            <button type="button" onclick="exportQuestionsJson()" class="bg-indigo-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer"><i class="fa-solid fa-download ml-1"></i> تصدير البنك ككل (JSON)</button>
                             <label class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد (JSON)<input type="file" id="import-questions-json-file" accept=".json" onchange="importQuestionsJsonFile(event)" class="hidden"></label>
                             <button type="button" onclick="openQuestionModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة سؤال فردي</button>
                         </div>
@@ -753,8 +754,18 @@
 
                 <!-- TAB 5: RECORDS -->
                 <div id="admin-tab-records" class="space-y-4 hidden">
-                    <div class="flex justify-between items-center flex-wrap gap-2">
-                        <h3 class="font-bold text-slate-800">سجل نتائج الطلاب ودخولهم</h3>
+                    <!-- فلاتر تبويب النتائج حسب المرحلة والصف والموضوع -->
+                    <div class="bg-sky-50 p-3 rounded-2xl border-2 border-sky-200 space-y-2">
+                        <h3 class="font-black text-sky-950 text-xs flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض النتائج حسب المرحلة والصف والموضوع:</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-bold">
+                            <div><select id="filter-rec-stage" onchange="filterRecordsByStage()" class="w-full p-2 rounded-xl border bg-white"><option value="">كل المراحل الدراسية</option></select></div>
+                            <div><select id="filter-rec-grade" onchange="filterRecordsByGrade()" class="w-full p-2 rounded-xl border bg-white"><option value="">كل الصفوف الدراسية</option></select></div>
+                            <div><select id="filter-rec-topic" onchange="renderAdminRecordsTable()" class="w-full p-2 rounded-xl border bg-white font-bold text-sky-900"><option value="">كل الموضوعات</option></select></div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center flex-wrap gap-2 pt-1">
+                        <h3 class="font-bold text-slate-800 text-sm">سجل نتائج الطلاب ودخولهم</h3>
                         <div class="flex gap-2 flex-wrap">
                             <button type="button" onclick="exportAllRecordsExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-file-excel ml-1"></i> تصدير جميع النتائج (Excel)</button>
                             <button type="button" onclick="exportAllRecordsJson()" class="bg-indigo-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer"><i class="fa-solid fa-download ml-1"></i> تصدير جميع النتائج (JSON)</button>
@@ -770,7 +781,7 @@
                                     <th class="p-3">المرحلة / الصف / الموضوع</th>
                                     <th class="p-3">الحالة</th>
                                     <th class="p-3">الدرجة</th>
-                                    <th class="p-3">وقت الدخول</th>
+                                    <th class="p-3">وقت الدخول والمدة</th>
                                     <th class="p-3">الأسئلة المجاب عنها</th>
                                     <th class="p-3">التفصيل للمعلم</th>
                                 </tr>
@@ -842,9 +853,13 @@
             </div>
             <input type="hidden" id="edit-q-index" value="-1">
             <div class="space-y-3 text-sm font-bold">
-                <div class="flex items-center gap-2 bg-sky-50 p-2.5 rounded-xl border border-sky-200">
-                    <input type="checkbox" id="edit-q-active" class="w-5 h-5 text-sky-600 rounded" checked>
-                    <label for="edit-q-active" class="cursor-pointer text-sky-950">تفعيل هذا السؤال (يظهر في الاختبار)</label>
+                <div class="flex items-center gap-4 bg-sky-50 p-2.5 rounded-xl border border-sky-200 flex-wrap">
+                    <label class="flex items-center gap-2 cursor-pointer text-sky-950">
+                        <input type="checkbox" id="edit-q-active" class="w-5 h-5 text-sky-600 rounded" checked> تفعيل السؤال
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-sky-950">
+                        <input type="checkbox" id="edit-q-tashkeel" class="w-5 h-5 text-emerald-600 rounded" checked> تفعيل التشكيل لهذا السؤال
+                    </label>
                 </div>
                 <div>
                     <label class="block text-slate-700 mb-1">مستوى الصعوبة:</label>
@@ -889,9 +904,13 @@
             </div>
             <input type="hidden" id="edit-para-id" value="para_1">
             <div class="space-y-3 text-sm font-bold">
-                <div class="flex items-center gap-2 bg-sky-50 p-2.5 rounded-xl border border-sky-200">
-                    <input type="checkbox" id="edit-para-active" class="w-5 h-5 text-sky-600 rounded" checked>
-                    <label for="edit-para-active" class="cursor-pointer text-sky-950">تفعيل هذه الفقرة (تظهر في الاختبار)</label>
+                <div class="flex items-center gap-4 bg-sky-50 p-2.5 rounded-xl border border-sky-200 flex-wrap">
+                    <label class="flex items-center gap-2 cursor-pointer text-sky-950">
+                        <input type="checkbox" id="edit-para-active" class="w-5 h-5 text-sky-600 rounded" checked> تفعيل الفقرة
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-sky-950">
+                        <input type="checkbox" id="edit-para-tashkeel" class="w-5 h-5 text-emerald-600 rounded" checked> تفعيل التشكيل لهذه الفقرة
+                    </label>
                 </div>
                 <div><label class="block text-slate-700 mb-1">اسم الفقرة:</label><input type="text" id="edit-para-name" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
                 <div><label class="block text-slate-700 mb-1">عنوان النص:</label><input type="text" id="edit-para-title" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
@@ -923,9 +942,13 @@
             </div>
             <input type="hidden" id="edit-qi-index" value="-1">
             <div class="space-y-3 text-sm font-bold">
-                <div class="flex items-center gap-2 bg-sky-50 p-2.5 rounded-xl border border-sky-200">
-                    <input type="checkbox" id="edit-qi-active" class="w-5 h-5 text-sky-600 rounded" checked>
-                    <label for="edit-qi-active" class="cursor-pointer text-sky-950">تفعيل هذه المعلومة السريعة (تظهر للطلاب)</label>
+                <div class="flex items-center gap-4 bg-sky-50 p-2.5 rounded-xl border border-sky-200 flex-wrap">
+                    <label class="flex items-center gap-2 cursor-pointer text-sky-950">
+                        <input type="checkbox" id="edit-qi-active" class="w-5 h-5 text-sky-600 rounded" checked> تفعيل المعلومة
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-sky-950">
+                        <input type="checkbox" id="edit-qi-tashkeel" class="w-5 h-5 text-emerald-600 rounded" checked> تفعيل التشكيل لهذه المعلومة
+                    </label>
                 </div>
                 <div class="grid grid-cols-3 gap-2">
                     <div><label class="block text-slate-700 mb-1 text-xs">المرحلة:</label><select id="edit-qi-stage" onchange="populateGradesForQiModal()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
@@ -1060,8 +1083,8 @@
         };
 
         let appSettings = defaultSettings;
-        let paragraphs = [{"id":"para_1","name":"فقرة الخطاب الإشهارى والتوجيهى","active":true,"title":"اقْرَأْ ثُمَّ أَجِبْ:","text":"الخطاب الإشهاري يسعى إلى التأثير في المتلقي وحثه على اقتناء سلعة أو خدمة، مستخدماً آليات الترغيب والإقناع البصري واللغوي. أما الخطاب التوجيهي فيهدف إلى توجيه السلوك والأخلاق وضبط المعاملات."}];
-        let questionBank = [{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"paragraphId":"","q":"قَالَ الشَّاعِرُ الطَّائِيُّ: (وَبِئْرِي ذُو حَفَرْتُ وَذُو طَوَيْتُ). مَا الْحُكْمُ النَّحْوِيُّ لِكَلِمَةِ (ذُو) الْأُولَى فِي الْبَيْتِ الشِّعْرِيِّ؟","opts":["تُعْرَبُ إِعْرَابَ الْأَسْمَاءِ الْخَمْسَةِ","تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","تُبْنَى عَلَى السُّكُونِ فِي مَحَلِّ رَفْعٍ","تُعْرَبُ بِحَرَكَاتٍ مُقَدَّرَةٍ عَلَى آخِرِهَا"],"ans":"تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","exp":"لُغَةُ طَيِّئٍ (الطَّيِّئِيَّةُ) تُلْزِمُ كَلِمَةَ (ذُو) الْوَاوَ فِي كُلِّ الْحَالَاتِ إِذَا كَانَتْ بِمَعْنَى (الَّذِي).","difficulty":"صعب جدا","paragraphId":""},{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"paragraphId":"","q":"إِذَا قِيلَ فِي لُغَةِ طَيِّئٍ: (رَأَيْتُ ذُو قَامَ)، فَمَا مَحَلُّ كَلِمَةِ (ذُو) مِنَ الْإِعْرَابِ؟","opts":["مَحَلُّهَا النَّصْبُ عَلَى أَنَّهَا مَفْعُولٌ بِهِ","مَحَلُّهَا الرَّفْعُ عَلَى أَنَّهَا فَاعِلٌ","مَحَلُّهَا الْجَرُّ بِالْإِضَافَةِ","مَبْنِيَّةٌ لَا مَحَلَّ لَهَا مِنَ الْإِعْرَابِ"],"ans":"مَحَلُّهَا النَّصْبُ عَلَى أَنَّهَا مَفْعُولٌ بِهِ","exp":"رَأَيْتُ: فِعْلٌ وَفَاعِلٌ، (ذُو): اسْمُ مَوْصُولٍ مَبْنِيٌّ أَوْ مُعْرَبٌ بِالْوَاوِ فِي مَحَلِّ نَصْبِ مَفْعُولٍ بِهِ.","difficulty":"صعب جدا","paragraphId":""},{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"paragraphId":"","q":"إِذَا قِيلَ فِي لُغَةِ طَيِّئٍ: (جَاءَتْ ذُو قَامَتْ)، فَمَا التَّوْجِيهُ النَّحْوِيُّ لِكَلِمَةِ (ذُو) هُنَا؟","opts":["بَقِيَتْ مُذَكَّرَةً لِأَنَّ لُغَةَ طَيِّئٍ تَلْزَمُهَا صِيغَةً وَاحِدَةً","تَأَنَّثَتْ لِلتَّطَابُقِ الصَّرْفِيِّ","وَرَدَتْ شَاذَّةً عَنْ قَوَاعِدِ النَّحْوِ الْعَرَبِيِّ","تُعْرَبُ إِعْرَابَ جَمْعِ الْمُؤَنَّثِ السَّالِمِ"],"ans":"بَقِيَتْ مُذَكَّرَةً لِأَنَّ لُغَةَ طَيِّئٍ تَلْزَمُهَا صِيغَةً وَاحِدَةً","exp":"عِنْدَ طَيِّئٍ، تَلْزَمُ (ذُو) صِيغَةً وَاحِدَةً لِلْمُذَكَّرِ وَالْمُؤَنَّثِ وَالْمُفْرَدِ وَالْمَجْمُوعِ.","difficulty":"صعب جدا","paragraphId":""},{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"paragraphId":"","q":"مَا إِعْرَابُ كَلِمَةِ (أُخَيَّكَ) فِي جُمْلَةِ: (أَعِنْ أُخَيَّكَ فِي حَاجَتِهِ)؟","opts":["مَفْعُولٌ بِهِ مَنْصُوبٌ وَعَلَامَةُ نَصْبِهِ الْفَتْحَةُ الظَّاهِرَةُ","مَفْعُولٌ بِهِ مَنْصُوبٌ بِالْأَلِفِ لِأَنَّهُ مِنَ الْأَسْمَاءِ الْخَمْسَةِ","مَفْعُولٌ بِهِ مَنْصُوبٌ بِالْيَاءِ","مَبْنِيٌّ عَلَى الْفَتْحِ فِي مَحَلِّ نَصْبٍ"],"ans":"مَفْعُولٌ بِهِ مَنْصُوبٌ وَعَلَامَةُ نَصْبِهِ الْفَتْحَةُ الظَّاهِرَةُ","exp":"الْأَسْمَاءِ الْخَمْسَةِ تُشْتَرَطُ إِعْرَابَهَا بِالْحُرُوفِ أَنْ تَكُونَ مُكَبَّرَةً، فَإِذَا صُغِّرَتْ (أُخَيّ) تُعْرَبُ بِحَرَكَاتٍ ظَاهِرَةٍ.","difficulty":"صعب","paragraphId":""},{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"paragraphId":"","q":"مَا إِعْرَابُ كَلِمَةِ (أُبَيِّكَ) أَوْ (أُبَيُّكَ) عِنْدَ التَّصْغِيرِ فِي قَوْلِنَا: (هَذَا أُبَيُّكَ)؟","opts":["خَبَرٌ مَرْفُوعٌ وَعَلَامَةُ رَفْعِهِ الضَّمَّةُ الظَّاهِرَةُ","خَبَرٌ مَرْفُوعٌ بِالْوَاوِ لِأَنَّهُ مِنَ الْأَسْمَاءِ الْخَمْسَةِ","بَدَلٌ مَرْفُوعٌ بِالضَّمَّةِ الْمُقَدَّرَةِ","مَبْنِيٌّ عَلَى الضَّمِّ فِي مَحَلِّ رَفْعٍ"],"ans":"خَبَرٌ مَرْفُوعٌ وَعَلَامَةُ رَفْعِهِ الضَّمَّةُ الظَّاهِرَةُ","exp":"شَرْطُ إِعْرَابِ الْأَسْمَاءِ الْخَمْسَةِ أَلَّا تَكُونَ مُصَغَّرَةً، وَالتَّصْغِيرُ يُعِيدُهَا لِلْإِعْرَابِ بِالْحَرَكَاتِ الظَّاهِرَةِ.","difficulty":"صعب","paragraphId":""}];
+        let paragraphs = [{"id":"para_1","name":"فقرة الخطاب الإشهارى والتوجيهى","active":true,"tashkeel":true,"title":"اقْرَأْ ثُمَّ أَجِبْ:","text":"الخطاب الإشهاري يسعى إلى التأثير في المتلقي وحثه على اقتناء سلعة أو خدمة، مستخدماً آليات الترغيب والإقناع البصري واللغوي. أما الخطاب التوجيهي فيهدف إلى توجيه السلوك والأخلاق وضبط المعاملات."}];
+        let questionBank = [{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"paragraphId":"","q":"قَالَ الشَّاعِرُ الطَّائِيُّ: (وَبِئْرِي ذُو حَفَرْتُ وَذُو طَوَيْتُ). مَا الْحُكْمُ النَّحْوِيُّ لِكَلِمَةِ (ذُو) الْأُولَى فِي الْبَيْتِ الشِّعْرِيِّ؟","opts":["تُعْرَبُ إِعْرَابَ الْأَسْمَاءِ الْخَمْسَةِ","تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","تُبْنَى عَلَى السُّكُونِ فِي مَحَلِّ رَفْعٍ","تُعْرَبُ بِحَرَكَاتٍ مُقَدَّرَةٍ عَلَى آخِرِهَا"],"ans":"تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","exp":"لُغَةُ طَيِّئٍ (الطَّيِّئِيَّةُ) تُلْزِمُ كَلِمَةَ (ذُو) الْوَاوَ فِي كُلِّ الْحَالَاتِ إِذَا كَانَتْ بِمَعْنَى (الَّذِي).","difficulty":"صعب جدا","paragraphId":""},{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"paragraphId":"","q":"إِذَا قِيلَ فِي لُغَةِ طَيِّئٍ: (رَأَيْتُ ذُو قَامَ)، فَمَا مَحَلُّ كَلِمَةِ (ذُو) مِنَ الْإِعْرَابِ؟","opts":["مَحَلُّهَا النَّصْبُ عَلَى أَنَّهَا مَفْعُولٌ بِهِ","مَحَلُّهَا الرَّفْعُ عَلَى أَنَّهَا فَاعِلٌ","مَحَلُّهَا الْجَرُّ بِالْإِضَافَةِ","مَبْنِيَّةٌ لَا مَحَلَّ لَهَا مِنَ الْإِعْرَابِ"],"ans":"مَحَلُّهَا النَّصْبُ عَلَى أَنَّهَا مَفْعُولٌ بِهِ","exp":"رَأَيْتُ: فِعْلٌ وَفَاعِلٌ، (ذُو): اسْمُ مَوْصُولٍ مَبْنِيٌّ أَوْ مُعْرَبٌ بِالْوَاوِ فِي مَحَلِّ نَصْبِ مَفْعُولٌ بِهِ.","difficulty":"صعب جدا","paragraphId":""},{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"paragraphId":"","q":"إِذَا قِيلَ فِي لُغَةِ طَيِّئٍ: (جَاءَتْ ذُو قَامَتْ)، فَمَا التَّوْجِيهُ النَّحْوِيُّ لِكَلِمَةِ (ذُو) هُنَا؟","opts":["بَقِيَتْ مُذَكَّرَةً لِأَنَّ لُغَةَ طَيِّئٍ تَلْزَمُهَا صِيغَةً وَاحِدَةً","تَأَنَّثَتْ لِلتَّطَابُقِ الصَّرْفِيِّ","وَرَدَتْ شَاذَّةً عَنْ قَوَاعِدِ النَّحْوِ الْعَرَبِيِّ","تُعْرَبُ إِعْرَابَ جَمْعِ الْمُؤَنَّثِ السَّالِمِ"],"ans":"بَقِيَتْ مُذَكَّرَةً لِأَنَّ لُغَةَ طَيِّئٍ تَلْزَمُهَا صِيغَةً وَاحِدَةً","exp":"عِنْدَ طَيِّئٍ، تَلْزَمُ (ذُو) صِيغَةً وَاحِدَةً لِلْمُذَكَّرِ وَالْمُؤَنَّثِ وَالْمُفْرَدِ وَالْمَجْمُوعِ.","difficulty":"صعب جدا","paragraphId":""},{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"paragraphId":"","q":"مَا إِعْرَابُ كَلِمَةِ (أُخَيَّكَ) فِي جُمْلَةِ: (أَعِنْ أُخَيَّكَ فِي حَاجَتِهِ)؟","opts":["مَفْعُولٌ بِهِ مَنْصُوبٌ وَعَلَامَةُ نَصْبِهِ الْفَتْحَةُ الظَّاهِرَةُ","مَفْعُولٌ بِهِ مَنْصُوبٌ بِالْأَلِفِ لِأَنَّهُ مِنَ الْأَسْمَاءِ الْخَمْسَةِ","مَفْعُولٌ بِهِ مَنْصُوبٌ بِالْيَاءِ","مَبْنِيٌّ عَلَى الْفَتْحِ فِي مَحَلِّ نَصْبٍ"],"ans":"مَفْعُولٌ بِهِ مَنْصُوبٌ وَعَلَامَةُ نَصْبِهِ الْفَتْحَةُ الظَّاهِرَةُ","exp":"الْأَسْمَاءِ الْخَمْسَةِ تُشْتَرَطُ إِعْرَابَهَا بِالْحُرُوفِ أَنْ تَكُونَ مُكَبَّرَةً، فَإِذَا صُغِّرَتْ (أُخَيّ) تُعْرَبُ بِحَرَكَاتٍ ظَاهِرَةٍ.","difficulty":"صعب","paragraphId":""},{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"paragraphId":"","q":"مَا إِعْرَابُ كَلِمَةِ (أُبَيِّكَ) أَوْ (أُبَيُّكَ) عِنْدَ التَّصْغِيرِ فِي قَوْلِنَا: (هَذَا أُبَيُّكَ)؟","opts":["خَبَرٌ مَرْفُوعٌ وَعَلَامَةُ رَفْعِهِ الضَّمَّةُ الظَّاهِرَةُ","خَبَرٌ مَرْفُوعٌ بِالْوَاوِ لِأَنَّهُ مِنَ الْأَسْمَاءِ الْخَمْسَةِ","بَدَلٌ مَرْفُوعٌ بِالضَّمَّةِ الْمُقَدَّرَةِ","مَبْنِيٌّ عَلَى الضَّمِّ فِي مَحَلِّ رَفْعٍ"],"ans":"خَبَرٌ مَرْفُوعٌ وَعَلَامَةُ رَفْعِهِ الضَّمَّةُ الظَّاهِرَةُ","exp":"شَرْطُ إِعْرَابِ الْأَسْمَاءِ الْخَمْسَةِ أَلَّا تَكُونَ مُصَغَّرَةً، وَالتَّصْغِيرُ يُعِيدُهَا لِلْإِعْرَابِ بِالْحَرَكَاتِ الظَّاهِرَةِ.","difficulty":"صعب","paragraphId":""}];
         let quickInfoList = [];
         let studentRecords = [];
         /* -- DATA_END -- */
@@ -1075,10 +1098,11 @@
             }
         });
 
-        // دالة تصفية التشكيل أو إبقاؤه حسب إعداد لوحة التحكم مع ضمان تباين ألوان حاد وواضح
-        function formatText(text) {
+        // دالة تصفية التشكيل أو إبقائه حسب خيار المعلم العام والخاص بالعنصر
+        function formatText(text, itemTashkeel) {
             if (!text || typeof text !== 'string') return text;
-            if (appSettings.enableTashkeel === false) {
+            let allowTashkeel = (itemTashkeel !== false) && (appSettings.enableTashkeel !== false);
+            if (!allowTashkeel) {
                 return text.replace(/[\u0610-\u061A\u064B-\u065F\u0670]/g, '');
             }
             return text;
@@ -1099,15 +1123,10 @@
                         if (data.paragraphs) paragraphs = data.paragraphs;
                         if (data.qiList) quickInfoList = data.qiList;
                         if (data.studentRecords) studentRecords = data.studentRecords;
-                        console.log("تم تحميل وتحديث البيانات من السحابة بنجاح!");
-                    } else {
-                        console.log("لا توجد بيانات سحابية محفوظة مسبقاً، سيتم استخدام الافتراضية.");
                     }
-                } else {
-                    console.log("العمل في وضع عدم الاتصال أو تشغيل ملف محلي (File Mode).");
                 }
             } catch (e) {
-                console.log("تعذر الاتصال بالسحابة، جاري استخدام التخزين المحلي:", e);
+                console.log("محلي:", e);
             }
             initApp();
         }
@@ -1115,30 +1134,20 @@
         async function saveState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
-                    const cleanStagesData = JSON.parse(JSON.stringify(stagesData || {}));
-                    const cleanGradeStatus = JSON.parse(JSON.stringify(gradeStatus || {}));
-                    const cleanTopicsData = JSON.parse(JSON.stringify(topicsData || []));
-                    const cleanAppSettings = JSON.parse(JSON.stringify(appSettings || {}));
-                    const cleanQuestionBank = JSON.parse(JSON.stringify(questionBank || []));
-                    const cleanParagraphs = JSON.parse(JSON.stringify(paragraphs || []));
-                    const cleanQiList = JSON.parse(JSON.stringify(quickInfoList || []));
-                    const cleanStudentRecords = JSON.parse(JSON.stringify(studentRecords || []));
-
                     const docRef = window.firebaseDoc(window.firebaseDb, "platformData", "mainConfig");
                     await window.firebaseSetDoc(docRef, {
-                        stagesData: cleanStagesData,
-                        gradeStatus: cleanGradeStatus,
-                        topicsData: cleanTopicsData,
-                        appSettings: cleanAppSettings,
-                        questionBank: cleanQuestionBank,
-                        paragraphs: cleanParagraphs,
-                        qiList: cleanQiList,
-                        studentRecords: cleanStudentRecords
+                        stagesData: JSON.parse(JSON.stringify(stagesData || {})),
+                        gradeStatus: JSON.parse(JSON.stringify(gradeStatus || {})),
+                        topicsData: JSON.parse(JSON.stringify(topicsData || [])),
+                        appSettings: JSON.parse(JSON.stringify(appSettings || {})),
+                        questionBank: JSON.parse(JSON.stringify(questionBank || [])),
+                        paragraphs: JSON.parse(JSON.stringify(paragraphs || [])),
+                        qiList: JSON.parse(JSON.stringify(quickInfoList || [])),
+                        studentRecords: JSON.parse(JSON.stringify(studentRecords || []))
                     });
-                    console.log("تم حفظ وتحديث السحابة بنجاح تام!");
                 }
             } catch (e) {
-                console.error("خطأ في الحفظ السحابي:", e);
+                console.error("خطأ الحفظ:", e);
             }
         }
 
@@ -1153,7 +1162,31 @@
             }
         }
 
-        // تصدير النتيجة للطالب بصيغة Excel (CSV)
+        function exportTopicQuestionsJson() {
+            const fStage = document.getElementById('filter-q-stage').value;
+            const fGrade = document.getElementById('filter-q-grade').value;
+            const fTopic = document.getElementById('filter-q-topic').value;
+
+            if (!fTopic) {
+                alert("يرجى اختيار وتحديد الموضوع من الفلاتر بالأعلى أولاً لتصدير أسئلته!");
+                return;
+            }
+
+            const topicQuestions = questionBank.filter(q => q.topic === fTopic && (!fStage || q.stage === fStage) && (!fGrade || q.grade === fGrade));
+            if (topicQuestions.length === 0) {
+                alert("لا توجد أسئلة مسجلة تحت هذا الموضوع لتصديرها.");
+                return;
+            }
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topicQuestions, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `questions_${fTopic.replace(/\s+/g, '_')}_${Date.now()}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+
         function exportStudentResultExcel() {
             if (!quizState.name || quizState.questions.length === 0) { alert("لا توجد نتيجة لتصديرها."); return; }
             let csvContent = "\uFEFF";
@@ -1166,10 +1199,10 @@
                 let userAns = quizState.answers[idx] || "لم يجب";
                 let isCorrect = userAns === q.ans;
                 let status = isCorrect ? "صحيح" : "خطأ/غير مجاب";
-                let qText = `"${formatText(q.q).replace(/"/g, '""')}"`;
-                let uAns = `"${formatText(userAns).replace(/"/g, '""')}"`;
-                let cAns = `"${formatText(q.ans).replace(/"/g, '""')}"`;
-                let exp = `"${formatText(q.exp || "").replace(/"/g, '""')}"`;
+                let qText = `"${formatText(q.q, q.tashkeel).replace(/"/g, '""')}"`;
+                let uAns = `"${formatText(userAns, q.tashkeel).replace(/"/g, '""')}"`;
+                let cAns = `"${formatText(q.ans, q.tashkeel).replace(/"/g, '""')}"`;
+                let exp = `"${formatText(q.exp || "", q.tashkeel).replace(/"/g, '""')}"`;
 
                 csvContent += `${idx + 1},${qText},${uAns},${cAns},${status},${exp}\n`;
             });
@@ -1184,16 +1217,16 @@
             link.remove();
         }
 
-        // تصدير جميع نتائج الطلاب كملف Excel (CSV) من لوحة التحكم
         function exportAllRecordsExcel() {
             if (studentRecords.length === 0) { alert("لا توجد سجلات نتائج لتصديرها!"); return; }
             let csvContent = "\uFEFF";
-            csvContent += "م,اسم الطالب,المرحلة والصف والموضوع,الحالة,الدرجة,النسبة,وقت الدخول,الأسئلة المجاب عنها\n";
+            csvContent += "م,اسم الطالب,المرحلة والصف والموضوع,الحالة,الدرجة,النسبة,وقت الدخول والمدة,الأسئلة المجاب عنها\n";
 
             studentRecords.forEach((r, idx) => {
                 let name = `"${r.name.replace(/"/g, '""')}"`;
                 let sg = `"${r.stageGrade.replace(/"/g, '""')}"`;
-                csvContent += `${idx + 1},${name},${sg},${r.status},${r.score}/${r.total},${r.pct}%,${r.date},${r.answeredCount || '-'}\n`;
+                let dateTimeDuration = `"${r.date} (المدة: ${r.duration || 'غير متوفر'})"`;
+                csvContent += `${idx + 1},${name},${sg},${r.status},${r.score}/${r.total},${r.pct}%,${dateTimeDuration},${r.answeredCount || '-'}\n`;
             });
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1211,16 +1244,16 @@
             let csvContent = "\uFEFF";
             csvContent += `تقرير الطالب:,${rec.name}\n`;
             csvContent += `القسم/الدرس:,${rec.stageGrade}\n`;
-            csvContent += `وقت الدخول:,${rec.date}\n`;
+            csvContent += `وقت الدخول والمدة:,${rec.date} (المدة: ${rec.duration || 'غير متوفر'})\n`;
             csvContent += `الدرجة:,${rec.score} من ${rec.total} (${rec.pct}%)\n\n`;
             csvContent += "رقم السؤال,السؤال,إجابة الطالب,الإجابة الصحيحة,الحالة,التعليل\n";
 
             rec.breakdown.forEach((b) => {
                 let status = b.isCorrect ? "صحيح" : "خطأ/غير مجاب";
-                let qText = `"${formatText(b.qText).replace(/"/g, '""')}"`;
-                let uAns = `"${formatText(b.userAnswer).replace(/"/g, '""')}"`;
-                let cAns = `"${formatText(b.correctAnswer).replace(/"/g, '""')}"`;
-                let exp = `"${formatText(b.explanation || "").replace(/"/g, '""')}"`;
+                let qText = `"${formatText(b.qText, b.tashkeel).replace(/"/g, '""')}"`;
+                let uAns = `"${formatText(b.userAnswer, b.tashkeel).replace(/"/g, '""')}"`;
+                let cAns = `"${formatText(b.correctAnswer, b.tashkeel).replace(/"/g, '""')}"`;
+                let exp = `"${formatText(b.explanation || "", b.tashkeel).replace(/"/g, '""')}"`;
 
                 csvContent += `${b.qIndex},${qText},${uAns},${cAns},${status},${exp}\n`;
             });
@@ -1248,7 +1281,6 @@
 
         function downloadUpdatedPlatformFile() {
             saveState();
-            
             const newDataSetCode = `
         let stagesData = ${JSON.stringify(stagesData, null, 2)};
         let gradeStatus = ${JSON.stringify(gradeStatus, null, 2)};
@@ -1260,33 +1292,19 @@
         let quickInfoList = ${JSON.stringify(quickInfoList, null, 2)};
         let studentRecords = ${JSON.stringify(studentRecords, null, 2)};
             `;
-
             const htmlContent = document.documentElement.outerHTML;
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlContent, 'text/html');
-            
-            const scriptTags = doc.querySelectorAll('script');
-            scriptTags.forEach(script => {
+            doc.querySelectorAll('script').forEach(script => {
                 if (script.textContent.includes('/* -- DATA_START -- */')) {
                     let text = script.textContent;
                     let startIdx = text.indexOf('/* -- DATA_START -- */');
                     let endIdx = text.indexOf('/* -- DATA_END -- */');
                     if (startIdx !== -1 && endIdx !== -1) {
-                        script.textContent = text.substring(0, startIdx + '/* -- DATA_START -- */'.length) + 
-                                             '\n' + newDataSetCode + '\n' + 
-                                             text.substring(endIdx);
+                        script.textContent = text.substring(0, startIdx + '/* -- DATA_START -- */'.length) + '\n' + newDataSetCode + '\n' + text.substring(endIdx);
                     }
                 }
             });
-
-            const adminView = doc.getElementById('view-admin');
-            if (adminView) {
-                adminView.classList.add('hidden');
-                adminView.classList.remove('flex');
-            }
-            const adminLogin = doc.getElementById('modal-admin-login');
-            if (adminLogin) adminLogin.classList.add('hidden');
-
             const updatedHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
             const blob = new Blob([updatedHtml], { type: 'text/html;charset=utf-8;' });
             const link = document.createElement("a");
@@ -1322,7 +1340,6 @@
                         if (imported.paragraphs) paragraphs = imported.paragraphs;
                         if (imported.qiList) quickInfoList = imported.qiList;
                         if (imported.studentRecords) studentRecords = imported.studentRecords;
-                        
                         await saveState();
                         loadAdminData();
                         initApp();
@@ -1350,6 +1367,7 @@
                                         grade: q.grade || document.getElementById('filter-q-grade').value || "",
                                         topic: q.topic || document.getElementById('filter-q-topic').value || "",
                                         active: q.active !== false,
+                                        tashkeel: q.tashkeel !== false,
                                         difficulty: q.difficulty || "",
                                         paragraphId: q.paragraphId || "",
                                         q: q.q,
@@ -1643,35 +1661,60 @@
             let sessionQuestions = [];
             const targetExamCount = Math.min(appSettings.examCount || 20, unassignedPool.length);
 
-            // تم توحيد خوارزمية الاختيار العشوائي السلسة لتجنب أي تداخل أو تكرار غير مرغوب فيه
-            let availableIndices = unassignedPool.map((_, i) => i);
-            availableIndices.sort(() => 0.5 - Math.random());
+            if (appSettings.useDifficultyFilter) {
+                let reqEasy = parseInt(appSettings.diffEasyCount) || 0;
+                let reqMed = parseInt(appSettings.diffMediumCount) || 0;
+                let reqHard = parseInt(appSettings.diffHardCount) || 0;
+                let reqVHard = parseInt(appSettings.diffVeryHardCount) || 0;
 
-            let selectedIndices = [];
-            let minGap = 10;
-
-            for (let i = 0; i < availableIndices.length && selectedIndices.length < targetExamCount; i++) {
-                let candidate = availableIndices[i];
-                let isTooClose = selectedIndices.some(sel => Math.abs(sel - candidate) < minGap);
-                
-                if (!isTooClose) {
-                    selectedIndices.push(candidate);
+                function pickRandom(arr, count) {
+                    let shuffled = [...arr].sort(() => 0.5 - Math.random());
+                    return shuffled.slice(0, count);
                 }
+
+                let easyPool = unassignedPool.filter(q => q.difficulty === "سهل");
+                let medPool = unassignedPool.filter(q => q.difficulty === "متوسط");
+                let hardPool = unassignedPool.filter(q => q.difficulty === "صعب");
+                let vhardPool = unassignedPool.filter(q => q.difficulty === "صعب جدا");
+
+                let chosenEasy = pickRandom(easyPool, reqEasy);
+                let chosenMed = pickRandom(medPool, reqMed);
+                let chosenHard = pickRandom(hardPool, reqHard);
+                let chosenVHard = pickRandom(vhardPool, reqVHard);
+
+                sessionQuestions = [...chosenEasy, ...chosenMed, ...chosenHard, ...chosenVHard];
+                sessionQuestions.sort(() => 0.5 - Math.random());
             }
 
-            if (selectedIndices.length < targetExamCount) {
+            if (sessionQuestions.length === 0) {
+                let availableIndices = unassignedPool.map((_, i) => i);
+                availableIndices.sort(() => 0.5 - Math.random());
+
+                let selectedIndices = [];
+                let minGap = 10;
+
                 for (let i = 0; i < availableIndices.length && selectedIndices.length < targetExamCount; i++) {
                     let candidate = availableIndices[i];
-                    if (!selectedIndices.includes(candidate)) {
+                    let isTooClose = selectedIndices.some(sel => Math.abs(sel - candidate) < minGap);
+                    
+                    if (!isTooClose) {
                         selectedIndices.push(candidate);
                     }
                 }
+
+                if (selectedIndices.length < targetExamCount) {
+                    for (let i = 0; i < availableIndices.length && selectedIndices.length < targetExamCount; i++) {
+                        let candidate = availableIndices[i];
+                        if (!selectedIndices.includes(candidate)) {
+                            selectedIndices.push(candidate);
+                        }
+                    }
+                }
+
+                selectedIndices.sort(() => 0.5 - Math.random());
+                sessionQuestions = selectedIndices.map(i => unassignedPool[i]);
             }
 
-            selectedIndices.sort(() => 0.5 - Math.random());
-            sessionQuestions = selectedIndices.map(i => unassignedPool[i]);
-
-            // خلط خيارات الأسئلة عشوائياً بدقة لضمان عدم تركيز الإجابة في الخيار الأول
             sessionQuestions = sessionQuestions.map(q => {
                 let qCopy = JSON.parse(JSON.stringify(q));
                 if (appSettings.shuffleOptions !== false) {
@@ -1739,7 +1782,7 @@
             const idx = quizState.currentIndex;
             const q = quizState.questions[idx];
             document.getElementById('display-q-idx').textContent = idx + 1;
-            document.getElementById('question-text').textContent = formatText(q.q);
+            document.getElementById('question-text').textContent = formatText(q.q, q.tashkeel);
 
             const readBox = document.getElementById('readtext-box-container');
             const imgContainer = document.getElementById('display-read-image-container');
@@ -1749,8 +1792,8 @@
             if (q.paragraphId) {
                 const para = paragraphs.find(p => p.id === q.paragraphId && p.active !== false);
                 if (para) {
-                    document.getElementById('display-read-text').textContent = formatText(para.text);
-                    if(titleEl) titleEl.textContent = formatText(para.title || "اقْرَأْ ثُمَّ أَجِبْ:");
+                    document.getElementById('display-read-text').textContent = formatText(para.text, para.tashkeel);
+                    if(titleEl) titleEl.textContent = formatText(para.title || "اقْرَأْ ثُمَّ أَجِبْ:", para.tashkeel);
                     if (para.img) {
                         imgEl.src = para.img;
                         imgContainer.classList.remove('hidden');
@@ -1769,7 +1812,7 @@
                 btn.type = 'button';
                 btn.className = `w-full text-right p-4 rounded-2xl font-bold transition flex items-center justify-between border-2 cursor-pointer text-lg ${isSelected ? 'bg-sky-50 border-sky-600 text-sky-950 shadow-md' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}`;
                 btn.onclick = () => { quizState.answers[idx] = opt; renderQuestion(); };
-                btn.innerHTML = `<span>${formatText(opt)}</span><i class="fa-regular ${isSelected ? 'fa-circle-check text-sky-600' : 'fa-circle text-slate-300'}"></i>`;
+                btn.innerHTML = `<span>${formatText(opt, q.tashkeel)}</span><i class="fa-regular ${isSelected ? 'fa-circle-check text-sky-600' : 'fa-circle text-slate-300'}"></i>`;
                 optsContainer.appendChild(btn);
             });
 
@@ -1819,6 +1862,12 @@
         function finishQuizSubmission() {
             if (quizState.timerInterval) clearInterval(quizState.timerInterval);
 
+            // حساب الوقت المستغرق
+            let elapsedSec = Math.floor((Date.now() - quizState.startTime) / 1000);
+            let mins = Math.floor(elapsedSec / 60);
+            let secs = elapsedSec % 60;
+            let durationFormatted = `${mins} دقيقة و ${secs} ثانية`;
+
             let score = 0;
             let correctListHtml = "";
             let wrongListHtml = "";
@@ -1834,22 +1883,23 @@
                 
                 breakdownDetails.push({
                     qIndex: idx + 1,
-                    qText: formatText(q.q),
-                    userAnswer: formatText(userAns || "لم يجب"),
-                    correctAnswer: formatText(q.ans),
+                    qText: formatText(q.q, q.tashkeel),
+                    userAnswer: formatText(userAns || "لم يجب", q.tashkeel),
+                    correctAnswer: formatText(q.ans, q.tashkeel),
                     isCorrect: isCorrect,
-                    explanation: formatText(q.exp || "")
+                    explanation: formatText(q.exp || "", q.tashkeel),
+                    tashkeel: q.tashkeel
                 });
 
                 if (isCorrect) {
                     score++;
                     correctCount++;
-                    correctListHtml += `<li><strong>س${idx+1}:</strong> ${formatText(q.q)}</li>`;
+                    correctListHtml += `<li><strong>س${idx+1}:</strong> ${formatText(q.q, q.tashkeel)}</li>`;
                     markQuestionAsAnswered(quizState.topic, q.q);
                 } else {
                     wrongCount++;
-                    let reasonText = userAns ? `إجابتك: (${formatText(userAns)})` : `لم تتم الإجابة`;
-                    wrongListHtml += `<li><strong>س${idx+1}:</strong> ${formatText(q.q)} <span class="text-rose-600">(${reasonText} - الصحيحة: ${formatText(q.ans)})</span></li>`;
+                    let reasonText = userAns ? `إجابتك: (${formatText(userAns, q.tashkeel)})` : `لم تتم الإجابة`;
+                    wrongListHtml += `<li><strong>س${idx+1}:</strong> ${formatText(q.q, q.tashkeel)} <span class="text-rose-600">(${reasonText} - الصحيحة: ${formatText(q.ans, q.tashkeel)})</span></li>`;
                 }
             });
 
@@ -1872,10 +1922,14 @@
 
             studentRecords.unshift({ 
                 name: quizState.name, 
+                stage: quizState.stage,
+                grade: quizState.grade,
+                topic: quizState.topic,
                 stageGrade: `${quizState.stage} - ${quizState.grade} (${quizState.topic})`, 
                 score, total, pct, 
                 status: isPassed ? "ناجح" : "راسب",
                 date: loginTimeFormatted,
+                duration: durationFormatted,
                 answeredCount: `${answeredCount} من ${total}`,
                 breakdown: breakdownDetails
             });
@@ -1966,7 +2020,7 @@
                 qi.attachments.forEach(att => {
                     if (att.active !== false && att.url) {
                         let btnLabel = att.label || "اطّلع على";
-                        btns += `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2 text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${formatText(btnLabel)}</a>`;
+                        btns += `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2 text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${formatText(btnLabel, qi.tashkeel)}</a>`;
                     }
                 });
                 if (btns) {
@@ -1987,8 +2041,8 @@
                             if(sec.subTitle || sec.subText) {
                                 subDetailsBlocks += `
                                     <div class="mt-2.5 space-y-1.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
-                                        ${sec.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base flex items-center gap-1.5"><i class="fa-solid fa-angle-left text-sky-600 text-xs"></i> ${formatText(sec.subTitle)}</h5>` : ''}
-                                        <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${formatText(sec.subText || '')}</p>
+                                        ${sec.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base flex items-center gap-1.5"><i class="fa-solid fa-angle-left text-sky-600 text-xs"></i> ${formatText(sec.subTitle, qi.tashkeel)}</h5>` : ''}
+                                        <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${formatText(sec.subText || '', qi.tashkeel)}</p>
                                     </div>
                                 `;
                             }
@@ -1996,25 +2050,25 @@
                     } else if (it.subTitle || it.subText) {
                         subDetailsBlocks += `
                             <div class="mt-2.5 space-y-1.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
-                                ${it.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base">${formatText(it.subTitle)}</h5>` : ''}
-                                <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${formatText(it.subText || '')}</p>
+                                ${it.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base">${formatText(it.subTitle, qi.tashkeel)}</h5>` : ''}
+                                <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${formatText(it.subText || '', qi.tashkeel)}</p>
                             </div>
                         `;
                     }
 
                     itemsHtml += `
                         <div class="bg-white p-4 sm:p-5 rounded-2xl border space-y-3 shadow-sm">
-                            ${it.mainHeader ? `<h4 class="font-black text-amber-800 text-base sm:text-lg border-b-2 border-amber-200 pb-2 flex items-center gap-2"><i class="fa-solid fa-bookmark text-amber-600 text-sm"></i> ${formatText(it.mainHeader)}</h4>` : ''}
+                            ${it.mainHeader ? `<h4 class="font-black text-amber-800 text-base sm:text-lg border-b-2 border-amber-200 pb-2 flex items-center gap-2"><i class="fa-solid fa-bookmark text-amber-600 text-sm"></i> ${formatText(it.mainHeader, qi.tashkeel)}</h4>` : ''}
                             ${itemImgHtml}
                             <div class="space-y-2">${subDetailsBlocks}</div>
                         </div>
                     `;
                 });
             } else {
-                itemsHtml = `<p class="text-slate-700 text-sm whitespace-pre-line">${formatText(qi.text || '')}</p>`;
+                itemsHtml = `<p class="text-slate-700 text-sm whitespace-pre-line">${formatText(qi.text || '', qi.tashkeel)}</p>`;
             }
 
-            return `<div class="bg-slate-100 p-6 rounded-3xl border space-y-4 shadow-md"><h3 class="font-black text-sky-950 text-xl sm:text-2xl border-b-4 border-amber-500 pb-2">${formatText(qi.title)}</h3>${mainImgHtml}${attachmentsHtml}<div class="space-y-4">${itemsHtml}</div></div>`;
+            return `<div class="bg-slate-100 p-6 rounded-3xl border space-y-4 shadow-md"><h3 class="font-black text-sky-950 text-xl sm:text-2xl border-b-4 border-amber-500 pb-2">${formatText(qi.title, qi.tashkeel)}</h3>${mainImgHtml}${attachmentsHtml}<div class="space-y-4">${itemsHtml}</div></div>`;
         }
 
         function previewQiFromModal(qiObj) {
@@ -2026,6 +2080,7 @@
         function previewCurrentQiModal() {
             const title = document.getElementById('edit-qi-title').value.trim() || "عنوان معاينة المعلومة";
             const img = document.getElementById('edit-qi-img').value.trim();
+            const tashkeel = document.getElementById('edit-qi-tashkeel').checked;
             
             const attRows = document.querySelectorAll('#qi-attachments-container > div');
             let attachments = [];
@@ -2054,13 +2109,14 @@
                 }
             });
 
-            previewQiFromModal({ title, img, attachments, items });
+            previewQiFromModal({ title, img, tashkeel, attachments, items });
         }
 
         function previewCurrentParagraphModal() {
             const pTitle = document.getElementById('edit-para-title').value.trim() || "اقْرَأْ ثُمَّ أَجِبْ:";
             const pText = document.getElementById('edit-para-text').value.trim() || "نص الفقرة القرائية التجريبي هنا...";
             const pImg = document.getElementById('edit-para-img').value.trim();
+            const tashkeel = document.getElementById('edit-para-tashkeel').checked;
 
             let imgHtml = pImg ? `<div class="my-2 text-center"><img src="${pImg}" alt="صورة الفقرة" class="max-h-48 rounded-xl mx-auto object-contain border" onerror="this.style.display='none';"></div>` : '';
 
@@ -2069,10 +2125,10 @@
                 <div class="bg-amber-50/70 p-4 rounded-2xl border-2 border-amber-200 space-y-2 text-right">
                     <div class="flex items-center gap-2 text-amber-900 border-b border-amber-200/60 pb-1.5 font-black">
                         <i class="fa-solid fa-book-open text-amber-600"></i>
-                        <span>${formatText(pTitle)}</span>
+                        <span>${formatText(pTitle, tashkeel)}</span>
                     </div>
                     ${imgHtml}
-                    <p class="whitespace-pre-line text-justify text-base font-semibold text-slate-800">${formatText(pText)}</p>
+                    <p class="whitespace-pre-line text-justify text-base font-semibold text-slate-800">${formatText(pText, tashkeel)}</p>
                 </div>
             `;
             document.getElementById('modal-preview-para').classList.remove('hidden');
@@ -2083,71 +2139,25 @@
             const opts = [0,1,2,3].map(i => document.getElementById(`edit-opt-${i}`).value.trim() || `الخيار ${i+1}`);
             const ans = document.getElementById('edit-q-ans').value.trim() || opts[0];
             const exp = document.getElementById('edit-q-exp').value.trim();
+            const tashkeel = document.getElementById('edit-q-tashkeel').checked;
 
             let optsHtml = '<div class="space-y-2 mt-3">';
             opts.forEach(opt => {
                 let isAns = opt === ans;
-                optsHtml += `<div class="p-3 rounded-2xl border text-sm flex items-center justify-between ${isAns ? 'bg-emerald-100 border-emerald-500 text-emerald-950 font-black' : 'bg-white border-slate-200 text-slate-700'}"><span>${formatText(opt)}</span>${isAns ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}</div>`;
+                optsHtml += `<div class="p-3 rounded-2xl border text-sm flex items-center justify-between ${isAns ? 'bg-emerald-100 border-emerald-500 text-emerald-950 font-black' : 'bg-white border-slate-200 text-slate-700'}"><span>${formatText(opt, tashkeel)}</span>${isAns ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}</div>`;
             });
             optsHtml += '</div>';
 
             const container = document.getElementById('preview-q-body');
             container.innerHTML = `
                 <div class="space-y-3">
-                    <p class="font-black text-sky-950 text-lg leading-relaxed">${formatText(qText)}</p>
+                    <p class="font-black text-sky-950 text-lg leading-relaxed">${formatText(qText, tashkeel)}</p>
                     ${optsHtml}
-                    ${exp ? `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-sm mt-3"><strong>التعليل:</strong> ${formatText(exp)}</div>` : ''}
+                    ${exp ? `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-sm mt-3"><strong>التعليل:</strong> ${formatText(exp, tashkeel)}</div>` : ''}
                 </div>
             `;
             document.getElementById('modal-preview-q').classList.remove('hidden');
         }
-
-        function closeQuickInfo() { document.getElementById('view-quick-info').classList.add('hidden'); }
-        
-        function openReviewModal() {
-            const container = document.getElementById('review-container');
-            container.innerHTML = '';
-            quizState.questions.forEach((q, idx) => {
-                const userAns = quizState.answers[idx];
-                const isCorrect = userAns === q.ans;
-                
-                let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">';
-                q.opts.forEach(opt => {
-                    let optStyle = "bg-white border-slate-200 text-slate-700";
-                    let optIcon = "";
-                    if (opt === q.ans) {
-                        optStyle = "bg-emerald-100 border-emerald-500 text-emerald-950 font-black";
-                        optIcon = '<i class="fa-solid fa-check text-emerald-600 mr-2 text-base"></i>';
-                    } else if (opt === userAns && !isCorrect) {
-                        optStyle = "bg-rose-100 border-rose-500 text-rose-950 font-black";
-                        optIcon = '<i class="fa-solid fa-xmark text-rose-600 mr-2 text-base"></i>';
-                    }
-                    optsHtml += `<div class="p-3 rounded-2xl border text-sm sm:text-base flex items-center justify-between ${optStyle}"><span>${formatText(opt)}</span>${optIcon}</div>`;
-                });
-                optsHtml += '</div>';
-
-                container.innerHTML += `
-                    <div class="p-5 sm:p-6 rounded-3xl border-2 ${isCorrect ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'} space-y-3 text-right shadow-sm">
-                        <div class="flex items-center justify-between font-black text-sm text-slate-600">
-                            <span>السؤال رقم (${idx + 1})</span>
-                            <span class="${isCorrect ? 'text-emerald-700' : 'text-rose-700'} text-base">${isCorrect ? 'إجابة صحيحة ✓' : 'إجابة خاطئة ✗'}</span>
-                        </div>
-                        <p class="font-black text-sky-950 text-lg sm:text-xl leading-relaxed">${formatText(q.q)}</p>
-                        ${optsHtml}
-                        <div class="text-sm sm:text-base font-bold space-y-1.5 pt-3 border-t border-slate-200/60 mt-2">
-                            <p class="text-slate-700">إجابتك: <span class="${isCorrect ? 'text-emerald-700' : 'text-rose-600'} font-black">${formatText(userAns || 'لم تتم الإجابة')}</span></p>
-                            ${!isCorrect ? `<p class="text-emerald-800">الإجابة الصحيحة: <span class="font-black">${formatText(q.ans)}</span></p>` : ''}
-                            ${q.exp ? `<p class="text-indigo-950 bg-indigo-50/80 p-3.5 rounded-2xl mt-2 border border-indigo-200 text-sm sm:text-base"><strong>${appSettings.expLabel || 'التعليل'}:</strong> ${formatText(q.exp)}</p>` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById('modal-review').classList.remove('hidden');
-        }
-
-        function closeReviewModal() { document.getElementById('modal-review').classList.add('hidden'); }
-        function openCertModal() { document.getElementById('cert-student-name').textContent = quizState.name; document.getElementById('modal-cert').classList.remove('hidden'); }
-        function closeCertModal() { document.getElementById('modal-cert').classList.add('hidden'); }
 
         function handleAdminAccess() {
             document.getElementById('admin-login-pwd-input').value = "";
@@ -2237,6 +2247,7 @@
             renderAdminQuestionsList();
             renderAdminParagraphsList();
             renderAdminQuickInfoList();
+            populateRecordFilterStages();
             renderAdminRecordsTable();
         }
 
@@ -2289,7 +2300,7 @@
             try {
                 await saveState();
             } catch (err) {
-                console.log("التخزين المحلي نشط والاتصال السحابي يعمل في الخلفية");
+                console.log("التخزين المحلي نشط");
             }
             
             initApp();
@@ -2468,1002 +2479,101 @@
             }
         }
 
-        function renderAdminTopicsList() {
-            const container = document.getElementById('admin-topics-list');
-            if(!container) return;
-            container.innerHTML = '';
-            if (topicsData.length === 0) {
-                container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد موضوعات مضافة.</p>';
-                return;
-            }
-            topicsData.forEach((t, idx) => {
-                let targetsSummary = t.targetGrades ? t.targetGrades.map(tg => `${tg.stage}: ${tg.grade}`).join(' | ') : '';
-                const isActive = t.active !== false;
-                const item = document.createElement('div');
-                item.className = "bg-slate-50 p-3 rounded-xl border flex justify-between items-center text-xs gap-2";
-                item.innerHTML = `
-                    <div class="flex items-center gap-2 overflow-hidden">
-                        <button type="button" onclick="toggleTopicVisibility(${idx})" class="px-2 py-0.5 rounded text-[10px] font-extrabold cursor-pointer shrink-0 ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-                            ${isActive ? 'مفعل' : 'مخفي'}
-                        </button>
-                        <span class="truncate"><strong class="${isActive ? 'text-sky-900 font-extrabold' : 'text-slate-400 line-through'} text-sm">${t.topic}</strong><br><span class="text-slate-500 text-[11px]">الصفوف المستهدفة: ${targetsSummary}</span></span>
-                    </div>
-                    <div class="flex gap-1.5 shrink-0 items-center">
-                        <button type="button" onclick="moveTopic(${idx}, -1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
-                        <button type="button" onclick="moveTopic(${idx}, 1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
-                        <button type="button" onclick="duplicateTopic(${idx})" class="bg-indigo-600 text-white px-2.5 py-1 rounded cursor-pointer" title="تكرار"><i class="fa-solid fa-copy"></i></button>
-                        <button type="button" onclick="openTopicModalForEdit(${idx})" class="bg-amber-500 text-white px-2.5 py-1 rounded cursor-pointer" title="تعديل"><i class="fa-solid fa-pen"></i></button>
-                        <button type="button" onclick="deleteTopic(${idx})" class="bg-rose-500 text-white px-2.5 py-1 rounded cursor-pointer" title="حذف"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function toggleTopicVisibility(idx) {
-            topicsData[idx].active = topicsData[idx].active === false ? true : false;
-            saveState();
-            renderAdminTopicsList();
-        }
-
-        function moveTopic(idx, direction) {
-            const newIdx = idx + direction;
-            if (newIdx < 0 || newIdx >= topicsData.length) return;
-            const moved = topicsData[idx];
-            topicsData.splice(idx, 1);
-            topicsData.splice(newIdx, 0, moved);
-            saveState();
-            renderAdminTopicsList();
-            populateFilterStageDropdowns();
-        }
-
-        function openTopicModalForAdd() {
-            document.getElementById('edit-topic-index').value = "-1";
-            document.getElementById('edit-topic-name').value = "";
-            document.getElementById('edit-topic-active').checked = true;
-            populateAllGradesCheckboxesForTopic();
-            document.getElementById('topic-modal-title').textContent = "إضافة موضوع جديد";
-            document.getElementById('modal-topic-edit').classList.remove('hidden');
-        }
-
-        function openTopicModalForEdit(idx) {
-            const t = topicsData[idx];
-            document.getElementById('edit-topic-index').value = idx;
-            document.getElementById('edit-topic-name').value = t.topic;
-            document.getElementById('edit-topic-active').checked = t.active !== false;
-            populateAllGradesCheckboxesForTopic(t.targetGrades || []);
-            document.getElementById('topic-modal-title').textContent = "تعديل الموضوع";
-            document.getElementById('modal-topic-edit').classList.remove('hidden');
-        }
-
-        function populateAllGradesCheckboxesForTopic(selectedTargets = []) {
-            const container = document.getElementById('all-grades-checkboxes-container');
-            if(!container) return;
-            container.innerHTML = '';
-            Object.keys(stagesData).forEach(stage => {
-                let stageTitle = document.createElement('div');
-                stageTitle.className = "font-black text-sky-950 text-xs mt-2 mb-1 border-b pb-0.5";
-                stageTitle.textContent = `المرحلة: ${stage}`;
-                container.appendChild(stageTitle);
-                stagesData[stage].forEach(grade => {
-                    const key = `${stage}_${grade}`;
-                    if (gradeStatus[key] !== false) {
-                        const isChecked = selectedTargets.some(tg => tg.stage === stage && tg.grade === grade) ? 'checked' : '';
-                        const label = document.createElement('label');
-                        label.className = "flex items-center gap-2 cursor-pointer font-bold text-xs text-slate-700 mr-2";
-                        label.innerHTML = `<input type="checkbox" name="topic-target-cb" data-stage="${stage}" data-grade="${grade}" ${isChecked} class="w-4 h-4 text-sky-600 rounded"><span>${grade}</span>`;
-                        container.appendChild(label);
-                    }
-                });
-            });
-        }
-
-        function saveTopicFromModal() {
-            const idx = parseInt(document.getElementById('edit-topic-index').value);
-            const topic = document.getElementById('edit-topic-name').value.trim();
-            const active = document.getElementById('edit-topic-active').checked;
-            const checkedBoxes = document.querySelectorAll('input[name="topic-target-cb"]:checked');
-            if (!topic) { alert("يرجى كتابة اسم الموضوع."); return; }
-            if (checkedBoxes.length === 0) { alert("يرجى اختيار صف واحد على الأقل للموضوع."); return; }
-            let targetGrades = [];
-            checkedBoxes.forEach(cb => { targetGrades.push({ stage: cb.getAttribute('data-stage'), grade: cb.getAttribute('data-grade') }); });
-            const tObj = { topic, active, targetGrades };
-            if (idx >= 0) topicsData[idx] = tObj;
-            else topicsData.push(tObj);
-            saveState();
-            renderAdminTopicsList();
-            populateFilterStageDropdowns();
-            document.getElementById('modal-topic-edit').classList.add('hidden');
-        }
-
-        function duplicateTopic(idx) {
-            const t = topicsData[idx];
-            if (!t) return;
-            topicsData.push({ ...t, topic: t.topic + " (نسخة)" });
-            saveState();
-            renderAdminTopicsList();
-            populateFilterStageDropdowns();
-        }
-
-        function deleteTopic(idx) {
-            if (confirm("هل أنت متأكد من حذف هذا الموضوع؟")) {
-                topicsData.splice(idx, 1);
-                saveState();
-                renderAdminTopicsList();
-                populateFilterStageDropdowns();
-            }
-        }
-
-        function populateFilterStageDropdowns() {
-            const stageSel = document.getElementById('filter-q-stage');
+        // فلاتر تبويب النتائج في لوحة التحكم
+        function populateRecordFilterStages() {
+            const stageSel = document.getElementById('filter-rec-stage');
             if(!stageSel) return;
-            stageSel.innerHTML = '<option value="">المرحلة</option>';
-            Object.keys(stagesData).forEach(stage => {
-                const grades = stagesData[stage] || [];
-                const hasActiveGrade = grades.some(grade => gradeStatus[`${stage}_${grade}`] !== false);
-                if (hasActiveGrade) {
-                    const opt = document.createElement('option');
-                    opt.value = stage; opt.textContent = stage;
-                    stageSel.appendChild(opt);
-                }
-            });
-            filterQuestionsByStage();
-        }
-
-        function filterQuestionsByStage() {
-            const stage = document.getElementById('filter-q-stage').value;
-            const gradeSel = document.getElementById('filter-q-grade');
-            if(!gradeSel) return;
-            gradeSel.innerHTML = '<option value="">الصف</option>';
-            if (stagesData[stage]) {
-                stagesData[stage].forEach(grade => {
-                    const key = `${stage}_${grade}`;
-                    if (gradeStatus[key] !== false) {
-                        const opt = document.createElement('option');
-                        opt.value = grade; opt.textContent = grade;
-                        gradeSel.appendChild(opt);
-                    }
-                });
-            }
-            filterQuestionsByGrade();
-        }
-
-        function filterQuestionsByGrade() {
-            const stage = document.getElementById('filter-q-stage').value;
-            const grade = document.getElementById('filter-q-grade').value;
-            const topicSel = document.getElementById('filter-q-topic');
-            if(!topicSel) return;
-            topicSel.innerHTML = '<option value="">اختر الموضوع أولاً</option>';
-            const filtered = topicsData.filter(t => {
-                if (t.targetGrades) return t.targetGrades.some(tg => (stage === "" || tg.stage === stage) && (grade === "" || tg.grade === grade));
-                return false;
-            });
-            filtered.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t.topic; opt.textContent = t.topic;
-                topicSel.appendChild(opt);
-            });
-            renderAdminQuestionsList();
-        }
-
-        function saveDirectBatchQuestions() {
-            let raw = document.getElementById('direct-batch-input').value.trim();
-            const stage = document.getElementById('filter-q-stage').value;
-            const grade = document.getElementById('filter-q-grade').value;
-            const topic = document.getElementById('filter-q-topic').value;
-            const batchDiff = document.getElementById('batch-default-difficulty').value;
-            if (!stage || !grade || !topic) { alert("يرجى تحديد (المرحلة، الصف، والموضوع) من الفلتر بالأعلى أولاً!"); return; }
-            if (!raw) { alert("يرجى إدخال صيغة الأسئلة!"); return; }
-            try {
-                let formatted = raw.trim();
-                formatted = formatted.replace(/,\s*([}\\]])/g, '$1');
-                if (!formatted.startsWith("[")) formatted = "[" + formatted;
-                if (!formatted.endsWith("]")) formatted = formatted + "]";
-                formatted = formatted.replace(/}\s*{/g, '},{').replace(/}\s*,\s*]/g, '}]');
-                formatted = formatted.replace(/([{,]\s*)(q|opts|ans|exp|active|difficulty|paragraphId)(\s*[:])/g, '$1"$2"$3');
-                formatted = formatted.replace(/,\s*,/g, ',');
-
-                const parsed = JSON.parse(formatted);
-                let addedCount = 0;
-                parsed.forEach(item => {
-                    if (item.q && Array.isArray(item.opts) && item.ans) {
-                        let qDiff = item.difficulty || batchDiff || "";
-                        questionBank.push({ stage, grade, topic, q: item.q, opts: item.opts, ans: item.ans, exp: item.exp || "", difficulty: qDiff, paragraphId: item.paragraphId || "", active: true });
-                        addedCount++;
-                    }
-                });
-                saveState();
-                renderAdminQuestionsList();
-                document.getElementById('direct-batch-input').value = "";
-                alert(`تمت معالجة وإضافة (${addedCount}) سؤالاً للموضوع بنجاح!`);
-            } catch (e) {
-                alert("تعذر قراءة التنسيق. يرجى التأكد من أن الإدخال عبارة عن كائنات JSON سليمة ومفصولة بفواصل صحيحة.");
-            }
-        }
-
-        function exportQuestionsJson() {
-            if (questionBank.length === 0) { alert("لا توجد أسئلة لتصديرها!"); return; }
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(questionBank, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `question_bank_${Date.now()}.json`);
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
-        }
-
-        function renderAdminQuestionsList() {
-            const container = document.getElementById('admin-questions-list');
-            if(!container) return;
-            container.innerHTML = '';
-            const masterCb = document.getElementById('select-all-q-checkbox');
-            if (masterCb) masterCb.checked = false;
-
-            const fStage = document.getElementById('filter-q-stage').value;
-            const fGrade = document.getElementById('filter-q-grade').value;
-            const fTopic = document.getElementById('filter-q-topic').value;
-
-            const displayedQuestions = questionBank.map((q, idx) => ({ ...q, originalIndex: idx })).filter(q => {
-                if (fStage && q.stage !== fStage) return false;
-                if (fGrade && q.grade !== fGrade) return false;
-                if (fTopic && q.topic !== fTopic) return false;
-                return true;
-            });
-
-            if (displayedQuestions.length === 0) {
-                container.innerHTML = `<div class="p-4 text-center text-slate-500 text-xs">لا توجد أسئلة مطابقة للتصفية المحددة.</div>`;
-                return;
-            }
-
-            displayedQuestions.forEach((q, displayIdx) => {
-                const idx = q.originalIndex;
-                const isActive = q.active !== false;
-                const diffBadge = q.difficulty ? `<span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded text-[10px]">${q.difficulty}</span>` : '';
-                
-                const paraObj = paragraphs.find(p => p.id === q.paragraphId);
-                const paraBadge = paraObj ? `<span class="bg-indigo-100 text-indigo-800 px-1.5 py-0.5 rounded text-[10px]">فقرة: ${paraObj.name}</span>` : '';
-
-                const item = document.createElement('div');
-                item.className = "bg-slate-50 p-3 rounded-xl border flex justify-between items-center gap-3";
-                item.innerHTML = `
-                    <div class="flex items-center gap-2.5 font-bold text-slate-800 text-xs overflow-hidden">
-                        <input type="checkbox" data-q-idx="${idx}" class="q-checkbox w-4 h-4 text-sky-600 rounded shrink-0 cursor-pointer">
-                        <button type="button" onclick="toggleQuestionVisibility(${idx})" class="px-2 py-0.5 rounded text-[10px] font-extrabold cursor-pointer shrink-0 ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-                            ${isActive ? 'مفعل' : 'مخفي'}
-                        </button>
-                        <span class="text-sky-600 font-extrabold shrink-0">#${displayIdx + 1}</span>
-                        <span class="bg-sky-100 text-sky-800 px-2 py-0.5 rounded text-[10px]">${q.stage} - ${q.grade} - ${q.topic || 'عام'}</span>
-                        ${diffBadge}
-                        ${paraBadge}
-                        <span class="${isActive ? 'text-slate-800' : 'text-slate-400 line-through'} truncate">${q.q}</span>
-                    </div>
-                    <div class="flex gap-1.5 shrink-0 items-center">
-                        <button type="button" onclick="previewQuestionItem(${idx})" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer" title="معاينة السؤال"><i class="fa-solid fa-eye"></i></button>
-                        <button type="button" onclick="moveQuestion(${idx}, -1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
-                        <button type="button" onclick="moveQuestion(${idx}, 1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
-                        <button type="button" onclick="duplicateQuestion(${idx})" class="bg-indigo-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer" title="تكرار"><i class="fa-solid fa-copy"></i></button>
-                        <button type="button" onclick="openQuestionModalForEdit(${idx})" class="bg-amber-500 text-white px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer" title="تعديل"><i class="fa-solid fa-pen"></i></button>
-                        <button type="button" onclick="deleteQuestion(${idx})" class="bg-rose-500 text-white px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer" title="حذف"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function previewQuestionItem(idx) {
-            const q = questionBank[idx];
-            if(!q) return;
-            let optsHtml = '<div class="space-y-2 mt-3">';
-            q.opts.forEach(opt => {
-                let isAns = opt === q.ans;
-                optsHtml += `<div class="p-3 rounded-2xl border text-sm flex items-center justify-between ${isAns ? 'bg-emerald-100 border-emerald-500 text-emerald-950 font-black' : 'bg-white border-slate-200 text-slate-700'}"><span>${formatText(opt)}</span>${isAns ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}</div>`;
-            });
-            optsHtml += '</div>';
-
-            const container = document.getElementById('preview-q-body');
-            container.innerHTML = `
-                <div class="space-y-3">
-                    <p class="font-black text-sky-950 text-lg leading-relaxed">${formatText(q.q)}</p>
-                    ${optsHtml}
-                    ${q.exp ? `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-sm mt-3"><strong>التعليل:</strong> ${formatText(q.exp)}</div>` : ''}
-                </div>
-            `;
-            document.getElementById('modal-preview-q').classList.remove('hidden');
-        }
-
-        function toggleQuestionVisibility(idx) {
-            questionBank[idx].active = questionBank[idx].active === false ? true : false;
-            saveState();
-            renderAdminQuestionsList();
-        }
-
-        function moveQuestion(idx, direction) {
-            const newIdx = idx + direction;
-            if (newIdx < 0 || newIdx >= questionBank.length) return;
-            const moved = questionBank[idx];
-            questionBank.splice(idx, 1);
-            questionBank.splice(newIdx, 0, moved);
-            saveState();
-            renderAdminQuestionsList();
-        }
-
-        function toggleSelectAllQuestions(masterCheckbox) {
-            document.querySelectorAll('.q-checkbox').forEach(cb => cb.checked = masterCheckbox.checked);
-        }
-
-        function deleteSelectedQuestions() {
-            const checkboxes = document.querySelectorAll('.q-checkbox:checked');
-            if (checkboxes.length === 0) { alert("يرجى تحديد سؤال واحد على الأقل للحذف!"); return; }
-            if (confirm(`هل أنت متأكد من حذف (${checkboxes.length}) سؤالاً محدداً؟`)) {
-                const indicesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.getAttribute('data-q-idx'))).sort((a, b) => b - a);
-                indicesToDelete.forEach(idx => questionBank.splice(idx, 1));
-                saveState();
-                renderAdminQuestionsList();
-                alert("تم حذف الأسئلة المحددة بنجاح!");
-            }
-        }
-
-        function populateQuestionParagraphsSelect(selectedParaId = "") {
-            const selectEl = document.getElementById('edit-q-paragraph-select');
-            if(!selectEl) return;
-            selectEl.innerHTML = '<option value="">بدون فقرة (سؤال مستقل)</option>';
-            paragraphs.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p.id;
-                opt.textContent = p.name || p.title || p.id;
-                if (p.id === selectedParaId) opt.selected = true;
-                selectEl.appendChild(opt);
-            });
-        }
-
-        function openQuestionModalForAdd() {
-            const fStage = document.getElementById('filter-q-stage').value;
-            const fGrade = document.getElementById('filter-q-grade').value;
-            const fTopic = document.getElementById('filter-q-topic').value;
-
-            if (!fStage || !fGrade || !fTopic) {
-                alert("يرجى اختيار (المرحلة، الصف، والموضوع) من الفلتر بالأعلى قبل إضافة سؤال فردي جديد.");
-                return;
-            }
-
-            document.getElementById('edit-q-index').value = "-1";
-            document.getElementById('question-modal-title').textContent = `إضافة سؤال جديد لـ (${fTopic})`;
-            document.getElementById('edit-q-active').checked = true;
-            document.getElementById('edit-q-difficulty').value = "";
-            populateQuestionParagraphsSelect("");
-            document.getElementById('edit-q-text').value = "";
-            for(let i=0; i<4; i++) document.getElementById(`edit-opt-${i}`).value = "";
-            document.getElementById('edit-q-ans').value = "";
-            document.getElementById('edit-q-exp').value = "";
-            document.getElementById('modal-question-edit').classList.remove('hidden');
-        }
-
-        function openQuestionModalForEdit(idx) {
-            const q = questionBank[idx];
-            document.getElementById('edit-q-index').value = idx;
-            document.getElementById('question-modal-title').textContent = "تعديل السؤال";
-            document.getElementById('edit-q-active').checked = q.active !== false;
-            document.getElementById('edit-q-difficulty').value = q.difficulty || "";
-            populateQuestionParagraphsSelect(q.paragraphId || "");
-            document.getElementById('edit-q-text').value = q.q || "";
-            for(let i=0; i<4; i++) document.getElementById(`edit-opt-${i}`).value = q.opts[i] || "";
-            document.getElementById('edit-q-ans').value = q.ans || "";
-            document.getElementById('edit-q-exp').value = q.exp || "";
-            document.getElementById('modal-question-edit').classList.remove('hidden');
-        }
-
-        function closeQuestionModal() { document.getElementById('modal-question-edit').classList.add('hidden'); }
-        function saveQuestionFromModal() {
-            const idx = parseInt(document.getElementById('edit-q-index').value);
-            const fStage = document.getElementById('filter-q-stage').value;
-            const fGrade = document.getElementById('filter-q-grade').value;
-            const fTopic = document.getElementById('filter-q-topic').value;
-            const active = document.getElementById('edit-q-active').checked;
-            const difficulty = document.getElementById('edit-q-difficulty').value;
-            const paragraphId = document.getElementById('edit-q-paragraph-select').value;
-            const qText = document.getElementById('edit-q-text').value.trim();
-            const opts = [0,1,2,3].map(i => document.getElementById(`edit-opt-${i}`).value.trim());
-            const ans = document.getElementById('edit-q-ans').value.trim();
-            const exp = document.getElementById('edit-q-exp').value.trim();
-
-            if (!qText || opts.some(o => !o) || !ans) { alert("يرجى إكمال بيانات السؤال."); return; }
-            
-            if (idx >= 0) {
-                questionBank[idx] = { ...questionBank[idx], active, difficulty, paragraphId, q: qText, opts, ans, exp };
-            } else {
-                questionBank.push({ stage: fStage, grade: fGrade, topic: fTopic, active, difficulty, paragraphId, q: qText, opts, ans, exp });
-            }
-
-            saveState();
-            renderAdminQuestionsList();
-            closeQuestionModal();
-        }
-        function duplicateQuestion(idx) {
-            const q = questionBank[idx];
-            if (!q) return;
-            questionBank.push({ ...q, q: q.q + " (نسخة)" });
-            saveState();
-            renderAdminQuestionsList();
-        }
-        function deleteQuestion(idx) { questionBank.splice(idx, 1); saveState(); renderAdminQuestionsList(); }
-
-        function renderAdminParagraphsList() {
-            const container = document.getElementById('admin-paragraphs-list');
-            if(!container) return;
-            container.innerHTML = '';
-            if (paragraphs.length === 0) {
-                container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد فقرات مضافة.</p>';
-                return;
-            }
-            paragraphs.forEach((p, idx) => {
-                const isActive = p.active !== false;
-                let linkedQDetails = questionBank
-                    .map((q, qIdx) => q.paragraphId === p.id ? `س${qIdx + 1} (${q.q.substring(0, 20)}...)` : null)
-                    .filter(Boolean)
-                    .join(' | ');
-                let linkedBadge = linkedQDetails ? `<span class="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded text-[11px] font-bold border border-emerald-200 block mt-1.5">الأسئلة المرتبطة: ${linkedQDetails}</span>` : `<span class="text-slate-400 text-[11px] block mt-1.5">لا توجد أسئلة مرتبطة</span>`;
-
-                const item = document.createElement('div');
-                item.className = "bg-slate-50 p-4 rounded-xl border flex justify-between items-center text-xs gap-3";
-                item.innerHTML = `
-                    <div class="space-y-1 flex-grow">
-                        <div class="flex items-center gap-2">
-                            <button type="button" onclick="toggleParagraphVisibility(${idx})" class="px-2 py-0.5 rounded text-[10px] font-extrabold cursor-pointer shrink-0 ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-                                ${isActive ? 'مفعل' : 'مخفي'}
-                            </button>
-                            <strong>#${idx+1}</strong> <span class="font-bold ${isActive ? 'text-sky-900' : 'text-slate-400 line-through'} text-sm ml-2">${p.name}</span>
-                        </div>
-                        <div class="text-slate-600 font-semibold italic">"${p.text.substring(0, 60)}..."</div>
-                        <div>${linkedBadge}</div>
-                    </div>
-                    <div class="flex gap-1.5 shrink-0 items-center">
-                        <button type="button" onclick="previewParagraphItem('${p.id}')" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2.5 py-1 rounded cursor-pointer font-bold" title="معاينة الفقرة"><i class="fa-solid fa-eye"></i></button>
-                        <button type="button" onclick="moveParagraph(${idx}, -1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
-                        <button type="button" onclick="moveParagraph(${idx}, 1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
-                        <button type="button" onclick="duplicateParagraph('${p.id}')" class="bg-indigo-600 text-white px-2.5 py-1 rounded cursor-pointer" title="تكرار"><i class="fa-solid fa-copy"></i></button>
-                        <button type="button" onclick="openParagraphModalForEdit('${p.id}')" class="bg-amber-500 text-white px-2.5 py-1 rounded cursor-pointer" title="تعديل"><i class="fa-solid fa-pen"></i></button>
-                        <button type="button" onclick="deleteParagraph('${p.id}')" class="bg-rose-500 text-white px-2.5 py-1 rounded cursor-pointer" title="حذف"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function previewParagraphItem(paraId) {
-            const p = paragraphs.find(item => item.id === paraId);
-            if(!p) return;
-            let imgHtml = p.img ? `<div class="my-2 text-center"><img src="${p.img}" alt="صورة الفقرة" class="max-h-48 rounded-xl mx-auto object-contain border" onerror="this.style.display='none';"></div>` : '';
-
-            const container = document.getElementById('preview-para-body');
-            container.innerHTML = `
-                <div class="bg-amber-50/70 p-4 rounded-2xl border-2 border-amber-200 space-y-2 text-right">
-                    <div class="flex items-center gap-2 text-amber-900 border-b border-amber-200/60 pb-1.5 font-black">
-                        <i class="fa-solid fa-book-open text-amber-600"></i>
-                        <span>${formatText(p.title || "اقْرَأْ ثُمَّ أَجِبْ:")}</span>
-                    </div>
-                    ${imgHtml}
-                    <p class="whitespace-pre-line text-justify text-base font-semibold text-slate-800">${formatText(p.text)}</p>
-                </div>
-            `;
-            document.getElementById('modal-preview-para').classList.remove('hidden');
-        }
-
-        function toggleParagraphVisibility(idx) {
-            paragraphs[idx].active = paragraphs[idx].active === false ? true : false;
-            saveState();
-            renderAdminParagraphsList();
-        }
-
-        function moveParagraph(idx, direction) {
-            const newIdx = idx + direction;
-            if (newIdx < 0 || newIdx >= paragraphs.length) return;
-            const moved = paragraphs[idx];
-            paragraphs.splice(idx, 1);
-            paragraphs.splice(newIdx, 0, moved);
-            saveState();
-            renderAdminParagraphsList();
-        }
-
-        function openParagraphModalForAdd() {
-            const newId = "para_" + Date.now();
-            document.getElementById('edit-para-id').value = newId;
-            document.getElementById('para-modal-title').textContent = "إضافة فقرة جديدة";
-            document.getElementById('edit-para-active').checked = true;
-            document.getElementById('edit-para-name').value = "";
-            document.getElementById('edit-para-title').value = "اقْرَأْ ثُمَّ أَجِبْ:";
-            document.getElementById('edit-para-img').value = "";
-            document.getElementById('edit-para-text').value = "";
-            
-            populateParaStagesFilter();
-            document.getElementById('para-questions-numbers-grid').innerHTML = '<span class="text-slate-400 text-xs">يرجى اختيار الموضوع من الفلاتر بالأعلى لعرض أرقام الأسئلة.</span>';
-            document.getElementById('modal-paragraph-edit').classList.remove('hidden');
-        }
-
-        function openParagraphModalForEdit(paraId) {
-            const para = paragraphs.find(p => p.id === paraId);
-            if (!para) return;
-            document.getElementById('edit-para-id').value = para.id;
-            document.getElementById('para-modal-title').textContent = "تعديل الفقرة";
-            document.getElementById('edit-para-active').checked = para.active !== false;
-            document.getElementById('edit-para-name').value = para.name || "";
-            document.getElementById('edit-para-title').value = para.title || "";
-            document.getElementById('edit-para-img').value = para.img || "";
-            document.getElementById('edit-para-text').value = para.text || "";
-            
-            populateParaStagesFilter();
-            
-            const linkedQ = questionBank.find(q => q.paragraphId === paraId);
-            if (linkedQ) {
-                document.getElementById('para-f-stage').value = linkedQ.stage || "";
-                populateParaGradesFilter();
-                document.getElementById('para-f-grade').value = linkedQ.grade || "";
-                populateParaTopicsFilter();
-                document.getElementById('para-f-topic').value = linkedQ.topic || "";
-            } else {
-                const firstQ = questionBank[0];
-                if (firstQ) {
-                    document.getElementById('para-f-stage').value = firstQ.stage || "";
-                    populateParaGradesFilter();
-                    document.getElementById('para-f-grade').value = firstQ.grade || "";
-                    populateParaTopicsFilter();
-                    document.getElementById('para-f-topic').value = firstQ.topic || "";
-                }
-            }
-            renderParaQuestionsListFiltered();
-            document.getElementById('modal-paragraph-edit').classList.remove('hidden');
-        }
-
-        function populateParaStagesFilter() {
-            const sSel = document.getElementById('para-f-stage');
-            if(!sSel) return;
-            sSel.innerHTML = '<option value="">المرحلة</option>';
+            stageSel.innerHTML = '<option value="">كل المراحل الدراسية</option>';
             Object.keys(stagesData).forEach(st => {
-                const grades = stagesData[st] || [];
-                const hasActiveGrade = grades.some(grade => gradeStatus[`${st}_${grade}`] !== false);
-                if (hasActiveGrade) {
-                    let opt = document.createElement('option');
-                    opt.value = st; opt.textContent = st;
-                    sSel.appendChild(opt);
-                }
+                let opt = document.createElement('option');
+                opt.value = st; opt.textContent = st;
+                stageSel.appendChild(opt);
             });
-            populateParaGradesFilter();
+            filterRecordsByStage();
         }
 
-        function populateParaGradesFilter() {
-            const st = document.getElementById('para-f-stage').value;
-            const gSel = document.getElementById('para-f-grade');
+        function filterRecordsByStage() {
+            const st = document.getElementById('filter-rec-stage').value;
+            const gSel = document.getElementById('filter-rec-grade');
             if(!gSel) return;
-            gSel.innerHTML = '<option value="">الصف</option>';
-            if(stagesData[st]) {
+            gSel.innerHTML = '<option value="">كل الصفوف الدراسية</option>';
+            if (st && stagesData[st]) {
                 stagesData[st].forEach(gr => {
-                    const key = `${st}_${gr}`;
-                    if (gradeStatus[key] !== false) {
-                        let opt = document.createElement('option');
-                        opt.value = gr; opt.textContent = gr;
-                        gSel.appendChild(opt);
-                    }
+                    let opt = document.createElement('option');
+                    opt.value = gr; opt.textContent = gr;
+                    gSel.appendChild(opt);
                 });
             }
-            populateParaTopicsFilter();
+            filterRecordsByGrade();
         }
 
-        function populateParaTopicsFilter() {
-            const st = document.getElementById('para-f-stage').value;
-            const gr = document.getElementById('para-f-grade').value;
-            const tSel = document.getElementById('para-f-topic');
+        function filterRecordsByGrade() {
+            const st = document.getElementById('filter-rec-stage').value;
+            const gr = document.getElementById('filter-rec-grade').value;
+            const tSel = document.getElementById('filter-rec-topic');
             if(!tSel) return;
-            tSel.innerHTML = '<option value="">اختر الموضوع أولاً</option>';
-
-            const filtered = topicsData.filter(t => {
-                if (t.targetGrades) return t.targetGrades.some(tg => (st === "" || tg.stage === st) && (gr === "" || tg.grade === gr));
+            tSel.innerHTML = '<option value="">كل الموضوعات</option>';
+            
+            const filteredTopics = topicsData.filter(t => {
+                if (t.targetGrades) {
+                    return t.targetGrades.some(tg => (st === "" || tg.stage === st) && (gr === "" || tg.grade === gr));
+                }
                 return false;
             });
 
-            filtered.forEach(t => {
+            filteredTopics.forEach(t => {
                 let opt = document.createElement('option');
                 opt.value = t.topic; opt.textContent = t.topic;
                 tSel.appendChild(opt);
             });
-            renderParaQuestionsListFiltered();
+            renderAdminRecordsTable();
         }
 
-        function renderParaQuestionsListFiltered() {
-            const paraId = document.getElementById('edit-para-id').value;
-            const container = document.getElementById('para-questions-numbers-grid');
-            if(!container) return;
-            container.innerHTML = '';
+        function renderAdminRecordsTable() {
+            const tbody = document.getElementById('admin-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
 
-            const st = document.getElementById('para-f-stage') ? document.getElementById('para-f-stage').value : "";
-            const gr = document.getElementById('para-f-grade') ? document.getElementById('para-f-grade').value : "";
-            const tp = document.getElementById('para-f-topic') ? document.getElementById('para-f-topic').value : "";
+            const fStage = document.getElementById('filter-rec-stage') ? document.getElementById('filter-rec-stage').value : "";
+            const fGrade = document.getElementById('filter-rec-grade') ? document.getElementById('filter-rec-grade').value : "";
+            const fTopic = document.getElementById('filter-rec-topic') ? document.getElementById('filter-rec-topic').value : "";
 
-            if (!tp) {
-                container.innerHTML = '<span class="text-slate-400 text-xs">يرجى اختيار الموضوع من الفلاتر بالأعلى لعرض أرقام الأسئلة.</span>';
-                return;
-            }
-
-            const matchedQuestions = questionBank.map((q, idx) => ({ ...q, originalIndex: idx })).filter(q => {
-                if (st && q.stage !== st) return false;
-                if (gr && q.grade !== gr) return false;
-                if (tp && q.topic !== tp) return false;
+            const filteredRecords = studentRecords.filter(r => {
+                if (fStage && r.stage !== fStage) return false;
+                if (fGrade && r.grade !== fGrade) return false;
+                if (fTopic && r.topic !== fTopic) return false;
                 return true;
             });
 
-            if (matchedQuestions.length === 0) {
-                container.innerHTML = '<span class="text-slate-400 text-xs">لا توجد أسئلة مسجلة تحت هذا الموضوع.</span>';
-                return;
+            if (filteredRecords.length === 0) { 
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500">لا توجد سجلات مطابقة للخيارات المحددة.</td></tr>`; 
+                return; 
             }
 
-            matchedQuestions.forEach((q) => {
-                const realIdx = q.originalIndex;
-                const realQ = questionBank[realIdx];
-                const isLinked = realQ.paragraphId === paraId;
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `px-3.5 py-2 rounded-xl font-bold text-xs cursor-pointer transition flex items-center gap-1.5 ${isLinked ? 'bg-indigo-600 text-white shadow' : 'bg-white border text-slate-700 hover:bg-slate-50'}`;
-                btn.innerHTML = `<span>س${realIdx + 1} (${realQ.q.substring(0, 18)}...)</span> ${isLinked ? '<i class="fa-solid fa-check"></i>' : ''}`;
-                btn.onclick = () => { 
-                    realQ.paragraphId = isLinked ? "" : paraId; 
-                    saveState();
-                    renderParaQuestionsListFiltered();
-                    renderAdminParagraphsList();
-                };
-                container.appendChild(btn);
+            filteredRecords.forEach((r, idx) => {
+                let originalIdx = studentRecords.indexOf(r);
+                let detailBtn = r.breakdown ? 
+                    `<button type="button" onclick="viewAdminRecordDetails(${originalIdx})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs cursor-pointer shadow"><i class="fa-solid fa-list-check ml-1"></i> عرض التفصيل</button>` : 
+                    `<span class="text-slate-400 text-xs">غير متوفر</span>`;
+
+                let durationText = r.duration ? `<br><span class="text-amber-600 text-[11px]">المدة: ${r.duration}</span>` : '';
+
+                tbody.innerHTML += `
+                    <tr class="border-b text-xs">
+                        <td class="p-3">${idx+1}</td>
+                        <td class="p-3 font-bold">${r.name}</td>
+                        <td class="p-3">${r.stageGrade}</td>
+                        <td class="p-3 font-bold">${r.status}</td>
+                        <td class="p-3">${r.score}/${r.total}</td>
+                        <td class="p-3">${r.date} ${durationText}</td>
+                        <td class="p-3 font-mono">${r.answeredCount || '-'}</td>
+                        <td class="p-3 text-center">${detailBtn}</td>
+                    </tr>`;
             });
         }
+        function clearRecords() { studentRecords = []; saveState(); renderAdminRecordsTable(); }
 
-        function closeParagraphModal() { document.getElementById('modal-paragraph-edit').classList.add('hidden'); }
-        function saveParagraphFromModal() {
-            const paraId = document.getElementById('edit-para-id').value;
-            const active = document.getElementById('edit-para-active').checked;
-            const paraName = document.getElementById('edit-para-name').value.trim();
-            const paraTitle = document.getElementById('edit-para-title').value.trim();
-            const paraImg = document.getElementById('edit-para-img').value.trim();
-            const paraText = document.getElementById('edit-para-text').value.trim();
-
-            if (!paraName || !paraText) { alert("يرجى كتابة اسم الفقرة ونصها."); return; }
-
-            const existingIdx = paragraphs.findIndex(p => p.id === paraId);
-            const paraObj = { id: paraId, active, name: paraName, title: paraTitle || "اقْرَأْ ثُمَّ أَجِبْ:", text: paraText, img: paraImg };
-            if (existingIdx >= 0) paragraphs[existingIdx] = paraObj;
-            else paragraphs.push(paraObj);
-
-            saveState();
-            renderAdminParagraphsList();
-            closeParagraphModal();
-            alert("تم حفظ الفقرة بنجاح!");
-        }
-        function duplicateParagraph(id) {
-            const p = paragraphs.find(item => item.id === id);
-            if (!p) return;
-            paragraphs.push({ ...p, id: "para_" + Date.now(), name: p.name + " (نسخة)" });
-            saveState();
-            renderAdminParagraphsList();
-        }
-        function deleteParagraph(id) {
-            if (confirm("هل أنت متأكد من حذف هذه الفقرة؟")) {
-                paragraphs = paragraphs.filter(p => p.id !== id);
-                questionBank.forEach(q => { if (q.paragraphId === id) q.paragraphId = ""; });
-                saveState();
-                renderAdminParagraphsList();
-            }
-        }
-
-        function renderAdminQuickInfoList() {
-            const container = document.getElementById('admin-quickinfo-list');
-            if(!container) return;
-            container.innerHTML = '';
-            quickInfoList.forEach((qi, idx) => {
-                const isActive = qi.active !== false;
-                const item = document.createElement('div');
-                item.className = "bg-slate-50 p-3 rounded-xl border flex justify-between items-center text-xs";
-                item.innerHTML = `
-                    <div class="flex items-center gap-2 overflow-hidden">
-                        <button type="button" onclick="toggleQuickInfoVisibility(${idx})" class="px-2 py-0.5 rounded text-[10px] font-extrabold cursor-pointer shrink-0 ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-                            ${isActive ? 'مفعل' : 'مخفي'}
-                        </button>
-                        <span class="truncate"><strong>[المرحلة: ${qi.stage || 'الكل'} | الصف: ${qi.grade || 'الكل'} | الموضوع: ${qi.topic || 'عام'}]</strong> <br><span class="${isActive ? 'text-sky-900 font-bold' : 'text-slate-400 line-through'} text-sm">${qi.title}</span></span>
-                    </div>
-                    <div class="flex gap-1.5 shrink-0 items-center">
-                        <button type="button" onclick="previewQuickInfoItem(${idx})" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2.5 py-1 rounded text-xs font-bold cursor-pointer" title="معاينة المعلومة"><i class="fa-solid fa-eye"></i></button>
-                        <button type="button" onclick="moveQuickInfo(${idx}, -1)" class="bg-slate-200 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
-                        <button type="button" onclick="moveQuickInfo(${idx}, 1)" class="bg-slate-200 px-1.5 py-1 rounded cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
-                        <button type="button" onclick="duplicateQuickInfo(${idx})" class="bg-indigo-600 text-white px-2 py-1 rounded cursor-pointer" title="تكرار المعلومة"><i class="fa-solid fa-copy"></i></button>
-                        <button type="button" onclick="openQuickInfoModalForEdit(${idx})" class="bg-amber-500 text-white px-2.5 py-1 rounded"><i class="fa-solid fa-pen"></i></button>
-                        <button type="button" onclick="deleteQuickInfo(${idx})" class="bg-rose-500 text-white px-2.5 py-1 rounded"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function previewQuickInfoItem(idx) {
-            const qi = quickInfoList[idx];
-            if(!qi) return;
-            previewQiFromModal(qi);
-        }
-
-        function toggleQuickInfoVisibility(idx) {
-            quickInfoList[idx].active = quickInfoList[idx].active === false ? true : false;
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function moveQuickInfo(idx, direction) {
-            const newIdx = idx + direction;
-            if (newIdx < 0 || newIdx >= quickInfoList.length) return;
-            const moved = quickInfoList[idx];
-            quickInfoList.splice(idx, 1);
-            quickInfoList.splice(newIdx, 0, moved);
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function duplicateQuickInfo(idx) {
-            const qi = quickInfoList[idx];
-            if (!qi) return;
-            const duplicated = JSON.parse(JSON.stringify(qi));
-            duplicated.title = duplicated.title + " (نسخة)";
-            quickInfoList.push(duplicated);
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function openQuickInfoModalForAdd() {
-            populateQiStagesFilter('edit-qi-stage', 'edit-qi-grade');
-            document.getElementById('edit-qi-index').value = "-1";
-            document.getElementById('qi-modal-title').textContent = "إضافة معلومة سريعة";
-            document.getElementById('edit-qi-active').checked = true;
-            document.getElementById('edit-qi-title').value = '';
-            document.getElementById('edit-qi-img').value = '';
-            document.getElementById('qi-attachments-container').innerHTML = '';
-            document.getElementById('qi-items-container').innerHTML = '';
-            addQiAttachmentRow("اطّلع على", "");
-            addQiItemRow();
-            document.getElementById('modal-qi-edit').classList.remove('hidden');
-        }
-
-        function openQuickInfoModalForEdit(idx) {
-            const qi = quickInfoList[idx];
-            populateQiStagesFilter('edit-qi-stage', 'edit-qi-grade');
-            document.getElementById('edit-qi-stage').value = qi.stage || "";
-            populateGradesForQiModal();
-            document.getElementById('edit-qi-grade').value = qi.grade || "";
-            populateTopicsForQiModal();
-            document.getElementById('edit-qi-topic').value = qi.topic || "";
-
-            document.getElementById('edit-qi-index').value = idx;
-            document.getElementById('qi-modal-title').textContent = "تعديل المعلومة السريعة";
-            document.getElementById('edit-qi-active').checked = qi.active !== false;
-            document.getElementById('edit-qi-title').value = qi.title || "";
-            document.getElementById('edit-qi-img').value = qi.img || "";
-            
-            const attContainer = document.getElementById('qi-attachments-container');
-            attContainer.innerHTML = '';
-            if (qi.attachments && Array.isArray(qi.attachments) && qi.attachments.length > 0) {
-                qi.attachments.forEach(att => {
-                    addQiAttachmentRow(att.label || "اطّلع على", att.url || "", att.active !== false);
-                });
-            } else {
-                addQiAttachmentRow("اطّلع على", "");
-            }
-
-            const container = document.getElementById('qi-items-container');
-            container.innerHTML = '';
-            if (qi.items && Array.isArray(qi.items)) {
-                qi.items.forEach(it => {
-                    addQiItemRow(it.mainHeader || "", it.subSections || (it.subTitle || it.subText ? [{subTitle: it.subTitle||"", subText: it.subText||""}] : []), it.subImg || "", it.active !== false);
-                });
-            } else if (qi.text) {
-                addQiItemRow("", [{subTitle: "", subText: qi.text}], "", true);
-            } else {
-                addQiItemRow();
-            }
-
-            document.getElementById('modal-qi-edit').classList.remove('hidden');
-        }
-
-        function populateQiStagesFilter(stageId, gradeId) {
-            const stageSel = document.getElementById('edit-qi-stage');
-            if(!stageSel) return;
-            stageSel.innerHTML = '<option value="">اختر المرحلة</option>';
-            Object.keys(stagesData).forEach(st => {
-                const grades = stagesData[st] || [];
-                const hasActiveGrade = grades.some(grade => gradeStatus[`${st}_${grade}`] !== false);
-                if (hasActiveGrade) {
-                    let opt = document.createElement('option');
-                    opt.value = st; opt.textContent = st;
-                    stageSel.appendChild(opt);
-                }
-            });
-            populateGradesForQiModal();
-        }
-
-        function populateGradesForQiModal() {
-            const st = document.getElementById('edit-qi-stage').value;
-            const gSel = document.getElementById('edit-qi-grade');
-            if(!gSel) return;
-            gSel.innerHTML = '<option value="">اختر الصف</option>';
-            if(stagesData[st]) {
-                stagesData[st].forEach(gr => {
-                    const key = `${st}_${gr}`;
-                    if (gradeStatus[key] !== false) {
-                        let opt = document.createElement('option');
-                        opt.value = gr; opt.textContent = gr;
-                        gSel.appendChild(opt);
-                    }
-                });
-            }
-            populateTopicsForQiModal();
-        }
-
-        function populateTopicsForQiModal() {
-            const st = document.getElementById('edit-qi-stage').value;
-            const gr = document.getElementById('edit-qi-grade').value;
-            const tSel = document.getElementById('edit-qi-topic');
-            if(!tSel) return;
-            tSel.innerHTML = '<option value="">اختر الموضوع</option>';
-            const filtered = topicsData.filter(t => {
-                if (t.targetGrades) return t.targetGrades.some(tg => (st === "" || tg.stage === st) && (gr === "" || tg.grade === gr));
-                return false;
-            });
-            filtered.forEach(t => {
-                let opt = document.createElement('option');
-                opt.value = t.topic; opt.textContent = t.topic;
-                tSel.appendChild(opt);
-            });
-        }
-
-        function addQiAttachmentRow(label = "اطّلع على", url = "", active = true) {
-            const container = document.getElementById('qi-attachments-container');
-            if(!container) return;
-            const rowId = "att_row_" + Date.now() + "_" + Math.floor(Math.random()*1000);
-            const row = document.createElement('div');
-            row.id = rowId;
-            row.className = "flex items-center gap-2 bg-white p-2 rounded-xl border";
-            row.innerHTML = `
-                <label class="flex items-center gap-1 cursor-pointer text-[11px] font-bold text-slate-700 shrink-0">
-                    <input type="checkbox" class="att-active-cb w-4 h-4 text-emerald-600 rounded" ${active ? 'checked' : ''}> مفعل
-                </label>
-                <input type="text" placeholder="مسمى الزر (مثال: اطّلع على)" value="${label}" class="att-label w-1/3 p-1.5 rounded-lg border text-xs font-bold bg-white">
-                <input type="text" placeholder="رابط الملف (Google Drive أو موقع آخر)..." value="${url}" class="att-url w-full p-1.5 rounded-lg border text-xs dir-ltr text-left bg-white">
-                <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-600 hover:text-rose-800 px-2 text-sm cursor-pointer shrink-0"><i class="fa-solid fa-trash"></i></button>
-            `;
-            container.appendChild(row);
-        }
-
-        function addQiItemRow(mainHeader = "", subSections = [], subImg = "", itemActive = true) {
-            const container = document.getElementById('qi-items-container');
-            if(!container) return;
-            if (!Array.isArray(subSections) || subSections.length === 0) {
-                subSections = [{subTitle: "", subText: "", active: true}];
-            }
-            const rowId = "qi_row_" + Date.now() + "_" + Math.floor(Math.random()*1000);
-            const row = document.createElement('div');
-            row.id = rowId;
-            row.className = "bg-white p-4 rounded-2xl border space-y-3 relative shadow-sm";
-
-            let subSecsHtml = '';
-            subSections.forEach((sec, sIdx) => {
-                const subSecId = rowId + "_sec_" + sIdx;
-                const isSecActive = sec.active !== false;
-                subSecsHtml += `
-                    <div id="${subSecId}" class="sub-sec-block p-3 rounded-xl border bg-slate-50 space-y-2 relative">
-                        <div class="flex justify-between items-center gap-2">
-                            <div class="flex items-center gap-2 w-full">
-                                <label class="flex items-center gap-1 cursor-pointer text-[10px] font-bold text-slate-600 shrink-0">
-                                    <input type="checkbox" class="sec-active-cb w-3.5 h-3.5 text-emerald-600 rounded" ${isSecActive ? 'checked' : ''}> مفعل
-                                </label>
-                                <input type="text" placeholder="العنوان الفرعي الداخلي رقم (${sIdx + 1})" value="${sec.subTitle || ''}" class="qi-sub-title-val w-full p-1.5 rounded-lg border text-xs font-bold bg-white">
-                            </div>
-                            ${sIdx > 0 ? '<button type="button" onclick="this.closest(\'.sub-sec-block\').remove()" class="text-rose-500 hover:text-rose-700 px-1.5 text-xs cursor-pointer shrink-0"><i class="fa-solid fa-xmark"></i></button>' : ''}
-                        </div>
-                        <textarea rows="2" placeholder="محتوى أو تفاصيل هذا العنوان الفرعي..." class="qi-sub-text-val w-full p-2 rounded-lg border text-xs bg-white">${sec.subText || ''}</textarea>
-                    </div>
-                `;
-            });
-
-            row.innerHTML = `
-                <div class="flex justify-between items-center gap-2">
-                    <div class="flex items-center gap-2 w-full">
-                        <label class="flex items-center gap-1 cursor-pointer text-xs font-bold text-slate-700 shrink-0">
-                            <input type="checkbox" class="item-active-cb w-4 h-4 text-emerald-600 rounded" ${itemActive ? 'checked' : ''}> تفعيل البند الرئيسي
-                        </label>
-                        <input type="text" placeholder="العنوان الرئيسي لهذه المجموعة (اختياري)" value="${mainHeader}" class="qi-main-header w-full p-2 rounded-lg border text-xs font-black bg-amber-50/70 text-amber-950">
-                    </div>
-                    <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-600 hover:text-rose-800 px-2 text-sm cursor-pointer shrink-0"><i class="fa-solid fa-trash"></i></button>
-                </div>
-                <input type="text" placeholder="رابط صورة لهذا البند (اختياري)" value="${subImg}" class="qi-sub-img w-full p-1.5 rounded-lg border text-xs bg-white">
-                <div class="space-y-2 border-r-2 border-sky-500 pr-3 my-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[11px] font-extrabold text-sky-900">الأزواج (عنوان فرعي + محتواه مع إمكانية التفعيل/الإخفاء):</span>
-                        <button type="button" onclick="addSubSectionBlock('${rowId}')" class="bg-sky-600 text-white px-2.5 py-1 rounded text-[10px] cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة عنوان فرعي وتفاصيله</button>
-                    </div>
-                    <div class="qi-subsecs-container space-y-2">${subSecsHtml}</div>
-                </div>
-            `;
-            container.appendChild(row);
-        }
-
-        function addSubSectionBlock(rowId) {
-            const rowEl = document.getElementById(rowId);
-            if(!rowEl) return;
-            const container = rowEl.querySelector('.qi-subsecs-container');
-            const subSecId = rowId + "_sec_" + Date.now();
-            const block = document.createElement('div');
-            block.id = subSecId;
-            block.className = "sub-sec-block p-3 rounded-xl border bg-slate-50 space-y-2 relative";
-            block.innerHTML = `
-                <div class="flex justify-between items-center gap-2">
-                    <div class="flex items-center gap-2 w-full">
-                        <label class="flex items-center gap-1 cursor-pointer text-[10px] font-bold text-slate-600 shrink-0">
-                            <input type="checkbox" class="sec-active-cb w-3.5 h-3.5 text-emerald-600 rounded" checked> مفعل
-                        </label>
-                        <input type="text" placeholder="عنوان فرعي إضافي..." value="" class="qi-sub-title-val w-full p-1.5 rounded-lg border text-xs font-bold bg-white">
-                    </div>
-                    <button type="button" onclick="this.closest('.sub-sec-block').remove()" class="text-rose-500 hover:text-rose-700 px-1.5 text-xs cursor-pointer shrink-0"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <textarea rows="2" placeholder="محتوى أو تفاصيل هذا العنوان الفرعي..." class="qi-sub-text-val w-full p-2 rounded-lg border text-xs bg-white"></textarea>
-            `;
-            container.appendChild(block);
-        }
-
-        function closeQuickInfoModal() { document.getElementById('modal-qi-edit').classList.add('hidden'); }
-
-        function saveQuickInfoFromModal() {
-            const idx = parseInt(document.getElementById('edit-qi-index').value);
-            const active = document.getElementById('edit-qi-active').checked;
-            const stage = document.getElementById('edit-qi-stage').value;
-            const grade = document.getElementById('edit-qi-grade').value;
-            const topic = document.getElementById('edit-qi-topic').value;
-            const title = document.getElementById('edit-qi-title').value.trim();
-            const img = document.getElementById('edit-qi-img').value.trim();
-
-            const attRows = document.querySelectorAll('#qi-attachments-container > div');
-            let attachments = [];
-            attRows.forEach(r => {
-                const attActive = r.querySelector('.att-active-cb').checked;
-                const label = r.querySelector('.att-label').value.trim() || "اطّلع على";
-                const url = r.querySelector('.att-url').value.trim();
-                if (url) {
-                    attachments.push({ active: attActive, label, url });
-                }
-            });
-
-            const rows = document.querySelectorAll('#qi-items-container > div');
-            let items = [];
-            rows.forEach(r => {
-                const itemActive = r.querySelector('.item-active-cb').checked;
-                const mainHeader = r.querySelector('.qi-main-header').value.trim();
-                const subImg = r.querySelector('.qi-sub-img').value.trim();
-                let subSectionsArr = [];
-                r.querySelectorAll('.sub-sec-block').forEach(block => {
-                    const secActive = block.querySelector('.sec-active-cb').checked;
-                    const subTitle = block.querySelector('.qi-sub-title-val').value.trim();
-                    const subText = block.querySelector('.qi-sub-text-val').value.trim();
-                    if(subTitle || subText) {
-                        subSectionsArr.push({ active: secActive, subTitle, subText });
-                    }
-                });
-                if (mainHeader || subSectionsArr.length > 0) {
-                    items.push({ active: itemActive, mainHeader, subSections: subSectionsArr, subImg });
-                }
-            });
-
-            if (!title || (items.length === 0 && attachments.length === 0)) { alert("أدخل عنوان البطاقة ومرفقاً أو بنداً واحداً على الأقل."); return; }
-
-            const qiObj = { active, stage, grade, topic, title, img, attachments, items };
-            if (idx >= 0) quickInfoList[idx] = qiObj;
-            else quickInfoList.push(qiObj);
-
-            saveState();
-            renderAdminQuickInfoList();
-            closeQuickInfoModal();
-            alert("تم حفظ المعلومة السريعة بنجاح!");
-        }
-
-        function deleteQuickInfo(idx) { quickInfoList.splice(idx, 1); saveState(); renderAdminQuickInfoList(); }
-
+        // تفصيل إجابات الطالب للمعلم
         function viewAdminRecordDetails(recordIdx) {
             const rec = studentRecords[recordIdx];
             if (!rec || !rec.breakdown) {
@@ -3476,6 +2586,7 @@
                     <p><strong>اسم الطالب:</strong> ${rec.name}</p>
                     <p><strong>الدرس/القسم:</strong> ${rec.stageGrade}</p>
                     <p><strong>وقت الدخول:</strong> ${rec.date}</p>
+                    <p><strong>المدة المستغرقة:</strong> ${rec.duration || 'غير متوفر'}</p>
                     <p><strong>الأسئلة المجاب عنها:</strong> ${rec.answeredCount || 'غير متوفر'}</p>
                     <p><strong>النتيجة الإجمالية:</strong> ${rec.score} / ${rec.total} (${rec.pct}٪)</p>
                 </div>
@@ -3492,10 +2603,10 @@
                             <span>السؤال (${b.qIndex})</span>
                             ${badge}
                         </div>
-                        <p class="font-bold text-sky-950 text-sm">${formatText(b.qText)}</p>
-                        <p class="text-xs text-slate-600">إجابة الطالب: <strong class="${b.isCorrect ? 'text-emerald-700' : 'text-rose-600'}">${formatText(b.userAnswer)}</strong></p>
-                        ${!b.isCorrect ? `<p class="text-xs text-emerald-800">الإجابة الصحيحة: <strong>${formatText(b.correctAnswer)}</strong></p>` : ''}
-                        ${b.explanation ? `<p class="text-xs text-indigo-900 bg-indigo-50 p-2 rounded-lg mt-1"><strong>التعليل:</strong> ${formatText(b.explanation)}</p>` : ''}
+                        <p class="font-bold text-sky-950 text-sm">${formatText(b.qText, b.tashkeel)}</p>
+                        <p class="text-xs text-slate-600">إجابة الطالب: <strong class="${b.isCorrect ? 'text-emerald-700' : 'text-rose-600'}">${formatText(b.userAnswer, b.tashkeel)}</strong></p>
+                        ${!b.isCorrect ? `<p class="text-xs text-emerald-800">الإجابة الصحيحة: <strong>${formatText(b.correctAnswer, b.tashkeel)}</strong></p>` : ''}
+                        ${b.explanation ? `<p class="text-xs text-indigo-900 bg-indigo-50 p-2 rounded-lg mt-1"><strong>التعليل:</strong> ${formatText(b.explanation, b.tashkeel)}</p>` : ''}
                     </div>
                 `;
             });
@@ -3508,34 +2619,6 @@
 
             document.getElementById('modal-admin-record-details').classList.remove('hidden');
         }
-
-        function renderAdminRecordsTable() {
-            const tbody = document.getElementById('admin-tbody');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            if (studentRecords.length === 0) { 
-                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500">لا توجد سجلات.</td></tr>`; 
-                return; 
-            }
-            studentRecords.forEach((r, idx) => {
-                let detailBtn = r.breakdown ? 
-                    `<button type="button" onclick="viewAdminRecordDetails(${idx})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs cursor-pointer shadow"><i class="fa-solid fa-list-check ml-1"></i> عرض التفصيل</button>` : 
-                    `<span class="text-slate-400 text-xs">غير متوفر</span>`;
-
-                tbody.innerHTML += `
-                    <tr class="border-b text-xs">
-                        <td class="p-3">${idx+1}</td>
-                        <td class="p-3 font-bold">${r.name}</td>
-                        <td class="p-3">${r.stageGrade}</td>
-                        <td class="p-3 font-bold">${r.status}</td>
-                        <td class="p-3">${r.score}/${r.total}</td>
-                        <td class="p-3">${r.date}</td>
-                        <td class="p-3 font-mono">${r.answeredCount || '-'}</td>
-                        <td class="p-3 text-center">${detailBtn}</td>
-                    </tr>`;
-            });
-        }
-        function clearRecords() { studentRecords = []; saveState(); renderAdminRecordsTable(); }
 
         window.addEventListener('DOMContentLoaded', loadDataFromCloud);
     </script>
