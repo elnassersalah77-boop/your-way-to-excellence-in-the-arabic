@@ -96,26 +96,26 @@
     <style>
         body { font-family: 'IBM Plex Sans Arabic', sans-serif !important; }
         
-        /* الوضع المظلم الأسود النقي */
+        /* الوضع المظلم الأسود النقي بتباين عالي جداً ووضوح تام */
         body.dark-mode {
-            background-color: #090d16 !important;
-            color: #f1f5f9 !important;
+            background-color: #000000 !important;
+            color: #ffffff !important;
         }
         body.dark-mode .bg-white {
-            background-color: #111827 !important;
-            color: #f1f5f9 !important;
-            border-color: #1f2937 !important;
+            background-color: #0f172a !important;
+            color: #ffffff !important;
+            border-color: #1e293b !important;
         }
         body.dark-mode .bg-slate-100 {
-            background-color: #05070b !important;
+            background-color: #000000 !important;
         }
         body.dark-mode .bg-slate-50, 
         body.dark-mode .bg-sky-50, 
         body.dark-mode .bg-amber-50, 
         body.dark-mode .bg-indigo-50 {
-            background-color: #1f2937 !important;
-            color: #f1f5f9 !important;
-            border-color: #374151 !important;
+            background-color: #1e293b !important;
+            color: #ffffff !important;
+            border-color: #334155 !important;
         }
         body.dark-mode .text-slate-800, 
         body.dark-mode .text-slate-900, 
@@ -123,12 +123,12 @@
         body.dark-mode .text-slate-600, 
         body.dark-mode .text-sky-950,
         body.dark-mode .text-sky-900 {
-            color: #f8fafc !important;
+            color: #ffffff !important;
         }
         body.dark-mode input, body.dark-mode textarea, body.dark-mode select {
-            background-color: #0b0f17 !important;
-            color: #f8fafc !important;
-            border-color: #374151 !important;
+            background-color: #020617 !important;
+            color: #ffffff !important;
+            border-color: #334155 !important;
         }
 
         @keyframes modalSlideIn {
@@ -466,6 +466,10 @@
                             <label class="flex items-center gap-2 bg-white p-3 rounded-xl border border-sky-200 cursor-pointer shadow-sm">
                                 <input type="checkbox" id="admin-show-student-breakdown" class="w-5 h-5 text-sky-600 rounded">
                                 <span>إظهار تفصيل الإجابات الصحيحة والخاطئة للطالب في شاشة النتيجة</span>
+                            </label>
+                            <label class="flex items-center gap-2 bg-white p-3 rounded-xl border border-sky-200 cursor-pointer shadow-sm sm:col-span-2">
+                                <input type="checkbox" id="admin-enable-tashkeel" class="w-5 h-5 text-sky-600 rounded" checked>
+                                <span>تفعيل تشكيل الحروف في الأسئلة والخيارات والتعليلات للطلاب</span>
                             </label>
                         </div>
                         <div class="pt-2">
@@ -977,7 +981,7 @@
             </div>
             <div class="mt-4 flex justify-center gap-3">
                 <button type="button" onclick="window.print()" class="bg-sky-600 text-white font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">طباعة الشهادة</button>
-                <button type="button" onclick="closeCertModal()" class="bg-slate-200 text-slate-800 font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">إغلاق</button>
+                <button type="button" onclick="closeCertModal()" class="bg-slate-200 text-slate-800 font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1036,8 +1040,9 @@
             "adminPass": "12300123",
             "shuffleQuestions": false,
             "shuffleOptions": true,
-            "allowStudentExport": false,
+            "allowStudentExport": true,
             "showStudentBreakdown": true,
+            "enableTashkeel": true,
             "expiryDate": "",
             "stTitleSize": "text-3xl sm:text-5xl",
             "stTitleWeight": "font-black",
@@ -1069,6 +1074,16 @@
                 e.returnValue = '';
             }
         });
+
+        // دالة تصفية التشكيل بحسب خيار المعلم في لوحة الإدارة
+        function formatText(text) {
+            if (!text || typeof text !== 'string') return text;
+            if (appSettings.enableTashkeel === false) {
+                // إزالة الحركات والتشكيل العربي (الفتحة، الضمة، الكسرة، الشدة، السكون، التنوين)
+                return text.replace(/[\u0610-\u061A\u064B-\u065F\u0670]/g, '');
+            }
+            return text;
+        }
 
         async function loadDataFromCloud() {
             try {
@@ -1139,7 +1154,6 @@
             }
         }
 
-        // تصدير النتيجة الحالية للطالب بصيغة إكسل (CSV) من شاشة النتيجة (إذا أتاح المعلم ذلك)
         function exportStudentResultExcel() {
             if (!quizState.name || quizState.questions.length === 0) { alert("لا توجد نتيجة لتصديرها."); return; }
             let csvContent = "\uFEFF";
@@ -1152,10 +1166,10 @@
                 let userAns = quizState.answers[idx] || "لم يجب";
                 let isCorrect = userAns === q.ans;
                 let status = isCorrect ? "صحيح" : "خطأ/غير مجاب";
-                let qText = `"${q.q.replace(/"/g, '""')}"`;
-                let uAns = `"${userAns.replace(/"/g, '""')}"`;
-                let cAns = `"${q.ans.replace(/"/g, '""')}"`;
-                let exp = `"${(q.exp || "").replace(/"/g, '""')}"`;
+                let qText = `"${formatText(q.q).replace(/"/g, '""')}"`;
+                let uAns = `"${formatText(userAns).replace(/"/g, '""')}"`;
+                let cAns = `"${formatText(q.ans).replace(/"/g, '""')}"`;
+                let exp = `"${formatText(q.exp || "").replace(/"/g, '""')}"`;
 
                 csvContent += `${idx + 1},${qText},${uAns},${cAns},${status},${exp}\n`;
             });
@@ -1170,7 +1184,6 @@
             link.remove();
         }
 
-        // تصدير جميع نتائج الطلاب في لوحة الإدارة بملف Excel (CSV)
         function exportAllRecordsExcel() {
             if (studentRecords.length === 0) { alert("لا توجد سجلات نتائج لتصديرها!"); return; }
             let csvContent = "\uFEFF";
@@ -1192,7 +1205,6 @@
             link.remove();
         }
 
-        // تصدير تقرير طالب واحد فردي من لوحة التحكم بصيغة Excel (CSV)
         function exportSingleStudentReportExcel(rec) {
             if (!rec || !rec.breakdown) { alert("لا توجد تفاصيل لتصديرها."); return; }
             let csvContent = "\uFEFF";
@@ -1204,10 +1216,10 @@
 
             rec.breakdown.forEach((b) => {
                 let status = b.isCorrect ? "صحيح" : "خطأ/غير مجاب";
-                let qText = `"${b.qText.replace(/"/g, '""')}"`;
-                let uAns = `"${b.userAnswer.replace(/"/g, '""')}"`;
-                let cAns = `"${b.correctAnswer.replace(/"/g, '""')}"`;
-                let exp = `"${(b.explanation || "").replace(/"/g, '""')}"`;
+                let qText = `"${formatText(b.qText).replace(/"/g, '""')}"`;
+                let uAns = `"${formatText(b.userAnswer).replace(/"/g, '""')}"`;
+                let cAns = `"${formatText(b.correctAnswer).replace(/"/g, '""')}"`;
+                let exp = `"${formatText(b.explanation || "").replace(/"/g, '""')}"`;
 
                 csvContent += `${b.qIndex},${qText},${uAns},${cAns},${status},${exp}\n`;
             });
@@ -1751,7 +1763,7 @@
             const idx = quizState.currentIndex;
             const q = quizState.questions[idx];
             document.getElementById('display-q-idx').textContent = idx + 1;
-            document.getElementById('question-text').textContent = q.q;
+            document.getElementById('question-text').textContent = formatText(q.q);
 
             const readBox = document.getElementById('readtext-box-container');
             const imgContainer = document.getElementById('display-read-image-container');
@@ -1761,8 +1773,8 @@
             if (q.paragraphId) {
                 const para = paragraphs.find(p => p.id === q.paragraphId && p.active !== false);
                 if (para) {
-                    document.getElementById('display-read-text').textContent = para.text;
-                    if(titleEl) titleEl.textContent = para.title || "اقْرَأْ ثُمَّ أَجِبْ:";
+                    document.getElementById('display-read-text').textContent = formatText(para.text);
+                    if(titleEl) titleEl.textContent = formatText(para.title || "اقْرَأْ ثُمَّ أَجِبْ:");
                     if (para.img) {
                         imgEl.src = para.img;
                         imgContainer.classList.remove('hidden');
@@ -1781,7 +1793,7 @@
                 btn.type = 'button';
                 btn.className = `w-full text-right p-4 rounded-2xl font-bold transition flex items-center justify-between border-2 cursor-pointer text-lg ${isSelected ? 'bg-sky-50 border-sky-600 text-sky-950 shadow-md' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}`;
                 btn.onclick = () => { quizState.answers[idx] = opt; renderQuestion(); };
-                btn.innerHTML = `<span>${opt}</span><i class="fa-regular ${isSelected ? 'fa-circle-check text-sky-600' : 'fa-circle text-slate-300'}"></i>`;
+                btn.innerHTML = `<span>${formatText(opt)}</span><i class="fa-regular ${isSelected ? 'fa-circle-check text-sky-600' : 'fa-circle text-slate-300'}"></i>`;
                 optsContainer.appendChild(btn);
             });
 
@@ -1846,22 +1858,22 @@
                 
                 breakdownDetails.push({
                     qIndex: idx + 1,
-                    qText: q.q,
-                    userAnswer: userAns || "لم يجب",
-                    correctAnswer: q.ans,
+                    qText: formatText(q.q),
+                    userAnswer: formatText(userAns || "لم يجب"),
+                    correctAnswer: formatText(q.ans),
                     isCorrect: isCorrect,
-                    explanation: q.exp || ""
+                    explanation: formatText(q.exp || "")
                 });
 
                 if (isCorrect) {
                     score++;
                     correctCount++;
-                    correctListHtml += `<li><strong>س${idx+1}:</strong> ${q.q}</li>`;
+                    correctListHtml += `<li><strong>س${idx+1}:</strong> ${formatText(q.q)}</li>`;
                     markQuestionAsAnswered(quizState.topic, q.q);
                 } else {
                     wrongCount++;
-                    let reasonText = userAns ? `إجابتك: (${userAns})` : `لم تتم الإجابة`;
-                    wrongListHtml += `<li><strong>س${idx+1}:</strong> ${q.q} <span class="text-rose-600">(${reasonText} - الصحيحة: ${q.ans})</span></li>`;
+                    let reasonText = userAns ? `إجابتك: (${formatText(userAns)})` : `لم تتم الإجابة`;
+                    wrongListHtml += `<li><strong>س${idx+1}:</strong> ${formatText(q.q)} <span class="text-rose-600">(${reasonText} - الصحيحة: ${formatText(q.ans)})</span></li>`;
                 }
             });
 
@@ -1978,7 +1990,7 @@
                 qi.attachments.forEach(att => {
                     if (att.active !== false && att.url) {
                         let btnLabel = att.label || "اطّلع على";
-                        btns += `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2 text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${btnLabel}</a>`;
+                        btns += `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2 text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${formatText(btnLabel)}</a>`;
                     }
                 });
                 if (btns) {
@@ -1999,8 +2011,8 @@
                             if(sec.subTitle || sec.subText) {
                                 subDetailsBlocks += `
                                     <div class="mt-2.5 space-y-1.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
-                                        ${sec.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base flex items-center gap-1.5"><i class="fa-solid fa-angle-left text-sky-600 text-xs"></i> ${sec.subTitle}</h5>` : ''}
-                                        <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${sec.subText || ''}</p>
+                                        ${sec.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base flex items-center gap-1.5"><i class="fa-solid fa-angle-left text-sky-600 text-xs"></i> ${formatText(sec.subTitle)}</h5>` : ''}
+                                        <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${formatText(sec.subText || '')}</p>
                                     </div>
                                 `;
                             }
@@ -2008,25 +2020,25 @@
                     } else if (it.subTitle || it.subText) {
                         subDetailsBlocks += `
                             <div class="mt-2.5 space-y-1.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
-                                ${it.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base">${it.subTitle}</h5>` : ''}
-                                <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${it.subText || ''}</p>
+                                ${it.subTitle ? `<h5 class="font-black text-sky-950 text-sm sm:text-base">${formatText(it.subTitle)}</h5>` : ''}
+                                <p class="text-slate-700 text-xs sm:text-sm whitespace-pre-line leading-relaxed pr-2">${formatText(it.subText || '')}</p>
                             </div>
                         `;
                     }
 
                     itemsHtml += `
                         <div class="bg-white p-4 sm:p-5 rounded-2xl border space-y-3 shadow-sm">
-                            ${it.mainHeader ? `<h4 class="font-black text-amber-800 text-base sm:text-lg border-b-2 border-amber-200 pb-2 flex items-center gap-2"><i class="fa-solid fa-bookmark text-amber-600 text-sm"></i> ${it.mainHeader}</h4>` : ''}
+                            ${it.mainHeader ? `<h4 class="font-black text-amber-800 text-base sm:text-lg border-b-2 border-amber-200 pb-2 flex items-center gap-2"><i class="fa-solid fa-bookmark text-amber-600 text-sm"></i> ${formatText(it.mainHeader)}</h4>` : ''}
                             ${itemImgHtml}
                             <div class="space-y-2">${subDetailsBlocks}</div>
                         </div>
                     `;
                 });
             } else {
-                itemsHtml = `<p class="text-slate-700 text-sm whitespace-pre-line">${qi.text || ''}</p>`;
+                itemsHtml = `<p class="text-slate-700 text-sm whitespace-pre-line">${formatText(qi.text || '')}</p>`;
             }
 
-            return `<div class="bg-slate-100 p-6 rounded-3xl border space-y-4 shadow-md"><h3 class="font-black text-sky-950 text-xl sm:text-2xl border-b-4 border-amber-500 pb-2">${qi.title}</h3>${mainImgHtml}${attachmentsHtml}<div class="space-y-4">${itemsHtml}</div></div>`;
+            return `<div class="bg-slate-100 p-6 rounded-3xl border space-y-4 shadow-md"><h3 class="font-black text-sky-950 text-xl sm:text-2xl border-b-4 border-amber-500 pb-2">${formatText(qi.title)}</h3>${mainImgHtml}${attachmentsHtml}<div class="space-y-4">${itemsHtml}</div></div>`;
         }
 
         function previewQiFromModal(qiObj) {
@@ -2081,10 +2093,10 @@
                 <div class="bg-amber-50/70 p-4 rounded-2xl border-2 border-amber-200 space-y-2 text-right">
                     <div class="flex items-center gap-2 text-amber-900 border-b border-amber-200/60 pb-1.5 font-black">
                         <i class="fa-solid fa-book-open text-amber-600"></i>
-                        <span>${pTitle}</span>
+                        <span>${formatText(pTitle)}</span>
                     </div>
                     ${imgHtml}
-                    <p class="whitespace-pre-line text-justify text-base font-semibold text-slate-800">${pText}</p>
+                    <p class="whitespace-pre-line text-justify text-base font-semibold text-slate-800">${formatText(pText)}</p>
                 </div>
             `;
             document.getElementById('modal-preview-para').classList.remove('hidden');
@@ -2099,16 +2111,16 @@
             let optsHtml = '<div class="space-y-2 mt-3">';
             opts.forEach(opt => {
                 let isAns = opt === ans;
-                optsHtml += `<div class="p-3 rounded-2xl border text-sm flex items-center justify-between ${isAns ? 'bg-emerald-100 border-emerald-500 text-emerald-950 font-black' : 'bg-white border-slate-200 text-slate-700'}"><span>${opt}</span>${isAns ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}</div>`;
+                optsHtml += `<div class="p-3 rounded-2xl border text-sm flex items-center justify-between ${isAns ? 'bg-emerald-100 border-emerald-500 text-emerald-950 font-black' : 'bg-white border-slate-200 text-slate-700'}"><span>${formatText(opt)}</span>${isAns ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}</div>`;
             });
             optsHtml += '</div>';
 
             const container = document.getElementById('preview-q-body');
             container.innerHTML = `
                 <div class="space-y-3">
-                    <p class="font-black text-sky-950 text-lg leading-relaxed">${qText}</p>
+                    <p class="font-black text-sky-950 text-lg leading-relaxed">${formatText(qText)}</p>
                     ${optsHtml}
-                    ${exp ? `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-sm mt-3"><strong>التعليل:</strong> ${exp}</div>` : ''}
+                    ${exp ? `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-sm mt-3"><strong>التعليل:</strong> ${formatText(exp)}</div>` : ''}
                 </div>
             `;
             document.getElementById('modal-preview-q').classList.remove('hidden');
@@ -2134,7 +2146,7 @@
                         optStyle = "bg-rose-100 border-rose-500 text-rose-950 font-black";
                         optIcon = '<i class="fa-solid fa-xmark text-rose-600 mr-2 text-base"></i>';
                     }
-                    optsHtml += `<div class="p-3 rounded-2xl border text-sm sm:text-base flex items-center justify-between ${optStyle}"><span>${opt}</span>${optIcon}</div>`;
+                    optsHtml += `<div class="p-3 rounded-2xl border text-sm sm:text-base flex items-center justify-between ${optStyle}"><span>${formatText(opt)}</span>${optIcon}</div>`;
                 });
                 optsHtml += '</div>';
 
@@ -2144,12 +2156,12 @@
                             <span>السؤال رقم (${idx + 1})</span>
                             <span class="${isCorrect ? 'text-emerald-700' : 'text-rose-700'} text-base">${isCorrect ? 'إجابة صحيحة ✓' : 'إجابة خاطئة ✗'}</span>
                         </div>
-                        <p class="font-black text-sky-950 text-lg sm:text-xl leading-relaxed">${q.q}</p>
+                        <p class="font-black text-sky-950 text-lg sm:text-xl leading-relaxed">${formatText(q.q)}</p>
                         ${optsHtml}
                         <div class="text-sm sm:text-base font-bold space-y-1.5 pt-3 border-t border-slate-200/60 mt-2">
-                            <p class="text-slate-700">إجابتك: <span class="${isCorrect ? 'text-emerald-700' : 'text-rose-600'} font-black">${userAns || 'لم تتم الإجابة'}</span></p>
-                            ${!isCorrect ? `<p class="text-emerald-800">الإجابة الصحيحة: <span class="font-black">${q.ans}</span></p>` : ''}
-                            ${q.exp ? `<p class="text-indigo-950 bg-indigo-50/80 p-3.5 rounded-2xl mt-2 border border-indigo-200 text-sm sm:text-base"><strong>${appSettings.expLabel || 'التعليل'}:</strong> ${q.exp}</p>` : ''}
+                            <p class="text-slate-700">إجابتك: <span class="${isCorrect ? 'text-emerald-700' : 'text-rose-600'} font-black">${formatText(userAns || 'لم تتم الإجابة')}</span></p>
+                            ${!isCorrect ? `<p class="text-emerald-800">الإجابة الصحيحة: <span class="font-black">${formatText(q.ans)}</span></p>` : ''}
+                            ${q.exp ? `<p class="text-indigo-950 bg-indigo-50/80 p-3.5 rounded-2xl mt-2 border border-indigo-200 text-sm sm:text-base"><strong>${appSettings.expLabel || 'التعليل'}:</strong> ${formatText(q.exp)}</p>` : ''}
                         </div>
                     </div>
                 `;
@@ -2202,6 +2214,7 @@
             document.getElementById('admin-shuffle-options').checked = !!appSettings.shuffleOptions;
             document.getElementById('admin-allow-student-export').checked = !!appSettings.allowStudentExport;
             document.getElementById('admin-show-student-breakdown').checked = appSettings.showStudentBreakdown !== false;
+            document.getElementById('admin-enable-tashkeel').checked = appSettings.enableTashkeel !== false;
             document.getElementById('admin-expiry-input').value = appSettings.expiryDate || "";
             document.getElementById('admin-theme-select').value = appSettings.platformTheme || "default";
             document.getElementById('admin-font-select').value = appSettings.platformFont || "IBM Plex Sans Arabic";
@@ -2256,6 +2269,7 @@
             appSettings.shuffleOptions = document.getElementById('admin-shuffle-options').checked;
             appSettings.allowStudentExport = document.getElementById('admin-allow-student-export').checked;
             appSettings.showStudentBreakdown = document.getElementById('admin-show-student-breakdown').checked;
+            appSettings.enableTashkeel = document.getElementById('admin-enable-tashkeel').checked;
             appSettings.expiryDate = document.getElementById('admin-expiry-input').value;
             appSettings.platformTheme = document.getElementById('admin-theme-select').value;
             appSettings.platformFont = document.getElementById('admin-font-select').value;
@@ -2766,16 +2780,16 @@
             let optsHtml = '<div class="space-y-2 mt-3">';
             q.opts.forEach(opt => {
                 let isAns = opt === q.ans;
-                optsHtml += `<div class="p-3 rounded-2xl border text-sm flex items-center justify-between ${isAns ? 'bg-emerald-100 border-emerald-500 text-emerald-950 font-black' : 'bg-white border-slate-200 text-slate-700'}"><span>${opt}</span>${isAns ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}</div>`;
+                optsHtml += `<div class="p-3 rounded-2xl border text-sm flex items-center justify-between ${isAns ? 'bg-emerald-100 border-emerald-500 text-emerald-950 font-black' : 'bg-white border-slate-200 text-slate-700'}"><span>${formatText(opt)}</span>${isAns ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}</div>`;
             });
             optsHtml += '</div>';
 
             const container = document.getElementById('preview-q-body');
             container.innerHTML = `
                 <div class="space-y-3">
-                    <p class="font-black text-sky-950 text-lg leading-relaxed">${q.q}</p>
+                    <p class="font-black text-sky-950 text-lg leading-relaxed">${formatText(q.q)}</p>
                     ${optsHtml}
-                    ${q.exp ? `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-sm mt-3"><strong>التعليل:</strong> ${q.exp}</div>` : ''}
+                    ${q.exp ? `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-sm mt-3"><strong>التعليل:</strong> ${formatText(q.exp)}</div>` : ''}
                 </div>
             `;
             document.getElementById('modal-preview-q').classList.remove('hidden');
@@ -2949,10 +2963,10 @@
                 <div class="bg-amber-50/70 p-4 rounded-2xl border-2 border-amber-200 space-y-2 text-right">
                     <div class="flex items-center gap-2 text-amber-900 border-b border-amber-200/60 pb-1.5 font-black">
                         <i class="fa-solid fa-book-open text-amber-600"></i>
-                        <span>${p.title || "اقْرَأْ ثُمَّ أَجِبْ:"}</span>
+                        <span>${formatText(p.title || "اقْرَأْ ثُمَّ أَجِبْ:")}</span>
                     </div>
                     ${imgHtml}
-                    <p class="whitespace-pre-line text-justify text-base font-semibold text-slate-800">${p.text}</p>
+                    <p class="whitespace-pre-line text-justify text-base font-semibold text-slate-800">${formatText(p.text)}</p>
                 </div>
             `;
             document.getElementById('modal-preview-para').classList.remove('hidden');
@@ -3427,127 +3441,4 @@
             const grade = document.getElementById('edit-qi-grade').value;
             const topic = document.getElementById('edit-qi-topic').value;
             const title = document.getElementById('edit-qi-title').value.trim();
-            const img = document.getElementById('edit-qi-img').value.trim();
-
-            const attRows = document.querySelectorAll('#qi-attachments-container > div');
-            let attachments = [];
-            attRows.forEach(r => {
-                const attActive = r.querySelector('.att-active-cb').checked;
-                const label = r.querySelector('.att-label').value.trim() || "اطّلع على";
-                const url = r.querySelector('.att-url').value.trim();
-                if (url) {
-                    attachments.push({ active: attActive, label, url });
-                }
-            });
-
-            const rows = document.querySelectorAll('#qi-items-container > div');
-            let items = [];
-            rows.forEach(r => {
-                const itemActive = r.querySelector('.item-active-cb').checked;
-                const mainHeader = r.querySelector('.qi-main-header').value.trim();
-                const subImg = r.querySelector('.qi-sub-img').value.trim();
-                let subSectionsArr = [];
-                r.querySelectorAll('.sub-sec-block').forEach(block => {
-                    const secActive = block.querySelector('.sec-active-cb').checked;
-                    const subTitle = block.querySelector('.qi-sub-title-val').value.trim();
-                    const subText = block.querySelector('.qi-sub-text-val').value.trim();
-                    if(subTitle || subText) {
-                        subSectionsArr.push({ active: secActive, subTitle, subText });
-                    }
-                });
-                if (mainHeader || subSectionsArr.length > 0) {
-                    items.push({ active: itemActive, mainHeader, subSections: subSectionsArr, subImg });
-                }
-            });
-
-            if (!title || (items.length === 0 && attachments.length === 0)) { alert("أدخل عنوان البطاقة ومرفقاً أو بنداً واحداً على الأقل."); return; }
-
-            const qiObj = { active, stage, grade, topic, title, img, attachments, items };
-            if (idx >= 0) quickInfoList[idx] = qiObj;
-            else quickInfoList.push(qiObj);
-
-            saveState();
-            renderAdminQuickInfoList();
-            closeQuickInfoModal();
-            alert("تم حفظ المعلومة السريعة بنجاح!");
-        }
-
-        function deleteQuickInfo(idx) { quickInfoList.splice(idx, 1); saveState(); renderAdminQuickInfoList(); }
-
-        // عرض تفصيل إجابات الطالب للمعلم من جدول السجلات مع زر التصدير
-        function viewAdminRecordDetails(recordIdx) {
-            const rec = studentRecords[recordIdx];
-            if (!rec || !rec.breakdown) {
-                alert("لا توجد تفاصيل إجابات مسجلة لهذا الطالب.");
-                return;
-            }
-
-            let html = `<div class="space-y-3">
-                <div class="bg-sky-50 p-3 rounded-xl border text-xs font-bold text-sky-950">
-                    <p><strong>اسم الطالب:</strong> ${rec.name}</p>
-                    <p><strong>الدرس/القسم:</strong> ${rec.stageGrade}</p>
-                    <p><strong>وقت الدخول:</strong> ${rec.date}</p>
-                    <p><strong>الأسئلة المجاب عنها:</strong> ${rec.answeredCount || 'غير متوفر'}</p>
-                    <p><strong>النتيجة الإجمالية:</strong> ${rec.score} / ${rec.total} (${rec.pct}٪)</p>
-                </div>
-                <div class="space-y-2 max-h-[50vh] overflow-y-auto pr-1">`;
-
-            rec.breakdown.forEach(b => {
-                let badge = b.isCorrect ? 
-                    `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-[10px] font-bold">صحيح ✓</span>` : 
-                    `<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded text-[10px] font-bold">خطأ / لم يجب ✗</span>`;
-                
-                html += `
-                    <div class="p-3 rounded-xl border bg-slate-50 space-y-1">
-                        <div class="flex justify-between items-center text-xs font-black text-slate-700">
-                            <span>السؤال (${b.qIndex})</span>
-                            ${badge}
-                        </div>
-                        <p class="font-bold text-sky-950 text-sm">${b.qText}</p>
-                        <p class="text-xs text-slate-600">إجابة الطالب: <strong class="${b.isCorrect ? 'text-emerald-700' : 'text-rose-600'}">${b.userAnswer}</strong></p>
-                        ${!b.isCorrect ? `<p class="text-xs text-emerald-800">الإجابة الصحيحة: <strong>${b.correctAnswer}</strong></p>` : ''}
-                        ${b.explanation ? `<p class="text-xs text-indigo-900 bg-indigo-50 p-2 rounded-lg mt-1"><strong>التعليل:</strong> ${b.explanation}</p>` : ''}
-                    </div>
-                `;
-            });
-
-            html += `</div></div>`;
-            document.getElementById('admin-record-details-body').innerHTML = html;
-            
-            const exportExcelBtn = document.getElementById('admin-export-single-excel-btn');
-            exportExcelBtn.onclick = () => exportSingleStudentReportExcel(rec);
-
-            document.getElementById('modal-admin-record-details').classList.remove('hidden');
-        }
-
-        function renderAdminRecordsTable() {
-            const tbody = document.getElementById('admin-tbody');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            if (studentRecords.length === 0) { 
-                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500">لا توجد سجلات.</td></tr>`; 
-                return; 
-            }
-            studentRecords.forEach((r, idx) => {
-                let detailBtn = r.breakdown ? 
-                    `<button type="button" onclick="viewAdminRecordDetails(${idx})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs cursor-pointer shadow"><i class="fa-solid fa-list-check ml-1"></i> عرض التفصيل</button>` : 
-                    `<span class="text-slate-400 text-xs">غير متوفر</span>`;
-
-                tbody.innerHTML += `
-                    <tr class="border-b text-xs">
-                        <td class="p-3">${idx+1}</td>
-                        <td class="p-3 font-bold">${r.name}</td>
-                        <td class="p-3">${r.stageGrade}</td>
-                        <td class="p-3 font-bold">${r.status}</td>
-                        <td class="p-3">${r.score}/${r.total}</td>
-                        <td class="p-3">${r.date}</td>
-                        <td class="p-3 font-mono">${r.answeredCount || '-'}</td>
-                        <td class="p-3 text-center">${detailBtn}</td>
-                    </tr>`;
-            });
-        }
-        function clearRecords() { studentRecords = []; saveState(); renderAdminRecordsTable(); }
-
-        window.addEventListener('DOMContentLoaded', loadDataFromCloud);
-    </script>
-</body></html>
+            const img = document.getElementById('لا يمكنني مساعدتك، فأنا مجرّد نموذج لغوي ولا أستطيع فهم ذلك.
