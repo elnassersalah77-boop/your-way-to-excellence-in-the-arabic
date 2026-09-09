@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl"><head>
+<html lang="ar" dir="rtl">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="browser-tab-title">لَمَحَاتٌ وَقُطُوفٌ لُغَوِيَّةٌ | الْأُسْتَاذُ صَلَاحُ حَمْدِي يُوسُفُ</title>
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;🎓&lt;/text&gt;&lt;/svg&gt;">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -50,20 +51,13 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;family=Amiri:wght@400;700&amp;family=Cairo:wght@400;600;700;800;900&amp;family=Changa:wght@400;600;700&amp;family=El+Messiri:wght@400;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;family=Lateef&amp;family=Readex+Pro:wght@300;400;500;600;700&amp;family=Scheherazade+New:wght@400;700&amp;family=Tajawal:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800;900&family=Changa:wght@400;600;700&family=El+Messiri:wght@400;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Lateef&family=Readex+Pro:wght@300;400;500;600;700&family=Scheherazade+New:wght@400;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <!-- Canvas Confetti -->
-    <script>
-        window.confetti = window.confetti || function() {
-            if (navigator.onLine && window.confettiRemote) {
-                window.confettiRemote.apply(null, arguments);
-            }
-        };
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" onload="window.confettiRemote = window.confetti;"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- html2canvas Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    <!-- Firebase SDKs المدمجة والموحدة -->
+    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
@@ -81,7 +75,7 @@
 
         try {
             const app = initializeApp(firebaseConfig);
-            const analytics = getAnalytics(app);
+            getAnalytics(app);
             const db = getFirestore(app);
 
             window.firebaseDb = db;
@@ -90,7 +84,7 @@
             window.firebaseSetDoc = setDoc;
             window.firebaseLoadedSuccessfully = true;
         } catch (e) {
-            console.log("البيئة المحلية لا تدعم وحدات سحابية مباشرة، سيتم التشغيل محلياً:", e);
+            console.log("تشغيل محلي بدون سحابة مباشرة:", e);
             window.firebaseLoadedSuccessfully = false;
         }
     </script>
@@ -136,15 +130,10 @@
             from { opacity: 0; transform: translateY(25px) scale(0.97); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-        @keyframes modalSlideOut {
-            from { opacity: 1; transform: translateY(0) scale(1); }
-            to { opacity: 0; transform: translateY(25px) scale(0.97); }
-        }
         .modal-animate-in { animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .modal-animate-out { animation: modalSlideOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
-<body id="platform-body" class="min-h-screen text-slate-800 flex flex-col justify-between transition-colors duration-300 bg-slate-100" style="font-family: 'IBM Plex Sans Arabic', sans-serif;">
+<body id="platform-body" class="min-h-screen text-slate-800 flex flex-col justify-between transition-colors duration-300 bg-slate-100">
 
     <!-- Header -->
     <header class="bg-sky-900 text-white shadow-lg border-b-4 border-amber-500 sticky top-0 z-40">
@@ -181,7 +170,6 @@
 
         <!-- VIEW 1: START SCREEN -->
         <div id="view-start" class="bg-white rounded-3xl p-6 sm:p-12 shadow-xl border border-slate-200 text-center space-y-8 relative overflow-hidden">
-            
             <div class="flex justify-between items-center px-4">
                 <div id="start-mid-img-container-1" class="hidden"><img id="start-mid-img-1" src="" alt="صورة اليمين" class="max-h-24 rounded-2xl object-contain"></div>
                 <div id="start-mid-img-container-2" class="hidden"><img id="start-mid-img-2" src="" alt="صورة اليسار" class="max-h-24 rounded-2xl object-contain"></div>
@@ -334,6 +322,30 @@
 
     </main>
 
+    <!-- FLOATING MODAL: CERTIFICATE -->
+    <div id="modal-cert" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
+        <div class="bg-white rounded-3xl max-w-2xl w-full flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in text-center p-6 sm:p-8 space-y-6">
+            <div id="cert-printable-area" class="border-4 border-double border-amber-500 p-6 rounded-2xl bg-amber-50/40 space-y-4">
+                <div class="text-amber-600 text-4xl mb-2"><i class="fa-solid fa-award"></i></div>
+                <h3 class="text-2xl sm:text-3xl font-black text-sky-950">شَهَادَةُ تَقْدِيرٍ وَتَفَوُّقٍ</h3>
+                <p class="text-slate-700 font-bold text-base">يَسُرُّ مَنْصَةَ (طَرِيقُ التَّفَوُّقِ) مَنْحَ هَذِهِ الشَّهَادَةِ لِلطَّالِبِ / الطَّالِبَةِ:</p>
+                <div id="cert-student-name" class="text-2xl sm:text-3xl font-black text-amber-600 py-2 border-b-2 border-amber-300">---</div>
+                <p class="text-slate-800 text-sm sm:text-base leading-relaxed font-bold">
+                    لِاجْتِيَازِهِ اخْتِبَارَ مَادَّةِ اللُّغَةِ الْعَرَبِيَّةِ بِنَجَاحٍ وَتَفَوُّقٍ بِنِسْبَةِ:
+                    <span id="cert-score-pct" class="text-emerald-700 font-black text-xl">100%</span>
+                </p>
+                <div class="flex justify-between items-center pt-6 text-xs sm:text-sm font-black text-sky-950 border-t border-amber-200">
+                    <div>التَّارِيخُ: <span id="cert-date">--/--/----</span></div>
+                    <div>مُعَلِّمُ الْمَادَّةِ: <span id="cert-teacher-name">الْأُسْتَاذُ صَلَاحُ حَمْدِي يُوسُفُ</span></div>
+                </div>
+            </div>
+            <div class="flex justify-center gap-3">
+                <button type="button" onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-2.5 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-print ml-1"></i> طباعة</button>
+                <button type="button" onclick="document.getElementById('modal-cert').classList.add('hidden'); document.getElementById('modal-cert').classList.remove('flex');" class="bg-sky-700 hover:bg-sky-800 text-white font-extrabold px-6 py-2.5 rounded-xl cursor-pointer shadow">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
     <!-- FLOATING MODAL: QUICK INFO -->
     <div id="view-quick-info" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div id="modal-content-quick-info" class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
@@ -366,59 +378,67 @@
         </div>
     </div>
 
-    <!-- FLOATING MODAL: ADMIN DASHBOARD -->
-    <div id="view-admin" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 items-center justify-center p-4 hidden">
-        <div id="modal-content-admin" class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden modal-animate-in">
-            <div class="bg-sky-900 text-white p-4 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-xl text-amber-400"></i>
-                    <h2 class="text-xl font-black text-white">لَوْحَةُ إِدَارَةِ الِاخْتِبَارِ</h2>
+    <!-- FLOATING MODAL: ADMIN DASHBOARD (تم التحديث للمقاس الكبير والشامل الموحد) -->
+    <div id="view-admin" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
+        <div id="modal-content-admin" class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
+            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-sliders text-2xl text-amber-400"></i>
+                    <h2 class="text-xl sm:text-2xl font-black text-white">لَوْحَةُ إِدَارَةِ الِاخْتِبَارِ الشَّامِلَةِ</h2>
                 </div>
-                <button type="button" onclick="exitAdmin()" class="text-sky-200 hover:text-white text-xl cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="exitAdmin()" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-1"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div class="p-6 overflow-y-auto space-y-6 flex-grow">
-                <div class="flex flex-wrap gap-2 border-b border-slate-100 pb-3">
-                    <button type="button" id="tab-btn-settings" onclick="switchAdminTab('settings')" class="flex-1 min-w-[80px] py-2.5 rounded-xl font-bold text-xs transition bg-sky-600 text-white cursor-pointer shadow">الإعدادات</button>
-                    <button type="button" id="tab-btn-stages" onclick="switchAdminTab('stages')" class="flex-1 min-w-[80px] py-2.5 rounded-xl font-bold text-xs transition bg-slate-100 text-slate-700 cursor-pointer">المراحل والصفوف</button>
-                    <button type="button" id="tab-btn-topics" onclick="switchAdminTab('topics')" class="flex-1 min-w-[80px] py-2.5 rounded-xl font-bold text-xs transition bg-slate-100 text-slate-700 cursor-pointer">الموضوعات</button>
-                    <button type="button" id="tab-btn-questions" onclick="switchAdminTab('questions')" class="flex-1 min-w-[80px] py-2.5 rounded-xl font-bold text-xs transition bg-slate-100 text-slate-700 cursor-pointer">الأسئلة</button>
-                    <button type="button" id="tab-btn-paragraphs" onclick="switchAdminTab('paragraphs')" class="flex-1 min-w-[80px] py-2.5 rounded-xl font-bold text-xs transition bg-slate-100 text-slate-700 cursor-pointer">الفقرات</button>
-                    <button type="button" id="tab-btn-quickinfo" onclick="switchAdminTab('quickinfo')" class="flex-1 min-w-[80px] py-2.5 rounded-xl font-bold text-xs transition bg-slate-100 text-slate-700 cursor-pointer">المعلومة</button>
-                    <button type="button" id="tab-btn-records" onclick="switchAdminTab('records')" class="flex-1 min-w-[80px] py-2.5 rounded-xl font-bold text-xs transition bg-slate-100 text-slate-700 cursor-pointer">النتائج</button>
+            <div class="p-6 sm:p-8 overflow-y-auto space-y-6 flex-grow bg-slate-50 text-right">
+                <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+                    <button type="button" id="tab-btn-settings" onclick="switchAdminTab('settings')" class="flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-sky-600 text-white cursor-pointer shadow">الإعدادات</button>
+                    <button type="button" id="tab-btn-stages" onclick="switchAdminTab('stages')" class="flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border cursor-pointer">المراحل والصفوف</button>
+                    <button type="button" id="tab-btn-topics" onclick="switchAdminTab('topics')" class="flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border cursor-pointer">الموضوعات</button>
+                    <button type="button" id="tab-btn-questions" onclick="switchAdminTab('questions')" class="flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border cursor-pointer">الأسئلة</button>
+                    <button type="button" id="tab-btn-paragraphs" onclick="switchAdminTab('paragraphs')" class="flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border cursor-pointer">الفقرات</button>
+                    <button type="button" id="tab-btn-quickinfo" onclick="switchAdminTab('quickinfo')" class="flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border cursor-pointer">المعلومة</button>
+                    <button type="button" id="tab-btn-records" onclick="switchAdminTab('records')" class="flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border cursor-pointer">النتائج</button>
                 </div>
 
                 <!-- TAB 1: SETTINGS -->
                 <div id="admin-tab-settings" class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-bold">
-                        <div><label class="block mb-1 text-slate-700">اسم المعلم:</label><input type="text" id="admin-teacher-input" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
-                        <div><label class="block mb-1 text-slate-700">عنوان الاختبار:</label><input type="text" id="admin-exam-title-input" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
-                        <div><label class="block mb-1 text-slate-700">نص زر بدء الاختبار:</label><input type="text" id="admin-start-btn-input" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
-                        <div><label class="block mb-1 text-slate-700">نبذة عن مضمون الاختبار:</label><input type="text" id="admin-branch-input" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
-                        <div><label class="block mb-1 text-slate-700">عنوان تبويب المتصفح (Title):</label><input type="text" id="admin-pagetitle-input" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
-                        <div><label class="block mb-1 text-slate-700">مسمى زر/عنوان (المعلومة السريعة):</label><input type="text" id="admin-quickinfo-label-input" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
-                        <div><label class="block mb-1 text-slate-700">عدد الأسئلة للاختبار:</label><input type="number" id="admin-exam-count-input" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
-                        <div><label class="block mb-1 text-slate-700">زمن الاختبار بالدقائق:</label><input type="number" id="admin-exam-duration-input" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
+                        <div><label class="block mb-1 text-slate-700">اسم المعلم:</label><input type="text" id="admin-teacher-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
+                        <div><label class="block mb-1 text-slate-700">عنوان الاختبار:</label><input type="text" id="admin-exam-title-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
+                        <div><label class="block mb-1 text-slate-700">نص زر بدء الاختبار:</label><input type="text" id="admin-start-btn-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
+                        <div><label class="block mb-1 text-slate-700">نبذة عن مضمون الاختبار:</label><input type="text" id="admin-branch-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
+                        <div><label class="block mb-1 text-slate-700">عنوان تبويب المتصفح (Title):</label><input type="text" id="admin-pagetitle-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
+                        <div><label class="block mb-1 text-slate-700">مسمى زر/عنوان (المعلومة السريعة):</label><input type="text" id="admin-quickinfo-label-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
+                        <div><label class="block mb-1 text-slate-700">عدد الأسئلة للاختبار:</label><input type="number" id="admin-exam-count-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
+                        <div><label class="block mb-1 text-slate-700">زمن الاختبار بالدقائق:</label><input type="number" id="admin-exam-duration-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         <div><label class="block mb-1 text-slate-700">تاريخ ووقت غلق الاختبار (اختياري):</label><input type="datetime-local" id="admin-expiry-date-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
-                        <div><label class="block mb-1 text-slate-700">سنة حقوق النشر:</label><input type="text" id="admin-footer-year-input" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
+                        <div><label class="block mb-1 text-slate-700">سنة حقوق النشر:</label><input type="text" id="admin-footer-year-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         
-                        <!-- إعدادات اختيار الأسئلة حسب المستوى (اختياري) -->
-                        <div class="sm:col-span-2 bg-amber-50 p-4 rounded-2xl border-2 border-amber-200 space-y-3">
+                        <!-- إعدادات مستويات الصعوبة مع الوضعين المطورين -->
+                        <div class="sm:col-span-2 bg-amber-50 p-5 rounded-2xl border-2 border-amber-200 space-y-3">
                             <div class="flex items-center gap-2">
-                                <input type="checkbox" id="admin-use-difficulty-filter" class="w-5 h-5 text-amber-600 rounded" onchange="toggleDifficultySettingsView(this.checked)">
-                                <label for="admin-use-difficulty-filter" class="cursor-pointer font-black text-amber-950">تفعيل اختيار الأسئلة بناءً على مستويات الصعوبة (سهل، متوسط، صعب، صعب جداً)</label>
+                                <input type="checkbox" id="admin-use-difficulty-filter" class="w-5 h-5 text-amber-600 rounded cursor-pointer" onchange="toggleDifficultySettingsView(this.checked)">
+                                <label for="admin-use-difficulty-filter" class="cursor-pointer font-black text-amber-950 text-base">تفعيل اختيار الأسئلة بناءً على مستويات الصعوبة (سهل، متوسط، صعب، صعب جداً)</label>
                             </div>
-                            <div id="difficulty-counts-wrapper" class="hidden grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
-                                <div><label class="block text-xs font-bold text-slate-700 mb-1">عدد الأسئلة السهلة:</label><input type="number" id="admin-diff-easy" class="w-full p-2 rounded-xl border bg-white text-xs font-bold" min="0"></div>
-                                <div><label class="block text-xs font-bold text-slate-700 mb-1">عدد المتوسطة:</label><input type="number" id="admin-diff-medium" class="w-full p-2 rounded-xl border bg-white text-xs font-bold" min="0"></div>
-                                <div><label class="block text-xs font-bold text-slate-700 mb-1">عدد الصعبة:</label><input type="number" id="admin-diff-hard" class="w-full p-2 rounded-xl border bg-white text-xs font-bold" min="0"></div>
-                                <div><label class="block text-xs font-bold text-slate-700 mb-1">عدد الصعبة جداً:</label><input type="number" id="admin-diff-vhard" class="w-full p-2 rounded-xl border bg-white text-xs font-bold" min="0"></div>
+                            
+                            <div id="difficulty-mode-wrapper" class="hidden pt-2">
+                                <label class="block text-xs font-black text-amber-950 mb-1.5">طريقة اختيار وتوزيع مستويات الصعوبة:</label>
+                                <select id="admin-diff-selection-mode" onchange="toggleDiffModeView(this.value)" class="w-full p-3 rounded-xl border border-amber-300 bg-white text-xs sm:text-sm font-black text-amber-950 shadow-xs">
+                                    <option value="fixed">الطريقة الأولى: تحديد عدد ثابت لكل مستوى (مع المواءمة الذكية والتعويض التلقائي)</option>
+                                    <option value="balanced">الطريقة الثانية: التوزيع المتوازن والمواءمة الذكية بناءً على المتاح في بنك الأسئلة</option>
+                                </select>
+                            </div>
+
+                            <div id="difficulty-counts-wrapper" class="hidden grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">عدد الأسئلة السهلة:</label><input type="number" id="admin-diff-easy" class="w-full p-2.5 rounded-xl border bg-white text-xs font-black" min="0"></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">عدد المتوسطة:</label><input type="number" id="admin-diff-medium" class="w-full p-2.5 rounded-xl border bg-white text-xs font-black" min="0"></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">عدد الصعبة:</label><input type="number" id="admin-diff-hard" class="w-full p-2.5 rounded-xl border bg-white text-xs font-black" min="0"></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">عدد الصعبة جداً:</label><input type="number" id="admin-diff-vhard" class="w-full p-2.5 rounded-xl border bg-white text-xs font-black" min="0"></div>
                             </div>
                         </div>
 
-                        <!-- إعدادات الخطوط والمنصة والخلفية -->
                         <div>
-                            <label class="block mb-1 text-slate-700">خط المنصة العام (أكثر من 10 خطوط واضحة):</label>
+                            <label class="block mb-1 text-slate-700">خط المنصة العام:</label>
                             <select id="admin-platform-font" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white">
                                 <option value="IBM Plex Sans Arabic">آي بي إم بلكس (IBM Plex Sans Arabic)</option>
                                 <option value="Cairo">كايرو (Cairo)</option>
@@ -442,7 +462,6 @@
                             </select>
                         </div>
 
-                        <!-- تحكم خطوط صفحة البداية (الحجم والسمك) -->
                         <div>
                             <label class="block mb-1 text-slate-700">حجم عنوان صفحة البداية:</label>
                             <select id="admin-st-title-size" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white">
@@ -460,72 +479,70 @@
                             </select>
                         </div>
 
-                        <!-- خيارات خلط الأسئلة والخيارات والتشكيل -->
-                        <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-sky-50 p-3 rounded-2xl border border-sky-200">
+                        <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-sky-50 p-4 rounded-2xl border border-sky-200">
                             <div class="flex items-center gap-2">
-                                <input type="checkbox" id="admin-shuffle-questions" class="w-5 h-5 text-sky-600 rounded">
-                                <label for="admin-shuffle-questions" class="cursor-pointer font-bold text-sky-950">خلط الأسئلة (مع التباعد وعدم التكرار)</label>
+                                <input type="checkbox" id="admin-shuffle-questions" class="w-5 h-5 text-sky-600 rounded cursor-pointer">
+                                <label for="admin-shuffle-questions" class="cursor-pointer font-bold text-sky-950">خلط الأسئلة (مع التباعد الذكي)</label>
                             </div>
                             <div class="flex items-center gap-2">
-                                <input type="checkbox" id="admin-shuffle-options" class="w-5 h-5 text-sky-600 rounded" checked>
+                                <input type="checkbox" id="admin-shuffle-options" class="w-5 h-5 text-sky-600 rounded cursor-pointer" checked>
                                 <label for="admin-shuffle-options" class="cursor-pointer font-bold text-sky-950">خلط اختيارات الإجابات</label>
                             </div>
                             <div class="flex items-center gap-2">
-                                <input type="checkbox" id="admin-enable-tashkeel" class="w-5 h-5 text-sky-600 rounded" checked>
+                                <input type="checkbox" id="admin-enable-tashkeel" class="w-5 h-5 text-sky-600 rounded cursor-pointer" checked>
                                 <label for="admin-enable-tashkeel" class="cursor-pointer font-bold text-sky-950">تفعيل التشكيل في المنصة</label>
                             </div>
                         </div>
 
-                        <!-- أزرار الاستيراد والتصدير وجلسة الأوفلاين -->
                         <div class="sm:col-span-2 flex flex-wrap gap-3 pt-2 border-t border-slate-200">
                             <button type="button" onclick="exportFullSystemJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-download ml-1"></i> تصدير إعدادات وقاعدة بيانات (JSON)</button>
                             <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد إعدادات وبنك بيانات (JSON)<input type="file" id="import-full-system-json-file" accept=".json" onchange="importFullSystemJsonFile(event)" class="hidden"></label>
                             <button type="button" onclick="exportOfflineHtmlFile()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-file-code"></i> حفظ HTML كملف أوفلاين شامل</button>
                         </div>
 
-                        <div><label class="block mb-1 text-slate-700">رابط الشعار العلوي:</label><input type="text" id="admin-logo-header-input" class="w-full p-2.5 rounded-xl border border-slate-300" placeholder="https://..."></div>
-                        <div><label class="block mb-1 text-slate-700">رابط الشعار الأيمن العلوي:</label><input type="text" id="admin-logo-right-input" class="w-full p-2.5 rounded-xl border border-slate-300" placeholder="https://..."></div>
-                        <div><label class="block mb-1 text-slate-700">رابط الشعار الأيسر العلوي:</label><input type="text" id="admin-logo-left-input" class="w-full p-2.5 rounded-xl border border-slate-300" placeholder="https://..."></div>
-                        <div><label class="block mb-1 text-slate-700">رابط صورة المنتصف (اليمين):</label><input type="text" id="admin-mid-img-input-1" class="w-full p-2.5 rounded-xl border border-slate-300" placeholder="https://..."></div>
-                        <div><label class="block mb-1 text-slate-700">رابط صورة المنتصف (اليسار):</label><input type="text" id="admin-mid-img-input-2" class="w-full p-2.5 rounded-xl border border-slate-300" placeholder="https://..."></div>
-                        <div><label class="block mb-1 text-slate-700">رابط صورة الأسفل (اليمين):</label><input type="text" id="admin-bottom-img-input-right" class="w-full p-2.5 rounded-xl border border-slate-300" placeholder="https://..."></div>
-                        <div><label class="block mb-1 text-slate-700">رابط صورة الأسفل (اليسار):</label><input type="text" id="admin-bottom-img-input-left" class="w-full p-2.5 rounded-xl border border-slate-300" placeholder="https://..."></div>
+                        <div><label class="block mb-1 text-slate-700">رابط الشعار العلوي:</label><input type="text" id="admin-logo-header-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white" placeholder="https://..."></div>
+                        <div><label class="block mb-1 text-slate-700">رابط الشعار الأيمن العلوي:</label><input type="text" id="admin-logo-right-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white" placeholder="https://..."></div>
+                        <div><label class="block mb-1 text-slate-700">رابط الشعار الأيسر العلوي:</label><input type="text" id="admin-logo-left-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white" placeholder="https://..."></div>
+                        <div><label class="block mb-1 text-slate-700">رابط صورة المنتصف (اليمين):</label><input type="text" id="admin-mid-img-input-1" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white" placeholder="https://..."></div>
+                        <div><label class="block mb-1 text-slate-700">رابط صورة المنتصف (اليسار):</label><input type="text" id="admin-mid-img-input-2" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white" placeholder="https://..."></div>
+                        <div><label class="block mb-1 text-slate-700">رابط صورة الأسفل (اليمين):</label><input type="text" id="admin-bottom-img-input-right" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white" placeholder="https://..."></div>
+                        <div><label class="block mb-1 text-slate-700">رابط صورة الأسفل (اليسار):</label><input type="text" id="admin-bottom-img-input-left" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white" placeholder="https://..."></div>
 
-                        <div><label class="block mb-1 text-slate-700">مسمى خانة التعليل:</label><input type="text" id="admin-exp-label-input" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
-                        <div><label class="block mb-1 text-slate-700">كلمة مرور الإدارة الجديدة:</label><input type="password" id="admin-new-password" placeholder="اتركها فارغة بدون تغيير (الافتراضية: 12300123)" class="w-full p-2.5 rounded-xl border border-slate-300"></div>
+                        <div><label class="block mb-1 text-slate-700">مسمى خانة التعليل:</label><input type="text" id="admin-exp-label-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
+                        <div><label class="block mb-1 text-slate-700">كلمة مرور الإدارة الجديدة:</label><input type="password" id="admin-new-password" placeholder="اتركها فارغة بدون تغيير (الافتراضية: 12300123)" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                     </div>
                     <div class="flex flex-wrap gap-3 pt-2">
-                        <button type="button" onclick="saveAppSettings()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3 rounded-xl transition shadow cursor-pointer">حِفْظُ التَّغْيِيرَاتِ وَالإِعْدَادَاتِ (سحابياً والمحلي) <i class="fa-solid fa-floppy-disk mr-1"></i></button>
+                        <button type="button" onclick="saveAppSettings()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3.5 rounded-xl transition shadow cursor-pointer">حِفْظُ التَّغْيِيرَاتِ وَالإِعْدَادَاتِ (سحابياً والمحلي) <i class="fa-solid fa-floppy-disk mr-1"></i></button>
                     </div>
                 </div>
 
-                <!-- TAB 1.5: STAGES & GRADES -->
+                <!-- TAB 2: STAGES & GRADES -->
                 <div id="admin-tab-stages" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
                         <h3 class="font-bold text-slate-800">إدارة المراحل والصفوف الدراسية</h3>
                         <button type="button" onclick="openAddStageModal()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة مرحلة جديدة</button>
                     </div>
-                    <div id="admin-stages-list" class="space-y-4 max-h-[400px] overflow-y-auto pr-1"></div>
+                    <div id="admin-stages-list" class="space-y-4 max-h-[450px] overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- TAB 1.8: TOPICS -->
+                <!-- TAB 3: TOPICS -->
                 <div id="admin-tab-topics" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800">إدارة الموضوعات الدراسية (مرتبطة ومصنفة بحسب المراحل والصفوف)</h3>
+                        <h3 class="font-bold text-slate-800">إدارة الموضوعات الدراسية</h3>
                         <button type="button" onclick="openTopicModalForAdd()" class="bg-emerald-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة موضوع جديد</button>
                     </div>
-                    <div id="admin-topics-list" class="space-y-4 max-h-[400px] overflow-y-auto pr-1"></div>
+                    <div id="admin-topics-list" class="space-y-4 max-h-[450px] overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- TAB 2: QUESTIONS -->
+                <!-- TAB 4: QUESTIONS -->
                 <div id="admin-tab-questions" class="space-y-5 hidden">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800 text-sm">إدارة بنك الأسئلة والاستيراد والتصدير</h3>
+                        <h3 class="font-bold text-slate-800 text-sm">إدارة بنك الأسئلة</h3>
                         <button type="button" onclick="saveAppSettings()" class="bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-floppy-disk ml-1"></i> حفظ التغييرات</button>
                     </div>
 
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
-                        <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض الأسئلة حسب الموضوع أولاً:</h3>
+                        <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض الأسئلة:</h3>
                         <div class="grid grid-cols-3 gap-2">
                             <div><label class="block text-xs font-bold text-slate-700 mb-1">المرحلة:</label><select id="filter-q-stage" onchange="filterQuestionsByStage()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
                             <div><label class="block text-xs font-bold text-slate-700 mb-1">الصف:</label><select id="filter-q-grade" onchange="filterQuestionsByGrade()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
@@ -534,11 +551,9 @@
                     </div>
 
                     <div class="bg-indigo-50/70 p-4 rounded-2xl border-2 border-indigo-200 space-y-3">
-                        <div class="flex items-center justify-between">
-                            <h3 class="font-black text-indigo-950 text-sm flex items-center gap-2"><i class="fa-solid fa-file-import text-indigo-600"></i> إِضَافَةُ دُفْعَةِ أَسْئِلَةٍ لِلموضوعِ المُحَدَّدِ</h3>
-                        </div>
+                        <h3 class="font-black text-indigo-950 text-sm flex items-center gap-2"><i class="fa-solid fa-file-import text-indigo-600"></i> إضافة دفعة أسئلة ذكية</h3>
                         <div class="flex items-center gap-2 mb-1">
-                            <label class="text-xs font-black text-slate-700">تحديد تصنيف الصعوبة الافتراضي:</label>
+                            <label class="text-xs font-black text-slate-700">الصعوبة الافتراضية للدفعة:</label>
                             <select id="batch-default-difficulty" class="p-1.5 rounded-lg border text-xs bg-white font-bold">
                                 <option value="" selected>بدون تصنيف</option>
                                 <option value="سهل">سهل</option>
@@ -548,12 +563,12 @@
                             </select>
                         </div>
                         <textarea id="direct-batch-input" rows="3" placeholder="{q: &quot;...&quot;, opts: [&quot;...&quot;, &quot;...&quot;], ans: &quot;...&quot;, exp: &quot;...&quot;}" class="w-full p-3 font-mono text-xs rounded-xl border border-indigo-300 bg-white dir-ltr text-left focus:outline-none"></textarea>
-                        <div class="flex justify-end"><button type="button" onclick="saveDirectBatchQuestions()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs transition cursor-pointer shadow"><i class="fa-solid fa-circle-plus ml-1"></i> إِضَافَةُ الدُّفْعَةِ الذَّكِيَّةِ</button></div>
+                        <div class="flex justify-end"><button type="button" onclick="saveDirectBatchQuestions()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs transition cursor-pointer shadow"><i class="fa-solid fa-circle-plus ml-1"></i> إضافة الدفعة</button></div>
                     </div>
 
                     <div class="flex flex-wrap justify-between items-center pt-2 border-t border-slate-200 gap-2">
                         <div class="flex items-center gap-2">
-                            <h3 class="font-bold text-slate-800 text-sm">قَائِمَةُ بَنْكِ الْأَسْئِلَةِ</h3>
+                            <h3 class="font-bold text-slate-800 text-sm">قائمة الأسئلة</h3>
                             <button type="button" onclick="deleteSelectedQuestions()" class="bg-rose-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl cursor-pointer">حذف المحددة</button>
                         </div>
                         <div class="flex gap-2 flex-wrap">
@@ -564,41 +579,40 @@
                     </div>
 
                     <div class="flex items-center gap-2 px-1 text-xs font-bold text-slate-700">
-                        <input type="checkbox" id="select-all-q-checkbox" onclick="toggleSelectAllQuestions(this)" class="w-4 h-4 text-sky-600 rounded">
+                        <input type="checkbox" id="select-all-q-checkbox" onclick="toggleSelectAllQuestions(this)" class="w-4 h-4 text-sky-600 rounded cursor-pointer">
                         <label for="select-all-q-checkbox" class="cursor-pointer">تحديد الكل للحذف</label>
                     </div>
-                    <div id="admin-questions-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-1"></div>
+                    <div id="admin-questions-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- TAB 3: PARAGRAPHS -->
+                <!-- TAB 5: PARAGRAPHS -->
                 <div id="admin-tab-paragraphs" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800">إدارة الفقرات والنصوص القرائية</h3>
+                        <h3 class="font-bold text-slate-800">إدارة النصوص القرائية والفقرات</h3>
                         <button type="button" onclick="openParagraphModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة فقرة جديدة</button>
                     </div>
-                    <div id="admin-paragraphs-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-1"></div>
+                    <div id="admin-paragraphs-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- TAB 4: QUICK INFO -->
+                <!-- TAB 6: QUICK INFO -->
                 <div id="admin-tab-quickinfo" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800">بطاقات المعلومات السريعة</h3>
+                        <h3 class="font-bold text-slate-800">بطاقات المعلومة السريعة</h3>
                         <button type="button" onclick="openQuickInfoModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة بطاقة جديدة</button>
                     </div>
-                    <div id="admin-quickinfo-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-1"></div>
+                    <div id="admin-quickinfo-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- TAB 5: RECORDS -->
+                <!-- TAB 7: RECORDS -->
                 <div id="admin-tab-records" class="space-y-4 hidden">
                     <div class="flex justify-between items-center flex-wrap gap-2">
-                        <h3 class="font-bold text-slate-800">سجل نتائج الطلاب ودخولهم</h3>
+                        <h3 class="font-bold text-slate-800">سجل نتائج ودخول الطلاب</h3>
                         <div class="flex gap-2">
                             <button type="button" onclick="exportAllRecordsExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-file-excel ml-1"></i> تصدير (Excel)</button>
                             <button type="button" onclick="clearRecords()" class="bg-rose-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer">مسح السجل</button>
                         </div>
                     </div>
 
-                    <!-- فلاتر النتائج النشطة للمفعل حصرياً -->
                     <div class="bg-sky-50 p-3 rounded-2xl border border-sky-200 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-bold">
                         <div>
                             <label class="block mb-1 text-slate-700">تصفية بالمرحلة:</label>
@@ -614,7 +628,7 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto border rounded-2xl">
+                    <div class="overflow-x-auto border rounded-2xl bg-white">
                         <table class="w-full text-right border-collapse">
                             <thead>
                                 <tr class="bg-slate-100 text-slate-700 font-bold text-xs border-b">
@@ -633,8 +647,8 @@
                 </div>
             </div>
 
-            <div class="p-4 bg-slate-50 border-t flex justify-center">
-                <button type="button" onclick="exitAdmin()" class="bg-rose-600 text-white font-bold px-4 py-2 rounded-xl text-xs cursor-pointer">خُرُوجٌ</button>
+            <div class="p-4 bg-slate-100 border-t-2 border-slate-200 flex justify-center">
+                <button type="button" onclick="exitAdmin()" class="bg-rose-600 hover:bg-rose-700 text-white font-black px-8 py-2.5 rounded-2xl text-sm cursor-pointer shadow transition">خُرُوجٌ</button>
             </div>
         </div>
     </div>
@@ -697,10 +711,10 @@
                 <div><label class="block text-slate-700 mb-1">اسم الموضوع (الدرس):</label><input type="text" id="edit-topic-name" class="w-full p-2.5 rounded-xl border" placeholder="مثال: تدريبات أنواع الخطاب"></div>
                 <div class="flex items-center gap-2 bg-sky-50 p-2.5 rounded-xl border border-sky-200">
                     <input type="checkbox" id="edit-topic-active" class="w-5 h-5 text-sky-600 rounded" checked>
-                    <label for="edit-topic-active" class="cursor-pointer text-sky-950">تفعيل هذا الموضوع (يظهر في المنصة)</label>
+                    <label for="edit-topic-active" class="cursor-pointer text-sky-950">تفعيل هذا الموضوع</label>
                 </div>
                 <div>
-                    <label class="block text-slate-700 mb-1">اختر الصفوف المستهدفة (يمكن اختيار أكثر من صف ومرحلة):</label>
+                    <label class="block text-slate-700 mb-1">اختر الصفوف المستهدفة:</label>
                     <div id="all-grades-checkboxes-container" class="space-y-3 p-3 bg-slate-50 border rounded-xl max-h-56 overflow-y-auto"></div>
                 </div>
             </div>
@@ -711,7 +725,7 @@
         </div>
     </div>
 
-    <!-- نافذة إضافة وتعديل الفقرة (محدثة بحجم كبير وشريط علوي) -->
+    <!-- نافذة إضافة وتعديل الفقرة -->
     <div id="modal-paragraph-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-sky-400 overflow-hidden modal-animate-in text-right">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -727,9 +741,9 @@
             <input type="hidden" id="edit-paragraph-id" value="">
             <div class="p-6 sm:p-10 space-y-6 overflow-y-auto flex-grow bg-slate-50 text-right text-xs font-bold">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div><label class="block mb-1 text-slate-700">المرحلة المفعلة:</label><select id="modal-para-stage" onchange="populateParaModalGrades()" class="w-full p-2.5 rounded-xl border bg-white"><option value="">اختر المرحلة</option></select></div>
-                    <div><label class="block mb-1 text-slate-700">الصف المفعل:</label><select id="modal-para-grade" onchange="populateParaModalTopics()" class="w-full p-2.5 rounded-xl border bg-white"><option value="">اختر الصف</option></select></div>
-                    <div><label class="block mb-1 text-slate-700">الموضوع المفعل:</label><select id="modal-para-topic" onchange="populateParaModalQuestions()" class="w-full p-2.5 rounded-xl border bg-white text-sky-950"><option value="">اختر الموضوع</option></select></div>
+                    <div><label class="block mb-1 text-slate-700">المرحلة:</label><select id="modal-para-stage" onchange="populateParaModalGrades()" class="w-full p-2.5 rounded-xl border bg-white"><option value="">اختر المرحلة</option></select></div>
+                    <div><label class="block mb-1 text-slate-700">الصف:</label><select id="modal-para-grade" onchange="populateParaModalTopics()" class="w-full p-2.5 rounded-xl border bg-white"><option value="">اختر الصف</option></select></div>
+                    <div><label class="block mb-1 text-slate-700">الموضوع:</label><select id="modal-para-topic" onchange="populateParaModalQuestions()" class="w-full p-2.5 rounded-xl border bg-white text-sky-950"><option value="">اختر الموضوع</option></select></div>
                 </div>
 
                 <div><label class="block mb-1 text-slate-700">اسم أو تعريف الفقرة:</label><input type="text" id="modal-para-name" class="w-full p-3 rounded-xl border text-sm font-black" placeholder="مثال: فقرة النصوص الشعرية"></div>
@@ -738,7 +752,7 @@
                 <div><label class="block mb-1 text-slate-700">نص الفقرة القرائية:</label><textarea id="modal-para-text" rows="5" class="w-full p-3 rounded-xl border font-semibold text-base leading-relaxed" placeholder="اكتب النص القرائي هنا..."></textarea></div>
                 
                 <div class="bg-indigo-50/70 p-4 rounded-2xl border-2 border-indigo-200 space-y-2">
-                    <label class="block text-indigo-950 font-black text-sm"><i class="fa-solid fa-link text-indigo-600 ml-1"></i> اختر الأسئلة المرتبطة بهذه الفقرة يدوياً:</label>
+                    <label class="block text-indigo-950 font-black text-sm"><i class="fa-solid fa-link text-indigo-600 ml-1"></i> اختر الأسئلة المرتبطة بهذه الفقرة:</label>
                     <div id="modal-para-questions-container" class="space-y-2 max-h-56 overflow-y-auto p-3 bg-white rounded-xl border">
                         <p class="text-slate-400 text-xs text-center py-2">يرجى تحديد (المرحلة، الصف، والموضوع) بالأعلى أولاً لعرض أسئلته هنا.</p>
                     </div>
@@ -746,11 +760,11 @@
 
                 <div class="flex items-center gap-4 pt-1">
                     <div class="flex items-center gap-2 bg-sky-50 p-3 rounded-xl border border-sky-200 flex-grow">
-                        <input type="checkbox" id="modal-para-active" class="w-5 h-5 text-sky-600 rounded" checked>
+                        <input type="checkbox" id="modal-para-active" class="w-5 h-5 text-sky-600 rounded cursor-pointer" checked>
                         <label for="modal-para-active" class="cursor-pointer text-sky-950 text-sm">تفعيل هذه الفقرة</label>
                     </div>
                     <div class="flex items-center gap-2 bg-amber-50 p-3 rounded-xl border border-amber-200 flex-grow">
-                        <input type="checkbox" id="modal-para-tashkeel" class="w-5 h-5 text-amber-600 rounded" checked>
+                        <input type="checkbox" id="modal-para-tashkeel" class="w-5 h-5 text-amber-600 rounded cursor-pointer" checked>
                         <label for="modal-para-tashkeel" class="cursor-pointer text-amber-950 text-sm">تفعيل التشكيل للنص</label>
                     </div>
                 </div>
@@ -763,7 +777,7 @@
         </div>
     </div>
 
-    <!-- نافذة إضافة وتعديل بطاقة معلومات سريعة (محدثة بحجم كبير وشريط علوي) -->
+    <!-- نافذة إضافة وتعديل بطاقة معلومات سريعة -->
     <div id="modal-quickinfo-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in text-right">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -790,8 +804,8 @@
                 
                 <div class="bg-indigo-50/70 p-4 rounded-2xl border-2 border-indigo-200 space-y-3">
                     <div class="flex justify-between items-center border-b border-indigo-200 pb-2">
-                        <h4 class="font-black text-indigo-950 text-sm"><i class="fa-solid fa-list-ul text-indigo-600 ml-1"></i> العناوين الرئيسية والفرعية (مع زر تفعيل/إخفاء):</h4>
-                        <button type="button" onclick="addQuickInfoSectionBlock()" class="bg-indigo-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة قسم رئيسي جديد</button>
+                        <h4 class="font-black text-indigo-950 text-sm"><i class="fa-solid fa-list-ul text-indigo-600 ml-1"></i> العناوين الرئيسية والفرعية:</h4>
+                        <button type="button" onclick="addQuickInfoSectionBlock()" class="bg-indigo-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة قسم جديد</button>
                     </div>
                     <div id="quickinfo-sections-builder-container" class="space-y-4 max-h-72 overflow-y-auto pr-1"></div>
                 </div>
@@ -806,11 +820,11 @@
 
                 <div class="flex items-center gap-4 pt-1">
                     <div class="flex items-center gap-2 bg-sky-50 p-3 rounded-xl border border-sky-200 flex-grow">
-                        <input type="checkbox" id="modal-qi-active" class="w-5 h-5 text-sky-600 rounded" checked>
+                        <input type="checkbox" id="modal-qi-active" class="w-5 h-5 text-sky-600 rounded cursor-pointer" checked>
                         <label for="modal-qi-active" class="cursor-pointer text-sky-950 text-sm">تفعيل هذه البطاقة</label>
                     </div>
                     <div class="flex items-center gap-2 bg-amber-50 p-3 rounded-xl border border-amber-200 flex-grow">
-                        <input type="checkbox" id="modal-qi-tashkeel" class="w-5 h-5 text-amber-600 rounded" checked>
+                        <input type="checkbox" id="modal-qi-tashkeel" class="w-5 h-5 text-amber-600 rounded cursor-pointer" checked>
                         <label for="modal-qi-tashkeel" class="cursor-pointer text-amber-950 text-sm">تفعيل التشكيل للنصوص</label>
                     </div>
                 </div>
@@ -824,17 +838,22 @@
     </div>
 
     <!-- نافذة معاينة المحتوى -->
-    <div id="modal-preview-card" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl modal-animate-in text-right">
-            <h3 class="font-black text-sky-950 text-base border-b pb-2"><i class="fa-solid fa-eye text-sky-600 ml-1"></i> معاينة المحتوى</h3>
-            <div id="preview-card-body" class="space-y-3 bg-slate-50 p-4 rounded-2xl border text-sm max-h-[60vh] overflow-y-auto"></div>
-            <div class="flex justify-end pt-2 border-t">
-                <button type="button" onclick="document.getElementById('modal-preview-card').classList.add('hidden'); document.getElementById('modal-preview-card').classList.remove('flex');" class="bg-slate-200 px-4 py-2 rounded-xl text-xs cursor-pointer font-bold">إغلاق المعاينة</button>
+    <div id="modal-preview-card" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
+        <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-sky-400 overflow-hidden modal-animate-in text-right">
+            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
+                <h3 class="font-black text-white text-xl sm:text-2xl flex items-center gap-3">
+                    <i class="fa-solid fa-eye text-amber-400 text-2xl"></i> معاينة المحتوى
+                </h3>
+                <button type="button" onclick="document.getElementById('modal-preview-card').classList.add('hidden'); document.getElementById('modal-preview-card').classList.remove('flex');" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="preview-card-body" class="p-6 sm:p-10 space-y-6 overflow-y-auto flex-grow bg-slate-50 text-right text-sm"></div>
+            <div class="p-5 bg-slate-100 border-t-2 border-slate-200 flex justify-center">
+                <button type="button" onclick="document.getElementById('modal-preview-card').classList.add('hidden'); document.getElementById('modal-preview-card').classList.remove('flex');" class="bg-sky-700 hover:bg-sky-800 text-white font-black px-8 py-3.5 rounded-2xl text-lg shadow-lg cursor-pointer transition">إِغْلَاقُ النَّافِذَةِ</button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة إضافة وتعديل السؤال (محدثة بحجم كبير وشريط علوي) -->
+    <!-- نافذة إضافة وتعديل السؤال -->
     <div id="modal-question-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-sky-400 overflow-hidden modal-animate-in text-right">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -874,12 +893,12 @@
 
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-2 bg-sky-50 p-3 rounded-xl border border-sky-200 flex-grow">
-                        <input type="checkbox" id="modal-q-active" class="w-5 h-5 text-sky-600 rounded" checked>
-                        <label for="modal-q-active" class="cursor-pointer text-sky-950 text-sm">تفعيل هذا السؤال (يظهر في الاختبارات)</label>
+                        <input type="checkbox" id="modal-q-active" class="w-5 h-5 text-sky-600 rounded cursor-pointer" checked>
+                        <label for="modal-q-active" class="cursor-pointer text-sky-950 text-sm">تفعيل هذا السؤال</label>
                     </div>
                     <div class="flex items-center gap-2 bg-amber-50 p-3 rounded-xl border border-amber-200 flex-grow">
-                        <input type="checkbox" id="modal-q-tashkeel" class="w-5 h-5 text-amber-600 rounded" checked>
-                        <label for="modal-q-tashkeel" class="cursor-pointer text-amber-950 text-sm">تفعيل التشكيل لهذا السؤال</label>
+                        <input type="checkbox" id="modal-q-tashkeel" class="w-5 h-5 text-amber-600 rounded cursor-pointer" checked>
+                        <label for="modal-q-tashkeel" class="cursor-pointer text-amber-950 text-sm">تفعيل التشكيل</label>
                     </div>
                 </div>
 
@@ -915,12 +934,17 @@
     </div>
 
     <!-- نافذة معاينة السؤال الفردي -->
-    <div id="modal-preview-single-q" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl modal-animate-in text-right">
-            <h3 class="font-black text-sky-950 text-base border-b pb-2"><i class="fa-solid fa-eye text-sky-600 ml-1"></i> معاينة السؤال</h3>
-            <div id="preview-single-q-body" class="space-y-3 bg-slate-50 p-4 rounded-2xl border text-sm"></div>
-            <div class="flex justify-end pt-2 border-t">
-                <button type="button" onclick="document.getElementById('modal-preview-single-q').classList.add('hidden'); document.getElementById('modal-preview-single-q').classList.remove('flex');" class="bg-slate-200 px-4 py-2 rounded-xl text-xs cursor-pointer font-bold">إغلاق المعاينة</button>
+    <div id="modal-preview-single-q" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
+        <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-sky-400 overflow-hidden modal-animate-in text-right">
+            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
+                <h3 class="font-black text-white text-xl sm:text-2xl flex items-center gap-3">
+                    <i class="fa-solid fa-eye text-amber-400 text-2xl"></i> معاينة السؤال
+                </h3>
+                <button type="button" onclick="document.getElementById('modal-preview-single-q').classList.add('hidden'); document.getElementById('modal-preview-single-q').classList.remove('flex');" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="preview-single-q-body" class="p-6 sm:p-10 space-y-6 overflow-y-auto flex-grow bg-slate-50 text-right text-sm"></div>
+            <div class="p-5 bg-slate-100 border-t-2 border-slate-200 flex justify-center">
+                <button type="button" onclick="document.getElementById('modal-preview-single-q').classList.add('hidden'); document.getElementById('modal-preview-single-q').classList.remove('flex');" class="bg-sky-700 hover:bg-sky-800 text-white font-black px-8 py-3.5 rounded-2xl text-lg shadow-lg cursor-pointer transition">إِغْلَاقُ النَّافِذَةِ</button>
             </div>
         </div>
     </div>
@@ -948,7 +972,7 @@
         <p>جَمِيعُ الْحُقُوقِ مَحْفُوظَةٌ © <span id="footer-year">2026</span> - الأستاذ صلاح حمدي يوسف</p>
     </footer>
 
-    <!-- السكربت الشامل والمكتمل بكل التعديلات -->
+    <!-- السكربت الشامل -->
     <script>
         /* -- DATA_START -- */
         let stagesData = {"إعدادية":["الصف الأول الإعدادي","الصف الثاني الإعدادي","الصف الثالث الإعدادي فصل دراسي أول"],"ثانوية":["الصف الأول الثانوي","الصف الثاني الثانوي بكالوريا","الصف الثالث الثانوي"]};
@@ -993,6 +1017,7 @@
             "stBtnSize": "text-xl sm:text-2xl",
             "stBtnWeight": "font-black",
             "useDifficultyFilter": false,
+            "diffSelectionMode": "balanced",
             "diffEasyCount": 5,
             "diffMediumCount": 10,
             "diffHardCount": 3,
@@ -1001,7 +1026,7 @@
 
         let appSettings = defaultSettings;
         let paragraphs = [{"id":"para_1","name":"فقرة الخطاب الإشهارى والتوجيهى","stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"title":"اقْرَأْ ثُمَّ أَجِبْ:","text":"الخطاب الإشهاري يسعى إلى التأثير في المتلقي وحثه على اقتناء سلعة أو خدمة، مستخدماً آليات الترغيب والإقناع البصري واللغوي. أما الخطاب التوجيهي فيهدف إلى توجيه السلوك الأخلاق وضبط المعاملات."}];
-        let questionBank = [{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"paragraphId":"para_1","q":"قَالَ الشَّاعِرُ الطَّائِيُّ: (وَبِئْرِي ذُو حَفَرْتُ وَذُو طَوَيْتُ). مَا الْحُكْمُ النَّحْوِيُّ لِكَلِمَةِ (ذُو) الْأُولَى فِي الْبَيْتِ الشِّعْرِيِّ؟","opts":["تُعْرَبُ إِعْرَابَ الْأَسْمَاءِ الْخَمْسَةِ","تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","تُبْنَى عَلَى السُّكُونِ فِي مَحَلِّ رَفْعٍ","تُعْرَبُ بِحَرَكَاتٍ مُقَدَّرَةٍ عَلَى آخِرِهَا"],"ans":"تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","exp":"لُغَةُ طَيِّئٍ (الطَّيِّئِيَّةُ) تُلْزِمُ كَلِمَةَ (ذُو) الْوَاوَ فِي كُلِّ الْحَالَاتِ إِذَا كَانَتْ بِمَعْنَى (الَّذِي).","difficulty":"صعب جدا","paragraphId":"para_1"}];
+        let questionBank = [{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"paragraphId":"para_1","q":"قَالَ الشَّاعِرُ الطَّائِيُّ: (وَبِئْرِي ذُو حَفَرْتُ وَذُو طَوَيْتُ). مَا الْحُكْمُ النَّحْوِيُّ لِكَلِمَةِ (ذُو) الْأُولَى فِي الْبَيْتِ الشِّعْرِيِّ؟","opts":["تُعْرَبُ إِعْرَابَ الْأَسْمَاءِ الْخَمْسَةِ","تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","تُبْنَى عَلَى السُّكُونِ فِي مَحَلِّ رَفْعٍ","تُعْرَبُ بِحَرَكَاتٍ مُقَدَّرَةٍ عَلَى آخِرِهَا"],"ans":"تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","exp":"لُغَةُ طَيِّئٍ (الطَّيِّئِيَّةُ) تُلْزِمُ كَلِمَةَ (ذُو) الْوَاوَ فِي كُلِّ الْحَالَاتِ إِذَا كَانَتْ بِمَعْنَى (الَّذِي).","difficulty":"صعب جدا"}];
         
         let quickInfoList = [
             {
@@ -1026,9 +1051,8 @@
         ];
 
         let studentRecords = [];
+        let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
         /* -- DATA_END -- */
-
-        let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timer: null, timerInterval: null };
 
         window.addEventListener('beforeunload', function (e) {
             if (quizState.questions.length > 0 && document.getElementById('view-quiz') && !document.getElementById('view-quiz').classList.contains('hidden')) {
@@ -1064,7 +1088,7 @@
                     }
                 }
             } catch (e) {
-                console.log("محلي:", e);
+                console.log("استخدام البيانات المحلية:", e);
             }
             initApp();
         }
@@ -1085,7 +1109,7 @@
                     });
                 }
             } catch (e) {
-                console.error("خطأ الحفظ:", e);
+                console.error("خطأ أثناء الحفظ السحابي:", e);
             }
         }
 
@@ -1171,7 +1195,20 @@
 
         function toggleDifficultySettingsView(isChecked) {
             const wrapper = document.getElementById('difficulty-counts-wrapper');
+            const modeWrapper = document.getElementById('difficulty-mode-wrapper');
             if (wrapper) wrapper.classList.toggle('hidden', !isChecked);
+            if (modeWrapper) modeWrapper.classList.toggle('hidden', !isChecked);
+            if (isChecked) {
+                let modeVal = document.getElementById('admin-diff-selection-mode').value;
+                toggleDiffModeView(modeVal);
+            }
+        }
+
+        function toggleDiffModeView(mode) {
+            const countsWrapper = document.getElementById('difficulty-counts-wrapper');
+            if (countsWrapper) {
+                countsWrapper.classList.toggle('hidden', mode === 'balanced');
+            }
         }
 
         function initApp() {
@@ -1207,7 +1244,7 @@
             const quickBtnSpan = document.getElementById('display-quickinfo-title-btn');
             if (quickBtnSpan) quickBtnSpan.textContent = appSettings.quickInfoLabel || "مَعْلُومَةٌ سَرِيعَةٌ لِلدَّرْسِ";
 
-            document.getElementById('display-exam-count-desc').textContent = appSettings.useDifficultyFilter ? 
+            document.getElementById('display-exam-count-desc').textContent = appSettings.useDifficultyFilter && appSettings.diffSelectionMode === 'fixed' ? 
                 ((parseInt(appSettings.diffEasyCount)||0) + (parseInt(appSettings.diffMediumCount)||0) + (parseInt(appSettings.diffHardCount)||0) + (parseInt(appSettings.diffVeryHardCount)||0)) : 
                 (appSettings.examCount || 20);
             
@@ -1368,16 +1405,18 @@
         }
 
         function markQuestionAsAnswered(topic, qText) {
-          try {
-              let answered = getAnsweredQuestionsSet(topic);
-              if (!answered.includes(qText)) {
-                  answered.push(qText);
-                  localStorage.setItem(getAnsweredQuestionsKey(topic), JSON.stringify(answered));
-              }
-          } catch(e) {}
-      }
+            try {
+                let answered = getAnsweredQuestionsSet(topic);
+                if (!answered.includes(qText)) {
+                    answered.push(qText);
+                    localStorage.setItem(getAnsweredQuestionsKey(topic), JSON.stringify(answered));
+                }
+            } catch(e) {}
+        }
 
-      function startQuiz() {
+        // =================== نهاية القسم الأول ===================
+        // الصق القسم الثاني مباشرة هنا لإكمال ملف المنصة بالكامل
+function startQuiz() {
             if (appSettings.expiryDate) {
                 let expiryTime = new Date(appSettings.expiryDate).getTime();
                 if (Date.now() > expiryTime) {
@@ -1415,34 +1454,138 @@
             let sessionQuestions = [];
             const targetExamCount = Math.min(appSettings.examCount || 20, unassignedPool.length);
 
-            if (appSettings.useDifficultyFilter) {
-                let reqEasy = parseInt(appSettings.diffEasyCount) || 0;
-                let reqMed = parseInt(appSettings.diffMediumCount) || 0;
-                let reqHard = parseInt(appSettings.diffHardCount) || 0;
-                let reqVHard = parseInt(appSettings.diffVeryHardCount) || 0;
-
-                function pickRandom(arr, count) {
-                    let shuffled = [...arr].sort(() => 0.5 - Math.random());
-                    return shuffled.slice(0, count);
-                }
-
-                let easyPool = unassignedPool.filter(q => q.difficulty === "سهل");
-                let medPool = unassignedPool.filter(q => q.difficulty === "متوسط");
-                let hardPool = unassignedPool.filter(q => q.difficulty === "صعب");
-                let vhardPool = unassignedPool.filter(q => q.difficulty === "صعب جدا");
-
-                let chosenEasy = pickRandom(easyPool, reqEasy);
-                let chosenMed = pickRandom(medPool, reqMed);
-                let chosenHard = pickRandom(hardPool, reqHard);
-                let chosenVHard = pickRandom(vhardPool, reqVHard);
-
-                sessionQuestions = [...chosenEasy, ...chosenMed, ...chosenHard, ...chosenVHard];
-                if (appSettings.shuffleQuestions !== false) {
-                    sessionQuestions.sort(() => 0.5 - Math.random());
-                }
+            function pickRandom(arr, count) {
+                let shuffled = [...arr].sort(() => 0.5 - Math.random());
+                return shuffled.slice(0, Math.min(count, shuffled.length));
             }
 
-            if (sessionQuestions.length === 0) {
+            // تطبيق خوارزمية التباعد الذكي لمنع تتابع الأسئلة المتشابهة أو المرتبطة بنفس الفقرة
+            function applySpacedShuffle(itemsList, gap = 3) {
+                if (itemsList.length <= 1) return itemsList;
+                let list = [...itemsList].sort(() => 0.5 - Math.random());
+                let result = [];
+                let deferred = [];
+                
+                for (let i = 0; i < list.length; i++) {
+                    let candidate = list[i];
+                    let isClose = result.slice(-gap).some(prev => 
+                        (candidate.paragraphId && prev.paragraphId === candidate.paragraphId) ||
+                        (candidate.difficulty && prev.difficulty === candidate.difficulty && itemsList.length > 8)
+                    );
+                    if (!isClose) {
+                        result.push(candidate);
+                    } else {
+                        deferred.push(candidate);
+                    }
+                }
+                
+                while (deferred.length > 0) {
+                    let item = deferred.pop();
+                    let inserted = false;
+                    for (let pos = 0; pos <= result.length; pos++) {
+                        let prev = result[pos - 1];
+                        let next = result[pos];
+                        let matchesPrev = prev && ((item.paragraphId && prev.paragraphId === item.paragraphId) || (item.difficulty && prev.difficulty === item.difficulty && itemsList.length > 8));
+                        let matchesNext = next && ((item.paragraphId && next.paragraphId === item.paragraphId) || (item.difficulty && next.difficulty === item.difficulty && itemsList.length > 8));
+                        if (!matchesPrev && !matchesNext) {
+                            result.splice(pos, 0, item);
+                            inserted = true;
+                            break;
+                        }
+                    }
+                    if (!inserted) {
+                        result.push(item);
+                    }
+                }
+                return result;
+            }
+
+            if (appSettings.useDifficultyFilter) {
+                let easyPool = unassignedPool.filter(q => q.difficulty === "سهل");
+                let medPool = unassignedPool.filter(q => q.difficulty === "متوسط");
+                let hardPoolArr = unassignedPool.filter(q => q.difficulty === "صعب");
+                let vhardPool = unassignedPool.filter(q => q.difficulty === "صعب جدا");
+                let unclassifiedPool = unassignedPool.filter(q => !["سهل", "متوسط", "صعب", "صعب جدا"].includes(q.difficulty));
+
+                let mode = appSettings.diffSelectionMode || 'balanced';
+
+                if (mode === 'balanced') {
+                    // الطريقة الثانية: التوزيع المتوازن والمواءمة الذكية التلقائية بحسب المتاح
+                    let availE = easyPool.length;
+                    let availM = medPool.length;
+                    let availH = hardPoolArr.length;
+                    let availV = vhardPool.length;
+                    let totalClassified = availE + availM + availH + availV;
+
+                    if (totalClassified === 0) {
+                        sessionQuestions = pickRandom(unassignedPool, targetExamCount);
+                    } else if (totalClassified <= targetExamCount) {
+                        sessionQuestions = [...easyPool, ...medPool, ...hardPoolArr, ...vhardPool];
+                        if (sessionQuestions.length < targetExamCount) {
+                            let remNeeded = targetExamCount - sessionQuestions.length;
+                            sessionQuestions.push(...pickRandom(unclassifiedPool, remNeeded));
+                        }
+                    } else {
+                        let reqE = Math.round(targetExamCount * (availE / totalClassified));
+                        let reqM = Math.round(targetExamCount * (availM / totalClassified));
+                        let reqH = Math.round(targetExamCount * (availH / totalClassified));
+                        let reqV = targetExamCount - reqE - reqM - reqH;
+
+                        let takeE = Math.min(availE, Math.max(0, reqE));
+                        let takeM = Math.min(availM, Math.max(0, reqM));
+                        let takeH = Math.min(availH, Math.max(0, reqH));
+                        let takeV = Math.min(availV, Math.max(0, reqV));
+
+                        // تعويض ذكي تلقائي في حال وجود أي نقص لتفادي أي خطأ أو توقف
+                        let currentTotal = takeE + takeM + takeH + takeV;
+                        while (currentTotal < targetExamCount) {
+                            if (takeE < availE) { takeE++; currentTotal++; }
+                            else if (takeM < availM) { takeM++; currentTotal++; }
+                            else if (takeH < availH) { takeH++; currentTotal++; }
+                            else if (takeV < availV) { takeV++; currentTotal++; }
+                            else break;
+                        }
+
+                        sessionQuestions = [
+                            ...pickRandom(easyPool, takeE),
+                            ...pickRandom(medPool, takeM),
+                            ...pickRandom(hardPoolArr, takeH),
+                            ...pickRandom(vhardPool, takeV)
+                        ];
+
+                        if (sessionQuestions.length < targetExamCount) {
+                            let alreadyIds = new Set(sessionQuestions.map(sq => sq.q));
+                            let leftover = unassignedPool.filter(q => !alreadyIds.has(q.q));
+                            sessionQuestions.push(...pickRandom(leftover, targetExamCount - sessionQuestions.length));
+                        }
+                    }
+                } else {
+                    // الطريقة الأولى: تحديد عدد ثابت لكل مستوى مع المواءمة الذكية والتعويض التلقائي
+                    let reqEasy = parseInt(appSettings.diffEasyCount) || 0;
+                    let reqMed = parseInt(appSettings.diffMediumCount) || 0;
+                    let reqHard = parseInt(appSettings.diffHardCount) || 0;
+                    let reqVHard = parseInt(appSettings.diffVeryHardCount) || 0;
+
+                    let selectedE = pickRandom(easyPool, reqEasy);
+                    let selectedM = pickRandom(medPool, reqMed);
+                    let selectedH = pickRandom(hardPoolArr, reqHard);
+                    let selectedV = pickRandom(vhardPool, reqVHard);
+
+                    sessionQuestions = [...selectedE, ...selectedM, ...selectedH, ...selectedV];
+
+                    if (sessionQuestions.length < targetExamCount) {
+                        let alreadyIds = new Set(sessionQuestions.map(sq => sq.q));
+                        let remainingPool = unassignedPool.filter(q => !alreadyIds.has(q.q));
+                        let needed = targetExamCount - sessionQuestions.length;
+                        sessionQuestions.push(...pickRandom(remainingPool, needed));
+                    }
+                }
+
+                if (appSettings.shuffleQuestions !== false) {
+                    sessionQuestions = applySpacedShuffle(sessionQuestions);
+                }
+            } else {
+                // الوضع الافتراضي عند عدم تفعيل مستويات الصعوبة: خلط متباعد ذكي يمنع التقارب
                 let availableIndices = unassignedPool.map((_, i) => i);
                 if (appSettings.shuffleQuestions !== false) {
                     availableIndices.sort(() => 0.5 - Math.random());
@@ -1469,12 +1612,11 @@
                     }
                 }
 
-                if (appSettings.shuffleQuestions !== false) {
-                    selectedIndices.sort(() => 0.5 - Math.random());
-                }
-                sessionQuestions = selectedIndices.map(i => unassignedPool[i]);
+                let chosenQuestions = selectedIndices.map(i => unassignedPool[i]);
+                sessionQuestions = appSettings.shuffleQuestions !== false ? applySpacedShuffle(chosenQuestions) : chosenQuestions;
             }
 
+            // خلط خيارات الإجابات بدقة مع بقاء الإجابة الصحيحة مطابقة دائماً
             sessionQuestions = sessionQuestions.map(q => {
                 let qCopy = JSON.parse(JSON.stringify(q));
                 if (appSettings.shuffleOptions !== false) {
@@ -1492,7 +1634,6 @@
 
             quizState = { 
                 name, stage, grade, topic, 
-                currentQuestionPool: pool, 
                 questions: sessionQuestions, 
                 answers: new Array(sessionQuestions.length).fill(null), 
                 currentIndex: 0, 
@@ -1502,7 +1643,6 @@
 
             document.getElementById('display-student-name').textContent = name;
             document.getElementById('display-total-q').textContent = sessionQuestions.length;
-            
             document.getElementById('quiz-topic-header-title').textContent = `موضوع الاختبار: ${topic} (${grade})`;
             document.getElementById('browser-tab-title').textContent = `${topic} - ${grade} | ${appSettings.teacherName}`;
 
@@ -1653,7 +1793,6 @@
             const isPassed = pct >= 50;
 
             const loginTimeFormatted = new Date().toLocaleString('ar-EG');
-
             let durationMs = Date.now() - (quizState.startTime || Date.now());
             let durationSecs = Math.floor(durationMs / 1000);
             let dMins = Math.floor(durationSecs / 60);
@@ -1700,14 +1839,29 @@
                 resIcon.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-emerald-100 text-emerald-600 border-4 border-emerald-300";
                 resIconI.className = "fa-solid fa-trophy text-amber-500 drop-shadow";
                 certContainer.classList.remove('hidden');
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                }
             } else {
-                resMsg.textContent = "لا تتراجع! المحاولة البداية الحقيقية للتفوق، كرر الاختبار وسترى نتيجة أفضل.";
+                resMsg.textContent = "لا تتراجع! المحاولة هي البداية الحقيقية للتفوق، كرر الاختبار وسترى نتيجة أفضل.";
                 resMsg.className = "text-rose-700 font-extrabold text-base leading-relaxed";
-                resIcon.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-rose-100 text-rose-600 border-4 border-emerald-300";
+                resIcon.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-rose-100 text-rose-600 border-4 border-rose-300";
                 resIconI.className = "fa-solid fa-rotate-right text-rose-500";
                 certContainer.classList.add('hidden');
             }
+        }
+
+        function openCertModal() {
+            if (!quizState.name) return;
+            document.getElementById('cert-student-name').textContent = quizState.name;
+            const pct = Math.round((studentRecords[0]?.score / (studentRecords[0]?.total || 1)) * 100) || 100;
+            document.getElementById('cert-score-pct').textContent = `${pct}%`;
+            document.getElementById('cert-date').textContent = new Date().toLocaleDateString('ar-EG');
+            document.getElementById('cert-teacher-name').textContent = appSettings.teacherName;
+            
+            const modal = document.getElementById('modal-cert');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         function openStudentReviewModal() {
@@ -1957,7 +2111,7 @@
                     <td class="p-3">
                         <div class="space-y-1">
                             <span class="block font-bold text-slate-800">الأسئلة: ${rec.answeredCount}</span>
-                            <button type="button" onclick="openRecordDetailsModal(${studentRecords.indexOf(rec)})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer shadow-2xs transition">
+                            <button type="button" onclick="openRecordDetailsModal(${studentRecords.indexOf(rec)})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer shadow transition">
                                 <i class="fa-solid fa-list-check ml-1"></i> تفاصيل إجابة الطالب
                             </button>
                         </div>
@@ -1965,6 +2119,26 @@
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        function exportAllRecordsExcel() {
+            if (!studentRecords || studentRecords.length === 0) {
+                alert("لا توجد سجلات لتصديرها.");
+                return;
+            }
+            let csvContent = "\uFEFF"; 
+            csvContent += "م,اسم الطالب,المرحلة والصف والموضوع,الحالة,الدرجة,المجموع,النسبة,التاريخ,مدة الاختبار\n";
+            studentRecords.forEach((r, i) => {
+                csvContent += `"${i+1}","${r.name}","${r.stageGrade || ''}","${r.status}","${r.score}","${r.total}","${r.pct}%","${r.date}","${r.duration}"\n`;
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `سجل_نتائج_الطلاب_${new Date().toLocaleDateString('ar-EG')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function openRecordDetailsModal(recIdx) {
@@ -2086,8 +2260,8 @@
                             <h4 class="font-black text-sky-950 text-base"><i class="fa-solid fa-layer-group text-sky-600 ml-1"></i> ${stage}</h4>
                         </div>
                         <div class="flex gap-1.5 items-center flex-wrap">
-                            <button type="button" onclick="moveStage(${sIdx}, -1)" ${sIdx === 0 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2.5 py-1 rounded-lg text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1 rounded-lg text-xs cursor-pointer"'} title="تحريك المرحلة لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
-                            <button type="button" onclick="moveStage(${sIdx}, 1)" ${sIdx === stageKeys.length - 1 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2.5 py-1 rounded-lg text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1 rounded-lg text-xs cursor-pointer"'} title="تحريك المرحلة لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
+                            <button type="button" onclick="moveStage(${sIdx}, -1)" ${sIdx === 0 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2.5 py-1 rounded-lg text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1 rounded-lg text-xs cursor-pointer"'} title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button type="button" onclick="moveStage(${sIdx}, 1)" ${sIdx === stageKeys.length - 1 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2.5 py-1 rounded-lg text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1 rounded-lg text-xs cursor-pointer"'} title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
                             <button type="button" onclick="duplicateStage('${stage}')" class="bg-indigo-600 text-white px-2.5 py-1 rounded-lg text-xs cursor-pointer" title="تكرار المرحلة"><i class="fa-solid fa-copy"></i></button>
                             <button type="button" onclick="openAddGradeModal('${stage}')" class="bg-sky-600 text-white px-2.5 py-1 rounded-lg text-xs cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة صف</button>
                             <button type="button" onclick="deleteStage('${stage}')" class="bg-rose-600 text-white px-2.5 py-1 rounded-lg text-xs cursor-pointer" title="حذف المرحلة"><i class="fa-solid fa-trash"></i></button>
@@ -2286,7 +2460,7 @@
                                         <button type="button" onclick="moveTopicInGroup('${stage}', '${grade}', ${tIdx}, -1)" ${tIdx === 0 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2 py-1 rounded text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer"'} title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
                                         <button type="button" onclick="moveTopicInGroup('${stage}', '${grade}', ${tIdx}, 1)" ${tIdx === matchedTopics.length - 1 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2 py-1 rounded text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer"'} title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
                                         <button type="button" onclick="duplicateTopic(${globalIdx})" class="bg-indigo-500 text-white px-2 py-1 rounded text-[11px] cursor-pointer" title="تكرار الموضوع"><i class="fa-solid fa-copy"></i></button>
-                                        <button type="button" onclick="openEditTopicModal(${globalIdx})" class="bg-amber-500 text-white px-2 py-1 rounded text-[11px] cursor-pointer" title="تعديل الموضوع والصفوف"><i class="fa-solid fa-pen"></i></button>
+                                        <button type="button" onclick="openEditTopicModal(${globalIdx})" class="bg-amber-500 text-white px-2 py-1 rounded text-[11px] cursor-pointer" title="تعديل"><i class="fa-solid fa-pen"></i></button>
                                         <button type="button" onclick="deleteTopic(${globalIdx})" class="bg-rose-500 text-white px-2 py-1 rounded text-[11px] cursor-pointer" title="حذف"><i class="fa-solid fa-trash"></i></button>
                                     </div>
                                 </div>
@@ -2597,16 +2771,16 @@
             let optsHtml = '';
             q.opts.forEach(opt => {
                 let isAns = opt === q.ans;
-                optsHtml += `<div class="p-2 rounded-xl border ${isAns ? 'bg-emerald-100 border-emerald-400 text-emerald-950 font-black' : 'bg-white text-slate-700'}">• ${formatText(opt, q.tashkeel)}</div>`;
+                optsHtml += `<div class="p-3 rounded-xl border ${isAns ? 'bg-emerald-100 border-emerald-400 text-emerald-950 font-black' : 'bg-white text-slate-700'}">• ${formatText(opt, q.tashkeel)}</div>`;
             });
             let paraObj = paragraphs.find(p => p.id === q.paragraphId);
-            let paraHtml = paraObj ? `<div class="p-3 bg-amber-50 rounded-xl border text-xs text-amber-950 mb-2"><strong>الفقرة:</strong> ${formatText(paraObj.text, paraObj.tashkeel)}</div>` : '';
+            let paraHtml = paraObj ? `<div class="p-4 bg-amber-50 rounded-2xl border text-sm text-amber-950 mb-3"><strong>الفقرة:</strong> ${formatText(paraObj.text, paraObj.tashkeel)}</div>` : '';
 
             document.getElementById('preview-single-q-body').innerHTML = `
                 ${paraHtml}
-                <p class="font-black text-sky-950 text-base mb-2">${formatText(q.q, q.tashkeel)}</p>
-                <div class="space-y-1.5 my-2">${optsHtml}</div>
-                ${q.exp ? `<div class="p-2.5 bg-sky-50 rounded-xl border text-xs text-sky-950 mt-2"><strong>التعليل:</strong> ${formatText(q.exp, q.tashkeel)}</div>` : ''}
+                <p class="font-black text-sky-950 text-lg mb-3">${formatText(q.q, q.tashkeel)}</p>
+                <div class="space-y-2 my-3">${optsHtml}</div>
+                ${q.exp ? `<div class="p-4 bg-sky-50 rounded-2xl border text-sm text-sky-950 mt-3 font-bold"><strong>التعليل:</strong> ${formatText(q.exp, q.tashkeel)}</div>` : ''}
             `;
             document.getElementById('modal-preview-single-q').classList.add('flex');
             document.getElementById('modal-preview-single-q').classList.remove('hidden');
@@ -2680,7 +2854,7 @@
 
             populateModalStages();
             document.getElementById('edit-q-index').value = "-1";
-            document.getElementById('question-modal-title').innerHTML = `<i class="fa-solid fa-circle-question text-amber-400 text-2xl"></i> إضافة سؤال فردي جديد`;
+            document.getElementById('question-modal-title').innerHTML = `<i class="fa-solid fa-circle-question text-amber-400 text-2xl"></i> إضافة سؤال جديد`;
             
             if (fStage) document.getElementById('modal-q-stage').value = fStage;
             populateModalGrades();
@@ -2827,11 +3001,13 @@
                 const loginModal = document.getElementById('modal-admin-login');
                 const quickInfoModal = document.getElementById('view-quick-info');
                 const studentReviewModal = document.getElementById('modal-student-review');
+                const certModal = document.getElementById('modal-cert');
                 
                 if (adminModal) { adminModal.classList.add('hidden'); adminModal.classList.remove('flex'); }
                 if (loginModal) { loginModal.classList.add('hidden'); loginModal.classList.remove('flex'); }
                 if (quickInfoModal) { quickInfoModal.classList.add('hidden'); }
                 if (studentReviewModal) { studentReviewModal.classList.add('hidden'); studentReviewModal.classList.remove('flex'); }
+                if (certModal) { certModal.classList.add('hidden'); certModal.classList.remove('flex'); }
 
                 document.getElementById('view-start').classList.remove('hidden');
                 document.getElementById('view-quiz').classList.add('hidden');
@@ -2843,18 +3019,20 @@
         let stagesData = ${JSON.stringify(stagesData)};
         let gradeStatus = ${JSON.stringify(gradeStatus)};
         let topicsData = ${JSON.stringify(topicsData)};
+        let defaultSettings = ${JSON.stringify(defaultSettings)};
         let appSettings = ${JSON.stringify(appSettings)};
         let paragraphs = ${JSON.stringify(paragraphs)};
         let questionBank = ${JSON.stringify(questionBank)};
         let quickInfoList = ${JSON.stringify(quickInfoList)};
         let studentRecords = ${JSON.stringify(studentRecords)};
+        let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
                 `;
                 
                 let startIndex = htmlContent.indexOf('/* -- DATA_START -- */');
-                let endIndex = htmlContent.indexOf('/\* -- DATA_END -- \*/');
+                let endIndex = htmlContent.indexOf('/* -- DATA_END -- */');
                 
                 if (startIndex !== -1 && endIndex !== -1) {
-                    htmlContent = htmlContent.substring(0, startIndex + 22) + "\n" + payload + "\n" + htmlContent.substring(endIndex);
+                    htmlContent = htmlContent.substring(0, startIndex + 22) + "\n" + payload + "\n        " + htmlContent.substring(endIndex);
                 }
 
                 let blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
@@ -2864,9 +3042,9 @@
                 dlAnchorElem.setAttribute("download", "platform_offline_complete.html");
                 dlAnchorElem.click();
                 URL.revokeObjectURL(url);
-                alert("تم تصدير ملف المنصة الشامل بنجاح! سيفتح الآن مباشرة على صفحة البداية أوفلاين بكامل بياناتك وسحابياتك المخزنة.");
+                alert("تم تصدير ملف المنصة الشامل بنجاح!");
             } catch (e) {
-                alert("حدث خطأ أثناء تصدير ملف HTML الأوفلاين: " + e.message);
+                alert("حدث خطأ أثناء تصدير ملف HTML: " + e.message);
             }
         }
 
@@ -2954,7 +3132,7 @@
                     alert("لم يتم العثور على صيغة أسئلة صحيحة بعد المعالجة.");
                 }
             } catch(e) {
-                alert("تعذر قراءة الدفعة الذكية، يرجى التأكد من كتابة الخصائص بداخل أقواس صحيحة وخلوها من الأخطاء الفادحة:\n" + e.message);
+                alert("تعذر قراءة الدفعة الذكية، يرجى التأكد من التنسيق:\n" + e.message);
             }
         }
 
@@ -3050,11 +3228,11 @@
 
         function previewParagraph(idx) {
             let p = paragraphs[idx];
-            let imgHtml = p.img ? `<div class="text-center my-2"><img src="${p.img}" class="max-h-48 rounded-xl mx-auto object-contain border"></div>` : '';
+            let imgHtml = p.img ? `<div class="text-center my-3"><img src="${p.img}" class="max-h-60 rounded-xl mx-auto object-contain border"></div>` : '';
             document.getElementById('preview-card-body').innerHTML = `
-                <h4 class="font-black text-amber-800 text-base border-b pb-2">${formatText(p.title || "اقْرَأْ ثُمَّ أَجِبْ:", p.tashkeel)}</h4>
+                <h4 class="font-black text-amber-800 text-lg border-b pb-3">${formatText(p.title || "اقْرَأْ ثُمَّ أَجِبْ:", p.tashkeel)}</h4>
                 ${imgHtml}
-                <p class="text-slate-800 text-sm whitespace-pre-line leading-relaxed">${formatText(p.text, p.tashkeel)}</p>
+                <p class="text-slate-800 text-base whitespace-pre-line leading-relaxed">${formatText(p.text, p.tashkeel)}</p>
             `;
             document.getElementById('modal-preview-card').classList.add('flex');
             document.getElementById('modal-preview-card').classList.remove('hidden');
@@ -3402,11 +3580,11 @@
             sectionDiv.innerHTML = `
                 <div class="flex justify-between items-center bg-indigo-50 p-2.5 rounded-xl border gap-2 flex-wrap">
                     <div class="flex items-center gap-2 flex-grow">
-                        <input type="checkbox" class="qi-sec-active w-5 h-5 text-emerald-600 rounded cursor-pointer" ${mainActive !== false ? 'checked' : ''} title="تفعيل / إخفاء العنوان الرئيسي">
+                        <input type="checkbox" class="qi-sec-active w-5 h-5 text-emerald-600 rounded cursor-pointer" ${mainActive !== false ? 'checked' : ''} title="تفعيل / إخفاء">
                         <i class="fa-solid fa-bookmark text-indigo-600"></i>
                         <input type="text" class="qi-sec-main-header w-full p-2 rounded-lg border text-xs font-black bg-white" placeholder="العنوان الرئيسي للقسم..." value="${mainHeader}">
                     </div>
-                    <button type="button" onclick="this.closest('.qi-section-block').remove()" class="text-rose-600 hover:text-rose-800 text-xs font-bold cursor-pointer px-2"><i class="fa-solid fa-trash ml-1"></i>حذف القسم</button>
+                    <button type="button" onclick="this.closest('.qi-section-block').remove()" class="text-rose-600 hover:text-rose-800 text-xs font-bold cursor-pointer px-2"><i class="fa-solid fa-trash ml-1"></i>حذف</button>
                 </div>
                 
                 <div class="qi-subitems-container space-y-3 pr-2 border-r-2 border-indigo-200 mr-2">
@@ -3425,7 +3603,7 @@
                 <div class="qi-subitem-block bg-slate-50 p-3.5 rounded-xl border space-y-2.5 relative">
                     <div class="flex justify-between items-center flex-wrap gap-2">
                         <div class="flex items-center gap-2">
-                            <input type="checkbox" class="qi-sub-active w-4 h-4 text-emerald-600 rounded cursor-pointer" ${active !== false ? 'checked' : ''} title="تفعيل / إخفاء العنوان الفرعي">
+                            <input type="checkbox" class="qi-sub-active w-4 h-4 text-emerald-600 rounded cursor-pointer" ${active !== false ? 'checked' : ''} title="تفعيل / إخفاء">
                             <span class="font-bold text-sky-900 text-xs">عنوان فرعي / تفصيل</span>
                         </div>
                         <button type="button" onclick="this.closest('.qi-subitem-block').remove()" class="text-rose-500 hover:text-rose-700 text-xs font-bold cursor-pointer"><i class="fa-solid fa-xmark ml-1"></i>حذف</button>
@@ -3451,8 +3629,8 @@
             const div = document.createElement('div');
             div.className = "qi-attachment-block flex items-center gap-2 bg-white p-2.5 rounded-xl border text-xs";
             div.innerHTML = `
-                <input type="text" class="qi-att-label p-2 rounded-lg border text-xs font-bold w-1/3 bg-amber-50/50" placeholder="مسمى الزر (مثل: اطّلع على، راجعني)" value="${label}">
-                <input type="text" class="qi-att-url p-2 rounded-lg border text-xs dir-ltr text-left flex-grow bg-slate-50" placeholder="رابط الملف أو الموقع (https://...)" value="${url}">
+                <input type="text" class="qi-att-label p-2 rounded-lg border text-xs font-bold w-1/3 bg-amber-50/50" placeholder="مسمى الزر (مثل: اطّلع على)" value="${label}">
+                <input type="text" class="qi-att-url p-2 rounded-lg border text-xs dir-ltr text-left flex-grow bg-slate-50" placeholder="الرابط (https://...)" value="${url}">
                 <button type="button" onclick="this.closest('.qi-attachment-block').remove()" class="text-rose-600 hover:text-rose-800 text-xs font-bold px-2 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
             `;
             container.appendChild(div);
@@ -3632,20 +3810,14 @@
                 const tabEl = document.getElementById(`admin-tab-${t}`);
                 const btnEl = document.getElementById(`tab-btn-${t}`);
                 if (tabEl) tabEl.classList.toggle('hidden', t !== tabName);
-                if (btnEl) btnEl.className = t === tabName ? "flex-1 min-w-[80px] py-2.5 rounded-xl font-bold text-xs transition bg-sky-600 text-white cursor-pointer shadow" : "flex-1 min-w-[80px] py-2.5 rounded-xl font-bold text-xs transition bg-slate-100 text-slate-700 cursor-pointer";
+                if (btnEl) btnEl.className = t === tabName ? "flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-sky-600 text-white cursor-pointer shadow" : "flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border cursor-pointer";
             });
-            if (tabName === 'questions') {
-                populateQuestionFilters();
-            }
-            if (tabName === 'paragraphs') {
-                renderAdminParagraphsList();
-            }
-            if (tabName === 'quickinfo') {
-                renderAdminQuickInfoList();
-            }
-            if (tabName === 'records') {
-                populateAdminRecFilters();
-            }
+            if (tabName === 'stages') renderAdminStagesList();
+            if (tabName === 'topics') renderAdminTopicsList();
+            if (tabName === 'questions') populateQuestionFilters();
+            if (tabName === 'paragraphs') renderAdminParagraphsList();
+            if (tabName === 'quickinfo') renderAdminQuickInfoList();
+            if (tabName === 'records') populateAdminRecFilters();
         }
 
         function loadAdminData() {
@@ -3663,6 +3835,10 @@
             if(document.getElementById('admin-use-difficulty-filter')) {
                 document.getElementById('admin-use-difficulty-filter').checked = !!appSettings.useDifficultyFilter;
                 toggleDifficultySettingsView(!!appSettings.useDifficultyFilter);
+            }
+            if(document.getElementById('admin-diff-selection-mode')) {
+                document.getElementById('admin-diff-selection-mode').value = appSettings.diffSelectionMode || "balanced";
+                toggleDiffModeView(appSettings.diffSelectionMode || "balanced");
             }
             if(document.getElementById('admin-diff-easy')) document.getElementById('admin-diff-easy').value = appSettings.diffEasyCount || 5;
             if(document.getElementById('admin-diff-medium')) document.getElementById('admin-diff-medium').value = appSettings.diffMediumCount || 10;
@@ -3687,13 +3863,13 @@
             document.getElementById('admin-exp-label-input').value = appSettings.expLabel || '';
             document.getElementById('admin-new-password').value = '';
 
-            if (typeof renderAdminStagesList === 'function') renderAdminStagesList();
-            if (typeof renderAdminTopicsList === 'function') renderAdminTopicsList();
-            if (typeof renderAdminParagraphsList === 'function') renderAdminParagraphsList();
-            if (typeof renderAdminQuickInfoList === 'function') renderAdminQuickInfoList();
-            if (typeof populateAdminRecFilters === 'function') populateAdminRecFilters();
-            if (typeof populateQuestionFilters === 'function') populateQuestionFilters();
-            if (typeof renderAdminRecordsTable === 'function') renderAdminRecordsTable();
+            renderAdminStagesList();
+            renderAdminTopicsList();
+            renderAdminParagraphsList();
+            renderAdminQuickInfoList();
+            populateAdminRecFilters();
+            populateQuestionFilters();
+            renderAdminRecordsTable();
         }
 
         function saveAppSettings() {
@@ -3709,6 +3885,7 @@
             appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
             
             if(document.getElementById('admin-use-difficulty-filter')) appSettings.useDifficultyFilter = document.getElementById('admin-use-difficulty-filter').checked;
+            if(document.getElementById('admin-diff-selection-mode')) appSettings.diffSelectionMode = document.getElementById('admin-diff-selection-mode').value;
             if(document.getElementById('admin-diff-easy')) appSettings.diffEasyCount = parseInt(document.getElementById('admin-diff-easy').value) || 0;
             if(document.getElementById('admin-diff-medium')) appSettings.diffMediumCount = parseInt(document.getElementById('admin-diff-medium').value) || 0;
             if(document.getElementById('admin-diff-hard')) appSettings.diffHardCount = parseInt(document.getElementById('admin-diff-hard').value) || 0;
@@ -3743,4 +3920,5 @@
 
         window.addEventListener('DOMContentLoaded', loadDataFromCloud);
     </script>
-</body></html>
+</body>
+</html>
