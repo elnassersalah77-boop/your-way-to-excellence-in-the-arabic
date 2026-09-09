@@ -212,6 +212,9 @@
                 </div>
             </div>
 
+            <!-- بطاقة بنك أسئلة الموضوع التفاعلية والمحاولات المطلوبة -->
+            <div id="topic-bank-stats-card" class="hidden"></div>
+
             <div id="start-form-container" class="max-w-md mx-auto space-y-5 pt-2">
                 <div class="text-right">
                     <label for="student-name-input" class="block text-sm font-black text-slate-800 mb-1.5 mr-1">اسْمُ الطَّالِبِ / الطَّالِبَةِ (بِاللُّغَةِ الْعَرَبِيَّةِ فَقَطْ):</label>
@@ -378,7 +381,7 @@
         </div>
     </div>
 
-    <!-- FLOATING MODAL: ADMIN DASHBOARD (تم التحديث للمقاس الكبير والشامل الموحد) -->
+    <!-- FLOATING MODAL: ADMIN DASHBOARD -->
     <div id="view-admin" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div id="modal-content-admin" class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -409,6 +412,24 @@
                         <div><label class="block mb-1 text-slate-700">نبذة عن مضمون الاختبار:</label><input type="text" id="admin-branch-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         <div><label class="block mb-1 text-slate-700">عنوان تبويب المتصفح (Title):</label><input type="text" id="admin-pagetitle-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         <div><label class="block mb-1 text-slate-700">مسمى زر/عنوان (المعلومة السريعة):</label><input type="text" id="admin-quickinfo-label-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
+                        
+                        <!-- إضافات التحكم في بطاقة بنك الأسئلة -->
+                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                            <label class="block mb-1 text-emerald-900">إظهار بطاقة بنك الأسئلة (صفحة البداية):</label>
+                            <select id="admin-show-bank-card" class="w-full p-2.5 rounded-xl border border-emerald-300 bg-white font-black text-emerald-800">
+                                <option value="true">إظهار البطاقة</option>
+                                <option value="false">إخفاء البطاقة</option>
+                            </select>
+                        </div>
+                        <div class="bg-sky-50 p-4 rounded-xl border border-sky-200">
+                            <label class="block mb-1 text-sky-900">شكل عرض بطاقة بنك الأسئلة:</label>
+                            <select id="admin-bank-card-style" class="w-full p-2.5 rounded-xl border border-sky-300 bg-white font-black text-sky-800">
+                                <option value="detailed">البطاقة التفصيلية الكاملة</option>
+                                <option value="mini">البطاقة المصغرة</option>
+                                <option value="horizontal">الشريط الأفقي المدمج</option>
+                            </select>
+                        </div>
+
                         <div><label class="block mb-1 text-slate-700">عدد الأسئلة للاختبار:</label><input type="number" id="admin-exam-count-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         <div><label class="block mb-1 text-slate-700">زمن الاختبار بالدقائق:</label><input type="number" id="admin-exam-duration-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         <div><label class="block mb-1 text-slate-700">تاريخ ووقت غلق الاختبار (اختياري):</label><input type="datetime-local" id="admin-expiry-date-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
@@ -562,7 +583,7 @@
                                 <option value="صعب جدا">صعب جداً</option>
                             </select>
                         </div>
-                        <textarea id="direct-batch-input" rows="3" placeholder="{q: &quot;...&quot;, opts: [&quot;...&quot;, &quot;...&quot;], ans: &quot;...&quot;, exp: &quot;...&quot;}" class="w-full p-3 font-mono text-xs rounded-xl border border-indigo-300 bg-white dir-ltr text-left focus:outline-none"></textarea>
+                        <textarea id="direct-batch-input" rows="3" placeholder='{q: "...", opts: ["...", "..."], ans: "...", exp: "..."}' class="w-full p-3 font-mono text-xs rounded-xl border border-indigo-300 bg-white dir-ltr text-left focus:outline-none"></textarea>
                         <div class="flex justify-end"><button type="button" onclick="saveDirectBatchQuestions()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs transition cursor-pointer shadow"><i class="fa-solid fa-circle-plus ml-1"></i> إضافة الدفعة</button></div>
                     </div>
 
@@ -993,6 +1014,8 @@
             "platformTheme": "default",
             "platformFont": "IBM Plex Sans Arabic",
             "quickInfoLabel": "مَعْلُومَةٌ سَرِيعَةٌ لِلدَّرْسِ",
+            "showBankCard": "true",
+            "bankCardStyle": "detailed",
             "logoHeader": "",
             "logoRight": "",
             "logoLeft": "",
@@ -1383,14 +1406,124 @@
         function onTopicChange() {
             const topic = document.getElementById('start-topic-select').value;
             const qiBtn = document.getElementById('quick-info-top-btn');
-            if (!qiBtn) return;
-            if (topic) {
-                const hasInfo = quickInfoList.some(qi => qi.active !== false && (qi.topic === topic || (!qi.topic && qi.stage)));
-                if (hasInfo) qiBtn.classList.remove('hidden');
-                else qiBtn.classList.add('hidden');
-            } else {
-                qiBtn.classList.add('hidden');
+            if (qiBtn) {
+                if (topic) {
+                    const hasInfo = quickInfoList.some(qi => qi.active !== false && (qi.topic === topic || (!qi.topic && qi.stage)));
+                    if (hasInfo) qiBtn.classList.remove('hidden');
+                    else qiBtn.classList.add('hidden');
+                } else {
+                    qiBtn.classList.add('hidden');
+                }
             }
+            updateTopicBankCard();
+        }
+
+        function updateTopicBankCard() {
+            const card = document.getElementById('topic-bank-stats-card');
+            if (!card) return;
+
+            const stage = document.getElementById('start-stage-select').value;
+            const grade = document.getElementById('start-grade-select').value;
+            const topic = document.getElementById('start-topic-select').value;
+
+            if (!stage || !grade || !topic) {
+                card.classList.add('hidden');
+                return;
+            }
+
+            const pool = questionBank.filter(q => q.stage === stage && q.grade === grade && q.topic === topic && q.active !== false);
+            const totalBankQs = pool.length;
+
+            const isCardVisible = (appSettings.showBankCard !== "false" && appSettings.showBankCard !== false);
+
+            if (totalBankQs === 0 || !isCardVisible) {
+                card.classList.add('hidden');
+                return;
+            }
+
+            let examCount = parseInt(appSettings.examCount) || 20;
+            if (appSettings.useDifficultyFilter && appSettings.diffSelectionMode === 'fixed') {
+                examCount = (parseInt(appSettings.diffEasyCount) || 0) + 
+                            (parseInt(appSettings.diffMediumCount) || 0) + 
+                            (parseInt(appSettings.diffHardCount) || 0) + 
+                            (parseInt(appSettings.diffVeryHardCount) || 0);
+            }
+            if (examCount <= 0) examCount = 20;
+
+            const attempts = Math.ceil(totalBankQs / Math.min(examCount, totalBankQs));
+            const answeredSet = getAnsweredQuestionsSet(topic);
+            const masteredCount = pool.filter(q => answeredSet.includes(q.q)).length;
+            const remainingCount = Math.max(0, totalBankQs - masteredCount);
+
+            const cardStyle = appSettings.bankCardStyle || "detailed";
+            card.className = ""; 
+
+            if (cardStyle === "mini") {
+                card.className = "max-w-xs mx-auto my-4 bg-white border-2 border-emerald-300 rounded-2xl p-3 shadow-md text-right transition-all duration-300";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-2">
+                        <span class="font-black text-emerald-800 text-sm"><i class="fa-solid fa-vault ml-1"></i> بنك الأسئلة: ${totalBankQs}</span>
+                        <span class="text-[10px] bg-sky-100 text-sky-800 font-bold px-2 py-1 rounded-lg">المحاولات: ${attempts}</span>
+                    </div>
+                    <div class="text-xs font-bold text-slate-600 flex justify-between px-1">
+                        <span class="text-emerald-600">مُتقن: ${masteredCount}</span>
+                        <span class="text-amber-600">متبقي: ${remainingCount}</span>
+                    </div>
+                `;
+            } else if (cardStyle === "horizontal") {
+                card.className = "w-full max-w-lg mx-auto my-4 bg-emerald-50 border-2 border-emerald-200 rounded-xl p-3 shadow-sm text-right flex justify-between items-center gap-2 flex-wrap transition-all duration-300";
+                card.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-vault text-emerald-600 text-lg"></i>
+                        <span class="font-black text-emerald-900 text-sm">البنك: ${totalBankQs} سؤال</span>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs font-bold bg-white px-3 py-1.5 rounded-lg border shadow-2xs">
+                        <span class="text-sky-700" title="جولات الاختبار"><i class="fa-solid fa-rotate-right ml-1"></i>${attempts}</span>
+                        <span class="text-emerald-600" title="متقن"><i class="fa-solid fa-check ml-1"></i>${masteredCount}</span>
+                        <span class="text-amber-600" title="متبقي"><i class="fa-solid fa-hourglass-half ml-1"></i>${remainingCount}</span>
+                    </div>
+                `;
+            } else {
+                card.className = "max-w-md mx-auto my-4 bg-gradient-to-r from-emerald-500/10 via-sky-500/10 to-indigo-500/10 border-2 border-emerald-400 rounded-3xl p-4 sm:p-5 shadow-md transition-all duration-300 text-right space-y-3";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-emerald-200 pb-2.5">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow">
+                                <i class="fa-solid fa-vault"></i>
+                            </div>
+                            <h4 class="font-black text-emerald-950 text-sm sm:text-base">بَنْكُ أَسْئِلَةِ الْمَوْضُوعِ</h4>
+                        </div>
+                        <span class="bg-emerald-600 text-white text-xs font-black px-3 py-1 rounded-full shadow-xs">
+                            ${totalBankQs} أسئلة
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-center">
+                        <div class="bg-white/90 p-2.5 rounded-2xl border border-emerald-200 shadow-2xs">
+                            <span class="block text-[11px] text-slate-500 font-bold mb-0.5">رَصِيدُ الْبَنْكِ الْكُلِّي</span>
+                            <span class="text-emerald-800 font-black text-xl sm:text-2xl">${totalBankQs}</span>
+                            <span class="text-[10px] text-emerald-600 font-bold block">سُؤَالاً مُتَاحاً</span>
+                        </div>
+                        <div class="bg-white/90 p-2.5 rounded-2xl border border-sky-200 shadow-2xs">
+                            <span class="block text-[11px] text-slate-500 font-bold mb-0.5">الْمُحَاوَلَاتُ لِتَغْطِيَتِهِ</span>
+                            <span class="text-sky-800 font-black text-xl sm:text-2xl">${attempts}</span>
+                            <span class="text-[10px] text-sky-600 font-bold block">جَوْلَاتِ اخْتِبَارٍ</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/80 p-3 rounded-2xl border border-slate-200 space-y-1.5 text-center">
+                        <p class="text-xs font-black text-slate-700 leading-relaxed">
+                            🎯 يتطلب خوض <strong class="text-sky-700 text-sm">${attempts} ${attempts <= 2 ? 'محاولتين' : attempts <= 10 ? 'محاولات' : 'محاولة'}</strong> للإجابة عن كامل أسئلة البنك وإتقانها!
+                        </p>
+                        <div class="flex justify-between items-center text-[10px] font-black text-slate-500 px-1 pt-1 border-t border-slate-100">
+                            <span>الأسئلة المُتقنة: <strong class="text-emerald-600">${masteredCount}</strong></span>
+                            <span>المتبقي للإتقان: <strong class="text-amber-600">${remainingCount}</strong></span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            card.classList.remove('hidden');
         }
 
         function getAnsweredQuestionsKey(topic) {
@@ -1413,9 +1546,6 @@
                 }
             } catch(e) {}
         }
-
-        // =================== نهاية القسم الأول ===================
-        // الصق القسم الثاني مباشرة هنا لإكمال ملف المنصة بالكامل
 function startQuiz() {
             if (appSettings.expiryDate) {
                 let expiryTime = new Date(appSettings.expiryDate).getTime();
@@ -1459,7 +1589,6 @@ function startQuiz() {
                 return shuffled.slice(0, Math.min(count, shuffled.length));
             }
 
-            // تطبيق خوارزمية التباعد الذكي لمنع تتابع الأسئلة المتشابهة أو المرتبطة بنفس الفقرة
             function applySpacedShuffle(itemsList, gap = 3) {
                 if (itemsList.length <= 1) return itemsList;
                 let list = [...itemsList].sort(() => 0.5 - Math.random());
@@ -1510,7 +1639,6 @@ function startQuiz() {
                 let mode = appSettings.diffSelectionMode || 'balanced';
 
                 if (mode === 'balanced') {
-                    // الطريقة الثانية: التوزيع المتوازن والمواءمة الذكية التلقائية بحسب المتاح
                     let availE = easyPool.length;
                     let availM = medPool.length;
                     let availH = hardPoolArr.length;
@@ -1536,7 +1664,6 @@ function startQuiz() {
                         let takeH = Math.min(availH, Math.max(0, reqH));
                         let takeV = Math.min(availV, Math.max(0, reqV));
 
-                        // تعويض ذكي تلقائي في حال وجود أي نقص لتفادي أي خطأ أو توقف
                         let currentTotal = takeE + takeM + takeH + takeV;
                         while (currentTotal < targetExamCount) {
                             if (takeE < availE) { takeE++; currentTotal++; }
@@ -1560,7 +1687,6 @@ function startQuiz() {
                         }
                     }
                 } else {
-                    // الطريقة الأولى: تحديد عدد ثابت لكل مستوى مع المواءمة الذكية والتعويض التلقائي
                     let reqEasy = parseInt(appSettings.diffEasyCount) || 0;
                     let reqMed = parseInt(appSettings.diffMediumCount) || 0;
                     let reqHard = parseInt(appSettings.diffHardCount) || 0;
@@ -1585,7 +1711,6 @@ function startQuiz() {
                     sessionQuestions = applySpacedShuffle(sessionQuestions);
                 }
             } else {
-                // الوضع الافتراضي عند عدم تفعيل مستويات الصعوبة: خلط متباعد ذكي يمنع التقارب
                 let availableIndices = unassignedPool.map((_, i) => i);
                 if (appSettings.shuffleQuestions !== false) {
                     availableIndices.sort(() => 0.5 - Math.random());
@@ -1616,7 +1741,6 @@ function startQuiz() {
                 sessionQuestions = appSettings.shuffleQuestions !== false ? applySpacedShuffle(chosenQuestions) : chosenQuestions;
             }
 
-            // خلط خيارات الإجابات بدقة مع بقاء الإجابة الصحيحة مطابقة دائماً
             sessionQuestions = sessionQuestions.map(q => {
                 let qCopy = JSON.parse(JSON.stringify(q));
                 if (appSettings.shuffleOptions !== false) {
@@ -2460,7 +2584,7 @@ function startQuiz() {
                                         <button type="button" onclick="moveTopicInGroup('${stage}', '${grade}', ${tIdx}, -1)" ${tIdx === 0 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2 py-1 rounded text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer"'} title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
                                         <button type="button" onclick="moveTopicInGroup('${stage}', '${grade}', ${tIdx}, 1)" ${tIdx === matchedTopics.length - 1 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2 py-1 rounded text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer"'} title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
                                         <button type="button" onclick="duplicateTopic(${globalIdx})" class="bg-indigo-500 text-white px-2 py-1 rounded text-[11px] cursor-pointer" title="تكرار الموضوع"><i class="fa-solid fa-copy"></i></button>
-                                        <button type="button" onclick="openEditTopicModal(${globalIdx})" class="bg-amber-500 text-white px-2 py-1 rounded text-[11px] cursor-pointer" title="تعديل"><i class="fa-solid fa-pen"></i></button>
+                                        <button type="button" onclick="openEditTopicModal(${globalIdx})" class="bg-amber-500 text-white px-2 py-1 rounded text-[11px] cursor-pointer" title="تعديل الموضوع والصفوف"><i class="fa-solid fa-pen"></i></button>
                                         <button type="button" onclick="deleteTopic(${globalIdx})" class="bg-rose-500 text-white px-2 py-1 rounded text-[11px] cursor-pointer" title="حذف"><i class="fa-solid fa-trash"></i></button>
                                     </div>
                                 </div>
@@ -3832,6 +3956,9 @@ function startQuiz() {
             document.getElementById('admin-expiry-date-input').value = appSettings.expiryDate || "";
             document.getElementById('admin-footer-year-input').value = appSettings.footerYear || "2026";
             
+            if(document.getElementById('admin-show-bank-card')) document.getElementById('admin-show-bank-card').value = (appSettings.showBankCard === false || appSettings.showBankCard === "false") ? "false" : "true";
+            if(document.getElementById('admin-bank-card-style')) document.getElementById('admin-bank-card-style').value = appSettings.bankCardStyle || "detailed";
+
             if(document.getElementById('admin-use-difficulty-filter')) {
                 document.getElementById('admin-use-difficulty-filter').checked = !!appSettings.useDifficultyFilter;
                 toggleDifficultySettingsView(!!appSettings.useDifficultyFilter);
@@ -3884,6 +4011,9 @@ function startQuiz() {
             appSettings.expiryDate = document.getElementById('admin-expiry-date-input').value;
             appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
             
+            if(document.getElementById('admin-show-bank-card')) appSettings.showBankCard = document.getElementById('admin-show-bank-card').value === "true";
+            if(document.getElementById('admin-bank-card-style')) appSettings.bankCardStyle = document.getElementById('admin-bank-card-style').value;
+
             if(document.getElementById('admin-use-difficulty-filter')) appSettings.useDifficultyFilter = document.getElementById('admin-use-difficulty-filter').checked;
             if(document.getElementById('admin-diff-selection-mode')) appSettings.diffSelectionMode = document.getElementById('admin-diff-selection-mode').value;
             if(document.getElementById('admin-diff-easy')) appSettings.diffEasyCount = parseInt(document.getElementById('admin-diff-easy').value) || 0;
