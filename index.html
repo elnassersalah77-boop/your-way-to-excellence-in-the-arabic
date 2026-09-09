@@ -711,94 +711,114 @@
         </div>
     </div>
 
-    <!-- نافذة إضافة وتعديل الفقرة -->
-    <div id="modal-paragraph-edit" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-xl w-full p-6 space-y-4 shadow-2xl modal-animate-in max-h-[90vh] overflow-y-auto text-right">
-            <h3 id="paragraph-modal-title" class="font-black text-slate-900 text-lg border-b pb-2">إضافة / تعديل فقرة قرائية</h3>
+    <!-- نافذة إضافة وتعديل الفقرة (محدثة بحجم كبير وشريط علوي) -->
+    <div id="modal-paragraph-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
+        <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-sky-400 overflow-hidden modal-animate-in text-right">
+            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
+                <h3 id="paragraph-modal-title" class="font-black text-white text-xl sm:text-2xl flex items-center gap-3">
+                    <i class="fa-solid fa-book-open text-amber-400 text-2xl"></i> إضافة / تعديل فقرة قرائية
+                </h3>
+                <div class="flex gap-3 items-center">
+                    <button type="button" onclick="saveParagraphFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حفظ سريع</button>
+                    <button type="button" onclick="document.getElementById('modal-paragraph-edit').classList.add('hidden'); document.getElementById('modal-paragraph-edit').classList.remove('flex');" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-1"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
             <input type="hidden" id="edit-paragraph-id" value="">
-            <div class="space-y-3 text-xs font-bold">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <div><label class="block mb-1 text-slate-700">المرحلة المفعلة:</label><select id="modal-para-stage" onchange="populateParaModalGrades()" class="w-full p-2 rounded-xl border bg-white"><option value="">اختر المرحلة</option></select></div>
-                    <div><label class="block mb-1 text-slate-700">الصف المفعل:</label><select id="modal-para-grade" onchange="populateParaModalTopics()" class="w-full p-2 rounded-xl border bg-white"><option value="">اختر الصف</option></select></div>
-                    <div><label class="block mb-1 text-slate-700">الموضوع المفعل:</label><select id="modal-para-topic" onchange="populateParaModalQuestions()" class="w-full p-2 rounded-xl border bg-white text-sky-950"><option value="">اختر الموضوع</option></select></div>
+            <div class="p-6 sm:p-10 space-y-6 overflow-y-auto flex-grow bg-slate-50 text-right text-xs font-bold">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div><label class="block mb-1 text-slate-700">المرحلة المفعلة:</label><select id="modal-para-stage" onchange="populateParaModalGrades()" class="w-full p-2.5 rounded-xl border bg-white"><option value="">اختر المرحلة</option></select></div>
+                    <div><label class="block mb-1 text-slate-700">الصف المفعل:</label><select id="modal-para-grade" onchange="populateParaModalTopics()" class="w-full p-2.5 rounded-xl border bg-white"><option value="">اختر الصف</option></select></div>
+                    <div><label class="block mb-1 text-slate-700">الموضوع المفعل:</label><select id="modal-para-topic" onchange="populateParaModalQuestions()" class="w-full p-2.5 rounded-xl border bg-white text-sky-950"><option value="">اختر الموضوع</option></select></div>
                 </div>
 
-                <div><label class="block mb-1 text-slate-700">اسم أو تعريف الفقرة:</label><input type="text" id="modal-para-name" class="w-full p-2.5 rounded-xl border" placeholder="مثال: فقرة النصوص الشعرية"></div>
-                <div><label class="block mb-1 text-slate-700">عنوان الفقرة العلوي:</label><input type="text" id="modal-para-title" class="w-full p-2.5 rounded-xl border" placeholder="اقْرَأْ ثُمَّ أَجِبْ:"></div>
-                <div><label class="block mb-1 text-slate-700">رابط صورة توضيحية (اختياري):</label><input type="text" id="modal-para-img" class="w-full p-2.5 rounded-xl border dir-ltr text-left" placeholder="https://..."></div>
-                <div><label class="block mb-1 text-slate-700">نص الفقرة القرائية:</label><textarea id="modal-para-text" rows="3" class="w-full p-2.5 rounded-xl border font-semibold text-sm" placeholder="اكتب النص القرائي هنا..."></textarea></div>
+                <div><label class="block mb-1 text-slate-700">اسم أو تعريف الفقرة:</label><input type="text" id="modal-para-name" class="w-full p-3 rounded-xl border text-sm font-black" placeholder="مثال: فقرة النصوص الشعرية"></div>
+                <div><label class="block mb-1 text-slate-700">عنوان الفقرة العلوي:</label><input type="text" id="modal-para-title" class="w-full p-3 rounded-xl border text-sm font-black" placeholder="اقْرَأْ ثُمَّ أَجِبْ:"></div>
+                <div><label class="block mb-1 text-slate-700">رابط صورة توضيحية (اختياري):</label><input type="text" id="modal-para-img" class="w-full p-3 rounded-xl border dir-ltr text-left text-sm" placeholder="https://..."></div>
+                <div><label class="block mb-1 text-slate-700">نص الفقرة القرائية:</label><textarea id="modal-para-text" rows="5" class="w-full p-3 rounded-xl border font-semibold text-base leading-relaxed" placeholder="اكتب النص القرائي هنا..."></textarea></div>
                 
-                <div class="bg-indigo-50/70 p-3 rounded-2xl border-2 border-indigo-200 space-y-2">
-                    <label class="block text-indigo-950 font-black"><i class="fa-solid fa-link text-indigo-600 ml-1"></i> اختر الأسئلة المرتبطة بهذه الفقرة يدوياً:</label>
-                    <div id="modal-para-questions-container" class="space-y-1.5 max-h-44 overflow-y-auto p-2 bg-white rounded-xl border">
+                <div class="bg-indigo-50/70 p-4 rounded-2xl border-2 border-indigo-200 space-y-2">
+                    <label class="block text-indigo-950 font-black text-sm"><i class="fa-solid fa-link text-indigo-600 ml-1"></i> اختر الأسئلة المرتبطة بهذه الفقرة يدوياً:</label>
+                    <div id="modal-para-questions-container" class="space-y-2 max-h-56 overflow-y-auto p-3 bg-white rounded-xl border">
                         <p class="text-slate-400 text-xs text-center py-2">يرجى تحديد (المرحلة، الصف، والموضوع) بالأعلى أولاً لعرض أسئلته هنا.</p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-4 pt-1">
-                    <div class="flex items-center gap-2 bg-sky-50 p-2 rounded-xl border border-sky-200 flex-grow">
-                        <input type="checkbox" id="modal-para-active" class="w-4 h-4 text-sky-600 rounded" checked>
-                        <label for="modal-para-active" class="cursor-pointer text-sky-950">تفعيل هذه الفقرة</label>
+                    <div class="flex items-center gap-2 bg-sky-50 p-3 rounded-xl border border-sky-200 flex-grow">
+                        <input type="checkbox" id="modal-para-active" class="w-5 h-5 text-sky-600 rounded" checked>
+                        <label for="modal-para-active" class="cursor-pointer text-sky-950 text-sm">تفعيل هذه الفقرة</label>
                     </div>
-                    <div class="flex items-center gap-2 bg-amber-50 p-2 rounded-xl border border-amber-200 flex-grow">
-                        <input type="checkbox" id="modal-para-tashkeel" class="w-4 h-4 text-amber-600 rounded" checked>
-                        <label for="modal-para-tashkeel" class="cursor-pointer text-amber-950">تفعيل التشكيل للنص</label>
+                    <div class="flex items-center gap-2 bg-amber-50 p-3 rounded-xl border border-amber-200 flex-grow">
+                        <input type="checkbox" id="modal-para-tashkeel" class="w-5 h-5 text-amber-600 rounded" checked>
+                        <label for="modal-para-tashkeel" class="cursor-pointer text-amber-950 text-sm">تفعيل التشكيل للنص</label>
                     </div>
                 </div>
             </div>
-            <div class="flex justify-end gap-2 pt-2 border-t">
-                <button type="button" onclick="document.getElementById('modal-paragraph-edit').classList.add('hidden'); document.getElementById('modal-paragraph-edit').classList.remove('flex');" class="bg-slate-200 px-4 py-2 rounded-xl text-xs cursor-pointer">إلغاء</button>
-                <button type="button" onclick="saveParagraphFromModal()" class="bg-sky-600 text-white px-5 py-2 rounded-xl text-xs cursor-pointer font-bold">حفظ الفقرة</button>
+
+            <div class="p-5 bg-slate-100 border-t-2 border-slate-200 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('modal-paragraph-edit').classList.add('hidden'); document.getElementById('modal-paragraph-edit').classList.remove('flex');" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-3 rounded-2xl text-base font-bold cursor-pointer">إلغاء</button>
+                <button type="button" onclick="saveParagraphFromModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-8 py-3 rounded-2xl text-base cursor-pointer font-extrabold shadow">حفظ الفقرة</button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة إضافة وتعديل بطاقة معلومات سريعة -->
-    <div id="modal-quickinfo-edit" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-4 shadow-2xl modal-animate-in max-h-[90vh] overflow-y-auto text-right">
-            <h3 id="quickinfo-modal-title" class="font-black text-slate-900 text-lg border-b pb-2">إضافة / تعديل بطاقة معلومات سريعة</h3>
+    <!-- نافذة إضافة وتعديل بطاقة معلومات سريعة (محدثة بحجم كبير وشريط علوي) -->
+    <div id="modal-quickinfo-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
+        <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in text-right">
+            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
+                <h3 id="quickinfo-modal-title" class="font-black text-white text-xl sm:text-2xl flex items-center gap-3">
+                    <i class="fa-solid fa-lightbulb text-amber-400 text-2xl"></i> إضافة / تعديل بطاقة معلومات سريعة
+                </h3>
+                <div class="flex gap-3 items-center">
+                    <button type="button" onclick="saveQuickInfoFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حفظ سريع</button>
+                    <button type="button" onclick="document.getElementById('modal-quickinfo-edit').classList.add('hidden'); document.getElementById('modal-quickinfo-edit').classList.remove('flex');" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-1"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
             <input type="hidden" id="edit-quickinfo-id" value="-1">
-            <div class="space-y-4 text-xs font-bold">
-                <div><label class="block mb-1 text-slate-700">عنوان البطاقة (الرئيسي):</label><input type="text" id="modal-qi-title" class="w-full p-2.5 rounded-xl border text-sm font-black" placeholder="عنوان الدرس أو القاعدة..."></div>
+            <div class="p-6 sm:p-10 space-y-6 overflow-y-auto flex-grow bg-slate-50 text-right text-xs font-bold">
+                <div><label class="block mb-1 text-slate-700">عنوان البطاقة (الرئيسي):</label><input type="text" id="modal-qi-title" class="w-full p-3 rounded-xl border text-sm font-black bg-white" placeholder="عنوان الدرس أو القاعدة..."></div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-sky-50 p-3 rounded-2xl border border-sky-200">
-                    <div><label class="block mb-1 text-sky-950">المرحلة:</label><select id="modal-qi-stage" onchange="populateQiModalGrades()" class="w-full p-2 rounded-xl border bg-white"><option value="">اختر المرحلة</option></select></div>
-                    <div><label class="block mb-1 text-sky-950">الصف:</label><select id="modal-qi-grade" onchange="populateQiModalTopics()" class="w-full p-2 rounded-xl border bg-white"><option value="">اختر الصف</option></select></div>
-                    <div><label class="block mb-1 text-sky-950">الموضوع المرتبط:</label><select id="modal-qi-topic-select" class="w-full p-2 rounded-xl border bg-white font-black text-sky-900"><option value="">اختر الموضوع</option></select></div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-sky-50 p-4 rounded-2xl border border-sky-200">
+                    <div><label class="block mb-1 text-sky-950">المرحلة:</label><select id="modal-qi-stage" onchange="populateQiModalGrades()" class="w-full p-2.5 rounded-xl border bg-white"><option value="">اختر المرحلة</option></select></div>
+                    <div><label class="block mb-1 text-sky-950">الصف:</label><select id="modal-qi-grade" onchange="populateQiModalTopics()" class="w-full p-2.5 rounded-xl border bg-white"><option value="">اختر الصف</option></select></div>
+                    <div><label class="block mb-1 text-sky-950">الموضوع المرتبط:</label><select id="modal-qi-topic-select" class="w-full p-2.5 rounded-xl border bg-white font-black text-sky-900"><option value="">اختر الموضوع</option></select></div>
                 </div>
 
-                <div><label class="block mb-1 text-slate-700">رابط صورة توضيحية عامة (اختياري):</label><input type="text" id="modal-qi-img" class="w-full p-2.5 rounded-xl border dir-ltr text-left" placeholder="https://..."></div>
+                <div><label class="block mb-1 text-slate-700">رابط صورة توضيحية عامة (اختياري):</label><input type="text" id="modal-qi-img" class="w-full p-3 rounded-xl border dir-ltr text-left bg-white" placeholder="https://..."></div>
                 
                 <div class="bg-indigo-50/70 p-4 rounded-2xl border-2 border-indigo-200 space-y-3">
                     <div class="flex justify-between items-center border-b border-indigo-200 pb-2">
                         <h4 class="font-black text-indigo-950 text-sm"><i class="fa-solid fa-list-ul text-indigo-600 ml-1"></i> العناوين الرئيسية والفرعية (مع زر تفعيل/إخفاء):</h4>
-                        <button type="button" onclick="addQuickInfoSectionBlock()" class="bg-indigo-600 text-white font-bold text-xs px-3 py-1.5 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة قسم رئيسي جديد</button>
+                        <button type="button" onclick="addQuickInfoSectionBlock()" class="bg-indigo-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة قسم رئيسي جديد</button>
                     </div>
-                    <div id="quickinfo-sections-builder-container" class="space-y-4 max-h-60 overflow-y-auto pr-1"></div>
+                    <div id="quickinfo-sections-builder-container" class="space-y-4 max-h-72 overflow-y-auto pr-1"></div>
                 </div>
 
                 <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200 space-y-3">
                     <div class="flex justify-between items-center border-b border-amber-200 pb-2">
                         <h4 class="font-black text-amber-950 text-sm"><i class="fa-solid fa-file-arrow-down text-amber-600 ml-1"></i> الروابط والملفات الخارجية:</h4>
-                        <button type="button" onclick="addQiAttachmentBlock()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3 py-1.5 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة رابط جديد</button>
+                        <button type="button" onclick="addQiAttachmentBlock()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة رابط جديد</button>
                     </div>
-                    <div id="quickinfo-attachments-builder-container" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
+                    <div id="quickinfo-attachments-builder-container" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
                 </div>
 
                 <div class="flex items-center gap-4 pt-1">
-                    <div class="flex items-center gap-2 bg-sky-50 p-2 rounded-xl border border-sky-200 flex-grow">
-                        <input type="checkbox" id="modal-qi-active" class="w-4 h-4 text-sky-600 rounded" checked>
-                        <label for="modal-qi-active" class="cursor-pointer text-sky-950">تفعيل هذه البطاقة</label>
+                    <div class="flex items-center gap-2 bg-sky-50 p-3 rounded-xl border border-sky-200 flex-grow">
+                        <input type="checkbox" id="modal-qi-active" class="w-5 h-5 text-sky-600 rounded" checked>
+                        <label for="modal-qi-active" class="cursor-pointer text-sky-950 text-sm">تفعيل هذه البطاقة</label>
                     </div>
-                    <div class="flex items-center gap-2 bg-amber-50 p-2 rounded-xl border border-amber-200 flex-grow">
-                        <input type="checkbox" id="modal-qi-tashkeel" class="w-4 h-4 text-amber-600 rounded" checked>
-                        <label for="modal-qi-tashkeel" class="cursor-pointer text-amber-950">تفعيل التشكيل للنصوص</label>
+                    <div class="flex items-center gap-2 bg-amber-50 p-3 rounded-xl border border-amber-200 flex-grow">
+                        <input type="checkbox" id="modal-qi-tashkeel" class="w-5 h-5 text-amber-600 rounded" checked>
+                        <label for="modal-qi-tashkeel" class="cursor-pointer text-amber-950 text-sm">تفعيل التشكيل للنصوص</label>
                     </div>
                 </div>
             </div>
-            <div class="flex justify-end gap-2 pt-2 border-t">
-                <button type="button" onclick="document.getElementById('modal-quickinfo-edit').classList.add('hidden'); document.getElementById('modal-quickinfo-edit').classList.remove('flex');" class="bg-slate-200 px-4 py-2 rounded-xl text-xs cursor-pointer">إلغاء</button>
-                <button type="button" onclick="saveQuickInfoFromModal()" class="bg-sky-600 text-white px-5 py-2 rounded-xl text-xs cursor-pointer font-bold">حفظ البطاقة</button>
+
+            <div class="p-5 bg-slate-100 border-t-2 border-slate-200 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('modal-quickinfo-edit').classList.add('hidden'); document.getElementById('modal-quickinfo-edit').classList.remove('flex');" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-3 rounded-2xl text-base font-bold cursor-pointer">إلغاء</button>
+                <button type="button" onclick="saveQuickInfoFromModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-8 py-3 rounded-2xl text-base cursor-pointer font-extrabold shadow">حفظ البطاقة</button>
             </div>
         </div>
     </div>
@@ -814,26 +834,35 @@
         </div>
     </div>
 
-    <!-- نافذة إضافة وتعديل السؤال -->
-    <div id="modal-question-edit" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-4 shadow-2xl modal-animate-in max-h-[90vh] overflow-y-auto text-right">
-            <h3 id="question-modal-title" class="font-black text-slate-900 text-lg border-b pb-2">إضافة / تعديل سؤال</h3>
+    <!-- نافذة إضافة وتعديل السؤال (محدثة بحجم كبير وشريط علوي) -->
+    <div id="modal-question-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
+        <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-sky-400 overflow-hidden modal-animate-in text-right">
+            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
+                <h3 id="question-modal-title" class="font-black text-white text-xl sm:text-2xl flex items-center gap-3">
+                    <i class="fa-solid fa-circle-question text-amber-400 text-2xl"></i> إضافة / تعديل سؤال
+                </h3>
+                <div class="flex gap-3 items-center">
+                    <button type="button" onclick="saveQuestionFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حفظ سريع</button>
+                    <button type="button" onclick="document.getElementById('modal-question-edit').classList.add('hidden'); document.getElementById('modal-question-edit').classList.remove('flex');" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-1"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
             <input type="hidden" id="edit-q-index" value="-1">
-            <div class="space-y-3 text-xs font-bold">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <div><label class="block mb-1 text-slate-700">المرحلة:</label><select id="modal-q-stage" onchange="populateModalGrades()" class="w-full p-2 rounded-xl border bg-white"><option value="">اختر المرحلة</option></select></div>
-                    <div><label class="block mb-1 text-slate-700">الصف:</label><select id="modal-q-grade" onchange="populateModalTopics()" class="w-full p-2 rounded-xl border bg-white"><option value="">اختر الصف</option></select></div>
-                    <div><label class="block mb-1 text-slate-700">الموضوع:</label><select id="modal-q-topic" class="w-full p-2 rounded-xl border bg-white text-sky-950"><option value="">اختر الموضوع</option></select></div>
+            <div class="p-6 sm:p-10 space-y-6 overflow-y-auto flex-grow bg-slate-50 text-right text-xs font-bold">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div><label class="block mb-1 text-slate-700">المرحلة:</label><select id="modal-q-stage" onchange="populateModalGrades()" class="w-full p-2.5 rounded-xl border bg-white"><option value="">اختر المرحلة</option></select></div>
+                    <div><label class="block mb-1 text-slate-700">الصف:</label><select id="modal-q-grade" onchange="populateModalTopics()" class="w-full p-2.5 rounded-xl border bg-white"><option value="">اختر الصف</option></select></div>
+                    <div><label class="block mb-1 text-slate-700">الموضوع:</label><select id="modal-q-topic" class="w-full p-2.5 rounded-xl border bg-white text-sky-950"><option value="">اختر الموضوع</option></select></div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block mb-1 text-slate-700">ربط بفقرة قرائية (اختياري):</label>
-                        <select id="modal-q-paragraph" class="w-full p-2 rounded-xl border bg-white"><option value="">بدون فقرة</option></select>
+                        <select id="modal-q-paragraph" class="w-full p-2.5 rounded-xl border bg-white"><option value="">بدون فقرة</option></select>
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-700">مستوى الصعوبة:</label>
-                        <select id="modal-q-difficulty" class="w-full p-2 rounded-xl border bg-white">
+                        <select id="modal-q-difficulty" class="w-full p-2.5 rounded-xl border bg-white">
                             <option value="" selected>بدون تصنيف</option>
                             <option value="سهل">سهل</option>
                             <option value="متوسط">متوسط</option>
@@ -844,43 +873,43 @@
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-2 bg-sky-50 p-2 rounded-xl border border-sky-200 flex-grow">
-                        <input type="checkbox" id="modal-q-active" class="w-4 h-4 text-sky-600 rounded" checked>
-                        <label for="modal-q-active" class="cursor-pointer text-sky-950">تفعيل هذا السؤال (يظهر في الاختبارات)</label>
+                    <div class="flex items-center gap-2 bg-sky-50 p-3 rounded-xl border border-sky-200 flex-grow">
+                        <input type="checkbox" id="modal-q-active" class="w-5 h-5 text-sky-600 rounded" checked>
+                        <label for="modal-q-active" class="cursor-pointer text-sky-950 text-sm">تفعيل هذا السؤال (يظهر في الاختبارات)</label>
                     </div>
-                    <div class="flex items-center gap-2 bg-amber-50 p-2 rounded-xl border border-amber-200 flex-grow">
-                        <input type="checkbox" id="modal-q-tashkeel" class="w-4 h-4 text-amber-600 rounded" checked>
-                        <label for="modal-q-tashkeel" class="cursor-pointer text-amber-950">تفعيل التشكيل لهذا السؤال</label>
+                    <div class="flex items-center gap-2 bg-amber-50 p-3 rounded-xl border border-amber-200 flex-grow">
+                        <input type="checkbox" id="modal-q-tashkeel" class="w-5 h-5 text-amber-600 rounded" checked>
+                        <label for="modal-q-tashkeel" class="cursor-pointer text-amber-950 text-sm">تفعيل التشكيل لهذا السؤال</label>
                     </div>
                 </div>
 
                 <div>
                     <label class="block mb-1 text-slate-700">نص السؤال:</label>
-                    <textarea id="modal-q-text" rows="2" class="w-full p-2.5 rounded-xl border bg-white font-black text-sm" placeholder="اكتب نص السؤال هنا..."></textarea>
+                    <textarea id="modal-q-text" rows="3" class="w-full p-3 rounded-xl border bg-white font-black text-sm leading-relaxed" placeholder="اكتب نص السؤال هنا..."></textarea>
                 </div>
 
-                <div class="space-y-2 border-t pt-2">
-                    <label class="block text-slate-700">خيارات الإجابة الأربعة:</label>
-                    <div><input type="text" id="modal-opt-0" class="w-full p-2 rounded-xl border mb-1 bg-white" placeholder="الخيار الأول"></div>
-                    <div><input type="text" id="modal-opt-1" class="w-full p-2 rounded-xl border mb-1 bg-white" placeholder="الخيار الثاني"></div>
-                    <div><input type="text" id="modal-opt-2" class="w-full p-2 rounded-xl border mb-1 bg-white" placeholder="الخيار الثالث"></div>
-                    <div><input type="text" id="modal-opt-3" class="w-full p-2 rounded-xl border mb-1 bg-white" placeholder="الخيار الرابع"></div>
+                <div class="space-y-2.5 border-t pt-4">
+                    <label class="block text-slate-700 text-sm font-black">خيارات الإجابة الأربعة:</label>
+                    <div><input type="text" id="modal-opt-0" class="w-full p-3 rounded-xl border mb-2 bg-white text-sm" placeholder="الخيار الأول"></div>
+                    <div><input type="text" id="modal-opt-1" class="w-full p-3 rounded-xl border mb-2 bg-white text-sm" placeholder="الخيار الثاني"></div>
+                    <div><input type="text" id="modal-opt-2" class="w-full p-3 rounded-xl border mb-2 bg-white text-sm" placeholder="الخيار الثالث"></div>
+                    <div><input type="text" id="modal-opt-3" class="w-full p-3 rounded-xl border mb-2 bg-white text-sm" placeholder="الخيار الرابع"></div>
                 </div>
 
                 <div>
                     <label class="block mb-1 text-slate-700">الإجابة الصحيحة:</label>
-                    <input type="text" id="modal-q-ans" class="w-full p-2 rounded-xl border bg-white font-bold text-emerald-800" placeholder="يجب أن تطابق نص أحد الخيارات تماماً">
+                    <input type="text" id="modal-q-ans" class="w-full p-3 rounded-xl border bg-white font-black text-emerald-800 text-sm" placeholder="يجب أن تطابق نص أحد الخيارات تماماً">
                 </div>
 
                 <div>
                     <label class="block mb-1 text-slate-700">التعليل أو الشرح (للإجابة الصحيحة):</label>
-                    <textarea id="modal-q-exp" rows="2" class="w-full p-2.5 rounded-xl border bg-white" placeholder="اكتب سبب صحة الإجابة..."></textarea>
+                    <textarea id="modal-q-exp" rows="3" class="w-full p-3 rounded-xl border bg-white text-sm" placeholder="اكتب سبب صحة الإجابة..."></textarea>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-2 pt-2 border-t">
-                <button type="button" onclick="document.getElementById('modal-question-edit').classList.add('hidden'); document.getElementById('modal-question-edit').classList.remove('flex');" class="bg-slate-200 px-4 py-2 rounded-xl text-xs cursor-pointer">إلغاء</button>
-                <button type="button" onclick="saveQuestionFromModal()" class="bg-sky-600 text-white px-5 py-2 rounded-xl text-xs cursor-pointer font-bold">حفظ السؤال</button>
+            <div class="p-5 bg-slate-100 border-t-2 border-slate-200 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('modal-question-edit').classList.add('hidden'); document.getElementById('modal-question-edit').classList.remove('flex');" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-3 rounded-2xl text-base font-bold cursor-pointer">إلغاء</button>
+                <button type="button" onclick="saveQuestionFromModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-8 py-3 rounded-2xl text-base cursor-pointer font-extrabold shadow">حفظ السؤال</button>
             </div>
         </div>
     </div>
@@ -971,7 +1000,7 @@
         };
 
         let appSettings = defaultSettings;
-        let paragraphs = [{"id":"para_1","name":"فقرة الخطاب الإشهارى والتوجيهى","stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"title":"اقْرَأْ ثُمَّ أَجِبْ:","text":"الخطاب الإشهاري يسعى إلى التأثير في المتلقي وحثه على اقتناء سلعة أو خدمة، مستخدماً آليات الترغيب والإقناع البصري واللغوي. أما الخطاب التوجيهي فيهدف إلى توجيه السلوك والأخلاق وضبط المعاملات."}];
+        let paragraphs = [{"id":"para_1","name":"فقرة الخطاب الإشهارى والتوجيهى","stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"title":"اقْرَأْ ثُمَّ أَجِبْ:","text":"الخطاب الإشهاري يسعى إلى التأثير في المتلقي وحثه على اقتناء سلعة أو خدمة، مستخدماً آليات الترغيب والإقناع البصري واللغوي. أما الخطاب التوجيهي فيهدف إلى توجيه السلوك الأخلاق وضبط المعاملات."}];
         let questionBank = [{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"paragraphId":"para_1","q":"قَالَ الشَّاعِرُ الطَّائِيُّ: (وَبِئْرِي ذُو حَفَرْتُ وَذُو طَوَيْتُ). مَا الْحُكْمُ النَّحْوِيُّ لِكَلِمَةِ (ذُو) الْأُولَى فِي الْبَيْتِ الشِّعْرِيِّ؟","opts":["تُعْرَبُ إِعْرَابَ الْأَسْمَاءِ الْخَمْسَةِ","تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","تُبْنَى عَلَى السُّكُونِ فِي مَحَلِّ رَفْعٍ","تُعْرَبُ بِحَرَكَاتٍ مُقَدَّرَةٍ عَلَى آخِرِهَا"],"ans":"تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","exp":"لُغَةُ طَيِّئٍ (الطَّيِّئِيَّةُ) تُلْزِمُ كَلِمَةَ (ذُو) الْوَاوَ فِي كُلِّ الْحَالَاتِ إِذَا كَانَتْ بِمَعْنَى (الَّذِي).","difficulty":"صعب جدا","paragraphId":"para_1"}];
         
         let quickInfoList = [
@@ -1386,7 +1415,6 @@
             let sessionQuestions = [];
             const targetExamCount = Math.min(appSettings.examCount || 20, unassignedPool.length);
 
-            // تفعيل نظام اختيار الأسئلة حسب مستويات الصعوبة عند تفضيل المعلم لذلك
             if (appSettings.useDifficultyFilter) {
                 let reqEasy = parseInt(appSettings.diffEasyCount) || 0;
                 let reqMed = parseInt(appSettings.diffMediumCount) || 0;
@@ -1414,7 +1442,6 @@
                 }
             }
 
-            // نظام الخلط والترشيح الأساسي في حال عدم تفعيل فلتر الصعوبة
             if (sessionQuestions.length === 0) {
                 let availableIndices = unassignedPool.map((_, i) => i);
                 if (appSettings.shuffleQuestions !== false) {
@@ -1448,7 +1475,6 @@
                 sessionQuestions = selectedIndices.map(i => unassignedPool[i]);
             }
 
-            // تطبيق خلط الاختيارات بحسب إعدادات المنصة
             sessionQuestions = sessionQuestions.map(q => {
                 let qCopy = JSON.parse(JSON.stringify(q));
                 if (appSettings.shuffleOptions !== false) {
@@ -2654,7 +2680,7 @@
 
             populateModalStages();
             document.getElementById('edit-q-index').value = "-1";
-            document.getElementById('question-modal-title').textContent = "إضافة سؤال فردي جديد";
+            document.getElementById('question-modal-title').innerHTML = `<i class="fa-solid fa-circle-question text-amber-400 text-2xl"></i> إضافة سؤال فردي جديد`;
             
             if (fStage) document.getElementById('modal-q-stage').value = fStage;
             populateModalGrades();
@@ -2682,7 +2708,7 @@
             populateModalStages();
             let q = questionBank[idx];
             document.getElementById('edit-q-index').value = idx;
-            document.getElementById('question-modal-title').textContent = `تعديل السؤال رقم (${idx+1})`;
+            document.getElementById('question-modal-title').innerHTML = `<i class="fa-solid fa-circle-question text-amber-400 text-2xl"></i> تعديل السؤال رقم (${idx+1})`;
             
             document.getElementById('modal-q-stage').value = q.stage || "";
             populateModalGrades();
@@ -2749,6 +2775,7 @@
             renderAdminQuestionsList();
             document.getElementById('modal-question-edit').classList.add('hidden');
             document.getElementById('modal-question-edit').classList.remove('flex');
+            alert("تم حفظ السؤال بنجاح!");
         }
 
         function exportFullSystemJson() {
@@ -3127,7 +3154,7 @@
         function openParagraphModalForAdd() {
             populateParaModalStages();
             document.getElementById('edit-paragraph-id').value = "";
-            document.getElementById('paragraph-modal-title').textContent = "إضافة فقرة جديدة";
+            document.getElementById('paragraph-modal-title').innerHTML = `<i class="fa-solid fa-book-open text-amber-400 text-2xl"></i> إضافة فقرة جديدة`;
             document.getElementById('modal-para-stage').value = "";
             populateParaModalGrades();
             document.getElementById('modal-para-name').value = "";
@@ -3147,7 +3174,7 @@
             let p = paragraphs.find(item => item.id === id);
             if (!p) return;
             document.getElementById('edit-paragraph-id').value = p.id;
-            document.getElementById('paragraph-modal-title').textContent = `تعديل الفقرة (${p.name || p.title})`;
+            document.getElementById('paragraph-modal-title').innerHTML = `<i class="fa-solid fa-book-open text-amber-400 text-2xl"></i> تعديل الفقرة (${p.name || p.title})`;
             
             document.getElementById('modal-para-stage').value = p.stage || "";
             populateParaModalGrades();
@@ -3209,6 +3236,7 @@
             renderAdminParagraphsList();
             document.getElementById('modal-paragraph-edit').classList.add('hidden');
             document.getElementById('modal-paragraph-edit').classList.remove('flex');
+            alert("تم حفظ الفقرة بنجاح!");
         }
 
         function deleteParagraph(id) {
@@ -3433,7 +3461,7 @@
         function openQuickInfoModalForAdd() {
             populateQiModalStages();
             document.getElementById('edit-quickinfo-id').value = "-1";
-            document.getElementById('quickinfo-modal-title').textContent = "إضافة بطاقة معلومات سريعة جديدة";
+            document.getElementById('quickinfo-modal-title').innerHTML = `<i class="fa-solid fa-lightbulb text-amber-400 text-2xl"></i> إضافة بطاقة معلومات سريعة جديدة`;
             document.getElementById('modal-qi-title').value = "";
             document.getElementById('modal-qi-img').value = "";
             document.getElementById('modal-qi-active').checked = true;
@@ -3449,7 +3477,7 @@
             populateQiModalStages();
             let qi = quickInfoList[idx];
             document.getElementById('edit-quickinfo-id').value = idx;
-            document.getElementById('quickinfo-modal-title').textContent = `تعديل البطاقة (${qi.title})`;
+            document.getElementById('quickinfo-modal-title').innerHTML = `<i class="fa-solid fa-lightbulb text-amber-400 text-2xl"></i> تعديل البطاقة (${qi.title})`;
             document.getElementById('modal-qi-title').value = qi.title || "";
             document.getElementById('modal-qi-img').value = qi.img || "";
             document.getElementById('modal-qi-active').checked = qi.active !== false;
@@ -3559,6 +3587,7 @@
             renderAdminQuickInfoList();
             document.getElementById('modal-quickinfo-edit').classList.add('hidden');
             document.getElementById('modal-quickinfo-edit').classList.remove('flex');
+            alert("تم حفظ البطاقة بنجاح!");
         }
 
         function deleteQuickInfo(idx) {
@@ -3631,7 +3660,6 @@
             document.getElementById('admin-expiry-date-input').value = appSettings.expiryDate || "";
             document.getElementById('admin-footer-year-input').value = appSettings.footerYear || "2026";
             
-            // تحميل إعدادات مستويات الصعوبة
             if(document.getElementById('admin-use-difficulty-filter')) {
                 document.getElementById('admin-use-difficulty-filter').checked = !!appSettings.useDifficultyFilter;
                 toggleDifficultySettingsView(!!appSettings.useDifficultyFilter);
@@ -3680,7 +3708,6 @@
             appSettings.expiryDate = document.getElementById('admin-expiry-date-input').value;
             appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
             
-            // حفظ إعدادات مستويات الصعوبة
             if(document.getElementById('admin-use-difficulty-filter')) appSettings.useDifficultyFilter = document.getElementById('admin-use-difficulty-filter').checked;
             if(document.getElementById('admin-diff-easy')) appSettings.diffEasyCount = parseInt(document.getElementById('admin-diff-easy').value) || 0;
             if(document.getElementById('admin-diff-medium')) appSettings.diffMediumCount = parseInt(document.getElementById('admin-diff-medium').value) || 0;
