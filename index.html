@@ -131,6 +131,32 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .modal-animate-in { animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .cert-bg-pattern {
+            background-color: #fffdf5;
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23f59e0b' fill-opacity='0.04' fill-rule='evenodd'/%3E");
+        }
+        .cert-lux-border {
+            position: relative;
+            border: 3px solid #d97706;
+            padding: 8px;
+        }
+        .cert-lux-border::before {
+            content: '';
+            position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border: 2px solid #b45309;
+            border-radius: 12px;
+            pointer-events: none;
+        }
+        .cert-lux-border::after {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px dashed #d97706;
+            border-radius: 8px;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body id="platform-body" class="min-h-screen text-slate-800 flex flex-col justify-between transition-colors duration-300 bg-slate-100">
@@ -167,8 +193,7 @@
 
     <!-- Main Container -->
     <main class="max-w-4xl mx-auto px-4 py-6 w-full flex-grow flex flex-col justify-center">
-
-        <!-- VIEW 1: START SCREEN -->
+<!-- VIEW 1: START SCREEN -->
         <div id="view-start" class="bg-white rounded-3xl p-6 sm:p-12 shadow-xl border border-slate-200 text-center space-y-8 relative overflow-hidden">
             <div class="flex justify-between items-center px-4">
                 <div id="start-mid-img-container-1" class="hidden"><img id="start-mid-img-1" src="" alt="صورة اليمين" class="max-h-24 rounded-2xl object-contain"></div>
@@ -224,8 +249,7 @@
                 <button type="button" onclick="startQuiz()" id="start-btn-text" class="w-full bg-gradient-to-r from-sky-600 to-sky-800 hover:from-sky-700 hover:to-sky-900 text-white px-6 rounded-2xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-0.5 cursor-pointer py-4 text-xl sm:text-2xl font-black">ابْدَأِ الِاخْتِبَارِ الْآنَ <i class="fa-solid fa-play mr-2"></i></button>
             </div>
         </div>
-
-        <!-- VIEW 2: QUIZ SCREEN -->
+<!-- VIEW 2: QUIZ SCREEN -->
         <div id="view-quiz" class="hidden flex-col gap-4">
             <div class="bg-white rounded-2xl p-4 shadow-md border border-slate-200 flex justify-between items-center font-bold text-slate-700 text-sm">
                 <div class="flex items-center gap-2">
@@ -236,9 +260,9 @@
                     <div class="bg-sky-50 text-sky-900 px-3 py-1 rounded-xl border border-sky-200">
                         سُؤَالٌ <span id="display-q-idx" class="font-black text-sky-600">1</span> مِنْ <span id="display-total-q" class="font-black">20</span>
                     </div>
-                    <div class="bg-amber-50 text-amber-900 px-3 py-1 rounded-xl border border-amber-200 flex items-center gap-1.5">
-                        <i class="fa-solid fa-stopwatch text-amber-600"></i>
-                        <span id="display-timer" class="font-black font-mono text-base">20:00</span>
+                    <div id="timer-container" class="bg-amber-50 text-amber-900 px-3 py-1 rounded-xl border border-amber-200 flex items-center gap-1.5 transition-colors duration-300">
+                        <i id="timer-icon" class="fa-solid fa-stopwatch text-amber-600 transition-colors duration-300"></i>
+                        <span id="display-timer" class="font-black font-mono text-base transition-colors duration-300">20:00</span>
                     </div>
                 </div>
             </div>
@@ -284,8 +308,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- VIEW 3: RESULT SCREEN -->
+<!-- VIEW 3: RESULT SCREEN -->
         <div id="view-result" class="hidden flex-col items-center justify-center text-center space-y-6 bg-white rounded-3xl p-8 shadow-xl border border-slate-200">
             <div id="res-icon" class="w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-emerald-100 text-emerald-600 border-4 border-emerald-300">
                 <i id="res-icon-i" class="fa-solid fa-trophy"></i>
@@ -327,16 +350,17 @@
     <!-- FLOATING MODAL: CERTIFICATE -->
     <div id="modal-cert" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-2xl w-full flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in text-center p-6 sm:p-8 space-y-6">
-            <div id="cert-printable-area" class="border-4 border-double border-amber-500 p-6 rounded-2xl bg-amber-50/40 space-y-4">
-                <div class="text-amber-600 text-4xl mb-2"><i class="fa-solid fa-award"></i></div>
-                <h3 class="text-2xl sm:text-3xl font-black text-sky-950">شَهَادَةُ تَقْدِيرٍ وَتَفَوُّقٍ</h3>
-                <p class="text-slate-700 font-bold text-base">يَسُرُّ مَنْصَةَ (طَرِيقُ التَّفَوُّقِ) مَنْحَ هَذِهِ الشَّهَادَةِ لِلطَّالِبِ / الطَّالِبَةِ:</p>
-                <div id="cert-student-name" class="text-2xl sm:text-3xl font-black text-amber-600 py-2 border-b-2 border-amber-300">---</div>
-                <p class="text-slate-800 text-sm sm:text-base leading-relaxed font-bold">
+            <div id="cert-printable-area" class="cert-bg-pattern cert-lux-border p-8 rounded-2xl space-y-5 text-center shadow-inner relative overflow-hidden bg-white">
+                <div class="absolute inset-0 bg-gradient-to-br from-amber-100/30 to-transparent pointer-events-none"></div>
+                <div class="text-amber-500 text-5xl mb-2 relative z-10 drop-shadow-md"><i class="fa-solid fa-award"></i></div>
+                <h3 class="text-3xl sm:text-4xl font-bold text-sky-950 relative z-10" style="font-family: 'Amiri', serif !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">شَهَادَةُ تَقْدِيرٍ وَتَفَوُّقٍ</h3>
+                <p class="text-slate-700 font-bold text-base relative z-10">يَسُرُّ مَنْصَةَ (طَرِيقُ التَّفَوُّقِ) مَنْحَ هَذِهِ الشَّهَادَةِ لِلطَّالِبِ / الطَّالِبَةِ:</p>
+                <div id="cert-student-name" class="text-2xl sm:text-3xl font-black text-amber-600 py-3 border-b-2 border-amber-300 relative z-10">---</div>
+                <p class="text-slate-800 text-sm sm:text-base leading-relaxed font-bold relative z-10">
                     لِاجْتِيَازِهِ اخْتِبَارَ مَادَّةِ اللُّغَةِ الْعَرَبِيَّةِ بِنَجَاحٍ وَتَفَوُّقٍ بِنِسْبَةِ:
-                    <span id="cert-score-pct" class="text-emerald-700 font-black text-xl">100%</span>
+                    <span id="cert-score-pct" class="text-emerald-700 font-black text-2xl mx-1">100%</span>
                 </p>
-                <div class="flex justify-between items-center pt-6 text-xs sm:text-sm font-black text-sky-950 border-t border-amber-200">
+                <div class="flex justify-between items-center pt-6 text-xs sm:text-sm font-black text-sky-950 border-t-2 border-amber-200 border-dashed relative z-10">
                     <div>التَّارِيخُ: <span id="cert-date">--/--/----</span></div>
                     <div>مُعَلِّمُ الْمَادَّةِ: <span id="cert-teacher-name">الْأُسْتَاذُ صَلَاحُ حَمْدِي يُوسُفُ</span></div>
                 </div>
@@ -347,8 +371,7 @@
             </div>
         </div>
     </div>
-
-    <!-- FLOATING MODAL: QUICK INFO -->
+<!-- FLOATING MODAL: QUICK INFO -->
     <div id="view-quick-info" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div id="modal-content-quick-info" class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -379,7 +402,8 @@
             </div>
         </div>
     </div>
-<!-- FLOATING MODAL: ADMIN DASHBOARD -->
+
+    <!-- FLOATING MODAL: ADMIN DASHBOARD -->
     <div id="view-admin" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div id="modal-content-admin" class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -532,8 +556,7 @@
                         <button type="button" onclick="saveAppSettings()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3.5 rounded-xl transition shadow cursor-pointer">حِفْظُ التَّغْيِيرَاتِ وَالإِعْدَادَاتِ (سحابياً والمحلي) <i class="fa-solid fa-floppy-disk mr-1"></i></button>
                     </div>
                 </div>
-
-                <!-- TAB 2: STAGES & GRADES -->
+<!-- TAB 2: STAGES & GRADES -->
                 <div id="admin-tab-stages" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
                         <h3 class="font-bold text-slate-800">إدارة المراحل والصفوف الدراسية</h3>
@@ -548,7 +571,6 @@
                         <h3 class="font-bold text-slate-800">إدارة الموضوعات الدراسية</h3>
                         <button type="button" onclick="openTopicModalForAdd()" class="bg-emerald-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة موضوع جديد</button>
                     </div>
-                    <!-- فلاتر التصفية للموضوعات -->
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
                         <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض الموضوعات:</h3>
                         <div class="grid grid-cols-2 gap-2">
@@ -616,7 +638,6 @@
                         <h3 class="font-bold text-slate-800">إدارة النصوص القرائية والفقرات</h3>
                         <button type="button" onclick="openParagraphModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة فقرة جديدة</button>
                     </div>
-                    <!-- فلاتر التصفية للفقرات وأزرار الاستيراد والتصدير -->
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
                         <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض الفقرات:</h3>
                         <div class="grid grid-cols-3 gap-2">
@@ -638,7 +659,6 @@
                         <h3 class="font-bold text-slate-800">بطاقات المعلومة السريعة</h3>
                         <button type="button" onclick="openQuickInfoModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة بطاقة جديدة</button>
                     </div>
-                    <!-- فلاتر التصفية للمعلومة السريعة وأزرار الاستيراد والتصدير -->
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
                         <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض البطاقات:</h3>
                         <div class="grid grid-cols-3 gap-2">
@@ -679,6 +699,13 @@
                         </div>
                     </div>
 
+                    <!-- Pagination Controls -->
+                    <div class="flex justify-between items-center bg-white p-3 rounded-2xl border">
+                        <button type="button" id="prev-page-btn" onclick="changeRecordsPage(-1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs transition disabled:opacity-50 cursor-pointer">السابق</button>
+                        <span id="pagination-info" class="text-xs font-black text-slate-700">الصفحة 1 من 1</span>
+                        <button type="button" id="next-page-btn" onclick="changeRecordsPage(1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs transition disabled:opacity-50 cursor-pointer">التالي</button>
+                    </div>
+
                     <div class="overflow-x-auto border rounded-2xl bg-white">
                         <table class="w-full text-right border-collapse">
                             <thead>
@@ -703,8 +730,7 @@
             </div>
         </div>
     </div>
-
-    <!-- نافذة تفاصيل إجابة الطالب للمعلم -->
+<!-- نافذة تفاصيل إجابة الطالب للمعلم -->
     <div id="modal-record-details" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -907,8 +933,7 @@
             </div>
         </div>
     </div>
-
-    <!-- نافذة إضافة وتعديل السؤال -->
+<!-- نافذة إضافة وتعديل السؤال -->
     <div id="modal-question-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-sky-400 overflow-hidden modal-animate-in text-right">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -1028,6 +1053,17 @@
     </footer>
 <!-- السكربت الشامل -->
     <script>
+        // دالة حماية اللوحة من أكواد XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"'`=\/]/g, function (s) {
+                return {
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;',
+                    "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
+                }[s];
+            });
+        }
+
         /* -- DATA_START -- */
         let stagesData = {"إعدادية":["الصف الأول الإعدادي","الصف الثاني الإعدادي","الصف الثالث الإعدادي فصل دراسي أول"],"ثانوية":["الصف الأول الثانوي","الصف الثاني الثانوي بكالوريا","الصف الثالث الثانوي"]};
 
@@ -1096,7 +1132,7 @@
                         "active": true,
                         "subItems": [
                             { "title": "الخطاب الإشهاري", "active": true, "text": "يسعى إلى التأثير في المتلقي وحثه على اقتناء سلعة أو خدمة مستخدماً آليات الترغيب والإقناع البصري واللغوي.", "img": "" },
-                            { "title": "الخطاب التوجيهي", "active": true, "text": "يهدف إلى توجيه السلوك والأخلاق وضبط المعاملات.", "img": "" }
+                            { "title": "الخطاب التوجيهي", "active": true, "text": "يهدف إلى توجيه السلوك الأخلاق وضبط المعاملات.", "img": "" }
                         ]
                     }
                 ],
@@ -1110,14 +1146,17 @@
         let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
         /* -- DATA_END -- */
 
+        // Pagination Variables for Records
+        let currentRecordsPage = 1;
+        const recordsPerPage = 20;
+
         window.addEventListener('beforeunload', function (e) {
             if (quizState.questions.length > 0 && document.getElementById('view-quiz') && !document.getElementById('view-quiz').classList.contains('hidden')) {
                 e.preventDefault();
                 e.returnValue = '';
             }
         });
-
-        function formatText(text, itemTashkeel) {
+function formatText(text, itemTashkeel) {
             if (!text || typeof text !== 'string') return text;
             let allowTashkeel = (itemTashkeel !== false) && (appSettings.enableTashkeel !== false);
             if (!allowTashkeel) {
@@ -1373,8 +1412,7 @@
                 botLC.classList.remove('hidden');
             } else { botLC.classList.add('hidden'); }
         }
-
-        function populateStartStages() {
+function populateStartStages() {
             const stageSel = document.getElementById('start-stage-select');
             if(!stageSel) return;
             stageSel.innerHTML = '<option value="">اختر المرحلة</option>';
@@ -1818,8 +1856,20 @@
             let durationMinutes = parseInt(appSettings.examDuration) || 20;
             let timerSeconds = durationMinutes * 60;
             const timerDisplay = document.getElementById('display-timer');
+            const timerIcon = document.getElementById('timer-icon');
+            const timerContainer = document.getElementById('timer-container');
 
             if (quizState.timerInterval) clearInterval(quizState.timerInterval);
+
+            if (timerDisplay) timerDisplay.classList.remove('text-rose-600', 'animate-pulse');
+            if (timerIcon) {
+                timerIcon.classList.remove('text-rose-600', 'animate-bounce');
+                timerIcon.classList.add('text-amber-600');
+            }
+            if (timerContainer) {
+                timerContainer.classList.remove('border-rose-400', 'bg-rose-50');
+                timerContainer.classList.add('border-amber-200', 'bg-amber-50');
+            }
 
             quizState.timerInterval = setInterval(() => {
                 let mins = Math.floor(timerSeconds / 60);
@@ -1827,6 +1877,19 @@
                 if (timerDisplay) {
                     timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                 }
+                
+                if (timerSeconds <= 60 && timerSeconds > 0) {
+                    if (timerDisplay) timerDisplay.classList.add('text-rose-600', 'animate-pulse');
+                    if (timerIcon) {
+                        timerIcon.classList.remove('text-amber-600');
+                        timerIcon.classList.add('text-rose-600', 'animate-bounce');
+                    }
+                    if (timerContainer) {
+                        timerContainer.classList.remove('border-amber-200', 'bg-amber-50');
+                        timerContainer.classList.add('border-rose-400', 'bg-rose-50');
+                    }
+                }
+
                 if (timerSeconds <= 0) {
                     clearInterval(quizState.timerInterval);
                     alert("انتهى وقت الاختبار المحدد!");
@@ -1835,8 +1898,7 @@
                 timerSeconds--;
             }, 1000);
         }
-
-        function renderQuestion() {
+function renderQuestion() {
             const idx = quizState.currentIndex;
             const q = quizState.questions[idx];
             document.getElementById('display-q-idx').textContent = idx + 1;
@@ -2303,7 +2365,6 @@
             initApp();
         }
 
-        // ================= دوال الاستيراد والتصدير للفقرات =================
         function exportTopicParagraphsJson() {
             const fTopic = document.getElementById('filter-para-topic').value;
             if (!fTopic) { alert("يرجى تحديد الموضوع من التصفية أولاً لتصدير فقراته."); return; }
@@ -2375,7 +2436,6 @@
             reader.readAsText(file);
         }
 
-        // ================= دوال الاستيراد والتصدير للمعلومة السريعة =================
         function exportTopicQuickInfoJson() {
             const fTopic = document.getElementById('filter-qi-topic').value;
             if (!fTopic) { alert("يرجى تحديد الموضوع من التصفية أولاً لتصدير بطاقاته."); return; }
@@ -2487,7 +2547,6 @@
             reader.readAsText(file);
         }
 
-        // ================= باقي دوال الإدارة واللوحة =================
         function populateTopicAdminFilters() {
             const stageSel = document.getElementById('filter-topic-stage');
             if (!stageSel) return;
@@ -2520,22 +2579,6 @@
                 });
             }
             renderAdminTopicsList();
-        }
-
-        function populateParaAdminFilters() {
-            const stageSel = document.getElementById('filter-para-stage');
-            if (!stageSel) return;
-            stageSel.innerHTML = '<option value="">الكل (جميع المراحل)</option>';
-            Object.keys(stagesData).forEach(stage => {
-                const grades = stagesData[stage] || [];
-                const hasActiveGrade = grades.some(grade => gradeStatus[`${stage}_${grade}`] !== false);
-                if (hasActiveGrade) {
-                    let opt = document.createElement('option');
-                    opt.value = stage; opt.textContent = stage;
-                    stageSel.appendChild(opt);
-                }
-            });
-            filterAdminParasByStage();
         }
 
         function filterAdminParasByStage() {
@@ -2571,6 +2614,22 @@
                 });
             }
             renderAdminParagraphsList();
+        }
+
+        function populateParaAdminFilters() {
+            const stageSel = document.getElementById('filter-para-stage');
+            if (!stageSel) return;
+            stageSel.innerHTML = '<option value="">الكل (جميع المراحل)</option>';
+            Object.keys(stagesData).forEach(stage => {
+                const grades = stagesData[stage] || [];
+                const hasActiveGrade = grades.some(grade => gradeStatus[`${stage}_${grade}`] !== false);
+                if (hasActiveGrade) {
+                    let opt = document.createElement('option');
+                    opt.value = stage; opt.textContent = stage;
+                    stageSel.appendChild(opt);
+                }
+            });
+            filterAdminParasByStage();
         }
 
         function populateQiAdminFilters() {
@@ -2636,7 +2695,7 @@
             if (tabName === 'questions') populateQuestionFilters();
             if (tabName === 'paragraphs') populateParaAdminFilters();
             if (tabName === 'quickinfo') populateQiAdminFilters();
-            if (tabName === 'records') populateAdminRecFilters();
+            if (tabName === 'records') { populateAdminRecFilters(); currentRecordsPage = 1; }
         }
 
         function renderAdminStagesList() {
@@ -3899,45 +3958,6 @@
             }
         }
 
-        function toggleQuickInfoVisibility(idx) {
-            quickInfoList[idx].active = quickInfoList[idx].active === false ? true : false;
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function toggleQuickInfoTashkeel(idx) {
-            quickInfoList[idx].tashkeel = quickInfoList[idx].tashkeel === false ? true : false;
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function duplicateQuickInfo(idx) {
-            let src = quickInfoList[idx];
-            let copy = JSON.parse(JSON.stringify(src));
-            copy.title = (src.title || "بطاقة") + " (نسخة)";
-            quickInfoList.push(copy);
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function moveQuickInfo(idx, direction) {
-            const targetIndex = idx + direction;
-            if (targetIndex < 0 || targetIndex >= quickInfoList.length) return;
-            let temp = quickInfoList[idx];
-            quickInfoList[idx] = quickInfoList[targetIndex];
-            quickInfoList[targetIndex] = temp;
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function previewQuickInfo(idx) {
-            let qi = quickInfoList[idx];
-            let contentHtml = generateQuickInfoCardHtml(qi);
-            document.getElementById('preview-card-body').innerHTML = contentHtml;
-            document.getElementById('modal-preview-card').classList.add('flex');
-            document.getElementById('modal-preview-card').classList.remove('hidden');
-        }
-
         function moveQiSectionBlock(btn, direction) {
             const block = btn.closest('.qi-section-block');
             const parent = block.parentNode;
@@ -4242,6 +4262,7 @@
                 topicSel.appendChild(opt);
             });
 
+            currentRecordsPage = 1; 
             renderAdminRecordsTable();
         }
 
@@ -4263,15 +4284,30 @@
 
             if (filtered.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500 font-bold">لا توجد سجلات مطابقة.</td></tr>';
+                document.getElementById('pagination-info').textContent = 'الصفحة 1 من 1';
+                document.getElementById('prev-page-btn').disabled = true;
+                document.getElementById('next-page-btn').disabled = true;
                 return;
             }
 
-            filtered.forEach((rec, idx) => {
+            const totalPages = Math.ceil(filtered.length / recordsPerPage) || 1;
+            if (currentRecordsPage > totalPages) currentRecordsPage = totalPages;
+            if (currentRecordsPage < 1) currentRecordsPage = 1;
+
+            const startIndex = (currentRecordsPage - 1) * recordsPerPage;
+            const endIndex = Math.min(startIndex + recordsPerPage, filtered.length);
+            
+            const pageRecords = filtered.slice(startIndex, endIndex);
+
+            pageRecords.forEach((rec, pageIdx) => {
+                const globalIdx = startIndex + pageIdx;
+                const originalIndex = studentRecords.indexOf(rec);
+                
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition border-b text-xs";
                 tr.innerHTML = `
-                    <td class="p-3 font-black text-slate-500">${idx + 1}</td>
-                    <td class="p-3 font-black text-sky-950 text-sm">${rec.name}</td>
+                    <td class="p-3 font-black text-slate-500">${globalIdx + 1}</td>
+                    <td class="p-3 font-black text-sky-950 text-sm">${escapeHTML(rec.name)}</td>
                     <td class="p-3 font-bold text-slate-700">${rec.stageGrade || `${rec.stage || ''} - ${rec.grade || ''} (${rec.topic || ''})`}</td>
                     <td class="p-3"><span class="px-2.5 py-1 rounded-full font-black ${rec.status === 'ناجح' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${rec.status}</span></td>
                     <td class="p-3 font-black text-sky-900">${rec.score} / ${rec.total} (${rec.pct}%)</td>
@@ -4279,7 +4315,7 @@
                     <td class="p-3">
                         <div class="space-y-1">
                             <span class="block font-bold text-slate-800">الأسئلة: ${rec.answeredCount}</span>
-                            <button type="button" onclick="openRecordDetailsModal(${studentRecords.indexOf(rec)})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer shadow transition">
+                            <button type="button" onclick="openRecordDetailsModal(${originalIndex})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer shadow transition">
                                 <i class="fa-solid fa-list-check ml-1"></i> تفاصيل إجابة الطالب
                             </button>
                         </div>
@@ -4287,6 +4323,15 @@
                 `;
                 tbody.appendChild(tr);
             });
+
+            document.getElementById('pagination-info').textContent = `الصفحة ${currentRecordsPage} من ${totalPages}`;
+            document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1;
+            document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
+        }
+
+        function changeRecordsPage(direction) {
+            currentRecordsPage += direction;
+            renderAdminRecordsTable();
         }
 
         function exportAllRecordsExcel() {
@@ -4296,9 +4341,15 @@
             }
             let csvContent = "\uFEFF"; 
             csvContent += "م,اسم الطالب,المرحلة والصف والموضوع,الحالة,الدرجة,المجموع,النسبة,التاريخ,مدة الاختبار\n";
+            
             studentRecords.forEach((r, i) => {
-                csvContent += `"${i+1}","${r.name}","${r.stageGrade || ''}","${r.status}","${r.score}","${r.total}","${r.pct}%","${r.date}","${r.duration}"\n`;
+                // تطبيق الحماية ومعالجة علامات التنصيص المزدوجة لمنع كسر ملف الإكسيل
+                let safeName = r.name ? String(r.name).replace(/"/g, '""') : '';
+                let safeStageGrade = r.stageGrade ? String(r.stageGrade).replace(/"/g, '""') : `${r.stage || ''} - ${r.grade || ''} (${r.topic || ''})`.replace(/"/g, '""');
+                
+                csvContent += `"${i+1}","${safeName}","${safeStageGrade}","${r.status}","${r.score}","${r.total}","${r.pct}%","${r.date}","${r.duration}"\n`;
             });
+            
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
@@ -4320,7 +4371,7 @@
                 <div class="bg-sky-900 text-white p-6 rounded-3xl shadow-lg border-2 border-amber-400 space-y-2 mb-6">
                     <h4 class="text-2xl font-black text-amber-300">تقرير إجابات الطالب المفصل</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-sm font-bold">
-                        <div><strong>الطالب:</strong> ${rec.name}</div>
+                        <div><strong>الطالب:</strong> ${escapeHTML(rec.name)}</div>
                         <div><strong>الاختبار:</strong> ${rec.stageGrade}</div>
                         <div><strong>النتيجة:</strong> ${rec.score} / ${rec.total} (${rec.pct}%) - <span class="${rec.status === 'ناجح' ? 'text-emerald-400' : 'text-rose-400'}">${rec.status}</span></div>
                     </div>
@@ -4484,7 +4535,44 @@
                 alert("حدث خطأ أثناء تصدير ملف HTML: " + e.message);
             }
         }
+function toggleQuickInfoVisibility(idx) {
+            quickInfoList[idx].active = quickInfoList[idx].active === false ? true : false;
+            saveState();
+            renderAdminQuickInfoList();
+        }
 
+        function toggleQuickInfoTashkeel(idx) {
+            quickInfoList[idx].tashkeel = quickInfoList[idx].tashkeel === false ? true : false;
+            saveState();
+            renderAdminQuickInfoList();
+        }
+
+        function duplicateQuickInfo(idx) {
+            let src = quickInfoList[idx];
+            let copy = JSON.parse(JSON.stringify(src));
+            copy.title = (src.title || "بطاقة") + " (نسخة)";
+            quickInfoList.push(copy);
+            saveState();
+            renderAdminQuickInfoList();
+        }
+
+        function moveQuickInfo(idx, direction) {
+            const targetIndex = idx + direction;
+            if (targetIndex < 0 || targetIndex >= quickInfoList.length) return;
+            let temp = quickInfoList[idx];
+            quickInfoList[idx] = quickInfoList[targetIndex];
+            quickInfoList[targetIndex] = temp;
+            saveState();
+            renderAdminQuickInfoList();
+        }
+
+        function previewQuickInfo(idx) {
+            let qi = quickInfoList[idx];
+            let contentHtml = generateQuickInfoCardHtml(qi);
+            document.getElementById('preview-card-body').innerHTML = contentHtml;
+            document.getElementById('modal-preview-card').classList.add('flex');
+            document.getElementById('modal-preview-card').classList.remove('hidden');
+        }
         window.addEventListener('DOMContentLoaded', loadDataFromCloud);
     </script>
 </body>
