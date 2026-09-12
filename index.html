@@ -555,7 +555,10 @@
                     <div class="flex flex-wrap gap-3 pt-2">
                         <button type="button" onclick="saveAppSettings()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3.5 rounded-xl transition shadow cursor-pointer">حِفْظُ التَّغْيِيرَاتِ وَالإِعْدَادَاتِ (سحابياً والمحلي) <i class="fa-solid fa-floppy-disk mr-1"></i></button>
                     </div>
-                </div>
+                </div><div id="admin-saving-indicator" class="hidden items-center gap-2 text-sky-700 font-bold text-sm bg-sky-50 p-3 rounded-xl border border-sky-200 mt-2">
+    <i class="fa-solid fa-spinner fa-spin text-lg"></i>
+    <span>جاري حفظ البيانات ورفعها إلى التخزين السحابي، يرجى الانتظار...</span>
+</div>
 <!-- TAB 2: STAGES & GRADES -->
                 <div id="admin-tab-stages" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
@@ -1189,6 +1192,12 @@ function formatText(text, itemTashkeel) {
         }
 
         async function saveState() {
+            const indicator = document.getElementById('admin-saving-indicator');
+            if (indicator) {
+                indicator.classList.remove('hidden');
+                indicator.classList.add('flex');
+            }
+
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
                     const docRef = window.firebaseDoc(window.firebaseDb, "platformData", "mainConfig");
@@ -1205,6 +1214,12 @@ function formatText(text, itemTashkeel) {
                 }
             } catch (e) {
                 console.error("خطأ أثناء الحفظ السحابي:", e);
+                alert("حدث خطأ أثناء الحفظ السحابي: " + e.message);
+            } finally {
+                if (indicator) {
+                    indicator.classList.add('hidden');
+                    indicator.classList.remove('flex');
+                }
             }
         }
 
@@ -2316,7 +2331,7 @@ function renderQuestion() {
             populateQuestionFilters();
         }
 
-       function saveAppSettings() {
+   async function saveAppSettings() {
             appSettings.teacherName = document.getElementById('admin-teacher-input').value.trim() || appSettings.teacherName;
             appSettings.examTitle = document.getElementById('admin-exam-title-input').value.trim() || appSettings.examTitle;
             appSettings.startBtnText = document.getElementById('admin-start-btn-input').value.trim();
@@ -2325,10 +2340,7 @@ function renderQuestion() {
             appSettings.quickInfoLabel = document.getElementById('admin-quickinfo-label-input').value.trim();
             appSettings.examCount = parseInt(document.getElementById('admin-exam-count-input').value) || 20;
             appSettings.examDuration = parseInt(document.getElementById('admin-exam-duration-input').value) || 20;
-            
-            // حفظ وقت غلق الاختبار بدقة
             appSettings.expiryDate = document.getElementById('admin-expiry-date-input').value;
-            
             appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
             
             if(document.getElementById('admin-show-bank-card')) appSettings.showBankCard = document.getElementById('admin-show-bank-card').value === "true";
@@ -2363,11 +2375,11 @@ function renderQuestion() {
                 appSettings.adminPass = newPwd;
             }
 
-            // الحفظ السحابي والمحلي ثم إعادة التحميل لضمان التطبيق الفوري بالخارج
-            saveState().then(() => {
-                alert("تم حفظ الإعدادات بنجاح وتطبيقها على المنصة!");
-                location.reload(); // تحديث الصفحة بالكامل لجلب أحدث إعدادات الوقت والخيارات من التخزين السحابي
-            });
+            // تنفيذ الحفظ الانتظاري مع ظهور المؤشر المرئي
+            await saveState();
+
+            alert("تم حفظ الإعدادات وتطبيقها بنجاح!");
+            initApp();
         }
 
         function exportTopicParagraphsJson() {
