@@ -4341,15 +4341,9 @@ function renderQuestion() {
             }
             let csvContent = "\uFEFF"; 
             csvContent += "م,اسم الطالب,المرحلة والصف والموضوع,الحالة,الدرجة,المجموع,النسبة,التاريخ,مدة الاختبار\n";
-            
             studentRecords.forEach((r, i) => {
-                // تطبيق الحماية ومعالجة علامات التنصيص المزدوجة لمنع كسر ملف الإكسيل
-                let safeName = r.name ? String(r.name).replace(/"/g, '""') : '';
-                let safeStageGrade = r.stageGrade ? String(r.stageGrade).replace(/"/g, '""') : `${r.stage || ''} - ${r.grade || ''} (${r.topic || ''})`.replace(/"/g, '""');
-                
-                csvContent += `"${i+1}","${safeName}","${safeStageGrade}","${r.status}","${r.score}","${r.total}","${r.pct}%","${r.date}","${r.duration}"\n`;
+                csvContent += `"${i+1}","${r.name}","${r.stageGrade || ''}","${r.status}","${r.score}","${r.total}","${r.pct}%","${r.date}","${r.duration}"\n`;
             });
-            
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
