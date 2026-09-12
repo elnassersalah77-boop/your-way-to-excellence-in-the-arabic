@@ -160,9 +160,11 @@
     </style>
 </head>
 <body id="platform-body" class="min-h-screen text-slate-800 flex flex-col justify-between transition-colors duration-300 bg-slate-100">
-<!-- مؤشر التحميل السحابي -->
-   <!-- مؤشر التحميل السحابي -->
-    <div id="cloud-loading-overlay" style="z-index: 9999;" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center space-y-4 text-white">
+<!-- مؤشر التحميل السحابي (آمن ومخفي افتراضياً) -->
+<div id="cloud-loading-overlay" style="display: none; z-index: 9999;" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex-col items-center justify-center space-y-4 text-white">
+    <div class="w-16 h-16 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+    <p id="cloud-loading-text" class="font-black text-lg text-amber-300">جَارِي الاتِّصَال بِالسَّحَابَةِ...</p>
+</div>
         <div class="w-16 h-16 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
         <p id="cloud-loading-text" class="font-black text-lg text-amber-300">جَارِي الاتِّصَال بِالسَّحَابَةِ وحِفْظِ البَيَانَات...</p>
     </div>
@@ -1174,23 +1176,21 @@ function formatText(text, itemTashkeel) {
             return text;
         }
 
-        // 1. دالة مؤشر التحميل
+       // 1. دالة المؤشر (تم تعديلها للتحكم الآمن في العرض)
         function toggleCloudLoading(show, customText = "جَارِي الاتِّصَال بِالسَّحَابَةِ...") {
             const overlay = document.getElementById('cloud-loading-overlay');
             const textEl = document.getElementById('cloud-loading-text');
             if (overlay && textEl) {
                 textEl.textContent = customText;
                 if (show) {
-                    overlay.classList.remove('hidden');
-                    overlay.classList.add('flex');
+                    overlay.style.display = 'flex';
                 } else {
-                    overlay.classList.add('hidden');
-                    overlay.classList.remove('flex');
+                    overlay.style.display = 'none';
                 }
             }
         }
 
-        // دالة جلب البيانات الشاملة والسريعة (Parallel Loading)
+        // 2. دالة جلب البيانات المتوازية السريعة
         async function loadDataFromCloud() {
             toggleCloudLoading(true, "جَارِي تَحْمِيلِ بَيَانَاتِ الْمَنْصَةِ مِنَ السَّحَابَةِ...");
             try {
@@ -1199,15 +1199,14 @@ function formatText(text, itemTashkeel) {
                     const doc = window.firebaseDoc;
                     const getDoc = window.firebaseGetDoc;
 
-                    // المرحلة الأولى: جلب الإعدادات، السجلات، وملفات المؤشرات (Meta) دفعة واحدة
                     const initialPromises = [
                         getDoc(doc(db, "platformData", "settings")),
                         getDoc(doc(db, "platformData", "records")),
                         getDoc(doc(db, "platformData", "questions_meta")),
                         getDoc(doc(db, "platformData", "paragraphs_meta")),
                         getDoc(doc(db, "platformData", "quickinfo_meta")),
-                        getDoc(doc(db, "platformData", "paragraphs")), // توافق مع القديم
-                        getDoc(doc(db, "platformData", "quickInfo"))   // توافق مع القديم
+                        getDoc(doc(db, "platformData", "paragraphs")), 
+                        getDoc(doc(db, "platformData", "quickInfo"))   
                     ];
 
                     const [
@@ -1216,7 +1215,6 @@ function formatText(text, itemTashkeel) {
                         legacyPSnap, legacyQiSnap
                     ] = await Promise.all(initialPromises);
 
-                    // استخراج الإعدادات والسجلات
                     if (settingsSnap.exists()) {
                         const data = settingsSnap.data();
                         if (data.stagesData) stagesData = data.stagesData;
@@ -1228,7 +1226,6 @@ function formatText(text, itemTashkeel) {
                         studentRecords = recordsSnap.data().studentRecords;
                     }
 
-                    // المرحلة الثانية: تجهيز طلبات جلب جميع الأجزاء (Chunks) معاً
                     let chunkPromises = [];
                     let qTotal = qMetaSnap.exists() ? (qMetaSnap.data().totalParts || 0) : 0;
                     let pTotal = pMetaSnap.exists() ? (pMetaSnap.data().totalParts || 0) : 0;
@@ -1238,10 +1235,8 @@ function formatText(text, itemTashkeel) {
                     for (let i = 0; i < pTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `paragraphs_part_${i}`)));
                     for (let i = 0; i < qiTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `quickinfo_part_${i}`)));
 
-                    // تنفيذ جلب جميع الأجزاء في نفس اللحظة
                     const chunksSnaps = await Promise.all(chunkPromises);
 
-                    // تجميع الأجزاء بترتيبها الصحيح
                     questionBank = [];
                     paragraphs = [];
                     quickInfoList = [];
@@ -1277,7 +1272,7 @@ function formatText(text, itemTashkeel) {
             initApp();
         }
 
-        // دالة الحفظ الشاملة والسريعة (Parallel Execution)
+        // 3. دالة الحفظ المتوازية السريعة
         async function saveState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
@@ -1285,9 +1280,8 @@ function formatText(text, itemTashkeel) {
                     const doc = window.firebaseDoc;
                     const setDoc = window.firebaseSetDoc;
 
-                    let savePromises = []; // مصفوفة لجمع كل عمليات الحفظ لإرسالها معاً
+                    let savePromises = []; 
 
-                    // 1. حفظ الإعدادات
                     savePromises.push(setDoc(doc(db, "platformData", "settings"), {
                         stagesData: JSON.parse(JSON.stringify(stagesData || {})),
                         gradeStatus: JSON.parse(JSON.stringify(gradeStatus || {})),
@@ -1295,7 +1289,6 @@ function formatText(text, itemTashkeel) {
                         appSettings: JSON.parse(JSON.stringify(appSettings || {}))
                     }));
 
-                    // 2. تقسيم الأسئلة
                     const qChunkSize = 40;
                     let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
                     for (let i = 0; i < qTotalParts; i++) {
@@ -1304,7 +1297,6 @@ function formatText(text, itemTashkeel) {
                     }
                     savePromises.push(setDoc(doc(db, "platformData", "questions_meta"), { totalParts: qTotalParts }));
 
-                    // 3. تقسيم الفقرات
                     const pChunkSize = 40;
                     let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
                     for (let i = 0; i < pTotalParts; i++) {
@@ -1313,7 +1305,6 @@ function formatText(text, itemTashkeel) {
                     }
                     savePromises.push(setDoc(doc(db, "platformData", "paragraphs_meta"), { totalParts: pTotalParts }));
 
-                    // 4. تقسيم المعلومات السريعة
                     const qiChunkSize = 40;
                     let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
                     for (let i = 0; i < qiTotalParts; i++) {
@@ -1322,12 +1313,10 @@ function formatText(text, itemTashkeel) {
                     }
                     savePromises.push(setDoc(doc(db, "platformData", "quickinfo_meta"), { totalParts: qiTotalParts }));
 
-                    // 5. حفظ السجلات
                     savePromises.push(setDoc(doc(db, "platformData", "records"), {
                         studentRecords: JSON.parse(JSON.stringify(studentRecords || []))
                     }));
 
-                    // تنفيذ جميع العمليات دفعة واحدة في نفس اللحظة
                     await Promise.all(savePromises);
                 }
             } catch (e) {
@@ -1336,11 +1325,9 @@ function formatText(text, itemTashkeel) {
             }
         }
 
+        // 4. حفظ الإعدادات مع التأخير لظهور الشاشة
         function saveAppSettings() {
-            // إظهار المؤشر فوراً
             toggleCloudLoading(true, "جَارِي حِفْظِ الإِعْدَادَاتِ وَتَحْدِيثِ الْمَنْصَةِ...");
-
-            // تأخير بسيط (150 ملي ثانية) لضمان رسم المتصفح لمؤشر التحميل قبل الانشغال بالحفظ
             setTimeout(() => {
                 appSettings.teacherName = document.getElementById('admin-teacher-input').value.trim() || appSettings.teacherName;
                 appSettings.examTitle = document.getElementById('admin-exam-title-input').value.trim() || appSettings.examTitle;
@@ -1386,7 +1373,6 @@ function formatText(text, itemTashkeel) {
                 }
 
                 saveState().then(() => {
-                    // إجبار المؤشر على البقاء ظاهراً حتى بعد انتهاء الحفظ خلف رسالة التنبيه
                     toggleCloudLoading(true, "تَمَّ الْحِفْظُ بِنَجَاح... جَارِي إِعَادَةُ التَّحْمِيلِ...");
                     setTimeout(() => {
                         alert("تم حفظ الإعدادات وتطبيقها على المنصة سحابياً بنجاح!");
