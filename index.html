@@ -161,7 +161,11 @@
 </head>
 <body id="platform-body" class="min-h-screen text-slate-800 flex flex-col justify-between transition-colors duration-300 bg-slate-100">
 <!-- مؤشر التحميل السحابي -->
-   <div id="cloud-loading-overlay" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center space-y-4 text-white">
+   <!-- مؤشر التحميل السحابي -->
+    <div id="cloud-loading-overlay" style="z-index: 9999;" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center space-y-4 text-white">
+        <div class="w-16 h-16 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+        <p id="cloud-loading-text" class="font-black text-lg text-amber-300">جَارِي الاتِّصَال بِالسَّحَابَةِ وحِفْظِ البَيَانَات...</p>
+    </div>
         <div class="w-16 h-16 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
         <p id="cloud-loading-text" class="font-black text-lg text-amber-300">جَارِي الاتِّصَال بِالسَّحَابَةِ وحِفْظِ البَيَانَات...</p>
     </div>
@@ -1297,60 +1301,68 @@ function formatText(text, itemTashkeel) {
         }
 
         function saveAppSettings() {
-            toggleCloudLoading(true, "جَارِي حِفْظِ الإِعْدَادَاتِ وَالتَّغْيِيرَاتِ سَحَابِيّاً...");
+            // إظهار المؤشر فوراً
+            toggleCloudLoading(true, "جَارِي حِفْظِ الإِعْدَادَاتِ وَتَحْدِيثِ الْمَنْصَةِ...");
 
-            appSettings.teacherName = document.getElementById('admin-teacher-input').value.trim() || appSettings.teacherName;
-            appSettings.examTitle = document.getElementById('admin-exam-title-input').value.trim() || appSettings.examTitle;
-            appSettings.startBtnText = document.getElementById('admin-start-btn-input').value.trim();
-            appSettings.branch = document.getElementById('admin-branch-input').value.trim();
-            appSettings.pageTitle = document.getElementById('admin-pagetitle-input').value.trim() || appSettings.pageTitle;
-            appSettings.quickInfoLabel = document.getElementById('admin-quickinfo-label-input').value.trim();
-            appSettings.examCount = parseInt(document.getElementById('admin-exam-count-input').value) || 20;
-            appSettings.examDuration = parseInt(document.getElementById('admin-exam-duration-input').value) || 20;
-            appSettings.expiryDate = document.getElementById('admin-expiry-date-input').value;
-            appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
-            
-            if(document.getElementById('admin-show-bank-card')) appSettings.showBankCard = document.getElementById('admin-show-bank-card').value === "true";
-            if(document.getElementById('admin-bank-card-style')) appSettings.bankCardStyle = document.getElementById('admin-bank-card-style').value;
+            // تأخير بسيط (150 ملي ثانية) لضمان رسم المتصفح لمؤشر التحميل قبل الانشغال بالحفظ
+            setTimeout(() => {
+                appSettings.teacherName = document.getElementById('admin-teacher-input').value.trim() || appSettings.teacherName;
+                appSettings.examTitle = document.getElementById('admin-exam-title-input').value.trim() || appSettings.examTitle;
+                appSettings.startBtnText = document.getElementById('admin-start-btn-input').value.trim();
+                appSettings.branch = document.getElementById('admin-branch-input').value.trim();
+                appSettings.pageTitle = document.getElementById('admin-pagetitle-input').value.trim() || appSettings.pageTitle;
+                appSettings.quickInfoLabel = document.getElementById('admin-quickinfo-label-input').value.trim();
+                appSettings.examCount = parseInt(document.getElementById('admin-exam-count-input').value) || 20;
+                appSettings.examDuration = parseInt(document.getElementById('admin-exam-duration-input').value) || 20;
+                appSettings.expiryDate = document.getElementById('admin-expiry-date-input').value;
+                appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
+                
+                if(document.getElementById('admin-show-bank-card')) appSettings.showBankCard = document.getElementById('admin-show-bank-card').value === "true";
+                if(document.getElementById('admin-bank-card-style')) appSettings.bankCardStyle = document.getElementById('admin-bank-card-style').value;
 
-            if(document.getElementById('admin-use-difficulty-filter')) appSettings.useDifficultyFilter = document.getElementById('admin-use-difficulty-filter').checked;
-            if(document.getElementById('admin-diff-selection-mode')) appSettings.diffSelectionMode = document.getElementById('admin-diff-selection-mode').value;
-            if(document.getElementById('admin-diff-easy')) appSettings.diffEasyCount = parseInt(document.getElementById('admin-diff-easy').value) || 0;
-            if(document.getElementById('admin-diff-medium')) appSettings.diffMediumCount = parseInt(document.getElementById('admin-diff-medium').value) || 0;
-            if(document.getElementById('admin-diff-hard')) appSettings.diffHardCount = parseInt(document.getElementById('admin-diff-hard').value) || 0;
-            if(document.getElementById('admin-diff-vhard')) appSettings.diffVeryHardCount = parseInt(document.getElementById('admin-diff-vhard').value) || 0;
+                if(document.getElementById('admin-use-difficulty-filter')) appSettings.useDifficultyFilter = document.getElementById('admin-use-difficulty-filter').checked;
+                if(document.getElementById('admin-diff-selection-mode')) appSettings.diffSelectionMode = document.getElementById('admin-diff-selection-mode').value;
+                if(document.getElementById('admin-diff-easy')) appSettings.diffEasyCount = parseInt(document.getElementById('admin-diff-easy').value) || 0;
+                if(document.getElementById('admin-diff-medium')) appSettings.diffMediumCount = parseInt(document.getElementById('admin-diff-medium').value) || 0;
+                if(document.getElementById('admin-diff-hard')) appSettings.diffHardCount = parseInt(document.getElementById('admin-diff-hard').value) || 0;
+                if(document.getElementById('admin-diff-vhard')) appSettings.diffVeryHardCount = parseInt(document.getElementById('admin-diff-vhard').value) || 0;
 
-            if(document.getElementById('admin-platform-font')) appSettings.platformFont = document.getElementById('admin-platform-font').value;
-            if(document.getElementById('admin-platform-theme')) appSettings.platformTheme = document.getElementById('admin-platform-theme').value;
-            if(document.getElementById('admin-st-title-size')) appSettings.stTitleSize = document.getElementById('admin-st-title-size').value;
-            if(document.getElementById('admin-st-title-weight')) appSettings.stTitleWeight = document.getElementById('admin-st-title-weight').value;
-            if(document.getElementById('admin-shuffle-questions')) appSettings.shuffleQuestions = document.getElementById('admin-shuffle-questions').checked;
-            if(document.getElementById('admin-shuffle-options')) appSettings.shuffleOptions = document.getElementById('admin-shuffle-options').checked;
-            if(document.getElementById('admin-enable-tashkeel')) appSettings.enableTashkeel = document.getElementById('admin-enable-tashkeel').checked;
+                if(document.getElementById('admin-platform-font')) appSettings.platformFont = document.getElementById('admin-platform-font').value;
+                if(document.getElementById('admin-platform-theme')) appSettings.platformTheme = document.getElementById('admin-platform-theme').value;
+                if(document.getElementById('admin-st-title-size')) appSettings.stTitleSize = document.getElementById('admin-st-title-size').value;
+                if(document.getElementById('admin-st-title-weight')) appSettings.stTitleWeight = document.getElementById('admin-st-title-weight').value;
+                if(document.getElementById('admin-shuffle-questions')) appSettings.shuffleQuestions = document.getElementById('admin-shuffle-questions').checked;
+                if(document.getElementById('admin-shuffle-options')) appSettings.shuffleOptions = document.getElementById('admin-shuffle-options').checked;
+                if(document.getElementById('admin-enable-tashkeel')) appSettings.enableTashkeel = document.getElementById('admin-enable-tashkeel').checked;
 
-            appSettings.logoHeader = document.getElementById('admin-logo-header-input').value.trim();
-            appSettings.logoRight = document.getElementById('admin-logo-right-input').value.trim();
-            appSettings.logoLeft = document.getElementById('admin-logo-left-input').value.trim();
-            appSettings.midImg1 = document.getElementById('admin-mid-img-input-1').value.trim();
-            appSettings.midImg2 = document.getElementById('admin-mid-img-input-2').value.trim();
-            appSettings.bottomImgRight = document.getElementById('admin-bottom-img-input-right').value.trim();
-            appSettings.bottomImgLeft = document.getElementById('admin-bottom-img-input-left').value.trim();
-            appSettings.expLabel = document.getElementById('admin-exp-label-input').value.trim();
+                appSettings.logoHeader = document.getElementById('admin-logo-header-input').value.trim();
+                appSettings.logoRight = document.getElementById('admin-logo-right-input').value.trim();
+                appSettings.logoLeft = document.getElementById('admin-logo-left-input').value.trim();
+                appSettings.midImg1 = document.getElementById('admin-mid-img-input-1').value.trim();
+                appSettings.midImg2 = document.getElementById('admin-mid-img-input-2').value.trim();
+                appSettings.bottomImgRight = document.getElementById('admin-bottom-img-input-right').value.trim();
+                appSettings.bottomImgLeft = document.getElementById('admin-bottom-img-input-left').value.trim();
+                appSettings.expLabel = document.getElementById('admin-exp-label-input').value.trim();
 
-            let newPwd = document.getElementById('admin-new-password').value.trim();
-            if (newPwd) {
-                appSettings.adminPass = newPwd;
-            }
+                let newPwd = document.getElementById('admin-new-password').value.trim();
+                if (newPwd) {
+                    appSettings.adminPass = newPwd;
+                }
 
-            saveState().then(() => {
-                toggleCloudLoading(false);
-                alert("تم حفظ الإعدادات وتطبيقها على المنصة سحابياً بنجاح!");
-                location.reload(); 
-            }).catch(err => {
-                toggleCloudLoading(false);
-                console.error(err);
-            });
+                saveState().then(() => {
+                    // إجبار المؤشر على البقاء ظاهراً حتى بعد انتهاء الحفظ خلف رسالة التنبيه
+                    toggleCloudLoading(true, "تَمَّ الْحِفْظُ بِنَجَاح... جَارِي إِعَادَةُ التَّحْمِيلِ...");
+                    setTimeout(() => {
+                        alert("تم حفظ الإعدادات وتطبيقها على المنصة سحابياً بنجاح!");
+                        location.reload(); 
+                    }, 50);
+                }).catch(err => {
+                    toggleCloudLoading(false);
+                    console.error(err);
+                });
+            }, 150);
         }
+
         function validateArabicName(inputEl) {
             let val = inputEl.value;
             let arabicOnly = val.replace(/[^\u0600-\u06FF\s]/g, '');
