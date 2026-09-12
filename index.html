@@ -160,16 +160,11 @@
     </style>
 </head>
 <body id="platform-body" class="min-h-screen text-slate-800 flex flex-col justify-between transition-colors duration-300 bg-slate-100">
-<!-- مؤشر التحميل السحابي (آمن ومخفي افتراضياً) -->
-<div id="cloud-loading-overlay" style="display: none; z-index: 9999;" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex-col items-center justify-center space-y-4 text-white">
-    <div class="w-16 h-16 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
-    <p id="cloud-loading-text" class="font-black text-lg text-amber-300">جَارِي الاتِّصَال بِالسَّحَابَةِ...</p>
-</div>
+
+    <!-- مؤشر التحميل السحابي (نسخة واحدة صحيحة ومخفية) -->
+    <div id="cloud-loading-overlay" style="display: none; z-index: 9999;" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex-col items-center justify-center space-y-4 text-white">
         <div class="w-16 h-16 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
-        <p id="cloud-loading-text" class="font-black text-lg text-amber-300">جَارِي الاتِّصَال بِالسَّحَابَةِ وحِفْظِ البَيَانَات...</p>
-    </div>
-        <div class="w-16 h-16 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
-        <p id="cloud-loading-text" class="font-black text-lg text-amber-300">جَارِي الاتِّصَال بِالسَّحَابَةِ وحِفْظِ البَيَانَات...</p>
+        <p id="cloud-loading-text" class="font-black text-lg text-amber-300">جَارِي الاتِّصَال بِالسَّحَابَةِ...</p>
     </div>
 
     <!-- Header -->
