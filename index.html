@@ -193,7 +193,8 @@
 
     <!-- Main Container -->
     <main class="max-w-4xl mx-auto px-4 py-6 w-full flex-grow flex flex-col justify-center">
-<!-- VIEW 1: START SCREEN -->
+
+        <!-- VIEW 1: START SCREEN -->
         <div id="view-start" class="bg-white rounded-3xl p-6 sm:p-12 shadow-xl border border-slate-200 text-center space-y-8 relative overflow-hidden">
             <div class="flex justify-between items-center px-4">
                 <div id="start-mid-img-container-1" class="hidden"><img id="start-mid-img-1" src="" alt="صورة اليمين" class="max-h-24 rounded-2xl object-contain"></div>
@@ -308,7 +309,8 @@
                 </div>
             </div>
         </div>
-<!-- VIEW 3: RESULT SCREEN -->
+
+        <!-- VIEW 3: RESULT SCREEN -->
         <div id="view-result" class="hidden flex-col items-center justify-center text-center space-y-6 bg-white rounded-3xl p-8 shadow-xl border border-slate-200">
             <div id="res-icon" class="w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-emerald-100 text-emerald-600 border-4 border-emerald-300">
                 <i id="res-icon-i" class="fa-solid fa-trophy"></i>
@@ -699,13 +701,6 @@
                         </div>
                     </div>
 
-                    <!-- Pagination Controls -->
-                    <div class="flex justify-between items-center bg-white p-3 rounded-2xl border">
-                        <button type="button" id="prev-page-btn" onclick="changeRecordsPage(-1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs transition disabled:opacity-50 cursor-pointer">السابق</button>
-                        <span id="pagination-info" class="text-xs font-black text-slate-700">الصفحة 1 من 1</span>
-                        <button type="button" id="next-page-btn" onclick="changeRecordsPage(1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs transition disabled:opacity-50 cursor-pointer">التالي</button>
-                    </div>
-
                     <div class="overflow-x-auto border rounded-2xl bg-white">
                         <table class="w-full text-right border-collapse">
                             <thead>
@@ -933,7 +928,8 @@
             </div>
         </div>
     </div>
-<!-- نافذة إضافة وتعديل السؤال -->
+
+    <!-- نافذة إضافة وتعديل السؤال -->
     <div id="modal-question-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-sky-400 overflow-hidden modal-animate-in text-right">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -1146,17 +1142,14 @@
         let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
         /* -- DATA_END -- */
 
-        // Pagination Variables for Records
-        let currentRecordsPage = 1;
-        const recordsPerPage = 20;
-
         window.addEventListener('beforeunload', function (e) {
             if (quizState.questions.length > 0 && document.getElementById('view-quiz') && !document.getElementById('view-quiz').classList.contains('hidden')) {
                 e.preventDefault();
                 e.returnValue = '';
             }
         });
-function formatText(text, itemTashkeel) {
+
+        function formatText(text, itemTashkeel) {
             if (!text || typeof text !== 'string') return text;
             let allowTashkeel = (itemTashkeel !== false) && (appSettings.enableTashkeel !== false);
             if (!allowTashkeel) {
@@ -1412,7 +1405,8 @@ function formatText(text, itemTashkeel) {
                 botLC.classList.remove('hidden');
             } else { botLC.classList.add('hidden'); }
         }
-function populateStartStages() {
+
+        function populateStartStages() {
             const stageSel = document.getElementById('start-stage-select');
             if(!stageSel) return;
             stageSel.innerHTML = '<option value="">اختر المرحلة</option>';
@@ -1898,7 +1892,8 @@ function populateStartStages() {
                 timerSeconds--;
             }, 1000);
         }
-function renderQuestion() {
+
+        function renderQuestion() {
             const idx = quizState.currentIndex;
             const q = quizState.questions[idx];
             document.getElementById('display-q-idx').textContent = idx + 1;
@@ -2695,7 +2690,7 @@ function renderQuestion() {
             if (tabName === 'questions') populateQuestionFilters();
             if (tabName === 'paragraphs') populateParaAdminFilters();
             if (tabName === 'quickinfo') populateQiAdminFilters();
-            if (tabName === 'records') { populateAdminRecFilters(); currentRecordsPage = 1; }
+            if (tabName === 'records') populateAdminRecFilters();
         }
 
         function renderAdminStagesList() {
@@ -3958,6 +3953,45 @@ function renderQuestion() {
             }
         }
 
+        function toggleQuickInfoVisibility(idx) {
+            quickInfoList[idx].active = quickInfoList[idx].active === false ? true : false;
+            saveState();
+            renderAdminQuickInfoList();
+        }
+
+        function toggleQuickInfoTashkeel(idx) {
+            quickInfoList[idx].tashkeel = quickInfoList[idx].tashkeel === false ? true : false;
+            saveState();
+            renderAdminQuickInfoList();
+        }
+
+        function duplicateQuickInfo(idx) {
+            let src = quickInfoList[idx];
+            let copy = JSON.parse(JSON.stringify(src));
+            copy.title = (src.title || "بطاقة") + " (نسخة)";
+            quickInfoList.push(copy);
+            saveState();
+            renderAdminQuickInfoList();
+        }
+
+        function moveQuickInfo(idx, direction) {
+            const targetIndex = idx + direction;
+            if (targetIndex < 0 || targetIndex >= quickInfoList.length) return;
+            let temp = quickInfoList[idx];
+            quickInfoList[idx] = quickInfoList[targetIndex];
+            quickInfoList[targetIndex] = temp;
+            saveState();
+            renderAdminQuickInfoList();
+        }
+
+        function previewQuickInfo(idx) {
+            let qi = quickInfoList[idx];
+            let contentHtml = generateQuickInfoCardHtml(qi);
+            document.getElementById('preview-card-body').innerHTML = contentHtml;
+            document.getElementById('modal-preview-card').classList.add('flex');
+            document.getElementById('modal-preview-card').classList.remove('hidden');
+        }
+
         function moveQiSectionBlock(btn, direction) {
             const block = btn.closest('.qi-section-block');
             const parent = block.parentNode;
@@ -4262,10 +4296,10 @@ function renderQuestion() {
                 topicSel.appendChild(opt);
             });
 
-            currentRecordsPage = 1; 
             renderAdminRecordsTable();
         }
 
+        // --- هنا تم تأمين اسم الطالب عبر escapeHTML لمنع الثغرة وتحديث الجدول ---
         function renderAdminRecordsTable() {
             const tbody = document.getElementById('admin-tbody');
             if (!tbody) return;
@@ -4284,29 +4318,14 @@ function renderQuestion() {
 
             if (filtered.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500 font-bold">لا توجد سجلات مطابقة.</td></tr>';
-                document.getElementById('pagination-info').textContent = 'الصفحة 1 من 1';
-                document.getElementById('prev-page-btn').disabled = true;
-                document.getElementById('next-page-btn').disabled = true;
                 return;
             }
 
-            const totalPages = Math.ceil(filtered.length / recordsPerPage) || 1;
-            if (currentRecordsPage > totalPages) currentRecordsPage = totalPages;
-            if (currentRecordsPage < 1) currentRecordsPage = 1;
-
-            const startIndex = (currentRecordsPage - 1) * recordsPerPage;
-            const endIndex = Math.min(startIndex + recordsPerPage, filtered.length);
-            
-            const pageRecords = filtered.slice(startIndex, endIndex);
-
-            pageRecords.forEach((rec, pageIdx) => {
-                const globalIdx = startIndex + pageIdx;
-                const originalIndex = studentRecords.indexOf(rec);
-                
+            filtered.forEach((rec, idx) => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition border-b text-xs";
                 tr.innerHTML = `
-                    <td class="p-3 font-black text-slate-500">${globalIdx + 1}</td>
+                    <td class="p-3 font-black text-slate-500">${idx + 1}</td>
                     <td class="p-3 font-black text-sky-950 text-sm">${escapeHTML(rec.name)}</td>
                     <td class="p-3 font-bold text-slate-700">${rec.stageGrade || `${rec.stage || ''} - ${rec.grade || ''} (${rec.topic || ''})`}</td>
                     <td class="p-3"><span class="px-2.5 py-1 rounded-full font-black ${rec.status === 'ناجح' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${rec.status}</span></td>
@@ -4315,7 +4334,7 @@ function renderQuestion() {
                     <td class="p-3">
                         <div class="space-y-1">
                             <span class="block font-bold text-slate-800">الأسئلة: ${rec.answeredCount}</span>
-                            <button type="button" onclick="openRecordDetailsModal(${originalIndex})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer shadow transition">
+                            <button type="button" onclick="openRecordDetailsModal(${studentRecords.indexOf(rec)})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer shadow transition">
                                 <i class="fa-solid fa-list-check ml-1"></i> تفاصيل إجابة الطالب
                             </button>
                         </div>
@@ -4323,15 +4342,6 @@ function renderQuestion() {
                 `;
                 tbody.appendChild(tr);
             });
-
-            document.getElementById('pagination-info').textContent = `الصفحة ${currentRecordsPage} من ${totalPages}`;
-            document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1;
-            document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
-        }
-
-        function changeRecordsPage(direction) {
-            currentRecordsPage += direction;
-            renderAdminRecordsTable();
         }
 
         function exportAllRecordsExcel() {
@@ -4354,6 +4364,7 @@ function renderQuestion() {
             document.body.removeChild(link);
         }
 
+        // --- هنا تم تأمين اسم الطالب عبر escapeHTML داخل النافذة المنبثقة ---
         function openRecordDetailsModal(recIdx) {
             let rec = studentRecords[recIdx];
             if (!rec || !rec.breakdown) {
@@ -4522,6 +4533,7 @@ function renderQuestion() {
                 let dlAnchorElem = document.createElement('a');
                 dlAnchorElem.setAttribute("href", url);
                 dlAnchorElem.setAttribute("download", "platform_offline_complete.html");
+                dlAnchorLink = dlAnchorElem;
                 dlAnchorElem.click();
                 URL.revokeObjectURL(url);
                 alert("تم تصدير ملف المنصة الشامل بنجاح!");
@@ -4529,44 +4541,7 @@ function renderQuestion() {
                 alert("حدث خطأ أثناء تصدير ملف HTML: " + e.message);
             }
         }
-function toggleQuickInfoVisibility(idx) {
-            quickInfoList[idx].active = quickInfoList[idx].active === false ? true : false;
-            saveState();
-            renderAdminQuickInfoList();
-        }
 
-        function toggleQuickInfoTashkeel(idx) {
-            quickInfoList[idx].tashkeel = quickInfoList[idx].tashkeel === false ? true : false;
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function duplicateQuickInfo(idx) {
-            let src = quickInfoList[idx];
-            let copy = JSON.parse(JSON.stringify(src));
-            copy.title = (src.title || "بطاقة") + " (نسخة)";
-            quickInfoList.push(copy);
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function moveQuickInfo(idx, direction) {
-            const targetIndex = idx + direction;
-            if (targetIndex < 0 || targetIndex >= quickInfoList.length) return;
-            let temp = quickInfoList[idx];
-            quickInfoList[idx] = quickInfoList[targetIndex];
-            quickInfoList[targetIndex] = temp;
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function previewQuickInfo(idx) {
-            let qi = quickInfoList[idx];
-            let contentHtml = generateQuickInfoCardHtml(qi);
-            document.getElementById('preview-card-body').innerHTML = contentHtml;
-            document.getElementById('modal-preview-card').classList.add('flex');
-            document.getElementById('modal-preview-card').classList.remove('hidden');
-        }
         window.addEventListener('DOMContentLoaded', loadDataFromCloud);
     </script>
 </body>
