@@ -1187,7 +1187,7 @@ function formatText(text, itemTashkeel) {
 
         // 2. دالة جلب البيانات المتوازية السريعة
         async function loadDataFromCloud() {
-            toggleCloudLoading(true, "جَارِي تَحْمِيلِ بَيَانَاتِ الْمَنْصَةِ مِنَ السَّحَابَةِ...");
+           toggleCloudLoading(true, "جَارِي تَحْمِيلِ الْبَيَانَاتِ...");
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseGetDoc) {
                     const db = window.firebaseDb;
