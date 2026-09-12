@@ -1263,9 +1263,9 @@ function formatText(text, itemTashkeel) {
                     });
                 }
             } catch (e) {
-                console.error("خطأ أثناء الحفظ السحابي المجزأ:", e);
-                alert("حدث خطأ أثناء الحفظ السحابي: " + e.message);
-            }
+        console.error("خطأ تفصيلي:", e);
+        alert("خطأ فايرستور: " + e.code + " - " + e.message);
+    }
         }
 
         // 4. دالة حفظ الإعدادات المرتبطة بزر لوحة التحكم
