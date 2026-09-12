@@ -1186,7 +1186,7 @@ function formatText(text, itemTashkeel) {
             }
         }
 
-        // 2. دالة جلب البيانات مجزأة من السحابة
+        // دالة جلب البيانات (مع تجميع أجزاء الأسئلة المقسمة)
         async function loadDataFromCloud() {
             toggleCloudLoading(true, "جَارِي تَحْمِيلِ بَيَانَاتِ الْمَنْصَةِ مِنَ السَّحَابَةِ...");
             try {
@@ -1195,6 +1195,7 @@ function formatText(text, itemTashkeel) {
                     const doc = window.firebaseDoc;
                     const getDoc = window.firebaseGetDoc;
 
+                    // 1. جلب الإعدادات
                     const settingsSnap = await getDoc(doc(db, "platformData", "settings"));
                     if (settingsSnap.exists()) {
                         const data = settingsSnap.data();
@@ -1204,21 +1205,32 @@ function formatText(text, itemTashkeel) {
                         if (data.appSettings) appSettings = { ...defaultSettings, ...data.appSettings };
                     }
 
-                    const qSnap = await getDoc(doc(db, "platformData", "questions"));
-                    if (qSnap.exists() && qSnap.data().questionBank) {
-                        questionBank = qSnap.data().questionBank;
+                    // 2. جلب الأسئلة المقسمة (تجميع الأجزاء)
+                    questionBank = [];
+                    const metaSnap = await getDoc(doc(db, "platformData", "questions_meta"));
+                    if (metaSnap.exists()) {
+                        let totalParts = metaSnap.data().totalParts || 0;
+                        for (let i = 0; i < totalParts; i++) {
+                            let partSnap = await getDoc(doc(db, "platformData", `questions_part_${i}`));
+                            if (partSnap.exists() && partSnap.data().chunk) {
+                                questionBank = questionBank.concat(partSnap.data().chunk);
+                            }
+                        }
                     }
 
+                    // 3. جلب الفقرات
                     const pSnap = await getDoc(doc(db, "platformData", "paragraphs"));
                     if (pSnap.exists() && pSnap.data().paragraphs) {
                         paragraphs = pSnap.data().paragraphs;
                     }
 
+                    // 4. جلب المعلومات السريعة
                     const qiSnap = await getDoc(doc(db, "platformData", "quickInfo"));
                     if (qiSnap.exists() && qiSnap.data().qiList) {
                         quickInfoList = qiSnap.data().qiList;
                     }
 
+                    // 5. جلب السجلات
                     const recSnap = await getDoc(doc(db, "platformData", "records"));
                     if (recSnap.exists() && recSnap.data().studentRecords) {
                         studentRecords = recSnap.data().studentRecords;
@@ -1231,14 +1243,16 @@ function formatText(text, itemTashkeel) {
             initApp();
         }
 
-        // 3. دالة الحفظ المجزأ سحابياً
+        // دالة الحفظ (مع تقسيم بنك الأسئلة لأجزاء لا تتجاوز 1 ميجا)
         async function saveState() {
+            toggleCloudLoading(true, "جَارِي حِفْظِ التَّغْيِيرَاتِ سَحَابِيّاً بَأَمَانٍ...");
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
                     const db = window.firebaseDb;
                     const doc = window.firebaseDoc;
                     const setDoc = window.firebaseSetDoc;
 
+                    // 1. حفظ الإعدادات
                     await setDoc(doc(db, "platformData", "settings"), {
                         stagesData: JSON.parse(JSON.stringify(stagesData || {})),
                         gradeStatus: JSON.parse(JSON.stringify(gradeStatus || {})),
@@ -1246,29 +1260,42 @@ function formatText(text, itemTashkeel) {
                         appSettings: JSON.parse(JSON.stringify(appSettings || {}))
                     });
 
-                    await setDoc(doc(db, "platformData", "questions"), {
-                        questionBank: JSON.parse(JSON.stringify(questionBank || []))
-                    });
+                    // 2. تقسيم بنك الأسئلة إلى أجزاء (كل 40 سؤال في مستند مستقل لتجنب تجاوز 1 ميجابايت)
+                    const chunkSize = 40;
+                    let totalParts = Math.ceil((questionBank || []).length / chunkSize);
+                    
+                    if (totalParts === 0) totalParts = 1;
 
+                    for (let i = 0; i < totalParts; i++) {
+                        let chunk = (questionBank || []).slice(i * chunkSize, (i + 1) * chunkSize);
+                        await setDoc(doc(db, "platformData", `questions_part_${i}`), { chunk });
+                    }
+                    
+                    // حفظ عدد الأجزاء الكلي
+                    await setDoc(doc(db, "platformData", "questions_meta"), { totalParts });
+
+                    // 3. حفظ الفقرات
                     await setDoc(doc(db, "platformData", "paragraphs"), {
                         paragraphs: JSON.parse(JSON.stringify(paragraphs || []))
                     });
 
+                    // 4. حفظ المعلومات السريعة
                     await setDoc(doc(db, "platformData", "quickInfo"), {
                         qiList: JSON.parse(JSON.stringify(quickInfoList || []))
                     });
 
+                    // 5. حفظ السجلات
                     await setDoc(doc(db, "platformData", "records"), {
                         studentRecords: JSON.parse(JSON.stringify(studentRecords || []))
                     });
                 }
             } catch (e) {
-        console.error("خطأ تفصيلي:", e);
-        alert("رمز الخطأ: " + e.code + "\nالسبب: " + e.message);
-    }
+                console.error("خطأ تفصيلي أثناء الحفظ:", e);
+                alert("رمز الخطأ: " + e.code + "\nالسبب: " + e.message);
+            }
+            toggleCloudLoading(false);
         }
 
-        // 4. دالة حفظ الإعدادات المرتبطة بزر لوحة التحكم
         function saveAppSettings() {
             toggleCloudLoading(true, "جَارِي حِفْظِ الإِعْدَادَاتِ وَالتَّغْيِيرَاتِ سَحَابِيّاً...");
 
