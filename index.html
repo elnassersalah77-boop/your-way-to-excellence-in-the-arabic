@@ -3467,10 +3467,24 @@ function renderQuestion() {
                 try {
                     let imported = JSON.parse(e.target.result);
                     if (Array.isArray(imported)) {
-                        questionBank = questionBank.concat(imported);
+                        const fStage = document.getElementById('filter-q-stage').value;
+                        const fGrade = document.getElementById('filter-q-grade').value;
+                        const fTopic = document.getElementById('filter-q-topic').value;
+
+                        imported.forEach(q => {
+                            // إذا كان الملف المستورد لا يحتوي على مرحلة أو صف أو موضوع، نربطه بالتصفية الحالية
+                            if (fStage) q.stage = q.stage || fStage;
+                            if (fGrade) q.grade = q.grade || fGrade;
+                            if (fTopic) q.topic = q.topic || fTopic;
+                            // ضمان تفعيل السؤال المستورد وعدم ظهوره مخفياً
+                            q.active = true;
+                            q.tashkeel = q.tashkeel !== false;
+                            questionBank.push(q);
+                        });
+
                         saveState();
                         renderAdminQuestionsList();
-                        alert("تم استيراد الأسئلة بنجاح!");
+                        alert("تم استيراد وتفعيل الأسئلة بنجاح!");
                     } else { alert("الملف غير متوافق."); }
                 } catch(err) { alert("خطأ في قراءة ملف JSON."); }
                 event.target.value = '';
@@ -3478,7 +3492,7 @@ function renderQuestion() {
             reader.readAsText(file);
         }
 
-        function saveDirectBatchQuestions() {
+function saveDirectBatchQuestions() {
             const rawTxt = document.getElementById('direct-batch-input').value.trim();
             const fStage = document.getElementById('filter-q-stage').value;
             const fGrade = document.getElementById('filter-q-grade').value;
@@ -3508,10 +3522,10 @@ function renderQuestion() {
                 parsed.forEach(item => {
                     if (item.q && item.opts && item.ans) {
                         questionBank.push({
-                            stage: fStage,
-                            grade: fGrade,
-                            topic: fTopic,
-                            active: true,
+                            stage: fStage,     // ربط إجباري بالمرحلة المصفاة
+                            grade: fGrade,     // ربط إجباري بالصف المصفى
+                            topic: fTopic,     // ربط إجباري بالموضوع المصفى
+                            active: true,      // ضمان تفعيل السؤال ليظهر في الاختبار فوراً
                             tashkeel: true,
                             paragraphId: item.paragraphId || "",
                             q: item.q,
@@ -3528,7 +3542,7 @@ function renderQuestion() {
                     saveState();
                     renderAdminQuestionsList();
                     document.getElementById('direct-batch-input').value = '';
-                    alert(`تمت معالجة وإضافة ${addedCount} سؤالاً بنجاح للموضوع.`);
+                    alert(`تمت معالجة وإضافة وتفعيل ${addedCount} سؤالاً بنجاح للموضوع.`);
                 } else {
                     alert("لم يتم العثور على صيغة أسئلة صحيحة بعد المعالجة.");
                 }
