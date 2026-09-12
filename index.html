@@ -131,33 +131,6 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .modal-animate-in { animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-        /* أنماط شهادة التقدير المضافة حديثاً */
-        .cert-bg-pattern {
-            background-color: #fffdf5;
-            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23f59e0b' fill-opacity='0.04' fill-rule='evenodd'/%3E");
-        }
-        .cert-lux-border {
-            position: relative;
-            border: 3px solid #d97706;
-            padding: 8px;
-        }
-        .cert-lux-border::before {
-            content: '';
-            position: absolute;
-            top: 6px; left: 6px; right: 6px; bottom: 6px;
-            border: 2px solid #b45309;
-            border-radius: 12px;
-            pointer-events: none;
-        }
-        .cert-lux-border::after {
-            content: '';
-            position: absolute;
-            top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border: 1px dashed #d97706;
-            border-radius: 8px;
-            pointer-events: none;
-        }
     </style>
 </head>
 <body id="platform-body" class="min-h-screen text-slate-800 flex flex-col justify-between transition-colors duration-300 bg-slate-100">
@@ -239,6 +212,7 @@
                 </div>
             </div>
 
+            <!-- بطاقة بنك أسئلة الموضوع التفاعلية والمحاولات المطلوبة -->
             <div id="topic-bank-stats-card" class="hidden"></div>
 
             <div id="start-form-container" class="max-w-md mx-auto space-y-5 pt-2">
@@ -251,7 +225,8 @@
                 <button type="button" onclick="startQuiz()" id="start-btn-text" class="w-full bg-gradient-to-r from-sky-600 to-sky-800 hover:from-sky-700 hover:to-sky-900 text-white px-6 rounded-2xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-0.5 cursor-pointer py-4 text-xl sm:text-2xl font-black">ابْدَأِ الِاخْتِبَارِ الْآنَ <i class="fa-solid fa-play mr-2"></i></button>
             </div>
         </div>
-<!-- VIEW 2: QUIZ SCREEN -->
+
+        <!-- VIEW 2: QUIZ SCREEN -->
         <div id="view-quiz" class="hidden flex-col gap-4">
             <div class="bg-white rounded-2xl p-4 shadow-md border border-slate-200 flex justify-between items-center font-bold text-slate-700 text-sm">
                 <div class="flex items-center gap-2">
@@ -262,9 +237,9 @@
                     <div class="bg-sky-50 text-sky-900 px-3 py-1 rounded-xl border border-sky-200">
                         سُؤَالٌ <span id="display-q-idx" class="font-black text-sky-600">1</span> مِنْ <span id="display-total-q" class="font-black">20</span>
                     </div>
-                    <div id="timer-container" class="bg-amber-50 text-amber-900 px-3 py-1 rounded-xl border border-amber-200 flex items-center gap-1.5 transition-colors duration-300">
-                        <i id="timer-icon" class="fa-solid fa-stopwatch text-amber-600 transition-colors duration-300"></i>
-                        <span id="display-timer" class="font-black font-mono text-base transition-colors duration-300">20:00</span>
+                    <div class="bg-amber-50 text-amber-900 px-3 py-1 rounded-xl border border-amber-200 flex items-center gap-1.5">
+                        <i class="fa-solid fa-stopwatch text-amber-600"></i>
+                        <span id="display-timer" class="font-black font-mono text-base">20:00</span>
                     </div>
                 </div>
             </div>
@@ -353,17 +328,16 @@
     <!-- FLOATING MODAL: CERTIFICATE -->
     <div id="modal-cert" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-2xl w-full flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in text-center p-6 sm:p-8 space-y-6">
-            <div id="cert-printable-area" class="cert-bg-pattern cert-lux-border p-8 rounded-2xl space-y-5 text-center shadow-inner relative overflow-hidden bg-white">
-                <div class="absolute inset-0 bg-gradient-to-br from-amber-100/30 to-transparent pointer-events-none"></div>
-                <div class="text-amber-500 text-5xl mb-2 relative z-10 drop-shadow-md"><i class="fa-solid fa-award"></i></div>
-                <h3 class="text-3xl sm:text-4xl font-bold text-sky-950 relative z-10" style="font-family: 'Amiri', serif !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">شَهَادَةُ تَقْدِيرٍ وَتَفَوُّقٍ</h3>
-                <p class="text-slate-700 font-bold text-base relative z-10">يَسُرُّ مَنْصَةَ (طَرِيقُ التَّفَوُّقِ) مَنْحَ هَذِهِ الشَّهَادَةِ لِلطَّالِبِ / الطَّالِبَةِ:</p>
-                <div id="cert-student-name" class="text-2xl sm:text-3xl font-black text-amber-600 py-3 border-b-2 border-amber-300 relative z-10">---</div>
-                <p class="text-slate-800 text-sm sm:text-base leading-relaxed font-bold relative z-10">
+            <div id="cert-printable-area" class="border-4 border-double border-amber-500 p-6 rounded-2xl bg-amber-50/40 space-y-4">
+                <div class="text-amber-600 text-4xl mb-2"><i class="fa-solid fa-award"></i></div>
+                <h3 class="text-2xl sm:text-3xl font-black text-sky-950">شَهَادَةُ تَقْدِيرٍ وَتَفَوُّقٍ</h3>
+                <p class="text-slate-700 font-bold text-base">يَسُرُّ مَنْصَةَ (طَرِيقُ التَّفَوُّقِ) مَنْحَ هَذِهِ الشَّهَادَةِ لِلطَّالِبِ / الطَّالِبَةِ:</p>
+                <div id="cert-student-name" class="text-2xl sm:text-3xl font-black text-amber-600 py-2 border-b-2 border-amber-300">---</div>
+                <p class="text-slate-800 text-sm sm:text-base leading-relaxed font-bold">
                     لِاجْتِيَازِهِ اخْتِبَارَ مَادَّةِ اللُّغَةِ الْعَرَبِيَّةِ بِنَجَاحٍ وَتَفَوُّقٍ بِنِسْبَةِ:
-                    <span id="cert-score-pct" class="text-emerald-700 font-black text-2xl mx-1">100%</span>
+                    <span id="cert-score-pct" class="text-emerald-700 font-black text-xl">100%</span>
                 </p>
-                <div class="flex justify-between items-center pt-6 text-xs sm:text-sm font-black text-sky-950 border-t-2 border-amber-200 border-dashed relative z-10">
+                <div class="flex justify-between items-center pt-6 text-xs sm:text-sm font-black text-sky-950 border-t border-amber-200">
                     <div>التَّارِيخُ: <span id="cert-date">--/--/----</span></div>
                     <div>مُعَلِّمُ الْمَادَّةِ: <span id="cert-teacher-name">الْأُسْتَاذُ صَلَاحُ حَمْدِي يُوسُفُ</span></div>
                 </div>
@@ -643,17 +617,13 @@
                         <h3 class="font-bold text-slate-800">إدارة النصوص القرائية والفقرات</h3>
                         <button type="button" onclick="openParagraphModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة فقرة جديدة</button>
                     </div>
-                    <!-- فلاتر التصفية للفقرات وأزرار الاستيراد والتصدير -->
+                    <!-- فلاتر التصفية للفقرات -->
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
                         <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض الفقرات:</h3>
                         <div class="grid grid-cols-3 gap-2">
                             <div><label class="block text-xs font-bold text-slate-700 mb-1">المرحلة:</label><select id="filter-para-stage" onchange="filterAdminParasByStage()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
                             <div><label class="block text-xs font-bold text-slate-700 mb-1">الصف:</label><select id="filter-para-grade" onchange="filterAdminParasByGrade()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
                             <div><label class="block text-xs font-bold text-slate-700 mb-1">الموضوع:</label><select id="filter-para-topic" onchange="renderAdminParagraphsList()" class="w-full p-2 rounded-xl border text-xs bg-white font-bold text-sky-900"></select></div>
-                        </div>
-                        <div class="flex gap-2 flex-wrap pt-2 border-t border-sky-200 mt-3">
-                            <button type="button" onclick="exportTopicParagraphsJson()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-download ml-1"></i> تصدير (JSON)</button>
-                            <label class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد (JSON)<input type="file" id="import-paragraphs-json-file" accept=".json" onchange="importParagraphsJsonFile(event)" class="hidden"></label>
                         </div>
                     </div>
                     <div id="admin-paragraphs-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-1"></div>
@@ -665,17 +635,13 @@
                         <h3 class="font-bold text-slate-800">بطاقات المعلومة السريعة</h3>
                         <button type="button" onclick="openQuickInfoModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة بطاقة جديدة</button>
                     </div>
-                    <!-- فلاتر التصفية للمعلومة السريعة وأزرار الاستيراد والتصدير -->
+                    <!-- فلاتر التصفية للمعلومة السريعة -->
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
                         <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض البطاقات:</h3>
                         <div class="grid grid-cols-3 gap-2">
                             <div><label class="block text-xs font-bold text-slate-700 mb-1">المرحلة:</label><select id="filter-qi-stage" onchange="filterAdminQiByStage()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
                             <div><label class="block text-xs font-bold text-slate-700 mb-1">الصف:</label><select id="filter-qi-grade" onchange="filterAdminQiByGrade()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
                             <div><label class="block text-xs font-bold text-slate-700 mb-1">الموضوع:</label><select id="filter-qi-topic" onchange="renderAdminQuickInfoList()" class="w-full p-2 rounded-xl border text-xs bg-white font-bold text-sky-900"></select></div>
-                        </div>
-                        <div class="flex gap-2 flex-wrap pt-2 border-t border-sky-200 mt-3">
-                            <button type="button" onclick="exportTopicQuickInfoJson()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-download ml-1"></i> تصدير (JSON)</button>
-                            <label class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد (JSON)<input type="file" id="import-quickinfo-json-file" accept=".json" onchange="importQuickInfoJsonFile(event)" class="hidden"></label>
                         </div>
                     </div>
                     <div id="admin-quickinfo-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-1"></div>
@@ -806,14 +772,12 @@
     <!-- نافذة إضافة وتعديل الفقرة -->
     <div id="modal-paragraph-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-sky-400 overflow-hidden modal-animate-in text-right">
-            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow flex-wrap gap-3">
+            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
                 <h3 id="paragraph-modal-title" class="font-black text-white text-xl sm:text-2xl flex items-center gap-3">
                     <i class="fa-solid fa-book-open text-amber-400 text-2xl"></i> إضافة / تعديل فقرة قرائية
                 </h3>
-                <div class="flex gap-2 items-center flex-wrap">
-                    <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-upload ml-1"></i> استيراد فقرة<input type="file" accept=".json" onchange="importSingleParagraphJson(event)" class="hidden"></label>
-                    <button type="button" onclick="exportSingleParagraphJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-download ml-1"></i> تصدير</button>
-                    <button type="button" onclick="saveParagraphFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حفظ سريع</button>
+                <div class="flex gap-3 items-center">
+                    <button type="button" onclick="saveParagraphFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حفظ سريع</button>
                     <button type="button" onclick="document.getElementById('modal-paragraph-edit').classList.add('hidden'); document.getElementById('modal-paragraph-edit').classList.remove('flex');" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-1"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
@@ -860,14 +824,12 @@
     <!-- نافذة إضافة وتعديل بطاقة معلومات سريعة -->
     <div id="modal-quickinfo-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in text-right">
-            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow flex-wrap gap-3">
+            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
                 <h3 id="quickinfo-modal-title" class="font-black text-white text-xl sm:text-2xl flex items-center gap-3">
                     <i class="fa-solid fa-lightbulb text-amber-400 text-2xl"></i> إضافة / تعديل بطاقة معلومات سريعة
                 </h3>
-                <div class="flex gap-2 items-center flex-wrap">
-                    <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-upload ml-1"></i> استيراد بطاقة<input type="file" accept=".json" onchange="importSingleQuickInfoJson(event)" class="hidden"></label>
-                    <button type="button" onclick="exportSingleQuickInfoJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-download ml-1"></i> تصدير</button>
-                    <button type="button" onclick="saveQuickInfoFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حفظ سريع</button>
+                <div class="flex gap-3 items-center">
+                    <button type="button" onclick="saveQuickInfoFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حفظ سريع</button>
                     <button type="button" onclick="document.getElementById('modal-quickinfo-edit').classList.add('hidden'); document.getElementById('modal-quickinfo-edit').classList.remove('flex');" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-1"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
@@ -1841,26 +1803,12 @@
             startExamTimer();
         }
 
-        // ================= دالة المؤقت الذكي المحسنة =================
         function startExamTimer() {
             let durationMinutes = parseInt(appSettings.examDuration) || 20;
             let timerSeconds = durationMinutes * 60;
             const timerDisplay = document.getElementById('display-timer');
-            const timerIcon = document.getElementById('timer-icon');
-            const timerContainer = document.getElementById('timer-container');
 
             if (quizState.timerInterval) clearInterval(quizState.timerInterval);
-
-            // استعادة الألوان الافتراضية
-            if (timerDisplay) timerDisplay.classList.remove('text-rose-600', 'animate-pulse');
-            if (timerIcon) {
-                timerIcon.classList.remove('text-rose-600', 'animate-bounce');
-                timerIcon.classList.add('text-amber-600');
-            }
-            if (timerContainer) {
-                timerContainer.classList.remove('border-rose-400', 'bg-rose-50');
-                timerContainer.classList.add('border-amber-200', 'bg-amber-50');
-            }
 
             quizState.timerInterval = setInterval(() => {
                 let mins = Math.floor(timerSeconds / 60);
@@ -1868,20 +1816,6 @@
                 if (timerDisplay) {
                     timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                 }
-                
-                // المؤقت الذكي - تفعيل النبض واللون الأحمر عندما يتبقى 60 ثانية أو أقل
-                if (timerSeconds <= 60 && timerSeconds > 0) {
-                    if (timerDisplay) timerDisplay.classList.add('text-rose-600', 'animate-pulse');
-                    if (timerIcon) {
-                        timerIcon.classList.remove('text-amber-600');
-                        timerIcon.classList.add('text-rose-600', 'animate-bounce');
-                    }
-                    if (timerContainer) {
-                        timerContainer.classList.remove('border-amber-200', 'bg-amber-50');
-                        timerContainer.classList.add('border-rose-400', 'bg-rose-50');
-                    }
-                }
-
                 if (timerSeconds <= 0) {
                     clearInterval(quizState.timerInterval);
                     alert("انتهى وقت الاختبار المحدد!");
@@ -1890,7 +1824,6 @@
                 timerSeconds--;
             }, 1000);
         }
-        // ==============================================================
 
         function renderQuestion() {
             const idx = quizState.currentIndex;
@@ -2359,191 +2292,9 @@
             initApp();
         }
 
-        // ================= دوال الاستيراد والتصدير للفقرات =================
-        function exportTopicParagraphsJson() {
-            const fTopic = document.getElementById('filter-para-topic').value;
-            if (!fTopic) { alert("يرجى تحديد الموضوع من التصفية أولاً لتصدير فقراته."); return; }
-            let topicParas = paragraphs.filter(p => p.topic === fTopic);
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topicParas, null, 2));
-            let dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `${fTopic}_paragraphs.json`);
-            dlAnchorElem.click();
-        }
+        // ================= دوال تعبئة الفلاتر الجديدة =================
 
-        function importParagraphsJsonFile(event) {
-            let file = event.target.files[0];
-            if (!file) return;
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    let imported = JSON.parse(e.target.result);
-                    if (Array.isArray(imported)) {
-                        imported.forEach(p => {
-                            p.id = "para_" + Date.now() + Math.floor(Math.random() * 10000);
-                            paragraphs.push(p);
-                        });
-                        saveState();
-                        renderAdminParagraphsList();
-                        alert("تم استيراد قائمة الفقرات بنجاح!");
-                    } else { alert("الملف غير متوافق. يرجى اختيار ملف يحتوي على مصفوفة فقرات."); }
-                } catch(err) { alert("خطأ في قراءة ملف JSON الخاص بالفقرات."); }
-                event.target.value = '';
-            };
-            reader.readAsText(file);
-        }
-
-        function exportSingleParagraphJson() {
-            let pObj = {
-                name: document.getElementById('modal-para-name').value.trim(),
-                title: document.getElementById('modal-para-title').value.trim(),
-                img: document.getElementById('modal-para-img').value.trim(),
-                text: document.getElementById('modal-para-text').value.trim(),
-                active: document.getElementById('modal-para-active').checked,
-                tashkeel: document.getElementById('modal-para-tashkeel').checked
-            };
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pObj, null, 2));
-            let dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `single_paragraph.json`);
-            dlAnchorElem.click();
-        }
-
-        function importSingleParagraphJson(event) {
-            let file = event.target.files[0];
-            if (!file) return;
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    let imported = JSON.parse(e.target.result);
-                    if (imported && !Array.isArray(imported)) {
-                        if (imported.name !== undefined) document.getElementById('modal-para-name').value = imported.name;
-                        if (imported.title !== undefined) document.getElementById('modal-para-title').value = imported.title;
-                        if (imported.img !== undefined) document.getElementById('modal-para-img').value = imported.img;
-                        if (imported.text !== undefined) document.getElementById('modal-para-text').value = imported.text;
-                        if (imported.active !== undefined) document.getElementById('modal-para-active').checked = imported.active;
-                        if (imported.tashkeel !== undefined) document.getElementById('modal-para-tashkeel').checked = imported.tashkeel;
-                        alert("تم استيراد الفقرة إلى النافذة بنجاح! يرجى مراجعتها وتأكيد حفظها السريع.");
-                    } else { alert("الملف غير متوافق."); }
-                } catch(err) { alert("خطأ في القراءة."); }
-                event.target.value = '';
-            };
-            reader.readAsText(file);
-        }
-
-        // ================= دوال الاستيراد والتصدير للمعلومة السريعة =================
-        function exportTopicQuickInfoJson() {
-            const fTopic = document.getElementById('filter-qi-topic').value;
-            if (!fTopic) { alert("يرجى تحديد الموضوع من التصفية أولاً لتصدير بطاقاته."); return; }
-            let topicQi = quickInfoList.filter(qi => qi.topic === fTopic);
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topicQi, null, 2));
-            let dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `${fTopic}_quickinfo.json`);
-            dlAnchorElem.click();
-        }
-
-        function importQuickInfoJsonFile(event) {
-            let file = event.target.files[0];
-            if (!file) return;
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    let imported = JSON.parse(e.target.result);
-                    if (Array.isArray(imported)) {
-                        quickInfoList = quickInfoList.concat(imported);
-                        saveState();
-                        renderAdminQuickInfoList();
-                        alert("تم استيراد قائمة البطاقات بنجاح!");
-                    } else { alert("الملف غير متوافق."); }
-                } catch(err) { alert("خطأ في القراءة."); }
-                event.target.value = '';
-            };
-            reader.readAsText(file);
-        }
-
-        function exportSingleQuickInfoJson() {
-            let title = document.getElementById('modal-qi-title').value.trim();
-            let img = document.getElementById('modal-qi-img').value.trim();
-            let active = document.getElementById('modal-qi-active').checked;
-            let tashkeel = document.getElementById('modal-qi-tashkeel').checked;
-
-            let sections = [];
-            document.querySelectorAll('.qi-section-block').forEach(secBlock => {
-                let mainHeader = secBlock.querySelector('.qi-sec-main-header').value.trim();
-                let mainActive = secBlock.querySelector('.qi-sec-active').checked;
-                let subItems = [];
-                secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => {
-                    let subTitle = subBlock.querySelector('.qi-sub-title').value.trim();
-                    let subText = subBlock.querySelector('.qi-sub-text').value.trim();
-                    let subImg = subBlock.querySelector('.qi-sub-img').value.trim();
-                    let subActive = subBlock.querySelector('.qi-sub-active').checked;
-                    if (subTitle || subText) {
-                        subItems.push({ title: subTitle, text: subText, img: subImg, active: subActive });
-                    }
-                });
-                if (mainHeader || subItems.length > 0) {
-                    sections.push({ mainHeader, active: mainActive, subItems });
-                }
-            });
-
-            let attachments = [];
-            document.querySelectorAll('.qi-attachment-block').forEach(attBlock => {
-                let label = attBlock.querySelector('.qi-att-label').value.trim();
-                let url = attBlock.querySelector('.qi-att-url').value.trim();
-                if (url) {
-                    attachments.push({ label: label || "اطّلع على", url });
-                }
-            });
-
-            let qiObj = { title, img, sections, attachments, active, tashkeel };
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(qiObj, null, 2));
-            let dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `single_quickinfo.json`);
-            dlAnchorElem.click();
-        }
-
-        function importSingleQuickInfoJson(event) {
-            let file = event.target.files[0];
-            if (!file) return;
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    let qi = JSON.parse(e.target.result);
-                    if (qi && !Array.isArray(qi)) {
-                        if (qi.title !== undefined) document.getElementById('modal-qi-title').value = qi.title;
-                        if (qi.img !== undefined) document.getElementById('modal-qi-img').value = qi.img;
-                        if (qi.active !== undefined) document.getElementById('modal-qi-active').checked = qi.active;
-                        if (qi.tashkeel !== undefined) document.getElementById('modal-qi-tashkeel').checked = qi.tashkeel;
-
-                        const container = document.getElementById('quickinfo-sections-builder-container');
-                        container.innerHTML = "";
-                        if (qi.sections && Array.isArray(qi.sections)) {
-                            qi.sections.forEach(sec => {
-                                addQuickInfoSectionBlock(sec.mainHeader || "", sec.active !== false, sec.subItems || []);
-                            });
-                        } else {
-                            addQuickInfoSectionBlock("", true, []);
-                        }
-
-                        const attContainer = document.getElementById('quickinfo-attachments-builder-container');
-                        attContainer.innerHTML = "";
-                        if (qi.attachments && Array.isArray(qi.attachments)) {
-                            qi.attachments.forEach(att => {
-                                addQiAttachmentBlock(att.label || "", att.url || "");
-                            });
-                        }
-                        
-                        alert("تم استيراد البطاقة إلى النافذة بنجاح! يرجى مراجعتها وتأكيد حفظها السريع.");
-                    } else { alert("الملف غير متوافق."); }
-                } catch(err) { alert("خطأ في القراءة."); }
-                event.target.value = '';
-            };
-            reader.readAsText(file);
-        }
-
-        // ================= باقي دوال الإدارة واللوحة =================
+        // 1. فلاتر الموضوعات
         function populateTopicAdminFilters() {
             const stageSel = document.getElementById('filter-topic-stage');
             if (!stageSel) return;
@@ -2578,6 +2329,7 @@
             renderAdminTopicsList();
         }
 
+        // 2. فلاتر الفقرات
         function populateParaAdminFilters() {
             const stageSel = document.getElementById('filter-para-stage');
             if (!stageSel) return;
@@ -2629,6 +2381,7 @@
             renderAdminParagraphsList();
         }
 
+        // 3. فلاتر المعلومة السريعة
         function populateQiAdminFilters() {
             const stageSel = document.getElementById('filter-qi-stage');
             if (!stageSel) return;
@@ -2680,6 +2433,7 @@
             renderAdminQuickInfoList();
         }
 
+        // ================= تحديث دالة تبديل التبويبات =================
         function switchAdminTab(tabName) {
             ['settings', 'stages', 'topics', 'questions', 'paragraphs', 'quickinfo', 'records'].forEach(t => {
                 const tabEl = document.getElementById(`admin-tab-${t}`);
@@ -2695,6 +2449,7 @@
             if (tabName === 'records') populateAdminRecFilters();
         }
 
+        // ================= باقي دوال الإدارة والطباعة =================
         function renderAdminStagesList() {
             const container = document.getElementById('admin-stages-list');
             if (!container) return;
@@ -3440,6 +3195,102 @@
             alert("تم حفظ السؤال بنجاح!");
         }
 
+        function exportFullSystemJson() {
+            let systemData = {
+                stagesData,
+                gradeStatus,
+                topicsData,
+                appSettings,
+                questionBank,
+                paragraphs,
+                qiList: quickInfoList,
+                studentRecords
+            };
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(systemData, null, 2));
+            let dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "platform_full_backup.json");
+            dlAnchorElem.click();
+        }
+
+        function importFullSystemJsonFile(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let imported = JSON.parse(e.target.result);
+                    if (imported && typeof imported === 'object') {
+                        if (imported.stagesData) stagesData = imported.stagesData;
+                        if (imported.gradeStatus) gradeStatus = imported.gradeStatus;
+                        if (imported.topicsData) topicsData = imported.topicsData;
+                        if (imported.appSettings) appSettings = { ...defaultSettings, ...imported.appSettings };
+                        if (imported.questionBank) questionBank = imported.questionBank;
+                        if (imported.paragraphs) paragraphs = imported.paragraphs;
+                        if (imported.qiList) quickInfoList = imported.qiList;
+                        if (imported.studentRecords) studentRecords = imported.studentRecords;
+                        saveState();
+                        initApp();
+                        alert("تم استيراد كافة إعدادات وقاعدة بيانات المنصة بنجاح!");
+                    } else { alert("الملف غير متوافق."); }
+                } catch(err) { alert("خطأ في قراءة ملف JSON الخاص بالنظام."); }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportOfflineHtmlFile() {
+            try {
+                const adminModal = document.getElementById('view-admin');
+                const loginModal = document.getElementById('modal-admin-login');
+                const quickInfoModal = document.getElementById('view-quick-info');
+                const studentReviewModal = document.getElementById('modal-student-review');
+                const certModal = document.getElementById('modal-cert');
+                
+                if (adminModal) { adminModal.classList.add('hidden'); adminModal.classList.remove('flex'); }
+                if (loginModal) { loginModal.classList.add('hidden'); loginModal.classList.remove('flex'); }
+                if (quickInfoModal) { quickInfoModal.classList.add('hidden'); }
+                if (studentReviewModal) { studentReviewModal.classList.add('hidden'); studentReviewModal.classList.remove('flex'); }
+                if (certModal) { certModal.classList.add('hidden'); certModal.classList.remove('flex'); }
+
+                document.getElementById('view-start').classList.remove('hidden');
+                document.getElementById('view-quiz').classList.add('hidden');
+                document.getElementById('view-result').classList.add('hidden');
+
+                let htmlContent = document.documentElement.outerHTML;
+                
+                let payload = `
+        let stagesData = ${JSON.stringify(stagesData)};
+        let gradeStatus = ${JSON.stringify(gradeStatus)};
+        let topicsData = ${JSON.stringify(topicsData)};
+        let defaultSettings = ${JSON.stringify(defaultSettings)};
+        let appSettings = ${JSON.stringify(appSettings)};
+        let paragraphs = ${JSON.stringify(paragraphs)};
+        let questionBank = ${JSON.stringify(questionBank)};
+        let quickInfoList = ${JSON.stringify(quickInfoList)};
+        let studentRecords = ${JSON.stringify(studentRecords)};
+        let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
+                `;
+                
+                let startIndex = htmlContent.indexOf('/* -- DATA_START -- */');
+                let endIndex = htmlContent.indexOf('/* -- DATA_END -- */');
+                
+                if (startIndex !== -1 && endIndex !== -1) {
+                    htmlContent = htmlContent.substring(0, startIndex + 22) + "\n" + payload + "\n        " + htmlContent.substring(endIndex);
+                }
+
+                let blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                let url = URL.createObjectURL(blob);
+                let dlAnchorElem = document.createElement('a');
+                dlAnchorElem.setAttribute("href", url);
+                dlAnchorElem.setAttribute("download", "platform_offline_complete.html");
+                dlAnchorElem.click();
+                URL.revokeObjectURL(url);
+                alert("تم تصدير ملف المنصة الشامل بنجاح!");
+            } catch (e) {
+                alert("حدث خطأ أثناء تصدير ملف HTML: " + e.message);
+            }
+        }
+
         function exportTopicQuestionsJson() {
             const fTopic = document.getElementById('filter-q-topic').value;
             if (!fTopic) { alert("يرجى تحديد الموضوع أولاً لتصدير أسئلته."); return; }
@@ -3465,7 +3316,6 @@
                         alert("تم استيراد الأسئلة بنجاح!");
                     } else { alert("الملف غير متوافق."); }
                 } catch(err) { alert("خطأ في قراءة ملف JSON."); }
-                event.target.value = '';
             };
             reader.readAsText(file);
         }
@@ -4442,102 +4292,6 @@
                 studentRecords = [];
                 saveState();
                 renderAdminRecordsTable();
-            }
-        }
-
-        function exportFullSystemJson() {
-            let systemData = {
-                stagesData,
-                gradeStatus,
-                topicsData,
-                appSettings,
-                questionBank,
-                paragraphs,
-                qiList: quickInfoList,
-                studentRecords
-            };
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(systemData, null, 2));
-            let dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", "platform_full_backup.json");
-            dlAnchorElem.click();
-        }
-
-        function importFullSystemJsonFile(event) {
-            let file = event.target.files[0];
-            if (!file) return;
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    let imported = JSON.parse(e.target.result);
-                    if (imported && typeof imported === 'object') {
-                        if (imported.stagesData) stagesData = imported.stagesData;
-                        if (imported.gradeStatus) gradeStatus = imported.gradeStatus;
-                        if (imported.topicsData) topicsData = imported.topicsData;
-                        if (imported.appSettings) appSettings = { ...defaultSettings, ...imported.appSettings };
-                        if (imported.questionBank) questionBank = imported.questionBank;
-                        if (imported.paragraphs) paragraphs = imported.paragraphs;
-                        if (imported.qiList) quickInfoList = imported.qiList;
-                        if (imported.studentRecords) studentRecords = imported.studentRecords;
-                        saveState();
-                        initApp();
-                        alert("تم استيراد كافة إعدادات وقاعدة بيانات المنصة بنجاح!");
-                    } else { alert("الملف غير متوافق."); }
-                } catch(err) { alert("خطأ في قراءة ملف JSON الخاص بالنظام."); }
-            };
-            reader.readAsText(file);
-        }
-
-        function exportOfflineHtmlFile() {
-            try {
-                const adminModal = document.getElementById('view-admin');
-                const loginModal = document.getElementById('modal-admin-login');
-                const quickInfoModal = document.getElementById('view-quick-info');
-                const studentReviewModal = document.getElementById('modal-student-review');
-                const certModal = document.getElementById('modal-cert');
-                
-                if (adminModal) { adminModal.classList.add('hidden'); adminModal.classList.remove('flex'); }
-                if (loginModal) { loginModal.classList.add('hidden'); loginModal.classList.remove('flex'); }
-                if (quickInfoModal) { quickInfoModal.classList.add('hidden'); }
-                if (studentReviewModal) { studentReviewModal.classList.add('hidden'); studentReviewModal.classList.remove('flex'); }
-                if (certModal) { certModal.classList.add('hidden'); certModal.classList.remove('flex'); }
-
-                document.getElementById('view-start').classList.remove('hidden');
-                document.getElementById('view-quiz').classList.add('hidden');
-                document.getElementById('view-result').classList.add('hidden');
-
-                let htmlContent = document.documentElement.outerHTML;
-                
-                let payload = `
-        let stagesData = ${JSON.stringify(stagesData)};
-        let gradeStatus = ${JSON.stringify(gradeStatus)};
-        let topicsData = ${JSON.stringify(topicsData)};
-        let defaultSettings = ${JSON.stringify(defaultSettings)};
-        let appSettings = ${JSON.stringify(appSettings)};
-        let paragraphs = ${JSON.stringify(paragraphs)};
-        let questionBank = ${JSON.stringify(questionBank)};
-        let quickInfoList = ${JSON.stringify(quickInfoList)};
-        let studentRecords = ${JSON.stringify(studentRecords)};
-        let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
-                `;
-                
-                let startIndex = htmlContent.indexOf('/* -- DATA_START -- */');
-                let endIndex = htmlContent.indexOf('/* -- DATA_END -- */');
-                
-                if (startIndex !== -1 && endIndex !== -1) {
-                    htmlContent = htmlContent.substring(0, startIndex + 22) + "\n" + payload + "\n        " + htmlContent.substring(endIndex);
-                }
-
-                let blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-                let url = URL.createObjectURL(blob);
-                let dlAnchorElem = document.createElement('a');
-                dlAnchorElem.setAttribute("href", url);
-                dlAnchorElem.setAttribute("download", "platform_offline_complete.html");
-                dlAnchorElem.click();
-                URL.revokeObjectURL(url);
-                alert("تم تصدير ملف المنصة الشامل بنجاح!");
-            } catch (e) {
-                alert("حدث خطأ أثناء تصدير ملف HTML: " + e.message);
             }
         }
 
