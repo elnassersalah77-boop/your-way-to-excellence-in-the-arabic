@@ -1190,7 +1190,7 @@ function formatText(text, itemTashkeel) {
             }
         }
 
-        // دالة جلب البيانات (مع تجميع أجزاء الأسئلة المقسمة)
+        // دالة جلب البيانات الشاملة والسريعة (Parallel Loading)
         async function loadDataFromCloud() {
             toggleCloudLoading(true, "جَارِي تَحْمِيلِ بَيَانَاتِ الْمَنْصَةِ مِنَ السَّحَابَةِ...");
             try {
@@ -1199,8 +1199,24 @@ function formatText(text, itemTashkeel) {
                     const doc = window.firebaseDoc;
                     const getDoc = window.firebaseGetDoc;
 
-                    // 1. جلب الإعدادات
-                    const settingsSnap = await getDoc(doc(db, "platformData", "settings"));
+                    // المرحلة الأولى: جلب الإعدادات، السجلات، وملفات المؤشرات (Meta) دفعة واحدة
+                    const initialPromises = [
+                        getDoc(doc(db, "platformData", "settings")),
+                        getDoc(doc(db, "platformData", "records")),
+                        getDoc(doc(db, "platformData", "questions_meta")),
+                        getDoc(doc(db, "platformData", "paragraphs_meta")),
+                        getDoc(doc(db, "platformData", "quickinfo_meta")),
+                        getDoc(doc(db, "platformData", "paragraphs")), // توافق مع القديم
+                        getDoc(doc(db, "platformData", "quickInfo"))   // توافق مع القديم
+                    ];
+
+                    const [
+                        settingsSnap, recordsSnap,
+                        qMetaSnap, pMetaSnap, qiMetaSnap,
+                        legacyPSnap, legacyQiSnap
+                    ] = await Promise.all(initialPromises);
+
+                    // استخراج الإعدادات والسجلات
                     if (settingsSnap.exists()) {
                         const data = settingsSnap.data();
                         if (data.stagesData) stagesData = data.stagesData;
@@ -1208,36 +1224,50 @@ function formatText(text, itemTashkeel) {
                         if (data.topicsData) topicsData = data.topicsData;
                         if (data.appSettings) appSettings = { ...defaultSettings, ...data.appSettings };
                     }
+                    if (recordsSnap.exists() && recordsSnap.data().studentRecords) {
+                        studentRecords = recordsSnap.data().studentRecords;
+                    }
 
-                    // 2. جلب الأسئلة المقسمة (تجميع الأجزاء)
+                    // المرحلة الثانية: تجهيز طلبات جلب جميع الأجزاء (Chunks) معاً
+                    let chunkPromises = [];
+                    let qTotal = qMetaSnap.exists() ? (qMetaSnap.data().totalParts || 0) : 0;
+                    let pTotal = pMetaSnap.exists() ? (pMetaSnap.data().totalParts || 0) : 0;
+                    let qiTotal = qiMetaSnap.exists() ? (qiMetaSnap.data().totalParts || 0) : 0;
+
+                    for (let i = 0; i < qTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `questions_part_${i}`)));
+                    for (let i = 0; i < pTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `paragraphs_part_${i}`)));
+                    for (let i = 0; i < qiTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `quickinfo_part_${i}`)));
+
+                    // تنفيذ جلب جميع الأجزاء في نفس اللحظة
+                    const chunksSnaps = await Promise.all(chunkPromises);
+
+                    // تجميع الأجزاء بترتيبها الصحيح
                     questionBank = [];
-                    const metaSnap = await getDoc(doc(db, "platformData", "questions_meta"));
-                    if (metaSnap.exists()) {
-                        let totalParts = metaSnap.data().totalParts || 0;
-                        for (let i = 0; i < totalParts; i++) {
-                            let partSnap = await getDoc(doc(db, "platformData", `questions_part_${i}`));
-                            if (partSnap.exists() && partSnap.data().chunk) {
-                                questionBank = questionBank.concat(partSnap.data().chunk);
-                            }
+                    paragraphs = [];
+                    quickInfoList = [];
+                    let snapIndex = 0;
+                    
+                    for (let i = 0; i < qTotal; i++) {
+                        let snap = chunksSnaps[snapIndex++];
+                        if (snap.exists() && snap.data().chunk) questionBank = questionBank.concat(snap.data().chunk);
+                    }
+                    
+                    if (pTotal > 0) {
+                        for (let i = 0; i < pTotal; i++) {
+                            let snap = chunksSnaps[snapIndex++];
+                            if (snap.exists() && snap.data().chunk) paragraphs = paragraphs.concat(snap.data().chunk);
                         }
+                    } else if (legacyPSnap.exists() && legacyPSnap.data().paragraphs) {
+                        paragraphs = legacyPSnap.data().paragraphs;
                     }
 
-                    // 3. جلب الفقرات
-                    const pSnap = await getDoc(doc(db, "platformData", "paragraphs"));
-                    if (pSnap.exists() && pSnap.data().paragraphs) {
-                        paragraphs = pSnap.data().paragraphs;
-                    }
-
-                    // 4. جلب المعلومات السريعة
-                    const qiSnap = await getDoc(doc(db, "platformData", "quickInfo"));
-                    if (qiSnap.exists() && qiSnap.data().qiList) {
-                        quickInfoList = qiSnap.data().qiList;
-                    }
-
-                    // 5. جلب السجلات
-                    const recSnap = await getDoc(doc(db, "platformData", "records"));
-                    if (recSnap.exists() && recSnap.data().studentRecords) {
-                        studentRecords = recSnap.data().studentRecords;
+                    if (qiTotal > 0) {
+                        for (let i = 0; i < qiTotal; i++) {
+                            let snap = chunksSnaps[snapIndex++];
+                            if (snap.exists() && snap.data().chunk) quickInfoList = quickInfoList.concat(snap.data().chunk);
+                        }
+                    } else if (legacyQiSnap.exists() && legacyQiSnap.data().qiList) {
+                        quickInfoList = legacyQiSnap.data().qiList;
                     }
                 }
             } catch (e) {
@@ -1247,57 +1277,63 @@ function formatText(text, itemTashkeel) {
             initApp();
         }
 
-        // دالة الحفظ (مع تقسيم بنك الأسئلة لأجزاء لا تتجاوز 1 ميجا)
+        // دالة الحفظ الشاملة والسريعة (Parallel Execution)
         async function saveState() {
-            toggleCloudLoading(true, "جَارِي حِفْظِ التَّغْيِيرَاتِ سَحَابِيّاً بَأَمَانٍ...");
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
                     const db = window.firebaseDb;
                     const doc = window.firebaseDoc;
                     const setDoc = window.firebaseSetDoc;
 
+                    let savePromises = []; // مصفوفة لجمع كل عمليات الحفظ لإرسالها معاً
+
                     // 1. حفظ الإعدادات
-                    await setDoc(doc(db, "platformData", "settings"), {
+                    savePromises.push(setDoc(doc(db, "platformData", "settings"), {
                         stagesData: JSON.parse(JSON.stringify(stagesData || {})),
                         gradeStatus: JSON.parse(JSON.stringify(gradeStatus || {})),
                         topicsData: JSON.parse(JSON.stringify(topicsData || [])),
                         appSettings: JSON.parse(JSON.stringify(appSettings || {}))
-                    });
+                    }));
 
-                    // 2. تقسيم بنك الأسئلة إلى أجزاء (كل 40 سؤال في مستند مستقل لتجنب تجاوز 1 ميجابايت)
-                    const chunkSize = 40;
-                    let totalParts = Math.ceil((questionBank || []).length / chunkSize);
-                    
-                    if (totalParts === 0) totalParts = 1;
-
-                    for (let i = 0; i < totalParts; i++) {
-                        let chunk = (questionBank || []).slice(i * chunkSize, (i + 1) * chunkSize);
-                        await setDoc(doc(db, "platformData", `questions_part_${i}`), { chunk });
+                    // 2. تقسيم الأسئلة
+                    const qChunkSize = 40;
+                    let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
+                    for (let i = 0; i < qTotalParts; i++) {
+                        let chunk = (questionBank || []).slice(i * qChunkSize, (i + 1) * qChunkSize);
+                        savePromises.push(setDoc(doc(db, "platformData", `questions_part_${i}`), { chunk: JSON.parse(JSON.stringify(chunk)) }));
                     }
-                    
-                    // حفظ عدد الأجزاء الكلي
-                    await setDoc(doc(db, "platformData", "questions_meta"), { totalParts });
+                    savePromises.push(setDoc(doc(db, "platformData", "questions_meta"), { totalParts: qTotalParts }));
 
-                    // 3. حفظ الفقرات
-                    await setDoc(doc(db, "platformData", "paragraphs"), {
-                        paragraphs: JSON.parse(JSON.stringify(paragraphs || []))
-                    });
+                    // 3. تقسيم الفقرات
+                    const pChunkSize = 40;
+                    let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
+                    for (let i = 0; i < pTotalParts; i++) {
+                        let chunk = (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize);
+                        savePromises.push(setDoc(doc(db, "platformData", `paragraphs_part_${i}`), { chunk: JSON.parse(JSON.stringify(chunk)) }));
+                    }
+                    savePromises.push(setDoc(doc(db, "platformData", "paragraphs_meta"), { totalParts: pTotalParts }));
 
-                    // 4. حفظ المعلومات السريعة
-                    await setDoc(doc(db, "platformData", "quickInfo"), {
-                        qiList: JSON.parse(JSON.stringify(quickInfoList || []))
-                    });
+                    // 4. تقسيم المعلومات السريعة
+                    const qiChunkSize = 40;
+                    let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
+                    for (let i = 0; i < qiTotalParts; i++) {
+                        let chunk = (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize);
+                        savePromises.push(setDoc(doc(db, "platformData", `quickinfo_part_${i}`), { chunk: JSON.parse(JSON.stringify(chunk)) }));
+                    }
+                    savePromises.push(setDoc(doc(db, "platformData", "quickinfo_meta"), { totalParts: qiTotalParts }));
 
                     // 5. حفظ السجلات
-                    await setDoc(doc(db, "platformData", "records"), {
+                    savePromises.push(setDoc(doc(db, "platformData", "records"), {
                         studentRecords: JSON.parse(JSON.stringify(studentRecords || []))
-                    });
+                    }));
+
+                    // تنفيذ جميع العمليات دفعة واحدة في نفس اللحظة
+                    await Promise.all(savePromises);
                 }
             } catch (e) {
                 console.error("خطأ تفصيلي أثناء الحفظ:", e);
                 alert("رمز الخطأ: " + e.code + "\nالسبب: " + e.message);
             }
-            toggleCloudLoading(false);
         }
 
         function saveAppSettings() {
