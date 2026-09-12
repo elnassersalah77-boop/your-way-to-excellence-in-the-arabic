@@ -2316,7 +2316,7 @@ function renderQuestion() {
             populateQuestionFilters();
         }
 
-       async function saveAppSettings() {
+        function saveAppSettings() {
             appSettings.teacherName = document.getElementById('admin-teacher-input').value.trim() || appSettings.teacherName;
             appSettings.examTitle = document.getElementById('admin-exam-title-input').value.trim() || appSettings.examTitle;
             appSettings.startBtnText = document.getElementById('admin-start-btn-input').value.trim();
@@ -2341,7 +2341,7 @@ function renderQuestion() {
             if(document.getElementById('admin-diff-hard')) appSettings.diffHardCount = parseInt(document.getElementById('admin-diff-hard').value) || 0;
             if(document.getElementById('admin-diff-vhard')) appSettings.diffVeryHardCount = parseInt(document.getElementById('admin-diff-vhard').value) || 0;
 
-            if(document.getElementById('admin-platform-font')) appSettings.platformFont = document.getElementById('admin-platform-font-input') ? document.getElementById('admin-platform-font-input').value : document.getElementById('admin-platform-font').value;
+            if(document.getElementById('admin-platform-font')) appSettings.platformFont = document.getElementById('admin-platform-font').value;
             if(document.getElementById('admin-platform-theme')) appSettings.platformTheme = document.getElementById('admin-platform-theme').value;
             if(document.getElementById('admin-st-title-size')) appSettings.stTitleSize = document.getElementById('admin-st-title-size').value;
             if(document.getElementById('admin-st-title-weight')) appSettings.stTitleWeight = document.getElementById('admin-st-title-weight').value;
@@ -2363,12 +2363,11 @@ function renderQuestion() {
                 appSettings.adminPass = newPwd;
             }
 
-            // إرسال البيانات للسحابة في الخلفية بهدوء وبدون تجميد للمتصفح
-            saveState();
-
-            // ظهور رسالة النجاح فوراً وبكل سرعة دون انتظار السحابة
-            alert("تم حفظ الإعدادات بنجاح وتطبيقها على المنصة!");
-            initApp();
+            // الحفظ السحابي والمحلي ثم إعادة التحميل لضمان التطبيق الفوري بالخارج
+            saveState().then(() => {
+                alert("تم حفظ الإعدادات بنجاح وتطبيقها على المنصة!");
+                location.reload(); // تحديث الصفحة بالكامل لجلب أحدث إعدادات الوقت والخيارات من التخزين السحابي
+            });
         }
 
         function exportTopicParagraphsJson() {
@@ -3460,7 +3459,7 @@ function renderQuestion() {
             dlAnchorElem.click();
         }
 
-       function importQuestionsJsonFile(event) {
+        function importQuestionsJsonFile(event) {
             let file = event.target.files[0];
             if (!file) return;
             let reader = new FileReader();
@@ -3491,7 +3490,6 @@ function renderQuestion() {
                 event.target.value = '';
             };
             reader.readAsText(file);
-        }
         }
 
         function saveDirectBatchQuestions() {
