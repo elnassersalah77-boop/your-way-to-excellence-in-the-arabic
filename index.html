@@ -132,9 +132,10 @@
         }
         .modal-animate-in { animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
+        /* أنماط شهادة التقدير المضافة حديثاً */
         .cert-bg-pattern {
             background-color: #fffdf5;
-            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23f59e0b' fill-opacity='0.04' fill-rule='evenodd'/%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23f59e0b' fill-opacity='0.04' fill-rule='evenodd'/%3E");
         }
         .cert-lux-border {
             position: relative;
@@ -373,7 +374,8 @@
             </div>
         </div>
     </div>
-<!-- FLOATING MODAL: QUICK INFO -->
+
+    <!-- FLOATING MODAL: QUICK INFO -->
     <div id="view-quick-info" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div id="modal-content-quick-info" class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -404,8 +406,7 @@
             </div>
         </div>
     </div>
-
-    <!-- FLOATING MODAL: ADMIN DASHBOARD -->
+<!-- FLOATING MODAL: ADMIN DASHBOARD -->
     <div id="view-admin" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div id="modal-content-admin" class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -558,7 +559,8 @@
                         <button type="button" onclick="saveAppSettings()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3.5 rounded-xl transition shadow cursor-pointer">حِفْظُ التَّغْيِيرَاتِ وَالإِعْدَادَاتِ (سحابياً والمحلي) <i class="fa-solid fa-floppy-disk mr-1"></i></button>
                     </div>
                 </div>
-<!-- TAB 2: STAGES & GRADES -->
+
+                <!-- TAB 2: STAGES & GRADES -->
                 <div id="admin-tab-stages" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
                         <h3 class="font-bold text-slate-800">إدارة المراحل والصفوف الدراسية</h3>
@@ -573,6 +575,7 @@
                         <h3 class="font-bold text-slate-800">إدارة الموضوعات الدراسية</h3>
                         <button type="button" onclick="openTopicModalForAdd()" class="bg-emerald-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة موضوع جديد</button>
                     </div>
+                    <!-- فلاتر التصفية للموضوعات -->
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
                         <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض الموضوعات:</h3>
                         <div class="grid grid-cols-2 gap-2">
@@ -640,6 +643,7 @@
                         <h3 class="font-bold text-slate-800">إدارة النصوص القرائية والفقرات</h3>
                         <button type="button" onclick="openParagraphModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة فقرة جديدة</button>
                     </div>
+                    <!-- فلاتر التصفية للفقرات وأزرار الاستيراد والتصدير -->
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
                         <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض الفقرات:</h3>
                         <div class="grid grid-cols-3 gap-2">
@@ -661,6 +665,7 @@
                         <h3 class="font-bold text-slate-800">بطاقات المعلومة السريعة</h3>
                         <button type="button" onclick="openQuickInfoModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة بطاقة جديدة</button>
                     </div>
+                    <!-- فلاتر التصفية للمعلومة السريعة وأزرار الاستيراد والتصدير -->
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
                         <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض البطاقات:</h3>
                         <div class="grid grid-cols-3 gap-2">
@@ -725,7 +730,8 @@
             </div>
         </div>
     </div>
-<!-- نافذة تفاصيل إجابة الطالب للمعلم -->
+
+    <!-- نافذة تفاصيل إجابة الطالب للمعلم -->
     <div id="modal-record-details" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -1049,17 +1055,6 @@
     </footer>
 <!-- السكربت الشامل -->
     <script>
-        // دالة حماية اللوحة من أكواد XSS
-        function escapeHTML(str) {
-            if (!str) return '';
-            return String(str).replace(/[&<>"'`=\/]/g, function (s) {
-                return {
-                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;',
-                    "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
-                }[s];
-            });
-        }
-
         /* -- DATA_START -- */
         let stagesData = {"إعدادية":["الصف الأول الإعدادي","الصف الثاني الإعدادي","الصف الثالث الإعدادي فصل دراسي أول"],"ثانوية":["الصف الأول الثانوي","الصف الثاني الثانوي بكالوريا","الصف الثالث الثانوي"]};
 
@@ -1128,7 +1123,7 @@
                         "active": true,
                         "subItems": [
                             { "title": "الخطاب الإشهاري", "active": true, "text": "يسعى إلى التأثير في المتلقي وحثه على اقتناء سلعة أو خدمة مستخدماً آليات الترغيب والإقناع البصري واللغوي.", "img": "" },
-                            { "title": "الخطاب التوجيهي", "active": true, "text": "يهدف إلى توجيه السلوك الأخلاق وضبط المعاملات.", "img": "" }
+                            { "title": "الخطاب التوجيهي", "active": true, "text": "يهدف إلى توجيه السلوك والأخلاق وضبط المعاملات.", "img": "" }
                         ]
                     }
                 ],
@@ -1846,6 +1841,7 @@
             startExamTimer();
         }
 
+        // ================= دالة المؤقت الذكي المحسنة =================
         function startExamTimer() {
             let durationMinutes = parseInt(appSettings.examDuration) || 20;
             let timerSeconds = durationMinutes * 60;
@@ -1855,6 +1851,7 @@
 
             if (quizState.timerInterval) clearInterval(quizState.timerInterval);
 
+            // استعادة الألوان الافتراضية
             if (timerDisplay) timerDisplay.classList.remove('text-rose-600', 'animate-pulse');
             if (timerIcon) {
                 timerIcon.classList.remove('text-rose-600', 'animate-bounce');
@@ -1872,6 +1869,7 @@
                     timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                 }
                 
+                // المؤقت الذكي - تفعيل النبض واللون الأحمر عندما يتبقى 60 ثانية أو أقل
                 if (timerSeconds <= 60 && timerSeconds > 0) {
                     if (timerDisplay) timerDisplay.classList.add('text-rose-600', 'animate-pulse');
                     if (timerIcon) {
@@ -1892,6 +1890,7 @@
                 timerSeconds--;
             }, 1000);
         }
+        // ==============================================================
 
         function renderQuestion() {
             const idx = quizState.currentIndex;
@@ -2360,6 +2359,7 @@
             initApp();
         }
 
+        // ================= دوال الاستيراد والتصدير للفقرات =================
         function exportTopicParagraphsJson() {
             const fTopic = document.getElementById('filter-para-topic').value;
             if (!fTopic) { alert("يرجى تحديد الموضوع من التصفية أولاً لتصدير فقراته."); return; }
@@ -2431,6 +2431,7 @@
             reader.readAsText(file);
         }
 
+        // ================= دوال الاستيراد والتصدير للمعلومة السريعة =================
         function exportTopicQuickInfoJson() {
             const fTopic = document.getElementById('filter-qi-topic').value;
             if (!fTopic) { alert("يرجى تحديد الموضوع من التصفية أولاً لتصدير بطاقاته."); return; }
@@ -2542,6 +2543,7 @@
             reader.readAsText(file);
         }
 
+        // ================= باقي دوال الإدارة واللوحة =================
         function populateTopicAdminFilters() {
             const stageSel = document.getElementById('filter-topic-stage');
             if (!stageSel) return;
@@ -2574,6 +2576,22 @@
                 });
             }
             renderAdminTopicsList();
+        }
+
+        function populateParaAdminFilters() {
+            const stageSel = document.getElementById('filter-para-stage');
+            if (!stageSel) return;
+            stageSel.innerHTML = '<option value="">الكل (جميع المراحل)</option>';
+            Object.keys(stagesData).forEach(stage => {
+                const grades = stagesData[stage] || [];
+                const hasActiveGrade = grades.some(grade => gradeStatus[`${stage}_${grade}`] !== false);
+                if (hasActiveGrade) {
+                    let opt = document.createElement('option');
+                    opt.value = stage; opt.textContent = stage;
+                    stageSel.appendChild(opt);
+                }
+            });
+            filterAdminParasByStage();
         }
 
         function filterAdminParasByStage() {
@@ -2609,22 +2627,6 @@
                 });
             }
             renderAdminParagraphsList();
-        }
-
-        function populateParaAdminFilters() {
-            const stageSel = document.getElementById('filter-para-stage');
-            if (!stageSel) return;
-            stageSel.innerHTML = '<option value="">الكل (جميع المراحل)</option>';
-            Object.keys(stagesData).forEach(stage => {
-                const grades = stagesData[stage] || [];
-                const hasActiveGrade = grades.some(grade => gradeStatus[`${stage}_${grade}`] !== false);
-                if (hasActiveGrade) {
-                    let opt = document.createElement('option');
-                    opt.value = stage; opt.textContent = stage;
-                    stageSel.appendChild(opt);
-                }
-            });
-            filterAdminParasByStage();
         }
 
         function populateQiAdminFilters() {
@@ -4299,7 +4301,6 @@
             renderAdminRecordsTable();
         }
 
-        // --- هنا تم تأمين اسم الطالب عبر escapeHTML لمنع الثغرة وتحديث الجدول ---
         function renderAdminRecordsTable() {
             const tbody = document.getElementById('admin-tbody');
             if (!tbody) return;
@@ -4326,7 +4327,7 @@
                 tr.className = "hover:bg-slate-50 transition border-b text-xs";
                 tr.innerHTML = `
                     <td class="p-3 font-black text-slate-500">${idx + 1}</td>
-                    <td class="p-3 font-black text-sky-950 text-sm">${escapeHTML(rec.name)}</td>
+                    <td class="p-3 font-black text-sky-950 text-sm">${rec.name}</td>
                     <td class="p-3 font-bold text-slate-700">${rec.stageGrade || `${rec.stage || ''} - ${rec.grade || ''} (${rec.topic || ''})`}</td>
                     <td class="p-3"><span class="px-2.5 py-1 rounded-full font-black ${rec.status === 'ناجح' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${rec.status}</span></td>
                     <td class="p-3 font-black text-sky-900">${rec.score} / ${rec.total} (${rec.pct}%)</td>
@@ -4364,7 +4365,6 @@
             document.body.removeChild(link);
         }
 
-        // --- هنا تم تأمين اسم الطالب عبر escapeHTML داخل النافذة المنبثقة ---
         function openRecordDetailsModal(recIdx) {
             let rec = studentRecords[recIdx];
             if (!rec || !rec.breakdown) {
@@ -4376,7 +4376,7 @@
                 <div class="bg-sky-900 text-white p-6 rounded-3xl shadow-lg border-2 border-amber-400 space-y-2 mb-6">
                     <h4 class="text-2xl font-black text-amber-300">تقرير إجابات الطالب المفصل</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-sm font-bold">
-                        <div><strong>الطالب:</strong> ${escapeHTML(rec.name)}</div>
+                        <div><strong>الطالب:</strong> ${rec.name}</div>
                         <div><strong>الاختبار:</strong> ${rec.stageGrade}</div>
                         <div><strong>النتيجة:</strong> ${rec.score} / ${rec.total} (${rec.pct}%) - <span class="${rec.status === 'ناجح' ? 'text-emerald-400' : 'text-rose-400'}">${rec.status}</span></div>
                     </div>
@@ -4533,7 +4533,6 @@
                 let dlAnchorElem = document.createElement('a');
                 dlAnchorElem.setAttribute("href", url);
                 dlAnchorElem.setAttribute("download", "platform_offline_complete.html");
-                dlAnchorLink = dlAnchorElem;
                 dlAnchorElem.click();
                 URL.revokeObjectURL(url);
                 alert("تم تصدير ملف المنصة الشامل بنجاح!");
