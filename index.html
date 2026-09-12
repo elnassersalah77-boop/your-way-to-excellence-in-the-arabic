@@ -131,6 +131,32 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .modal-animate-in { animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .cert-bg-pattern {
+            background-color: #fffdf5;
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23f59e0b' fill-opacity='0.04' fill-rule='evenodd'/%3E");
+        }
+        .cert-lux-border {
+            position: relative;
+            border: 3px solid #d97706;
+            padding: 8px;
+        }
+        .cert-lux-border::before {
+            content: '';
+            position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border: 2px solid #b45309;
+            border-radius: 12px;
+            pointer-events: none;
+        }
+        .cert-lux-border::after {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px dashed #d97706;
+            border-radius: 8px;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body id="platform-body" class="min-h-screen text-slate-800 flex flex-col justify-between transition-colors duration-300 bg-slate-100">
@@ -167,8 +193,7 @@
 
     <!-- Main Container -->
     <main class="max-w-4xl mx-auto px-4 py-6 w-full flex-grow flex flex-col justify-center">
-
-        <!-- VIEW 1: START SCREEN -->
+<!-- VIEW 1: START SCREEN -->
         <div id="view-start" class="bg-white rounded-3xl p-6 sm:p-12 shadow-xl border border-slate-200 text-center space-y-8 relative overflow-hidden">
             <div class="flex justify-between items-center px-4">
                 <div id="start-mid-img-container-1" class="hidden"><img id="start-mid-img-1" src="" alt="صورة اليمين" class="max-h-24 rounded-2xl object-contain"></div>
@@ -212,7 +237,6 @@
                 </div>
             </div>
 
-            <!-- بطاقة بنك أسئلة الموضوع التفاعلية والمحاولات المطلوبة -->
             <div id="topic-bank-stats-card" class="hidden"></div>
 
             <div id="start-form-container" class="max-w-md mx-auto space-y-5 pt-2">
@@ -225,8 +249,7 @@
                 <button type="button" onclick="startQuiz()" id="start-btn-text" class="w-full bg-gradient-to-r from-sky-600 to-sky-800 hover:from-sky-700 hover:to-sky-900 text-white px-6 rounded-2xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-0.5 cursor-pointer py-4 text-xl sm:text-2xl font-black">ابْدَأِ الِاخْتِبَارِ الْآنَ <i class="fa-solid fa-play mr-2"></i></button>
             </div>
         </div>
-
-        <!-- VIEW 2: QUIZ SCREEN -->
+<!-- VIEW 2: QUIZ SCREEN -->
         <div id="view-quiz" class="hidden flex-col gap-4">
             <div class="bg-white rounded-2xl p-4 shadow-md border border-slate-200 flex justify-between items-center font-bold text-slate-700 text-sm">
                 <div class="flex items-center gap-2">
@@ -237,9 +260,9 @@
                     <div class="bg-sky-50 text-sky-900 px-3 py-1 rounded-xl border border-sky-200">
                         سُؤَالٌ <span id="display-q-idx" class="font-black text-sky-600">1</span> مِنْ <span id="display-total-q" class="font-black">20</span>
                     </div>
-                    <div class="bg-amber-50 text-amber-900 px-3 py-1 rounded-xl border border-amber-200 flex items-center gap-1.5">
-                        <i class="fa-solid fa-stopwatch text-amber-600"></i>
-                        <span id="display-timer" class="font-black font-mono text-base">20:00</span>
+                    <div id="timer-container" class="bg-amber-50 text-amber-900 px-3 py-1 rounded-xl border border-amber-200 flex items-center gap-1.5 transition-colors duration-300">
+                        <i id="timer-icon" class="fa-solid fa-stopwatch text-amber-600 transition-colors duration-300"></i>
+                        <span id="display-timer" class="font-black font-mono text-base transition-colors duration-300">20:00</span>
                     </div>
                 </div>
             </div>
@@ -285,8 +308,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- VIEW 3: RESULT SCREEN -->
+<!-- VIEW 3: RESULT SCREEN -->
         <div id="view-result" class="hidden flex-col items-center justify-center text-center space-y-6 bg-white rounded-3xl p-8 shadow-xl border border-slate-200">
             <div id="res-icon" class="w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-emerald-100 text-emerald-600 border-4 border-emerald-300">
                 <i id="res-icon-i" class="fa-solid fa-trophy"></i>
@@ -324,19 +346,21 @@
         </div>
 
     </main>
-<!-- FLOATING MODAL: CERTIFICATE -->
+
+    <!-- FLOATING MODAL: CERTIFICATE -->
     <div id="modal-cert" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-2xl w-full flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in text-center p-6 sm:p-8 space-y-6">
-            <div id="cert-printable-area" class="border-4 border-double border-amber-500 p-6 rounded-2xl bg-amber-50/40 space-y-4">
-                <div class="text-amber-600 text-4xl mb-2"><i class="fa-solid fa-award"></i></div>
-                <h3 class="text-2xl sm:text-3xl font-black text-sky-950">شَهَادَةُ تَقْدِيرٍ وَتَفَوُّقٍ</h3>
-                <p class="text-slate-700 font-bold text-base">يَسُرُّ مَنْصَةَ (طَرِيقُ التَّفَوُّقِ) مَنْحَ هَذِهِ الشَّهَادَةِ لِلطَّالِبِ / الطَّالِبَةِ:</p>
-                <div id="cert-student-name" class="text-2xl sm:text-3xl font-black text-amber-600 py-2 border-b-2 border-amber-300">---</div>
-                <p class="text-slate-800 text-sm sm:text-base leading-relaxed font-bold">
+            <div id="cert-printable-area" class="cert-bg-pattern cert-lux-border p-8 rounded-2xl space-y-5 text-center shadow-inner relative overflow-hidden bg-white">
+                <div class="absolute inset-0 bg-gradient-to-br from-amber-100/30 to-transparent pointer-events-none"></div>
+                <div class="text-amber-500 text-5xl mb-2 relative z-10 drop-shadow-md"><i class="fa-solid fa-award"></i></div>
+                <h3 class="text-3xl sm:text-4xl font-bold text-sky-950 relative z-10" style="font-family: 'Amiri', serif !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">شَهَادَةُ تَقْدِيرٍ وَتَفَوُّقٍ</h3>
+                <p class="text-slate-700 font-bold text-base relative z-10">يَسُرُّ مَنْصَةَ (طَرِيقُ التَّفَوُّقِ) مَنْحَ هَذِهِ الشَّهَادَةِ لِلطَّالِبِ / الطَّالِبَةِ:</p>
+                <div id="cert-student-name" class="text-2xl sm:text-3xl font-black text-amber-600 py-3 border-b-2 border-amber-300 relative z-10">---</div>
+                <p class="text-slate-800 text-sm sm:text-base leading-relaxed font-bold relative z-10">
                     لِاجْتِيَازِهِ اخْتِبَارَ مَادَّةِ اللُّغَةِ الْعَرَبِيَّةِ بِنَجَاحٍ وَتَفَوُّقٍ بِنِسْبَةِ:
-                    <span id="cert-score-pct" class="text-emerald-700 font-black text-xl">100%</span>
+                    <span id="cert-score-pct" class="text-emerald-700 font-black text-2xl mx-1">100%</span>
                 </p>
-                <div class="flex justify-between items-center pt-6 text-xs sm:text-sm font-black text-sky-950 border-t border-amber-200">
+                <div class="flex justify-between items-center pt-6 text-xs sm:text-sm font-black text-sky-950 border-t-2 border-amber-200 border-dashed relative z-10">
                     <div>التَّارِيخُ: <span id="cert-date">--/--/----</span></div>
                     <div>مُعَلِّمُ الْمَادَّةِ: <span id="cert-teacher-name">الْأُسْتَاذُ صَلَاحُ حَمْدِي يُوسُفُ</span></div>
                 </div>
@@ -347,8 +371,7 @@
             </div>
         </div>
     </div>
-
-    <!-- FLOATING MODAL: QUICK INFO -->
+<!-- FLOATING MODAL: QUICK INFO -->
     <div id="view-quick-info" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div id="modal-content-quick-info" class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -412,7 +435,6 @@
                         <div><label class="block mb-1 text-slate-700">عنوان تبويب المتصفح (Title):</label><input type="text" id="admin-pagetitle-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         <div><label class="block mb-1 text-slate-700">مسمى زر/عنوان (المعلومة السريعة):</label><input type="text" id="admin-quickinfo-label-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         
-                        <!-- إضافات التحكم في بطاقة بنك الأسئلة -->
                         <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
                             <label class="block mb-1 text-emerald-900">إظهار بطاقة بنك الأسئلة (صفحة البداية):</label>
                             <select id="admin-show-bank-card" class="w-full p-2.5 rounded-xl border border-emerald-300 bg-white font-black text-emerald-800">
@@ -434,7 +456,6 @@
                         <div><label class="block mb-1 text-slate-700">تاريخ ووقت غلق الاختبار (اختياري):</label><input type="datetime-local" id="admin-expiry-date-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         <div><label class="block mb-1 text-slate-700">سنة حقوق النشر:</label><input type="text" id="admin-footer-year-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         
-                        <!-- إعدادات مستويات الصعوبة مع الوضعين المطورين -->
                         <div class="sm:col-span-2 bg-amber-50 p-5 rounded-2xl border-2 border-amber-200 space-y-3">
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" id="admin-use-difficulty-filter" class="w-5 h-5 text-amber-600 rounded cursor-pointer" onchange="toggleDifficultySettingsView(this.checked)">
@@ -535,8 +556,7 @@
                         <button type="button" onclick="saveAppSettings()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3.5 rounded-xl transition shadow cursor-pointer">حِفْظُ التَّغْيِيرَاتِ وَالإِعْدَادَاتِ (سحابياً والمحلي) <i class="fa-solid fa-floppy-disk mr-1"></i></button>
                     </div>
                 </div>
-
-                <!-- TAB 2: STAGES & GRADES -->
+<!-- TAB 2: STAGES & GRADES -->
                 <div id="admin-tab-stages" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
                         <h3 class="font-bold text-slate-800">إدارة المراحل والصفوف الدراسية</h3>
@@ -550,6 +570,13 @@
                     <div class="flex justify-between items-center">
                         <h3 class="font-bold text-slate-800">إدارة الموضوعات الدراسية</h3>
                         <button type="button" onclick="openTopicModalForAdd()" class="bg-emerald-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة موضوع جديد</button>
+                    </div>
+                    <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
+                        <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض الموضوعات:</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">المرحلة:</label><select id="filter-topic-stage" onchange="filterAdminTopicsByStage()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">الصف:</label><select id="filter-topic-grade" onchange="renderAdminTopicsList()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
+                        </div>
                     </div>
                     <div id="admin-topics-list" class="space-y-4 max-h-[450px] overflow-y-auto pr-1"></div>
                 </div>
@@ -611,6 +638,18 @@
                         <h3 class="font-bold text-slate-800">إدارة النصوص القرائية والفقرات</h3>
                         <button type="button" onclick="openParagraphModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة فقرة جديدة</button>
                     </div>
+                    <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
+                        <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض الفقرات:</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">المرحلة:</label><select id="filter-para-stage" onchange="filterAdminParasByStage()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">الصف:</label><select id="filter-para-grade" onchange="filterAdminParasByGrade()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">الموضوع:</label><select id="filter-para-topic" onchange="renderAdminParagraphsList()" class="w-full p-2 rounded-xl border text-xs bg-white font-bold text-sky-900"></select></div>
+                        </div>
+                        <div class="flex gap-2 flex-wrap pt-2 border-t border-sky-200 mt-3">
+                            <button type="button" onclick="exportTopicParagraphsJson()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-download ml-1"></i> تصدير (JSON)</button>
+                            <label class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد (JSON)<input type="file" id="import-paragraphs-json-file" accept=".json" onchange="importParagraphsJsonFile(event)" class="hidden"></label>
+                        </div>
+                    </div>
                     <div id="admin-paragraphs-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-1"></div>
                 </div>
 
@@ -619,6 +658,18 @@
                     <div class="flex justify-between items-center">
                         <h3 class="font-bold text-slate-800">بطاقات المعلومة السريعة</h3>
                         <button type="button" onclick="openQuickInfoModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة بطاقة جديدة</button>
+                    </div>
+                    <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
+                        <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض البطاقات:</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">المرحلة:</label><select id="filter-qi-stage" onchange="filterAdminQiByStage()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">الصف:</label><select id="filter-qi-grade" onchange="filterAdminQiByGrade()" class="w-full p-2 rounded-xl border text-xs bg-white"></select></div>
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">الموضوع:</label><select id="filter-qi-topic" onchange="renderAdminQuickInfoList()" class="w-full p-2 rounded-xl border text-xs bg-white font-bold text-sky-900"></select></div>
+                        </div>
+                        <div class="flex gap-2 flex-wrap pt-2 border-t border-sky-200 mt-3">
+                            <button type="button" onclick="exportTopicQuickInfoJson()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-download ml-1"></i> تصدير (JSON)</button>
+                            <label class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد (JSON)<input type="file" id="import-quickinfo-json-file" accept=".json" onchange="importQuickInfoJsonFile(event)" class="hidden"></label>
+                        </div>
                     </div>
                     <div id="admin-quickinfo-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-1"></div>
                 </div>
@@ -648,6 +699,13 @@
                         </div>
                     </div>
 
+                    <!-- Pagination Controls -->
+                    <div class="flex justify-between items-center bg-white p-3 rounded-2xl border">
+                        <button type="button" id="prev-page-btn" onclick="changeRecordsPage(-1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs transition disabled:opacity-50 cursor-pointer">السابق</button>
+                        <span id="pagination-info" class="text-xs font-black text-slate-700">الصفحة 1 من 1</span>
+                        <button type="button" id="next-page-btn" onclick="changeRecordsPage(1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs transition disabled:opacity-50 cursor-pointer">التالي</button>
+                    </div>
+
                     <div class="overflow-x-auto border rounded-2xl bg-white">
                         <table class="w-full text-right border-collapse">
                             <thead>
@@ -672,8 +730,7 @@
             </div>
         </div>
     </div>
-
-    <!-- نافذة تفاصيل إجابة الطالب للمعلم -->
+<!-- نافذة تفاصيل إجابة الطالب للمعلم -->
     <div id="modal-record-details" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -748,12 +805,14 @@
     <!-- نافذة إضافة وتعديل الفقرة -->
     <div id="modal-paragraph-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-sky-400 overflow-hidden modal-animate-in text-right">
-            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
+            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow flex-wrap gap-3">
                 <h3 id="paragraph-modal-title" class="font-black text-white text-xl sm:text-2xl flex items-center gap-3">
                     <i class="fa-solid fa-book-open text-amber-400 text-2xl"></i> إضافة / تعديل فقرة قرائية
                 </h3>
-                <div class="flex gap-3 items-center">
-                    <button type="button" onclick="saveParagraphFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حفظ سريع</button>
+                <div class="flex gap-2 items-center flex-wrap">
+                    <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-upload ml-1"></i> استيراد فقرة<input type="file" accept=".json" onchange="importSingleParagraphJson(event)" class="hidden"></label>
+                    <button type="button" onclick="exportSingleParagraphJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-download ml-1"></i> تصدير</button>
+                    <button type="button" onclick="saveParagraphFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حفظ سريع</button>
                     <button type="button" onclick="document.getElementById('modal-paragraph-edit').classList.add('hidden'); document.getElementById('modal-paragraph-edit').classList.remove('flex');" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-1"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
@@ -800,12 +859,14 @@
     <!-- نافذة إضافة وتعديل بطاقة معلومات سريعة -->
     <div id="modal-quickinfo-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in text-right">
-            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
+            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow flex-wrap gap-3">
                 <h3 id="quickinfo-modal-title" class="font-black text-white text-xl sm:text-2xl flex items-center gap-3">
                     <i class="fa-solid fa-lightbulb text-amber-400 text-2xl"></i> إضافة / تعديل بطاقة معلومات سريعة
                 </h3>
-                <div class="flex gap-3 items-center">
-                    <button type="button" onclick="saveQuickInfoFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حفظ سريع</button>
+                <div class="flex gap-2 items-center flex-wrap">
+                    <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-upload ml-1"></i> استيراد بطاقة<input type="file" accept=".json" onchange="importSingleQuickInfoJson(event)" class="hidden"></label>
+                    <button type="button" onclick="exportSingleQuickInfoJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-download ml-1"></i> تصدير</button>
+                    <button type="button" onclick="saveQuickInfoFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حفظ سريع</button>
                     <button type="button" onclick="document.getElementById('modal-quickinfo-edit').classList.add('hidden'); document.getElementById('modal-quickinfo-edit').classList.remove('flex');" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-1"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
@@ -872,8 +933,7 @@
             </div>
         </div>
     </div>
-
-    <!-- نافذة إضافة وتعديل السؤال -->
+<!-- نافذة إضافة وتعديل السؤال -->
     <div id="modal-question-edit" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
         <div class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-sky-400 overflow-hidden modal-animate-in text-right">
             <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
@@ -991,9 +1051,19 @@
     <footer class="bg-slate-800 text-slate-400 py-4 text-center text-xs font-bold border-t border-slate-700">
         <p>جَمِيعُ الْحُقُوقِ مَحْفُوظَةٌ © <span id="footer-year">2026</span> - الأستاذ صلاح حمدي يوسف</p>
     </footer>
-
-    <!-- السكربت الشامل -->
+<!-- السكربت الشامل -->
     <script>
+        // دالة حماية اللوحة من أكواد XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"'`=\/]/g, function (s) {
+                return {
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;',
+                    "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
+                }[s];
+            });
+        }
+
         /* -- DATA_START -- */
         let stagesData = {"إعدادية":["الصف الأول الإعدادي","الصف الثاني الإعدادي","الصف الثالث الإعدادي فصل دراسي أول"],"ثانوية":["الصف الأول الثانوي","الصف الثاني الثانوي بكالوريا","الصف الثالث الثانوي"]};
 
@@ -1062,7 +1132,7 @@
                         "active": true,
                         "subItems": [
                             { "title": "الخطاب الإشهاري", "active": true, "text": "يسعى إلى التأثير في المتلقي وحثه على اقتناء سلعة أو خدمة مستخدماً آليات الترغيب والإقناع البصري واللغوي.", "img": "" },
-                            { "title": "الخطاب التوجيهي", "active": true, "text": "يهدف إلى توجيه السلوك والأخلاق وضبط المعاملات.", "img": "" }
+                            { "title": "الخطاب التوجيهي", "active": true, "text": "يهدف إلى توجيه السلوك الأخلاق وضبط المعاملات.", "img": "" }
                         ]
                     }
                 ],
@@ -1076,14 +1146,17 @@
         let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
         /* -- DATA_END -- */
 
+        // Pagination Variables for Records
+        let currentRecordsPage = 1;
+        const recordsPerPage = 20;
+
         window.addEventListener('beforeunload', function (e) {
             if (quizState.questions.length > 0 && document.getElementById('view-quiz') && !document.getElementById('view-quiz').classList.contains('hidden')) {
                 e.preventDefault();
                 e.returnValue = '';
             }
         });
-
-        function formatText(text, itemTashkeel) {
+function formatText(text, itemTashkeel) {
             if (!text || typeof text !== 'string') return text;
             let allowTashkeel = (itemTashkeel !== false) && (appSettings.enableTashkeel !== false);
             if (!allowTashkeel) {
@@ -1339,8 +1412,7 @@
                 botLC.classList.remove('hidden');
             } else { botLC.classList.add('hidden'); }
         }
-
-        function populateStartStages() {
+function populateStartStages() {
             const stageSel = document.getElementById('start-stage-select');
             if(!stageSel) return;
             stageSel.innerHTML = '<option value="">اختر المرحلة</option>';
@@ -1784,8 +1856,20 @@
             let durationMinutes = parseInt(appSettings.examDuration) || 20;
             let timerSeconds = durationMinutes * 60;
             const timerDisplay = document.getElementById('display-timer');
+            const timerIcon = document.getElementById('timer-icon');
+            const timerContainer = document.getElementById('timer-container');
 
             if (quizState.timerInterval) clearInterval(quizState.timerInterval);
+
+            if (timerDisplay) timerDisplay.classList.remove('text-rose-600', 'animate-pulse');
+            if (timerIcon) {
+                timerIcon.classList.remove('text-rose-600', 'animate-bounce');
+                timerIcon.classList.add('text-amber-600');
+            }
+            if (timerContainer) {
+                timerContainer.classList.remove('border-rose-400', 'bg-rose-50');
+                timerContainer.classList.add('border-amber-200', 'bg-amber-50');
+            }
 
             quizState.timerInterval = setInterval(() => {
                 let mins = Math.floor(timerSeconds / 60);
@@ -1793,6 +1877,19 @@
                 if (timerDisplay) {
                     timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                 }
+                
+                if (timerSeconds <= 60 && timerSeconds > 0) {
+                    if (timerDisplay) timerDisplay.classList.add('text-rose-600', 'animate-pulse');
+                    if (timerIcon) {
+                        timerIcon.classList.remove('text-amber-600');
+                        timerIcon.classList.add('text-rose-600', 'animate-bounce');
+                    }
+                    if (timerContainer) {
+                        timerContainer.classList.remove('border-amber-200', 'bg-amber-50');
+                        timerContainer.classList.add('border-rose-400', 'bg-rose-50');
+                    }
+                }
+
                 if (timerSeconds <= 0) {
                     clearInterval(quizState.timerInterval);
                     alert("انتهى وقت الاختبار المحدد!");
@@ -1801,8 +1898,7 @@
                 timerSeconds--;
             }, 1000);
         }
-
-        function renderQuestion() {
+function renderQuestion() {
             const idx = quizState.currentIndex;
             const q = quizState.questions[idx];
             document.getElementById('display-q-idx').textContent = idx + 1;
@@ -2136,15 +2232,331 @@
         }
 
         function closeQuickInfo() { document.getElementById('view-quick-info').classList.add('hidden'); }
-function populateAdminRecFilters() {
-            const stageSel = document.getElementById('admin-rec-stage-filter');
+
+        function handleAdminAccess() {
+            document.getElementById('admin-login-pwd-input').value = "";
+            document.getElementById('modal-admin-login').classList.add('flex');
+            document.getElementById('modal-admin-login').classList.remove('hidden');
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('modal-admin-login').classList.add('hidden');
+            document.getElementById('modal-admin-login').classList.remove('flex');
+        }
+
+        function verifyAdminPassword() {
+            const pwd = document.getElementById('admin-login-pwd-input').value.trim();
+            if (pwd === "12300123" || pwd === appSettings.adminPass) {
+                closeAdminLoginModal();
+                document.getElementById('view-admin').classList.remove('hidden');
+                document.getElementById('view-admin').classList.add('flex');
+                loadAdminData();
+            } else {
+                alert("كلمة المرور غير صحيحة!");
+            }
+        }
+
+        function exitAdmin() {
+            document.getElementById('view-admin').classList.add('hidden');
+            document.getElementById('view-admin').classList.remove('flex');
+            initApp();
+        }
+
+        function loadAdminData() {
+            document.getElementById('admin-teacher-input').value = appSettings.teacherName;
+            document.getElementById('admin-exam-title-input').value = appSettings.examTitle;
+            document.getElementById('admin-start-btn-input').value = appSettings.startBtnText || "";
+            document.getElementById('admin-branch-input').value = appSettings.branch || "";
+            document.getElementById('admin-pagetitle-input').value = appSettings.pageTitle;
+            document.getElementById('admin-quickinfo-label-input').value = appSettings.quickInfoLabel || "";
+            document.getElementById('admin-exam-count-input').value = appSettings.examCount;
+            document.getElementById('admin-exam-duration-input').value = appSettings.examDuration || 20;
+            document.getElementById('admin-expiry-date-input').value = appSettings.expiryDate || "";
+            document.getElementById('admin-footer-year-input').value = appSettings.footerYear || "2026";
+            
+            if(document.getElementById('admin-show-bank-card')) document.getElementById('admin-show-bank-card').value = (appSettings.showBankCard === false || appSettings.showBankCard === "false") ? "false" : "true";
+            if(document.getElementById('admin-bank-card-style')) document.getElementById('admin-bank-card-style').value = appSettings.bankCardStyle || "detailed";
+
+            if(document.getElementById('admin-use-difficulty-filter')) {
+                document.getElementById('admin-use-difficulty-filter').checked = !!appSettings.useDifficultyFilter;
+                toggleDifficultySettingsView(!!appSettings.useDifficultyFilter);
+            }
+            if(document.getElementById('admin-diff-selection-mode')) {
+                document.getElementById('admin-diff-selection-mode').value = appSettings.diffSelectionMode || "balanced";
+                toggleDiffModeView(appSettings.diffSelectionMode || "balanced");
+            }
+            if(document.getElementById('admin-diff-easy')) document.getElementById('admin-diff-easy').value = appSettings.diffEasyCount || 5;
+            if(document.getElementById('admin-diff-medium')) document.getElementById('admin-diff-medium').value = appSettings.diffMediumCount || 10;
+            if(document.getElementById('admin-diff-hard')) document.getElementById('admin-diff-hard').value = appSettings.diffHardCount || 3;
+            if(document.getElementById('admin-diff-vhard')) document.getElementById('admin-diff-vhard').value = appSettings.diffVeryHardCount || 2;
+
+            if(document.getElementById('admin-platform-font')) document.getElementById('admin-platform-font').value = appSettings.platformFont || "IBM Plex Sans Arabic";
+            if(document.getElementById('admin-platform-theme')) document.getElementById('admin-platform-theme').value = appSettings.platformTheme || "default";
+            if(document.getElementById('admin-st-title-size')) document.getElementById('admin-st-title-size').value = appSettings.stTitleSize || "text-3xl sm:text-5xl";
+            if(document.getElementById('admin-st-title-weight')) document.getElementById('admin-st-title-weight').value = appSettings.stTitleWeight || "font-black";
+            if(document.getElementById('admin-shuffle-questions')) document.getElementById('admin-shuffle-questions').checked = appSettings.shuffleQuestions !== false;
+            if(document.getElementById('admin-shuffle-options')) document.getElementById('admin-shuffle-options').checked = appSettings.shuffleOptions !== false;
+            if(document.getElementById('admin-enable-tashkeel')) document.getElementById('admin-enable-tashkeel').checked = appSettings.enableTashkeel !== false;
+
+            document.getElementById('admin-logo-header-input').value = appSettings.logoHeader || '';
+            document.getElementById('admin-logo-right-input').value = appSettings.logoRight || '';
+            document.getElementById('admin-logo-left-input').value = appSettings.logoLeft || '';
+            document.getElementById('admin-mid-img-input-1').value = appSettings.midImg1 || '';
+            document.getElementById('admin-mid-img-input-2').value = appSettings.midImg2 || '';
+            document.getElementById('admin-bottom-img-input-right').value = appSettings.bottomImgRight || '';
+            document.getElementById('admin-bottom-img-input-left').value = appSettings.bottomImgLeft || '';
+            document.getElementById('admin-exp-label-input').value = appSettings.expLabel || '';
+            document.getElementById('admin-new-password').value = '';
+
+            renderAdminStagesList();
+            populateTopicAdminFilters();
+            populateParaAdminFilters();
+            populateQiAdminFilters();
+            populateAdminRecFilters();
+            populateQuestionFilters();
+        }
+
+       function saveAppSettings() {
+            appSettings.teacherName = document.getElementById('admin-teacher-input').value.trim() || appSettings.teacherName;
+            appSettings.examTitle = document.getElementById('admin-exam-title-input').value.trim() || appSettings.examTitle;
+            appSettings.startBtnText = document.getElementById('admin-start-btn-input').value.trim();
+            appSettings.branch = document.getElementById('admin-branch-input').value.trim();
+            appSettings.pageTitle = document.getElementById('admin-pagetitle-input').value.trim() || appSettings.pageTitle;
+            appSettings.quickInfoLabel = document.getElementById('admin-quickinfo-label-input').value.trim();
+            appSettings.examCount = parseInt(document.getElementById('admin-exam-count-input').value) || 20;
+            appSettings.examDuration = parseInt(document.getElementById('admin-exam-duration-input').value) || 20;
+            
+            // حفظ وقت غلق الاختبار بدقة
+            appSettings.expiryDate = document.getElementById('admin-expiry-date-input').value;
+            
+            appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
+            
+            if(document.getElementById('admin-show-bank-card')) appSettings.showBankCard = document.getElementById('admin-show-bank-card').value === "true";
+            if(document.getElementById('admin-bank-card-style')) appSettings.bankCardStyle = document.getElementById('admin-bank-card-style').value;
+
+            if(document.getElementById('admin-use-difficulty-filter')) appSettings.useDifficultyFilter = document.getElementById('admin-use-difficulty-filter').checked;
+            if(document.getElementById('admin-diff-selection-mode')) appSettings.diffSelectionMode = document.getElementById('admin-diff-selection-mode').value;
+            if(document.getElementById('admin-diff-easy')) appSettings.diffEasyCount = parseInt(document.getElementById('admin-diff-easy').value) || 0;
+            if(document.getElementById('admin-diff-medium')) appSettings.diffMediumCount = parseInt(document.getElementById('admin-diff-medium').value) || 0;
+            if(document.getElementById('admin-diff-hard')) appSettings.diffHardCount = parseInt(document.getElementById('admin-diff-hard').value) || 0;
+            if(document.getElementById('admin-diff-vhard')) appSettings.diffVeryHardCount = parseInt(document.getElementById('admin-diff-vhard').value) || 0;
+
+            if(document.getElementById('admin-platform-font')) appSettings.platformFont = document.getElementById('admin-platform-font').value;
+            if(document.getElementById('admin-platform-theme')) appSettings.platformTheme = document.getElementById('admin-platform-theme').value;
+            if(document.getElementById('admin-st-title-size')) appSettings.stTitleSize = document.getElementById('admin-st-title-size').value;
+            if(document.getElementById('admin-st-title-weight')) appSettings.stTitleWeight = document.getElementById('admin-st-title-weight').value;
+            if(document.getElementById('admin-shuffle-questions')) appSettings.shuffleQuestions = document.getElementById('admin-shuffle-questions').checked;
+            if(document.getElementById('admin-shuffle-options')) appSettings.shuffleOptions = document.getElementById('admin-shuffle-options').checked;
+            if(document.getElementById('admin-enable-tashkeel')) appSettings.enableTashkeel = document.getElementById('admin-enable-tashkeel').checked;
+
+            appSettings.logoHeader = document.getElementById('admin-logo-header-input').value.trim();
+            appSettings.logoRight = document.getElementById('admin-logo-right-input').value.trim();
+            appSettings.logoLeft = document.getElementById('admin-logo-left-input').value.trim();
+            appSettings.midImg1 = document.getElementById('admin-mid-img-input-1').value.trim();
+            appSettings.midImg2 = document.getElementById('admin-mid-img-input-2').value.trim();
+            appSettings.bottomImgRight = document.getElementById('admin-bottom-img-input-right').value.trim();
+            appSettings.bottomImgLeft = document.getElementById('admin-bottom-img-input-left').value.trim();
+            appSettings.expLabel = document.getElementById('admin-exp-label-input').value.trim();
+
+            let newPwd = document.getElementById('admin-new-password').value.trim();
+            if (newPwd) {
+                appSettings.adminPass = newPwd;
+            }
+
+            // الحفظ السحابي والمحلي ثم إعادة التحميل لضمان التطبيق الفوري بالخارج
+            saveState().then(() => {
+                alert("تم حفظ الإعدادات بنجاح وتطبيقها على المنصة!");
+                location.reload(); // تحديث الصفحة بالكامل لجلب أحدث إعدادات الوقت والخيارات من التخزين السحابي
+            });
+        }
+
+        function exportTopicParagraphsJson() {
+            const fTopic = document.getElementById('filter-para-topic').value;
+            if (!fTopic) { alert("يرجى تحديد الموضوع من التصفية أولاً لتصدير فقراته."); return; }
+            let topicParas = paragraphs.filter(p => p.topic === fTopic);
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topicParas, null, 2));
+            let dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `${fTopic}_paragraphs.json`);
+            dlAnchorElem.click();
+        }
+
+        function importParagraphsJsonFile(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        imported.forEach(p => {
+                            p.id = "para_" + Date.now() + Math.floor(Math.random() * 10000);
+                            paragraphs.push(p);
+                        });
+                        saveState();
+                        renderAdminParagraphsList();
+                        alert("تم استيراد قائمة الفقرات بنجاح!");
+                    } else { alert("الملف غير متوافق. يرجى اختيار ملف يحتوي على مصفوفة فقرات."); }
+                } catch(err) { alert("خطأ في قراءة ملف JSON الخاص بالفقرات."); }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function exportSingleParagraphJson() {
+            let pObj = {
+                name: document.getElementById('modal-para-name').value.trim(),
+                title: document.getElementById('modal-para-title').value.trim(),
+                img: document.getElementById('modal-para-img').value.trim(),
+                text: document.getElementById('modal-para-text').value.trim(),
+                active: document.getElementById('modal-para-active').checked,
+                tashkeel: document.getElementById('modal-para-tashkeel').checked
+            };
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pObj, null, 2));
+            let dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `single_paragraph.json`);
+            dlAnchorElem.click();
+        }
+
+        function importSingleParagraphJson(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let imported = JSON.parse(e.target.result);
+                    if (imported && !Array.isArray(imported)) {
+                        if (imported.name !== undefined) document.getElementById('modal-para-name').value = imported.name;
+                        if (imported.title !== undefined) document.getElementById('modal-para-title').value = imported.title;
+                        if (imported.img !== undefined) document.getElementById('modal-para-img').value = imported.img;
+                        if (imported.text !== undefined) document.getElementById('modal-para-text').value = imported.text;
+                        if (imported.active !== undefined) document.getElementById('modal-para-active').checked = imported.active;
+                        if (imported.tashkeel !== undefined) document.getElementById('modal-para-tashkeel').checked = imported.tashkeel;
+                        alert("تم استيراد الفقرة إلى النافذة بنجاح! يرجى مراجعتها وتأكيد حفظها السريع.");
+                    } else { alert("الملف غير متوافق."); }
+                } catch(err) { alert("خطأ في القراءة."); }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function exportTopicQuickInfoJson() {
+            const fTopic = document.getElementById('filter-qi-topic').value;
+            if (!fTopic) { alert("يرجى تحديد الموضوع من التصفية أولاً لتصدير بطاقاته."); return; }
+            let topicQi = quickInfoList.filter(qi => qi.topic === fTopic);
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topicQi, null, 2));
+            let dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `${fTopic}_quickinfo.json`);
+            dlAnchorElem.click();
+        }
+
+        function importQuickInfoJsonFile(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        quickInfoList = quickInfoList.concat(imported);
+                        saveState();
+                        renderAdminQuickInfoList();
+                        alert("تم استيراد قائمة البطاقات بنجاح!");
+                    } else { alert("الملف غير متوافق."); }
+                } catch(err) { alert("خطأ في القراءة."); }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function exportSingleQuickInfoJson() {
+            let title = document.getElementById('modal-qi-title').value.trim();
+            let img = document.getElementById('modal-qi-img').value.trim();
+            let active = document.getElementById('modal-qi-active').checked;
+            let tashkeel = document.getElementById('modal-qi-tashkeel').checked;
+
+            let sections = [];
+            document.querySelectorAll('.qi-section-block').forEach(secBlock => {
+                let mainHeader = secBlock.querySelector('.qi-sec-main-header').value.trim();
+                let mainActive = secBlock.querySelector('.qi-sec-active').checked;
+                let subItems = [];
+                secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => {
+                    let subTitle = subBlock.querySelector('.qi-sub-title').value.trim();
+                    let subText = subBlock.querySelector('.qi-sub-text').value.trim();
+                    let subImg = subBlock.querySelector('.qi-sub-img').value.trim();
+                    let subActive = subBlock.querySelector('.qi-sub-active').checked;
+                    if (subTitle || subText) {
+                        subItems.push({ title: subTitle, text: subText, img: subImg, active: subActive });
+                    }
+                });
+                if (mainHeader || subItems.length > 0) {
+                    sections.push({ mainHeader, active: mainActive, subItems });
+                }
+            });
+
+            let attachments = [];
+            document.querySelectorAll('.qi-attachment-block').forEach(attBlock => {
+                let label = attBlock.querySelector('.qi-att-label').value.trim();
+                let url = attBlock.querySelector('.qi-att-url').value.trim();
+                if (url) {
+                    attachments.push({ label: label || "اطّلع على", url });
+                }
+            });
+
+            let qiObj = { title, img, sections, attachments, active, tashkeel };
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(qiObj, null, 2));
+            let dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `single_quickinfo.json`);
+            dlAnchorElem.click();
+        }
+
+        function importSingleQuickInfoJson(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let qi = JSON.parse(e.target.result);
+                    if (qi && !Array.isArray(qi)) {
+                        if (qi.title !== undefined) document.getElementById('modal-qi-title').value = qi.title;
+                        if (qi.img !== undefined) document.getElementById('modal-qi-img').value = qi.img;
+                        if (qi.active !== undefined) document.getElementById('modal-qi-active').checked = qi.active;
+                        if (qi.tashkeel !== undefined) document.getElementById('modal-qi-tashkeel').checked = qi.tashkeel;
+
+                        const container = document.getElementById('quickinfo-sections-builder-container');
+                        container.innerHTML = "";
+                        if (qi.sections && Array.isArray(qi.sections)) {
+                            qi.sections.forEach(sec => {
+                                addQuickInfoSectionBlock(sec.mainHeader || "", sec.active !== false, sec.subItems || []);
+                            });
+                        } else {
+                            addQuickInfoSectionBlock("", true, []);
+                        }
+
+                        const attContainer = document.getElementById('quickinfo-attachments-builder-container');
+                        attContainer.innerHTML = "";
+                        if (qi.attachments && Array.isArray(qi.attachments)) {
+                            qi.attachments.forEach(att => {
+                                addQiAttachmentBlock(att.label || "", att.url || "");
+                            });
+                        }
+                        
+                        alert("تم استيراد البطاقة إلى النافذة بنجاح! يرجى مراجعتها وتأكيد حفظها السريع.");
+                    } else { alert("الملف غير متوافق."); }
+                } catch(err) { alert("خطأ في القراءة."); }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function populateTopicAdminFilters() {
+            const stageSel = document.getElementById('filter-topic-stage');
             if (!stageSel) return;
-            stageSel.innerHTML = '<option value="">جميع المراحل المفعلة (عرض الكل)</option>';
-
+            stageSel.innerHTML = '<option value="">الكل (جميع المراحل)</option>';
             Object.keys(stagesData).forEach(stage => {
-                const isStageActive = gradeStatus[`stage_active_${stage}`] !== false;
-                if (!isStageActive) return;
-
                 const grades = stagesData[stage] || [];
                 const hasActiveGrade = grades.some(grade => gradeStatus[`${stage}_${grade}`] !== false);
                 if (hasActiveGrade) {
@@ -2153,195 +2565,142 @@ function populateAdminRecFilters() {
                     stageSel.appendChild(opt);
                 }
             });
-            onAdminRecStageChange();
+            filterAdminTopicsByStage();
         }
 
-        function onAdminRecStageChange() {
-            const stage = document.getElementById('admin-rec-stage-filter').value;
-            const gradeSel = document.getElementById('admin-rec-grade-filter');
+        function filterAdminTopicsByStage() {
+            const stage = document.getElementById('filter-topic-stage').value;
+            const gradeSel = document.getElementById('filter-topic-grade');
             if (!gradeSel) return;
-            gradeSel.innerHTML = '<option value="">جميع الصفوف المفعلة (عرض الكل)</option>';
-
+            gradeSel.innerHTML = '<option value="">الكل (جميع الصفوف)</option>';
             if (stage && stagesData[stage]) {
                 stagesData[stage].forEach(grade => {
                     const key = `${stage}_${grade}`;
-                    const isVisible = gradeStatus[key] !== false;
-                    if (isVisible) {
+                    if (gradeStatus[key] !== false) {
                         let opt = document.createElement('option');
                         opt.value = grade; opt.textContent = grade;
                         gradeSel.appendChild(opt);
                     }
                 });
             }
-            onAdminRecGradeChange();
+            renderAdminTopicsList();
         }
 
-        function onAdminRecGradeChange() {
-            const stage = document.getElementById('admin-rec-stage-filter').value;
-            const grade = document.getElementById('admin-rec-grade-filter').value;
-            const topicSel = document.getElementById('admin-rec-topic-filter');
+        function filterAdminParasByStage() {
+            const stage = document.getElementById('filter-para-stage').value;
+            const gradeSel = document.getElementById('filter-para-grade');
+            if (!gradeSel) return;
+            gradeSel.innerHTML = '<option value="">الكل (جميع الصفوف)</option>';
+            if (stage && stagesData[stage]) {
+                stagesData[stage].forEach(grade => {
+                    const key = `${stage}_${grade}`;
+                    if (gradeStatus[key] !== false) {
+                        let opt = document.createElement('option');
+                        opt.value = grade; opt.textContent = grade;
+                        gradeSel.appendChild(opt);
+                    }
+                });
+            }
+            filterAdminParasByGrade();
+        }
+
+        function filterAdminParasByGrade() {
+            const stage = document.getElementById('filter-para-stage').value;
+            const grade = document.getElementById('filter-para-grade').value;
+            const topicSel = document.getElementById('filter-para-topic');
             if (!topicSel) return;
-            topicSel.innerHTML = '<option value="">جميع الموضوعات المفعلة (عرض الكل)</option>';
+            topicSel.innerHTML = '<option value="">الكل (جميع الموضوعات)</option>';
+            if (stage && grade) {
+                const filtered = topicsData.filter(t => t.active !== false && t.targetGrades && t.targetGrades.some(tg => tg.stage === stage && tg.grade === grade));
+                filtered.forEach(t => {
+                    let opt = document.createElement('option');
+                    opt.value = t.topic; opt.textContent = t.topic;
+                    topicSel.appendChild(opt);
+                });
+            }
+            renderAdminParagraphsList();
+        }
 
-            const filteredTopics = topicsData.filter(t => {
-                if (t.active === false) return false;
-                if (stage && grade && t.targetGrades) {
-                    return t.targetGrades.some(tg => tg.stage === stage && tg.grade === grade);
+        function populateParaAdminFilters() {
+            const stageSel = document.getElementById('filter-para-stage');
+            if (!stageSel) return;
+            stageSel.innerHTML = '<option value="">الكل (جميع المراحل)</option>';
+            Object.keys(stagesData).forEach(stage => {
+                const grades = stagesData[stage] || [];
+                const hasActiveGrade = grades.some(grade => gradeStatus[`${stage}_${grade}`] !== false);
+                if (hasActiveGrade) {
+                    let opt = document.createElement('option');
+                    opt.value = stage; opt.textContent = stage;
+                    stageSel.appendChild(opt);
                 }
-                return true;
             });
-
-            filteredTopics.forEach(t => {
-                let opt = document.createElement('option');
-                opt.value = t.topic; opt.textContent = t.topic;
-                topicSel.appendChild(opt);
-            });
-
-            renderAdminRecordsTable();
+            filterAdminParasByStage();
         }
 
-        function renderAdminRecordsTable() {
-            const tbody = document.getElementById('admin-tbody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            const fStage = document.getElementById('admin-rec-stage-filter').value;
-            const fGrade = document.getElementById('admin-rec-grade-filter').value;
-            const fTopic = document.getElementById('admin-rec-topic-filter').value;
-
-            const filtered = studentRecords.filter(rec => {
-                if (fStage && rec.stage !== fStage) return false;
-                if (fGrade && rec.grade !== fGrade) return false;
-                if (fTopic && rec.topic !== fTopic) return false;
-                return true;
-            });
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500 font-bold">لا توجد سجلات مطابقة.</td></tr>';
-                return;
-            }
-
-            filtered.forEach((rec, idx) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition border-b text-xs";
-                tr.innerHTML = `
-                    <td class="p-3 font-black text-slate-500">${idx + 1}</td>
-                    <td class="p-3 font-black text-sky-950 text-sm">${rec.name}</td>
-                    <td class="p-3 font-bold text-slate-700">${rec.stageGrade || `${rec.stage || ''} - ${rec.grade || ''} (${rec.topic || ''})`}</td>
-                    <td class="p-3"><span class="px-2.5 py-1 rounded-full font-black ${rec.status === 'ناجح' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${rec.status}</span></td>
-                    <td class="p-3 font-black text-sky-900">${rec.score} / ${rec.total} (${rec.pct}%)</td>
-                    <td class="p-3 text-slate-600 font-mono">📅 ${rec.date}<br>⏱️ ${rec.duration}</td>
-                    <td class="p-3">
-                        <div class="space-y-1">
-                            <span class="block font-bold text-slate-800">الأسئلة: ${rec.answeredCount}</span>
-                            <button type="button" onclick="openRecordDetailsModal(${studentRecords.indexOf(rec)})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer shadow transition">
-                                <i class="fa-solid fa-list-check ml-1"></i> تفاصيل إجابة الطالب
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function exportAllRecordsExcel() {
-            if (!studentRecords || studentRecords.length === 0) {
-                alert("لا توجد سجلات لتصديرها.");
-                return;
-            }
-            let csvContent = "\uFEFF"; 
-            csvContent += "م,اسم الطالب,المرحلة والصف والموضوع,الحالة,الدرجة,المجموع,النسبة,التاريخ,مدة الاختبار\n";
-            studentRecords.forEach((r, i) => {
-                csvContent += `"${i+1}","${r.name}","${r.stageGrade || ''}","${r.status}","${r.score}","${r.total}","${r.pct}%","${r.date}","${r.duration}"\n`;
-            });
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `سجل_نتائج_الطلاب_${new Date().toLocaleDateString('ar-EG')}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function openRecordDetailsModal(recIdx) {
-            let rec = studentRecords[recIdx];
-            if (!rec || !rec.breakdown) {
-                alert("لا توجد تفاصيل مفصلة لهذا السجل.");
-                return;
-            }
-
-            let html = `
-                <div class="bg-sky-900 text-white p-6 rounded-3xl shadow-lg border-2 border-amber-400 space-y-2 mb-6">
-                    <h4 class="text-2xl font-black text-amber-300">تقرير إجابات الطالب المفصل</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-sm font-bold">
-                        <div><strong>الطالب:</strong> ${rec.name}</div>
-                        <div><strong>الاختبار:</strong> ${rec.stageGrade}</div>
-                        <div><strong>النتيجة:</strong> ${rec.score} / ${rec.total} (${rec.pct}%) - <span class="${rec.status === 'ناجح' ? 'text-emerald-400' : 'text-rose-400'}">${rec.status}</span></div>
-                    </div>
-                </div>
-                <div class="space-y-6">
-            `;
-
-            rec.breakdown.forEach(b => {
-                let badgeClass = b.isCorrect ? 'bg-emerald-50/85 border-emerald-300 text-slate-900' : 'bg-rose-50/85 border-rose-300 text-slate-900';
-                let icon = b.isCorrect ? '<i class="fa-solid fa-check text-emerald-600 ml-2 text-xl"></i>' : '<i class="fa-solid fa-xmark text-rose-600 ml-2 text-xl"></i>';
-                
-                let optsListHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">';
-                if (b.options && Array.isArray(b.options)) {
-                    b.options.forEach(opt => {
-                        let isThisCorrect = opt === b.correctAnswer;
-                        let isThisUser = opt === b.userAnswer;
-                        let optStyle = "";
-                        let optIcon = "";
-                        if (isThisCorrect) {
-                            optStyle = "bg-emerald-100 border-emerald-400 text-emerald-950 font-black shadow-sm";
-                            optIcon = '<span class="text-emerald-800 font-extrabold block text-xs mt-1.5">(✓ الإجابة الصحيحة)</span>';
-                        } else if (isThisUser && !b.isCorrect) {
-                            optStyle = "bg-rose-100 border-rose-400 text-rose-950 font-black shadow-sm";
-                            optIcon = '<span class="text-rose-800 font-extrabold block text-xs mt-1.5">(✗ إجابة الطالب الخاطئة)</span>';
-                        } else {
-                            optStyle = "bg-white text-slate-800 font-semibold";
-                        }
-                        optsListHtml += `<div class="p-3.5 rounded-xl border-2 text-sm sm:text-base flex flex-col justify-between ${optStyle}"><span class="leading-relaxed">• ${opt}</span>${optIcon}</div>`;
-                    });
+        function populateQiAdminFilters() {
+            const stageSel = document.getElementById('filter-qi-stage');
+            if (!stageSel) return;
+            stageSel.innerHTML = '<option value="">الكل (جميع المراحل)</option>';
+            Object.keys(stagesData).forEach(stage => {
+                const grades = stagesData[stage] || [];
+                const hasActiveGrade = grades.some(grade => gradeStatus[`${stage}_${grade}`] !== false);
+                if (hasActiveGrade) {
+                    let opt = document.createElement('option');
+                    opt.value = stage; opt.textContent = stage;
+                    stageSel.appendChild(opt);
                 }
-                optsListHtml += '</div>';
-
-                html += `
-                    <div class="bg-white p-6 rounded-3xl border-3 ${badgeClass} space-y-3 shadow-md">
-                        <p class="font-black text-base sm:text-lg flex items-center border-b pb-2 text-sky-950">
-                            ${icon} س${b.qIndex}: ${b.qText}
-                        </p>
-                        ${optsListHtml}
-                        ${b.explanation ? `<div class="p-4 bg-sky-50 rounded-2xl border-2 border-sky-200 text-sm sm:text-base text-sky-950 font-bold leading-loose"><strong><i class="fa-solid fa-lightbulb text-amber-500 ml-1 text-lg"></i> التعليل والشرح:</strong> ${b.explanation}</div>` : ''}
-                    </div>
-                `;
             });
-
-            html += `</div>`;
-            document.getElementById('record-details-body').innerHTML = html;
-            document.getElementById('modal-record-details').classList.add('flex');
-            document.getElementById('modal-record-details').classList.remove('hidden');
+            filterAdminQiByStage();
         }
 
-        function exportStudentDetailsImage() {
-            const printArea = document.getElementById('record-details-printable-area');
-            if (!printArea) return;
-            html2canvas(printArea).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'student_exam_details.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
-
-        function clearRecords() {
-            if (confirm("هل أنت متأكد من مسح جميع سجلات النتائج؟")) {
-                studentRecords = [];
-                saveState();
-                renderAdminRecordsTable();
+        function filterAdminQiByStage() {
+            const stage = document.getElementById('filter-qi-stage').value;
+            const gradeSel = document.getElementById('filter-qi-grade');
+            if (!gradeSel) return;
+            gradeSel.innerHTML = '<option value="">الكل (جميع الصفوف)</option>';
+            if (stage && stagesData[stage]) {
+                stagesData[stage].forEach(grade => {
+                    const key = `${stage}_${grade}`;
+                    if (gradeStatus[key] !== false) {
+                        let opt = document.createElement('option');
+                        opt.value = grade; opt.textContent = grade;
+                        gradeSel.appendChild(opt);
+                    }
+                });
             }
+            filterAdminQiByGrade();
+        }
+
+        function filterAdminQiByGrade() {
+            const stage = document.getElementById('filter-qi-stage').value;
+            const grade = document.getElementById('filter-qi-grade').value;
+            const topicSel = document.getElementById('filter-qi-topic');
+            if (!topicSel) return;
+            topicSel.innerHTML = '<option value="">الكل (جميع الموضوعات)</option>';
+            if (stage && grade) {
+                const filtered = topicsData.filter(t => t.active !== false && t.targetGrades && t.targetGrades.some(tg => tg.stage === stage && tg.grade === grade));
+                filtered.forEach(t => {
+                    let opt = document.createElement('option');
+                    opt.value = t.topic; opt.textContent = t.topic;
+                    topicSel.appendChild(opt);
+                });
+            }
+            renderAdminQuickInfoList();
+        }
+
+        function switchAdminTab(tabName) {
+            ['settings', 'stages', 'topics', 'questions', 'paragraphs', 'quickinfo', 'records'].forEach(t => {
+                const tabEl = document.getElementById(`admin-tab-${t}`);
+                const btnEl = document.getElementById(`tab-btn-${t}`);
+                if (tabEl) tabEl.classList.toggle('hidden', t !== tabName);
+                if (btnEl) btnEl.className = t === tabName ? "flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-sky-600 text-white cursor-pointer shadow" : "flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border cursor-pointer";
+            });
+            if (tabName === 'stages') renderAdminStagesList();
+            if (tabName === 'topics') populateTopicAdminFilters();
+            if (tabName === 'questions') populateQuestionFilters();
+            if (tabName === 'paragraphs') populateParaAdminFilters();
+            if (tabName === 'quickinfo') populateQiAdminFilters();
+            if (tabName === 'records') { populateAdminRecFilters(); currentRecordsPage = 1; }
         }
 
         function renderAdminStagesList() {
@@ -2558,15 +2917,25 @@ function populateAdminRecFilters() {
                 return;
             }
 
+            const fStage = document.getElementById('filter-topic-stage') ? document.getElementById('filter-topic-stage').value : "";
+            const fGrade = document.getElementById('filter-topic-grade') ? document.getElementById('filter-topic-grade').value : "";
+
+            let displayedCount = 0;
+
             Object.keys(stagesData).forEach(stage => {
+                if (fStage && stage !== fStage) return; 
+                
                 const grades = stagesData[stage] || [];
                 grades.forEach(grade => {
+                    if (fGrade && grade !== fGrade) return; 
+
                     const matchedTopics = topicsData.filter(t => {
                         if (!t.targetGrades) return false;
                         return t.targetGrades.some(tg => tg.stage === stage && tg.grade === grade);
                     });
 
                     if (matchedTopics.length > 0) {
+                        displayedCount++;
                         let topicsHtml = '';
                         matchedTopics.forEach((t, tIdx) => {
                             const globalIdx = topicsData.indexOf(t);
@@ -2602,6 +2971,10 @@ function populateAdminRecFilters() {
                     }
                 });
             });
+
+            if (displayedCount === 0) {
+                container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد موضوعات مطابقة للتصفية.</p>';
+            }
         }
 
         function toggleTopicVisibility(idx) {
@@ -3075,102 +3448,6 @@ function populateAdminRecFilters() {
             alert("تم حفظ السؤال بنجاح!");
         }
 
-        function exportFullSystemJson() {
-            let systemData = {
-                stagesData,
-                gradeStatus,
-                topicsData,
-                appSettings,
-                questionBank,
-                paragraphs,
-                qiList: quickInfoList,
-                studentRecords
-            };
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(systemData, null, 2));
-            let dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", "platform_full_backup.json");
-            dlAnchorElem.click();
-        }
-
-        function importFullSystemJsonFile(event) {
-            let file = event.target.files[0];
-            if (!file) return;
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    let imported = JSON.parse(e.target.result);
-                    if (imported && typeof imported === 'object') {
-                        if (imported.stagesData) stagesData = imported.stagesData;
-                        if (imported.gradeStatus) gradeStatus = imported.gradeStatus;
-                        if (imported.topicsData) topicsData = imported.topicsData;
-                        if (imported.appSettings) appSettings = { ...defaultSettings, ...imported.appSettings };
-                        if (imported.questionBank) questionBank = imported.questionBank;
-                        if (imported.paragraphs) paragraphs = imported.paragraphs;
-                        if (imported.qiList) quickInfoList = imported.qiList;
-                        if (imported.studentRecords) studentRecords = imported.studentRecords;
-                        saveState();
-                        initApp();
-                        alert("تم استيراد كافة إعدادات وقاعدة بيانات المنصة بنجاح!");
-                    } else { alert("الملف غير متوافق."); }
-                } catch(err) { alert("خطأ في قراءة ملف JSON الخاص بالنظام."); }
-            };
-            reader.readAsText(file);
-        }
-
-        function exportOfflineHtmlFile() {
-            try {
-                const adminModal = document.getElementById('view-admin');
-                const loginModal = document.getElementById('modal-admin-login');
-                const quickInfoModal = document.getElementById('view-quick-info');
-                const studentReviewModal = document.getElementById('modal-student-review');
-                const certModal = document.getElementById('modal-cert');
-                
-                if (adminModal) { adminModal.classList.add('hidden'); adminModal.classList.remove('flex'); }
-                if (loginModal) { loginModal.classList.add('hidden'); loginModal.classList.remove('flex'); }
-                if (quickInfoModal) { quickInfoModal.classList.add('hidden'); }
-                if (studentReviewModal) { studentReviewModal.classList.add('hidden'); studentReviewModal.classList.remove('flex'); }
-                if (certModal) { certModal.classList.add('hidden'); certModal.classList.remove('flex'); }
-
-                document.getElementById('view-start').classList.remove('hidden');
-                document.getElementById('view-quiz').classList.add('hidden');
-                document.getElementById('view-result').classList.add('hidden');
-
-                let htmlContent = document.documentElement.outerHTML;
-                
-                let payload = `
-        let stagesData = ${JSON.stringify(stagesData)};
-        let gradeStatus = ${JSON.stringify(gradeStatus)};
-        let topicsData = ${JSON.stringify(topicsData)};
-        let defaultSettings = ${JSON.stringify(defaultSettings)};
-        let appSettings = ${JSON.stringify(appSettings)};
-        let paragraphs = ${JSON.stringify(paragraphs)};
-        let questionBank = ${JSON.stringify(questionBank)};
-        let quickInfoList = ${JSON.stringify(quickInfoList)};
-        let studentRecords = ${JSON.stringify(studentRecords)};
-        let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
-                `;
-                
-                let startIndex = htmlContent.indexOf('/* -- DATA_START -- */');
-                let endIndex = htmlContent.indexOf('/* -- DATA_END -- */');
-                
-                if (startIndex !== -1 && endIndex !== -1) {
-                    htmlContent = htmlContent.substring(0, startIndex + 22) + "\n" + payload + "\n        " + htmlContent.substring(endIndex);
-                }
-
-                let blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-                let url = URL.createObjectURL(blob);
-                let dlAnchorElem = document.createElement('a');
-                dlAnchorElem.setAttribute("href", url);
-                dlAnchorElem.setAttribute("download", "platform_offline_complete.html");
-                dlAnchorElem.click();
-                URL.revokeObjectURL(url);
-                alert("تم تصدير ملف المنصة الشامل بنجاح!");
-            } catch (e) {
-                alert("حدث خطأ أثناء تصدير ملف HTML: " + e.message);
-            }
-        }
-
         function exportTopicQuestionsJson() {
             const fTopic = document.getElementById('filter-q-topic').value;
             if (!fTopic) { alert("يرجى تحديد الموضوع أولاً لتصدير أسئلته."); return; }
@@ -3196,6 +3473,7 @@ function populateAdminRecFilters() {
                         alert("تم استيراد الأسئلة بنجاح!");
                     } else { alert("الملف غير متوافق."); }
                 } catch(err) { alert("خطأ في قراءة ملف JSON."); }
+                event.target.value = '';
             };
             reader.readAsText(file);
         }
@@ -3263,11 +3541,25 @@ function populateAdminRecFilters() {
             const container = document.getElementById('admin-paragraphs-list');
             if (!container) return;
             container.innerHTML = '';
-            if (paragraphs.length === 0) {
-                container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد فقرات مضافة.</p>';
+            
+            const fStage = document.getElementById('filter-para-stage') ? document.getElementById('filter-para-stage').value : "";
+            const fGrade = document.getElementById('filter-para-grade') ? document.getElementById('filter-para-grade').value : "";
+            const fTopic = document.getElementById('filter-para-topic') ? document.getElementById('filter-para-topic').value : "";
+
+            const filtered = paragraphs.filter(p => {
+                if (fStage && p.stage !== fStage) return false;
+                if (fGrade && p.grade !== fGrade) return false;
+                if (fTopic && p.topic !== fTopic) return false;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد فقرات مطابقة للتصفية.</p>';
                 return;
             }
-            paragraphs.forEach((p, idx) => {
+            
+            filtered.forEach((p) => {
+                const idx = paragraphs.indexOf(p); 
                 const isActive = p.active !== false;
                 const isTashkeel = p.tashkeel !== false;
 
@@ -3551,6 +3843,71 @@ function populateAdminRecFilters() {
             }
         }
 
+        function renderAdminQuickInfoList() {
+            const container = document.getElementById('admin-quickinfo-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const fStage = document.getElementById('filter-qi-stage') ? document.getElementById('filter-qi-stage').value : "";
+            const fGrade = document.getElementById('filter-qi-grade') ? document.getElementById('filter-qi-grade').value : "";
+            const fTopic = document.getElementById('filter-qi-topic') ? document.getElementById('filter-qi-topic').value : "";
+
+            const filtered = quickInfoList.filter(qi => {
+                if (fTopic && qi.topic !== fTopic) return false;
+                
+                if (fStage || fGrade) {
+                    let matches = false;
+                    if (qi.stage && qi.grade) {
+                        if ((!fStage || qi.stage === fStage) && (!fGrade || qi.grade === fGrade)) matches = true;
+                    }
+                    if (qi.topic) {
+                        let tMatch = topicsData.find(t => t.topic === qi.topic);
+                        if (tMatch && tMatch.targetGrades) {
+                            if (tMatch.targetGrades.some(tg => (!fStage || tg.stage === fStage) && (!fGrade || tg.grade === fGrade))) matches = true;
+                        }
+                    }
+                    if (!matches) return false;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد بطاقات معلومات مطابقة للتصفية.</p>';
+                return;
+            }
+
+            filtered.forEach((qi) => {
+                const idx = quickInfoList.indexOf(qi);
+                const isActive = qi.active !== false;
+                const isTashkeel = qi.tashkeel !== false;
+                const item = document.createElement('div');
+                item.className = "bg-white p-3.5 rounded-2xl border space-y-2 text-xs shadow-2xs";
+                item.innerHTML = `
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button type="button" onclick="toggleQuickInfoVisibility(${idx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold cursor-pointer ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}" title="تفعيل / إخفاء">
+                                ${isActive ? 'مفعلة' : 'مخفية'}
+                            </button>
+                            <button type="button" onclick="toggleQuickInfoTashkeel(${idx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold cursor-pointer ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}" title="تفعيل / إيقاف التشكيل">
+                                ${isTashkeel ? 'تشكيل مفعل' : 'بدون تشكيل'}
+                            </button>
+                            <span class="font-black text-sky-950 text-sm">${qi.title}</span>
+                            ${qi.topic ? `<span class="bg-amber-50 text-amber-800 px-2 py-0.5 rounded-md font-bold text-[11px] border border-amber-200">موضوع: ${qi.topic}</span>` : ''}
+                        </div>
+                        <div class="flex gap-1 items-center">
+                            <button type="button" onclick="moveQuickInfo(${idx}, -1)" ${idx === 0 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2 py-1 rounded text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer"'} title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button type="button" onclick="moveQuickInfo(${idx}, 1)" ${idx === quickInfoList.length - 1 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2 py-1 rounded text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer"'} title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
+                            <button type="button" onclick="previewQuickInfo(${idx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs cursor-pointer" title="عرض المعاينة"><i class="fa-solid fa-eye"></i></button>
+                            <button type="button" onclick="duplicateQuickInfo(${idx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs cursor-pointer" title="تكرار البطاقة"><i class="fa-solid fa-copy"></i></button>
+                            <button type="button" onclick="openEditQuickInfoModal(${idx})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs cursor-pointer" title="تعديل"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="deleteQuickInfo(${idx})" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs cursor-pointer" title="حذف"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
         function populateQiModalStages() {
             const sel = document.getElementById('modal-qi-stage');
             if(!sel) return;
@@ -3606,85 +3963,6 @@ function populateAdminRecFilters() {
             }
         }
 
-        function renderAdminQuickInfoList() {
-            const container = document.getElementById('admin-quickinfo-list');
-            if (!container) return;
-            container.innerHTML = '';
-            if (quickInfoList.length === 0) {
-                container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد بطاقات معلومات مضافة.</p>';
-                return;
-            }
-            quickInfoList.forEach((qi, idx) => {
-                const isActive = qi.active !== false;
-                const isTashkeel = qi.tashkeel !== false;
-                const item = document.createElement('div');
-                item.className = "bg-white p-3.5 rounded-2xl border space-y-2 text-xs shadow-2xs";
-                item.innerHTML = `
-                    <div class="flex justify-between items-center flex-wrap gap-2">
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <button type="button" onclick="toggleQuickInfoVisibility(${idx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold cursor-pointer ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}" title="تفعيل / إخفاء">
-                                ${isActive ? 'مفعلة' : 'مخفية'}
-                            </button>
-                            <button type="button" onclick="toggleQuickInfoTashkeel(${idx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold cursor-pointer ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}" title="تفعيل / إيقاف التشكيل">
-                                ${isTashkeel ? 'تشكيل مفعل' : 'بدون تشكيل'}
-                            </button>
-                            <span class="font-black text-sky-950 text-sm">${qi.title}</span>
-                            ${qi.topic ? `<span class="bg-amber-50 text-amber-800 px-2 py-0.5 rounded-md font-bold text-[11px] border border-amber-200">موضوع: ${qi.topic}</span>` : ''}
-                        </div>
-                        <div class="flex gap-1 items-center">
-                            <button type="button" onclick="moveQuickInfo(${idx}, -1)" ${idx === 0 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2 py-1 rounded text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer"'} title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
-                            <button type="button" onclick="moveQuickInfo(${idx}, 1)" ${idx === quickInfoList.length - 1 ? 'disabled class="opacity-30 bg-slate-100 text-slate-400 px-2 py-1 rounded text-xs cursor-not-allowed"' : 'class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer"'} title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
-                            <button type="button" onclick="previewQuickInfo(${idx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs cursor-pointer" title="عرض المعاينة"><i class="fa-solid fa-eye"></i></button>
-                            <button type="button" onclick="duplicateQuickInfo(${idx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs cursor-pointer" title="تكرار البطاقة"><i class="fa-solid fa-copy"></i></button>
-                            <button type="button" onclick="openEditQuickInfoModal(${idx})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs cursor-pointer" title="تعديل"><i class="fa-solid fa-pen"></i></button>
-                            <button type="button" onclick="deleteQuickInfo(${idx})" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs cursor-pointer" title="حذف"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function toggleQuickInfoVisibility(idx) {
-            quickInfoList[idx].active = quickInfoList[idx].active === false ? true : false;
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function toggleQuickInfoTashkeel(idx) {
-            quickInfoList[idx].tashkeel = quickInfoList[idx].tashkeel === false ? true : false;
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function duplicateQuickInfo(idx) {
-            let src = quickInfoList[idx];
-            let copy = JSON.parse(JSON.stringify(src));
-            copy.title = (src.title || "بطاقة") + " (نسخة)";
-            quickInfoList.push(copy);
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function moveQuickInfo(idx, direction) {
-            const targetIndex = idx + direction;
-            if (targetIndex < 0 || targetIndex >= quickInfoList.length) return;
-            let temp = quickInfoList[idx];
-            quickInfoList[idx] = quickInfoList[targetIndex];
-            quickInfoList[targetIndex] = temp;
-            saveState();
-            renderAdminQuickInfoList();
-        }
-
-        function previewQuickInfo(idx) {
-            let qi = quickInfoList[idx];
-            let contentHtml = generateQuickInfoCardHtml(qi);
-            document.getElementById('preview-card-body').innerHTML = contentHtml;
-            document.getElementById('modal-preview-card').classList.add('flex');
-            document.getElementById('modal-preview-card').classList.remove('hidden');
-        }
-
-        // ================= إضافة وظائف تحريك الأقسام والعناوين الفرعية =================
         function moveQiSectionBlock(btn, direction) {
             const block = btn.closest('.qi-section-block');
             const parent = block.parentNode;
@@ -3704,7 +3982,6 @@ function populateAdminRecFilters() {
                 parent.insertBefore(block, block.nextElementSibling.nextElementSibling);
             }
         }
-        // ==============================================================================
 
         function addQuickInfoSectionBlock(mainHeader = "", mainActive = true, subItems = []) {
             const container = document.getElementById('quickinfo-sections-builder-container');
@@ -3929,154 +4206,378 @@ function populateAdminRecFilters() {
             }
         }
 
-        function handleAdminAccess() {
-            document.getElementById('admin-login-pwd-input').value = "";
-            document.getElementById('modal-admin-login').classList.add('flex');
-            document.getElementById('modal-admin-login').classList.remove('hidden');
-        }
+        function populateAdminRecFilters() {
+            const stageSel = document.getElementById('admin-rec-stage-filter');
+            if (!stageSel) return;
+            stageSel.innerHTML = '<option value="">جميع المراحل المفعلة (عرض الكل)</option>';
 
-        function closeAdminLoginModal() {
-            document.getElementById('modal-admin-login').classList.add('hidden');
-            document.getElementById('modal-admin-login').classList.remove('flex');
-        }
+            Object.keys(stagesData).forEach(stage => {
+                const isStageActive = gradeStatus[`stage_active_${stage}`] !== false;
+                if (!isStageActive) return;
 
-        function verifyAdminPassword() {
-            const pwd = document.getElementById('admin-login-pwd-input').value.trim();
-            if (pwd === "12300123" || pwd === appSettings.adminPass) {
-                closeAdminLoginModal();
-                document.getElementById('view-admin').classList.remove('hidden');
-                document.getElementById('view-admin').classList.add('flex');
-                loadAdminData();
-            } else {
-                alert("كلمة المرور غير صحيحة!");
-            }
-        }
-
-        function exitAdmin() {
-            document.getElementById('view-admin').classList.add('hidden');
-            document.getElementById('view-admin').classList.remove('flex');
-            initApp();
-        }
-
-        function switchAdminTab(tabName) {
-            ['settings', 'stages', 'topics', 'questions', 'paragraphs', 'quickinfo', 'records'].forEach(t => {
-                const tabEl = document.getElementById(`admin-tab-${t}`);
-                const btnEl = document.getElementById(`tab-btn-${t}`);
-                if (tabEl) tabEl.classList.toggle('hidden', t !== tabName);
-                if (btnEl) btnEl.className = t === tabName ? "flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-sky-600 text-white cursor-pointer shadow" : "flex-1 min-w-[90px] py-3 rounded-xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border cursor-pointer";
+                const grades = stagesData[stage] || [];
+                const hasActiveGrade = grades.some(grade => gradeStatus[`${stage}_${grade}`] !== false);
+                if (hasActiveGrade) {
+                    let opt = document.createElement('option');
+                    opt.value = stage; opt.textContent = stage;
+                    stageSel.appendChild(opt);
+                }
             });
-            if (tabName === 'stages') renderAdminStagesList();
-            if (tabName === 'topics') renderAdminTopicsList();
-            if (tabName === 'questions') populateQuestionFilters();
-            if (tabName === 'paragraphs') renderAdminParagraphsList();
-            if (tabName === 'quickinfo') renderAdminQuickInfoList();
-            if (tabName === 'records') populateAdminRecFilters();
+            onAdminRecStageChange();
         }
 
-        function loadAdminData() {
-            document.getElementById('admin-teacher-input').value = appSettings.teacherName;
-            document.getElementById('admin-exam-title-input').value = appSettings.examTitle;
-            document.getElementById('admin-start-btn-input').value = appSettings.startBtnText || "";
-            document.getElementById('admin-branch-input').value = appSettings.branch || "";
-            document.getElementById('admin-pagetitle-input').value = appSettings.pageTitle;
-            document.getElementById('admin-quickinfo-label-input').value = appSettings.quickInfoLabel || "";
-            document.getElementById('admin-exam-count-input').value = appSettings.examCount;
-            document.getElementById('admin-exam-duration-input').value = appSettings.examDuration || 20;
-            document.getElementById('admin-expiry-date-input').value = appSettings.expiryDate || "";
-            document.getElementById('admin-footer-year-input').value = appSettings.footerYear || "2026";
-            
-            if(document.getElementById('admin-show-bank-card')) document.getElementById('admin-show-bank-card').value = (appSettings.showBankCard === false || appSettings.showBankCard === "false") ? "false" : "true";
-            if(document.getElementById('admin-bank-card-style')) document.getElementById('admin-bank-card-style').value = appSettings.bankCardStyle || "detailed";
+        function onAdminRecStageChange() {
+            const stage = document.getElementById('admin-rec-stage-filter').value;
+            const gradeSel = document.getElementById('admin-rec-grade-filter');
+            if (!gradeSel) return;
+            gradeSel.innerHTML = '<option value="">جميع الصفوف المفعلة (عرض الكل)</option>';
 
-            if(document.getElementById('admin-use-difficulty-filter')) {
-                document.getElementById('admin-use-difficulty-filter').checked = !!appSettings.useDifficultyFilter;
-                toggleDifficultySettingsView(!!appSettings.useDifficultyFilter);
+            if (stage && stagesData[stage]) {
+                stagesData[stage].forEach(grade => {
+                    const key = `${stage}_${grade}`;
+                    const isVisible = gradeStatus[key] !== false;
+                    if (isVisible) {
+                        let opt = document.createElement('option');
+                        opt.value = grade; opt.textContent = grade;
+                        gradeSel.appendChild(opt);
+                    }
+                });
             }
-            if(document.getElementById('admin-diff-selection-mode')) {
-                document.getElementById('admin-diff-selection-mode').value = appSettings.diffSelectionMode || "balanced";
-                toggleDiffModeView(appSettings.diffSelectionMode || "balanced");
-            }
-            if(document.getElementById('admin-diff-easy')) document.getElementById('admin-diff-easy').value = appSettings.diffEasyCount || 5;
-            if(document.getElementById('admin-diff-medium')) document.getElementById('admin-diff-medium').value = appSettings.diffMediumCount || 10;
-            if(document.getElementById('admin-diff-hard')) document.getElementById('admin-diff-hard').value = appSettings.diffHardCount || 3;
-            if(document.getElementById('admin-diff-vhard')) document.getElementById('admin-diff-vhard').value = appSettings.diffVeryHardCount || 2;
+            onAdminRecGradeChange();
+        }
 
-            if(document.getElementById('admin-platform-font')) document.getElementById('admin-platform-font').value = appSettings.platformFont || "IBM Plex Sans Arabic";
-            if(document.getElementById('admin-platform-theme')) document.getElementById('admin-platform-theme').value = appSettings.platformTheme || "default";
-            if(document.getElementById('admin-st-title-size')) document.getElementById('admin-st-title-size').value = appSettings.stTitleSize || "text-3xl sm:text-5xl";
-            if(document.getElementById('admin-st-title-weight')) document.getElementById('admin-st-title-weight').value = appSettings.stTitleWeight || "font-black";
-            if(document.getElementById('admin-shuffle-questions')) document.getElementById('admin-shuffle-questions').checked = appSettings.shuffleQuestions !== false;
-            if(document.getElementById('admin-shuffle-options')) document.getElementById('admin-shuffle-options').checked = appSettings.shuffleOptions !== false;
-            if(document.getElementById('admin-enable-tashkeel')) document.getElementById('admin-enable-tashkeel').checked = appSettings.enableTashkeel !== false;
+        function onAdminRecGradeChange() {
+            const stage = document.getElementById('admin-rec-stage-filter').value;
+            const grade = document.getElementById('admin-rec-grade-filter').value;
+            const topicSel = document.getElementById('admin-rec-topic-filter');
+            if (!topicSel) return;
+            topicSel.innerHTML = '<option value="">جميع الموضوعات المفعلة (عرض الكل)</option>';
 
-            document.getElementById('admin-logo-header-input').value = appSettings.logoHeader || '';
-            document.getElementById('admin-logo-right-input').value = appSettings.logoRight || '';
-            document.getElementById('admin-logo-left-input').value = appSettings.logoLeft || '';
-            document.getElementById('admin-mid-img-input-1').value = appSettings.midImg1 || '';
-            document.getElementById('admin-mid-img-input-2').value = appSettings.midImg2 || '';
-            document.getElementById('admin-bottom-img-input-right').value = appSettings.bottomImgRight || '';
-            document.getElementById('admin-bottom-img-input-left').value = appSettings.bottomImgLeft || '';
-            document.getElementById('admin-exp-label-input').value = appSettings.expLabel || '';
-            document.getElementById('admin-new-password').value = '';
+            const filteredTopics = topicsData.filter(t => {
+                if (t.active === false) return false;
+                if (stage && grade && t.targetGrades) {
+                    return t.targetGrades.some(tg => tg.stage === stage && tg.grade === grade);
+                }
+                return true;
+            });
 
-            renderAdminStagesList();
-            renderAdminTopicsList();
-            renderAdminParagraphsList();
-            renderAdminQuickInfoList();
-            populateAdminRecFilters();
-            populateQuestionFilters();
+            filteredTopics.forEach(t => {
+                let opt = document.createElement('option');
+                opt.value = t.topic; opt.textContent = t.topic;
+                topicSel.appendChild(opt);
+            });
+
+            currentRecordsPage = 1; 
             renderAdminRecordsTable();
         }
 
-        function saveAppSettings() {
-            appSettings.teacherName = document.getElementById('admin-teacher-input').value.trim() || appSettings.teacherName;
-            appSettings.examTitle = document.getElementById('admin-exam-title-input').value.trim() || appSettings.examTitle;
-            appSettings.startBtnText = document.getElementById('admin-start-btn-input').value.trim();
-            appSettings.branch = document.getElementById('admin-branch-input').value.trim();
-            appSettings.pageTitle = document.getElementById('admin-pagetitle-input').value.trim() || appSettings.pageTitle;
-            appSettings.quickInfoLabel = document.getElementById('admin-quickinfo-label-input').value.trim();
-            appSettings.examCount = parseInt(document.getElementById('admin-exam-count-input').value) || 20;
-            appSettings.examDuration = parseInt(document.getElementById('admin-exam-duration-input').value) || 20;
-            appSettings.expiryDate = document.getElementById('admin-expiry-date-input').value;
-            appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
-            
-            if(document.getElementById('admin-show-bank-card')) appSettings.showBankCard = document.getElementById('admin-show-bank-card').value === "true";
-            if(document.getElementById('admin-bank-card-style')) appSettings.bankCardStyle = document.getElementById('admin-bank-card-style').value;
+        function renderAdminRecordsTable() {
+            const tbody = document.getElementById('admin-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
 
-            if(document.getElementById('admin-use-difficulty-filter')) appSettings.useDifficultyFilter = document.getElementById('admin-use-difficulty-filter').checked;
-            if(document.getElementById('admin-diff-selection-mode')) appSettings.diffSelectionMode = document.getElementById('admin-diff-selection-mode').value;
-            if(document.getElementById('admin-diff-easy')) appSettings.diffEasyCount = parseInt(document.getElementById('admin-diff-easy').value) || 0;
-            if(document.getElementById('admin-diff-medium')) appSettings.diffMediumCount = parseInt(document.getElementById('admin-diff-medium').value) || 0;
-            if(document.getElementById('admin-diff-hard')) appSettings.diffHardCount = parseInt(document.getElementById('admin-diff-hard').value) || 0;
-            if(document.getElementById('admin-diff-vhard')) appSettings.diffVeryHardCount = parseInt(document.getElementById('admin-diff-vhard').value) || 0;
+            const fStage = document.getElementById('admin-rec-stage-filter').value;
+            const fGrade = document.getElementById('admin-rec-grade-filter').value;
+            const fTopic = document.getElementById('admin-rec-topic-filter').value;
 
-            if(document.getElementById('admin-platform-font')) appSettings.platformFont = document.getElementById('admin-platform-font').value;
-            if(document.getElementById('admin-platform-theme')) appSettings.platformTheme = document.getElementById('admin-platform-theme').value;
-            if(document.getElementById('admin-st-title-size')) appSettings.stTitleSize = document.getElementById('admin-st-title-size').value;
-            if(document.getElementById('admin-st-title-weight')) appSettings.stTitleWeight = document.getElementById('admin-st-title-weight').value;
-            if(document.getElementById('admin-shuffle-questions')) appSettings.shuffleQuestions = document.getElementById('admin-shuffle-questions').checked;
-            if(document.getElementById('admin-shuffle-options')) appSettings.shuffleOptions = document.getElementById('admin-shuffle-options').checked;
-            if(document.getElementById('admin-enable-tashkeel')) appSettings.enableTashkeel = document.getElementById('admin-enable-tashkeel').checked;
+            const filtered = studentRecords.filter(rec => {
+                if (fStage && rec.stage !== fStage) return false;
+                if (fGrade && rec.grade !== fGrade) return false;
+                if (fTopic && rec.topic !== fTopic) return false;
+                return true;
+            });
 
-            appSettings.logoHeader = document.getElementById('admin-logo-header-input').value.trim();
-            appSettings.logoRight = document.getElementById('admin-logo-right-input').value.trim();
-            appSettings.logoLeft = document.getElementById('admin-logo-left-input').value.trim();
-            appSettings.midImg1 = document.getElementById('admin-mid-img-input-1').value.trim();
-            appSettings.midImg2 = document.getElementById('admin-mid-img-input-2').value.trim();
-            appSettings.bottomImgRight = document.getElementById('admin-bottom-img-input-right').value.trim();
-            appSettings.bottomImgLeft = document.getElementById('admin-bottom-img-input-left').value.trim();
-            appSettings.expLabel = document.getElementById('admin-exp-label-input').value.trim();
-
-            let newPwd = document.getElementById('admin-new-password').value.trim();
-            if (newPwd) {
-                appSettings.adminPass = newPwd;
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500 font-bold">لا توجد سجلات مطابقة.</td></tr>';
+                document.getElementById('pagination-info').textContent = 'الصفحة 1 من 1';
+                document.getElementById('prev-page-btn').disabled = true;
+                document.getElementById('next-page-btn').disabled = true;
+                return;
             }
 
-            saveState();
-            alert("تم حفظ الإعدادات بنجاح وتطبيقها على المنصة!");
-            initApp();
+            const totalPages = Math.ceil(filtered.length / recordsPerPage) || 1;
+            if (currentRecordsPage > totalPages) currentRecordsPage = totalPages;
+            if (currentRecordsPage < 1) currentRecordsPage = 1;
+
+            const startIndex = (currentRecordsPage - 1) * recordsPerPage;
+            const endIndex = Math.min(startIndex + recordsPerPage, filtered.length);
+            
+            const pageRecords = filtered.slice(startIndex, endIndex);
+
+            pageRecords.forEach((rec, pageIdx) => {
+                const globalIdx = startIndex + pageIdx;
+                const originalIndex = studentRecords.indexOf(rec);
+                
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b text-xs";
+                tr.innerHTML = `
+                    <td class="p-3 font-black text-slate-500">${globalIdx + 1}</td>
+                    <td class="p-3 font-black text-sky-950 text-sm">${escapeHTML(rec.name)}</td>
+                    <td class="p-3 font-bold text-slate-700">${rec.stageGrade || `${rec.stage || ''} - ${rec.grade || ''} (${rec.topic || ''})`}</td>
+                    <td class="p-3"><span class="px-2.5 py-1 rounded-full font-black ${rec.status === 'ناجح' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${rec.status}</span></td>
+                    <td class="p-3 font-black text-sky-900">${rec.score} / ${rec.total} (${rec.pct}%)</td>
+                    <td class="p-3 text-slate-600 font-mono">📅 ${rec.date}<br>⏱️ ${rec.duration}</td>
+                    <td class="p-3">
+                        <div class="space-y-1">
+                            <span class="block font-bold text-slate-800">الأسئلة: ${rec.answeredCount}</span>
+                            <button type="button" onclick="openRecordDetailsModal(${originalIndex})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer shadow transition">
+                                <i class="fa-solid fa-list-check ml-1"></i> تفاصيل إجابة الطالب
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('pagination-info').textContent = `الصفحة ${currentRecordsPage} من ${totalPages}`;
+            document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1;
+            document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
         }
 
+        function changeRecordsPage(direction) {
+            currentRecordsPage += direction;
+            renderAdminRecordsTable();
+        }
+
+        function exportAllRecordsExcel() {
+            if (!studentRecords || studentRecords.length === 0) {
+                alert("لا توجد سجلات لتصديرها.");
+                return;
+            }
+            let csvContent = "\uFEFF"; 
+            csvContent += "م,اسم الطالب,المرحلة والصف والموضوع,الحالة,الدرجة,المجموع,النسبة,التاريخ,مدة الاختبار\n";
+            
+            studentRecords.forEach((r, i) => {
+                // تطبيق الحماية ومعالجة علامات التنصيص المزدوجة لمنع كسر ملف الإكسيل
+                let safeName = r.name ? String(r.name).replace(/"/g, '""') : '';
+                let safeStageGrade = r.stageGrade ? String(r.stageGrade).replace(/"/g, '""') : `${r.stage || ''} - ${r.grade || ''} (${r.topic || ''})`.replace(/"/g, '""');
+                
+                csvContent += `"${i+1}","${safeName}","${safeStageGrade}","${r.status}","${r.score}","${r.total}","${r.pct}%","${r.date}","${r.duration}"\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `سجل_نتائج_الطلاب_${new Date().toLocaleDateString('ar-EG')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function openRecordDetailsModal(recIdx) {
+            let rec = studentRecords[recIdx];
+            if (!rec || !rec.breakdown) {
+                alert("لا توجد تفاصيل مفصلة لهذا السجل.");
+                return;
+            }
+
+            let html = `
+                <div class="bg-sky-900 text-white p-6 rounded-3xl shadow-lg border-2 border-amber-400 space-y-2 mb-6">
+                    <h4 class="text-2xl font-black text-amber-300">تقرير إجابات الطالب المفصل</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-sm font-bold">
+                        <div><strong>الطالب:</strong> ${escapeHTML(rec.name)}</div>
+                        <div><strong>الاختبار:</strong> ${rec.stageGrade}</div>
+                        <div><strong>النتيجة:</strong> ${rec.score} / ${rec.total} (${rec.pct}%) - <span class="${rec.status === 'ناجح' ? 'text-emerald-400' : 'text-rose-400'}">${rec.status}</span></div>
+                    </div>
+                </div>
+                <div class="space-y-6">
+            `;
+
+            rec.breakdown.forEach(b => {
+                let badgeClass = b.isCorrect ? 'bg-emerald-50/85 border-emerald-300 text-slate-900' : 'bg-rose-50/85 border-rose-300 text-slate-900';
+                let icon = b.isCorrect ? '<i class="fa-solid fa-check text-emerald-600 ml-2 text-xl"></i>' : '<i class="fa-solid fa-xmark text-rose-600 ml-2 text-xl"></i>';
+                
+                let optsListHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">';
+                if (b.options && Array.isArray(b.options)) {
+                    b.options.forEach(opt => {
+                        let isThisCorrect = opt === b.correctAnswer;
+                        let isThisUser = opt === b.userAnswer;
+                        let optStyle = "";
+                        let optIcon = "";
+                        if (isThisCorrect) {
+                            optStyle = "bg-emerald-100 border-emerald-400 text-emerald-950 font-black shadow-sm";
+                            optIcon = '<span class="text-emerald-800 font-extrabold block text-xs mt-1.5">(✓ الإجابة الصحيحة)</span>';
+                        } else if (isThisUser && !b.isCorrect) {
+                            optStyle = "bg-rose-100 border-rose-400 text-rose-950 font-black shadow-sm";
+                            optIcon = '<span class="text-rose-800 font-extrabold block text-xs mt-1.5">(✗ إجابة الطالب الخاطئة)</span>';
+                        } else {
+                            optStyle = "bg-white text-slate-800 font-semibold";
+                        }
+                        optsListHtml += `<div class="p-3.5 rounded-xl border-2 text-sm sm:text-base flex flex-col justify-between ${optStyle}"><span class="leading-relaxed">• ${opt}</span>${optIcon}</div>`;
+                    });
+                }
+                optsListHtml += '</div>';
+
+                html += `
+                    <div class="bg-white p-6 rounded-3xl border-3 ${badgeClass} space-y-3 shadow-md">
+                        <p class="font-black text-base sm:text-lg flex items-center border-b pb-2 text-sky-950">
+                            ${icon} س${b.qIndex}: ${b.qText}
+                        </p>
+                        ${optsListHtml}
+                        ${b.explanation ? `<div class="p-4 bg-sky-50 rounded-2xl border-2 border-sky-200 text-sm sm:text-base text-sky-950 font-bold leading-loose"><strong><i class="fa-solid fa-lightbulb text-amber-500 ml-1 text-lg"></i> التعليل والشرح:</strong> ${b.explanation}</div>` : ''}
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            document.getElementById('record-details-body').innerHTML = html;
+            document.getElementById('modal-record-details').classList.add('flex');
+            document.getElementById('modal-record-details').classList.remove('hidden');
+        }
+
+        function exportStudentDetailsImage() {
+            const printArea = document.getElementById('record-details-printable-area');
+            if (!printArea) return;
+            html2canvas(printArea).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'student_exam_details.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        function clearRecords() {
+            if (confirm("هل أنت متأكد من مسح جميع سجلات النتائج؟")) {
+                studentRecords = [];
+                saveState();
+                renderAdminRecordsTable();
+            }
+        }
+
+        function exportFullSystemJson() {
+            let systemData = {
+                stagesData,
+                gradeStatus,
+                topicsData,
+                appSettings,
+                questionBank,
+                paragraphs,
+                qiList: quickInfoList,
+                studentRecords
+            };
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(systemData, null, 2));
+            let dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "platform_full_backup.json");
+            dlAnchorElem.click();
+        }
+
+        function importFullSystemJsonFile(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let imported = JSON.parse(e.target.result);
+                    if (imported && typeof imported === 'object') {
+                        if (imported.stagesData) stagesData = imported.stagesData;
+                        if (imported.gradeStatus) gradeStatus = imported.gradeStatus;
+                        if (imported.topicsData) topicsData = imported.topicsData;
+                        if (imported.appSettings) appSettings = { ...defaultSettings, ...imported.appSettings };
+                        if (imported.questionBank) questionBank = imported.questionBank;
+                        if (imported.paragraphs) paragraphs = imported.paragraphs;
+                        if (imported.qiList) quickInfoList = imported.qiList;
+                        if (imported.studentRecords) studentRecords = imported.studentRecords;
+                        saveState();
+                        initApp();
+                        alert("تم استيراد كافة إعدادات وقاعدة بيانات المنصة بنجاح!");
+                    } else { alert("الملف غير متوافق."); }
+                } catch(err) { alert("خطأ في قراءة ملف JSON الخاص بالنظام."); }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportOfflineHtmlFile() {
+            try {
+                const adminModal = document.getElementById('view-admin');
+                const loginModal = document.getElementById('modal-admin-login');
+                const quickInfoModal = document.getElementById('view-quick-info');
+                const studentReviewModal = document.getElementById('modal-student-review');
+                const certModal = document.getElementById('modal-cert');
+                
+                if (adminModal) { adminModal.classList.add('hidden'); adminModal.classList.remove('flex'); }
+                if (loginModal) { loginModal.classList.add('hidden'); loginModal.classList.remove('flex'); }
+                if (quickInfoModal) { quickInfoModal.classList.add('hidden'); }
+                if (studentReviewModal) { studentReviewModal.classList.add('hidden'); studentReviewModal.classList.remove('flex'); }
+                if (certModal) { certModal.classList.add('hidden'); certModal.classList.remove('flex'); }
+
+                document.getElementById('view-start').classList.remove('hidden');
+                document.getElementById('view-quiz').classList.add('hidden');
+                document.getElementById('view-result').classList.add('hidden');
+
+                let htmlContent = document.documentElement.outerHTML;
+                
+                let payload = `
+        let stagesData = ${JSON.stringify(stagesData)};
+        let gradeStatus = ${JSON.stringify(gradeStatus)};
+        let topicsData = ${JSON.stringify(topicsData)};
+        let defaultSettings = ${JSON.stringify(defaultSettings)};
+        let appSettings = ${JSON.stringify(appSettings)};
+        let paragraphs = ${JSON.stringify(paragraphs)};
+        let questionBank = ${JSON.stringify(questionBank)};
+        let quickInfoList = ${JSON.stringify(quickInfoList)};
+        let studentRecords = ${JSON.stringify(studentRecords)};
+        let quizState = { name: "", stage: "", grade: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
+                `;
+                
+                let startIndex = htmlContent.indexOf('/* -- DATA_START -- */');
+                let endIndex = htmlContent.indexOf('/* -- DATA_END -- */');
+                
+                if (startIndex !== -1 && endIndex !== -1) {
+                    htmlContent = htmlContent.substring(0, startIndex + 22) + "\n" + payload + "\n        " + htmlContent.substring(endIndex);
+                }
+
+                let blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                let url = URL.createObjectURL(blob);
+                let dlAnchorElem = document.createElement('a');
+                dlAnchorElem.setAttribute("href", url);
+                dlAnchorElem.setAttribute("download", "platform_offline_complete.html");
+                dlAnchorElem.click();
+                URL.revokeObjectURL(url);
+                alert("تم تصدير ملف المنصة الشامل بنجاح!");
+            } catch (e) {
+                alert("حدث خطأ أثناء تصدير ملف HTML: " + e.message);
+            }
+        }
+function toggleQuickInfoVisibility(idx) {
+            quickInfoList[idx].active = quickInfoList[idx].active === false ? true : false;
+            saveState();
+            renderAdminQuickInfoList();
+        }
+
+        function toggleQuickInfoTashkeel(idx) {
+            quickInfoList[idx].tashkeel = quickInfoList[idx].tashkeel === false ? true : false;
+            saveState();
+            renderAdminQuickInfoList();
+        }
+
+        function duplicateQuickInfo(idx) {
+            let src = quickInfoList[idx];
+            let copy = JSON.parse(JSON.stringify(src));
+            copy.title = (src.title || "بطاقة") + " (نسخة)";
+            quickInfoList.push(copy);
+            saveState();
+            renderAdminQuickInfoList();
+        }
+
+        function moveQuickInfo(idx, direction) {
+            const targetIndex = idx + direction;
+            if (targetIndex < 0 || targetIndex >= quickInfoList.length) return;
+            let temp = quickInfoList[idx];
+            quickInfoList[idx] = quickInfoList[targetIndex];
+            quickInfoList[targetIndex] = temp;
+            saveState();
+            renderAdminQuickInfoList();
+        }
+
+        function previewQuickInfo(idx) {
+            let qi = quickInfoList[idx];
+            let contentHtml = generateQuickInfoCardHtml(qi);
+            document.getElementById('preview-card-body').innerHTML = contentHtml;
+            document.getElementById('modal-preview-card').classList.add('flex');
+            document.getElementById('modal-preview-card').classList.remove('hidden');
+        }
         window.addEventListener('DOMContentLoaded', loadDataFromCloud);
     </script>
 </body>
