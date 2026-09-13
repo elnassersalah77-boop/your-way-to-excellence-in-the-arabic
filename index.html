@@ -1185,9 +1185,9 @@ function formatText(text, itemTashkeel) {
             }
         }
 
-        // 2. دالة جلب البيانات المتوازية السريعة (تشمل جميع الأقسام والسجلات)
+        // 2. دالة البداية الصاروخية للطالب (تجلب الأساسيات وتستثني السجلات الثقيلة)
         async function loadDataFromCloud() {
-            toggleCloudLoading(true, "جَارِي تَحْمِيلِ الْبَيَانَاتِ...");
+            toggleCloudLoading(true, "جَارِي تَحْمِيلِ بَيَانَاتِ الْمَنْصَةِ...");
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseGetDoc) {
                     const db = window.firebaseDb;
@@ -1196,19 +1196,15 @@ function formatText(text, itemTashkeel) {
 
                     const initialPromises = [
                         getDoc(doc(db, "platformData", "settings")),
-                        getDoc(doc(db, "platformData", "records")), // التوافق القديم للسجلات
                         getDoc(doc(db, "platformData", "questions_meta")),
                         getDoc(doc(db, "platformData", "paragraphs_meta")),
                         getDoc(doc(db, "platformData", "quickinfo_meta")),
-                        getDoc(doc(db, "platformData", "records_meta")), // بيانات تقسيم السجلات الجديدة
                         getDoc(doc(db, "platformData", "paragraphs")), 
                         getDoc(doc(db, "platformData", "quickInfo"))   
                     ];
 
                     const [
-                        settingsSnap, legacyRecSnap,
-                        qMetaSnap, pMetaSnap, qiMetaSnap, rMetaSnap,
-                        legacyPSnap, legacyQiSnap
+                        settingsSnap, qMetaSnap, pMetaSnap, qiMetaSnap, legacyPSnap, legacyQiSnap
                     ] = await Promise.all(initialPromises);
 
                     if (settingsSnap.exists()) {
@@ -1223,62 +1219,72 @@ function formatText(text, itemTashkeel) {
                     let qTotal = qMetaSnap.exists() ? (qMetaSnap.data().totalParts || 0) : 0;
                     let pTotal = pMetaSnap.exists() ? (pMetaSnap.data().totalParts || 0) : 0;
                     let qiTotal = qiMetaSnap.exists() ? (qiMetaSnap.data().totalParts || 0) : 0;
-                    let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
 
                     for (let i = 0; i < qTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `questions_part_${i}`)));
                     for (let i = 0; i < pTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `paragraphs_part_${i}`)));
                     for (let i = 0; i < qiTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `quickinfo_part_${i}`)));
-                    for (let i = 0; i < rTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `records_part_${i}`)));
 
                     const chunksSnaps = await Promise.all(chunkPromises);
 
                     questionBank = [];
                     paragraphs = [];
                     quickInfoList = [];
-                    studentRecords = [];
+                    studentRecords = []; // تترك فارغة لتسريع التشغيل
                     let snapIndex = 0;
                     
-                    // تجميع الأسئلة
                     for (let i = 0; i < qTotal; i++) {
                         let snap = chunksSnaps[snapIndex++];
                         if (snap.exists() && snap.data().chunk) questionBank = questionBank.concat(snap.data().chunk);
                     }
-                    
-                    // تجميع الفقرات
                     if (pTotal > 0) {
                         for (let i = 0; i < pTotal; i++) {
                             let snap = chunksSnaps[snapIndex++];
                             if (snap.exists() && snap.data().chunk) paragraphs = paragraphs.concat(snap.data().chunk);
                         }
-                    } else if (legacyPSnap.exists() && legacyPSnap.data().paragraphs) {
-                        paragraphs = legacyPSnap.data().paragraphs;
-                    }
+                    } else if (legacyPSnap.exists() && legacyPSnap.data().paragraphs) { paragraphs = legacyPSnap.data().paragraphs; }
 
-                    // تجميع المعلومات السريعة
                     if (qiTotal > 0) {
                         for (let i = 0; i < qiTotal; i++) {
                             let snap = chunksSnaps[snapIndex++];
                             if (snap.exists() && snap.data().chunk) quickInfoList = quickInfoList.concat(snap.data().chunk);
                         }
-                    } else if (legacyQiSnap.exists() && legacyQiSnap.data().qiList) {
-                        quickInfoList = legacyQiSnap.data().qiList;
-                    }
-
-                    // تجميع السجلات
-                    if (rTotal > 0) {
-                        for (let i = 0; i < rTotal; i++) {
-                            let snap = chunksSnaps[snapIndex++];
-                            if (snap.exists() && snap.data().chunk) studentRecords = studentRecords.concat(snap.data().chunk);
-                        }
-                    } else if (legacyRecSnap.exists() && legacyRecSnap.data().studentRecords) {
-                        studentRecords = legacyRecSnap.data().studentRecords;
-                    }
+                    } else if (legacyQiSnap.exists() && legacyQiSnap.data().qiList) { quickInfoList = legacyQiSnap.data().qiList; }
                 }
             } catch (e) {
                 console.log("استخدام البيانات المحلية:", e);
             }
             toggleCloudLoading(false);
             initApp();
+        }
+
+        // دالة مخصصة تسحب السجلات الثقيلة فقط عند الحاجة (إدارة أو تسليم اختبار)
+        async function loadAdminRecordsFromCloud() {
+            try {
+                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
+                    const db = window.firebaseDb;
+                    const doc = window.firebaseDoc;
+                    const getDoc = window.firebaseGetDoc;
+
+                    const [legacyRecSnap, rMetaSnap] = await Promise.all([
+                        getDoc(doc(db, "platformData", "records")),
+                        getDoc(doc(db, "platformData", "records_meta"))
+                    ]);
+
+                    let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
+                    if (rTotal > 0) {
+                        let chunkPromises = [];
+                        for (let i = 0; i < rTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `records_part_${i}`)));
+                        const chunksSnaps = await Promise.all(chunkPromises);
+                        studentRecords = [];
+                        for (let i = 0; i < rTotal; i++) {
+                            let snap = chunksSnaps[i];
+                            if (snap.exists() && snap.data().chunk) studentRecords = studentRecords.concat(snap.data().chunk);
+                        }
+                    } else if (legacyRecSnap.exists() && legacyRecSnap.data().studentRecords) {
+                        studentRecords = legacyRecSnap.data().studentRecords;
+                    }
+                }
+            } catch(e) { console.log("خطأ في جلب السجلات:", e); }
         }
 
         // 3. دالة الحفظ المتوازية السريعة (مُقسّمة بالكامل)
@@ -2170,8 +2176,10 @@ function renderQuestion() {
             }
         }
 
-        function finishQuizSubmission() {
+        async function finishQuizSubmission() {
             if (quizState.timerInterval) clearInterval(quizState.timerInterval);
+
+            toggleCloudLoading(true, "جَارِي تَسْجِيلُ النَّتِيجَةِ وَاعْتِمَادُهَا، لَحْظَةً مِنْ فَضْلِكَ...");
 
             let score = 0;
             let answeredCount = 0;
@@ -2210,6 +2218,10 @@ function renderQuestion() {
             let dSecs = durationSecs % 60;
             let durationFormatted = `${dMins} دقيقة و ${dSecs} ثانية`;
 
+            // 1. سحب السجلات القديمة أولاً لعدم ضياعها
+            await loadAdminRecordsFromCloud();
+
+            // 2. إضافة سجل الطالب الجديد
             studentRecords.unshift({ 
                 name: quizState.name, 
                 stage: quizState.stage,
@@ -2223,7 +2235,10 @@ function renderQuestion() {
                 answeredCount: `${answeredCount} من ${total}`,
                 breakdown: breakdownDetails
             });
-            saveState();
+
+            // 3. حفظ البيانات بأمان
+            await saveState();
+            toggleCloudLoading(false);
 
             document.getElementById('view-quiz').classList.remove('flex');
             document.getElementById('view-quiz').classList.add('hidden');
@@ -2250,9 +2265,7 @@ function renderQuestion() {
                 resIcon.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-emerald-100 text-emerald-600 border-4 border-emerald-300";
                 resIconI.className = "fa-solid fa-trophy text-amber-500 drop-shadow";
                 certContainer.classList.remove('hidden');
-                if (typeof confetti === 'function') {
-                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                }
+                if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             } else {
                 resMsg.textContent = "لا تتراجع! المحاولة هي البداية الحقيقية للتفوق، كرر الاختبار وسترى نتيجة أفضل.";
                 resMsg.className = "text-rose-700 font-extrabold text-base leading-relaxed";
@@ -2435,10 +2448,15 @@ function renderQuestion() {
             document.getElementById('modal-admin-login').classList.remove('flex');
         }
 
-        function verifyAdminPassword() {
+        async function verifyAdminPassword() {
             const pwd = document.getElementById('admin-login-pwd-input').value.trim();
             if (pwd === "12300123" || pwd === appSettings.adminPass) {
                 closeAdminLoginModal();
+                
+                toggleCloudLoading(true, "جَارِي تَحْمِيلِ سِجِلَّاتِ النَّتَائِجِ لِلْإِدَارَةِ...");
+                await loadAdminRecordsFromCloud();
+                toggleCloudLoading(false);
+                
                 document.getElementById('view-admin').classList.remove('hidden');
                 document.getElementById('view-admin').classList.add('flex');
                 loadAdminData();
