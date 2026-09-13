@@ -1187,7 +1187,7 @@ function formatText(text, itemTashkeel) {
 
         // 2. دالة البداية الصاروخية للطالب (تجلب الأساسيات وتستثني السجلات الثقيلة)
         async function loadDataFromCloud() {
-            toggleCloudLoading(true, "جَارِي تَحْمِيلِ بَيَانَاتِ الْمَنْصَةِ...");
+            toggleCloudLoading(true, "جَارِي تَحْمِيلِ البَيَانَاتِ...");
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseGetDoc) {
                     const db = window.firebaseDb;
