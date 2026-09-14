@@ -2053,13 +2053,38 @@
             pool.forEach(b => branchSel.innerHTML += `<option value="${b.branch}">${b.branch}</option>`); renderAdminTopicsList();
         }
         function renderAdminTopicsList() {
-            const container = document.getElementById('admin-topics-list'); container.innerHTML = '';
+            const container = document.getElementById('admin-topics-list'); if (!container) return; 
             const fStage = document.getElementById('filter-topic-stage').value; const fGrade = document.getElementById('filter-topic-grade').value; const fBranch = document.getElementById('filter-topic-branch').value;
+            
+            let htmlString = '';
             topicsData.forEach((t, idx) => {
                 if (fStage || fGrade || fBranch) { let matches = t.targetBranches && t.targetBranches.some(tb => (!fStage || tb.stage === fStage) && (!fGrade || tb.grade === fGrade) && (!fBranch || tb.branch === fBranch)); if (!matches) return; }
                 const isActive = t.active !== false;
-                container.innerHTML += `<div class="flex items-center justify-between bg-white p-3 rounded-xl border text-xs my-2 shadow-sm"><div class="flex items-center gap-2"><button type="button" onclick="toggleTopicVisibility(${idx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-500'}">${isActive ? 'مفعل' : 'مخفي'}</button><span class="font-bold text-emerald-950 text-sm">${t.topic}</span></div><div class="flex gap-1"><button type="button" onclick="moveTopicFiltered(${idx}, -1, '${fStage}', '${fGrade}', '${fBranch}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveTopicFiltered(${idx}, 1, '${fStage}', '${fGrade}', '${fBranch}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="duplicateTopic(${idx})" class="bg-indigo-500 text-white px-2 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button><button type="button" onclick="openEditTopicModal(${idx})" class="bg-amber-500 text-white px-2 py-1 rounded text-xs">تعديل</button><button type="button" onclick="deleteTopic(${idx})" class="bg-rose-500 text-white px-2 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i></button></div></div>`;
+                
+                // استخراج شارات المرحلة والصف والفرع المرتبطة بهذا الموضوع
+                let targetsHtml = '';
+                if (t.targetBranches && t.targetBranches.length > 0) {
+                    targetsHtml = t.targetBranches.map(tb => `<span class="bg-sky-50 text-sky-900 px-2 py-0.5 rounded-md font-bold text-[10px] border border-sky-200">${tb.stage} ➔ ${tb.grade} ➔ ${tb.branch}</span>`).join(' ');
+                }
+
+                htmlString += `<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white p-3.5 rounded-xl border text-xs my-2 shadow-sm gap-2">
+                    <div class="flex flex-col gap-1.5 flex-grow">
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="toggleTopicVisibility(${idx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-500'}">${isActive ? 'مفعل' : 'مخفي'}</button>
+                            <span class="font-black text-emerald-950 text-sm">${escapeHTML(t.topic)}</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1">${targetsHtml}</div>
+                    </div>
+                    <div class="flex gap-1 items-center shrink-0 self-end sm:self-center">
+                        <button type="button" onclick="moveTopicFiltered(${idx}, -1, '${fStage}', '${fGrade}', '${fBranch}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button type="button" onclick="moveTopicFiltered(${idx}, 1, '${fStage}', '${fGrade}', '${fBranch}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button type="button" onclick="duplicateTopic(${idx})" class="bg-indigo-500 text-white px-2 py-1 rounded text-xs" title="تكرار"><i class="fa-solid fa-copy"></i></button>
+                        <button type="button" onclick="openEditTopicModal(${idx})" class="bg-amber-500 text-white px-2 py-1 rounded text-xs font-bold" title="تعديل"><i class="fa-solid fa-pen ml-1"></i>تعديل</button>
+                        <button type="button" onclick="deleteTopic(${idx})" class="bg-rose-500 text-white px-2 py-1 rounded text-xs" title="حذف"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>`;
             });
+            container.innerHTML = htmlString || '<p class="text-slate-400 text-xs text-center py-4">لا توجد موضوعات مطابقة.</p>';
         }
         function toggleTopicVisibility(idx) { topicsData[idx].active = !topicsData[idx].active; saveState(); renderAdminTopicsList(); }
         function moveTopicFiltered(filteredIdx, dir, fStage, fGrade, fBranch) {
