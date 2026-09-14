@@ -1186,7 +1186,7 @@
 
         // ================== CLOUD SYNC & LAZY LOADING ==================
         async function loadDataFromCloud() {
-            toggleCloudLoading(true, "جَارِي تَحْمِيلِ بَيَانَاتِ الْمَنْصَةِ...");
+            toggleCloudLoading(true, "جَارِي تَحْمِيلِ البَيَانَاتِ...");
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseGetDoc) {
                     const db = window.firebaseDb; const doc = window.firebaseDoc; const getDoc = window.firebaseGetDoc;
