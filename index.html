@@ -104,7 +104,12 @@
         }
         body.dark-mode .text-slate-800, body.dark-mode .text-slate-900, body.dark-mode .text-slate-700, body.dark-mode .text-slate-600, body.dark-mode .text-sky-950, body.dark-mode .text-sky-900 { color: #ffffff !important; }
         body.dark-mode input, body.dark-mode textarea, body.dark-mode select { background-color: #020617 !important; color: #ffffff !important; border-color: #334155 !important; }
-
+/* تكبير وتثخين خطوط القوائم المنسدلة و الخيارات بداخلها */
+select, select option {
+    font-size: 1.35rem !important;
+    font-weight: 900 !important;
+    padding: 0.5rem !important;
+}
         @keyframes modalSlideIn {
             from { opacity: 0; transform: translateY(25px) scale(0.97); }
             to { opacity: 1; transform: translateY(0) scale(1); }
@@ -183,11 +188,11 @@
                 
                 <!-- التحديث المتسلسل الذكي: المرحلة ➔ الصف ➔ الفرع (إن وجد) ➔ الموضوع -->
                 <div class="mx-auto flex flex-col sm:flex-row flex-wrap gap-3 justify-center items-center">
-                    <select id="start-stage-select" onchange="onStageChange()" class="bg-sky-100 text-sky-950 px-5 py-3.5 rounded-2xl border-2 border-sky-400 cursor-pointer focus:outline-none shadow-md text-base sm:text-lg font-black transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر المرحلة</option></select>
-                    <select id="start-grade-select" onchange="onGradeChange()" class="bg-amber-100 text-amber-950 px-5 py-3.5 rounded-2xl border-2 border-amber-400 cursor-pointer focus:outline-none shadow-md text-base sm:text-lg font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الصف</option></select>
-                    <select id="start-branch-select" onchange="onBranchChange()" class="bg-indigo-100 text-indigo-950 px-5 py-3.5 rounded-2xl border-2 border-indigo-400 cursor-pointer focus:outline-none shadow-md text-base sm:text-lg font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الفرع</option></select>
-                    <select id="start-topic-select" onchange="onTopicChange()" class="bg-emerald-100 text-emerald-950 px-5 py-3.5 rounded-2xl border-2 border-emerald-400 cursor-pointer focus:outline-none shadow-md text-base sm:text-lg font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الموضوع</option></select>
-                </div>
+    <select id="start-stage-select" onchange="onStageChange()" class="bg-sky-100 text-sky-950 px-5 py-4 rounded-2xl border-3 border-sky-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر المرحلة</option></select>
+    <select id="start-grade-select" onchange="onGradeChange()" class="bg-amber-100 text-amber-950 px-5 py-4 rounded-2xl border-3 border-amber-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الصف</option></select>
+    <select id="start-branch-select" onchange="onBranchChange()" class="bg-indigo-100 text-indigo-950 px-5 py-4 rounded-2xl border-3 border-indigo-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الفرع</option></select>
+    <select id="start-topic-select" onchange="onTopicChange()" class="bg-emerald-100 text-emerald-950 px-5 py-4 rounded-2xl border-3 border-emerald-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الموضوع</option></select>
+</div>
 
                 <div id="start-logo-left-container" class="hidden"><img id="start-logo-left" src="" alt="" class="h-16 w-auto object-contain"></div>
             </div>
@@ -1792,6 +1797,34 @@
                 toggleCloudLoading(false);
             }
         }
+// دالة حفظ سجلات الطلاب في الخلفية بصمت تام بدون أي شاشات تحميل
+        async function saveStudentRecordsBackground() {
+            try {
+                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+                    const db = window.firebaseDb; 
+                    if (!window._cloudCache) window._cloudCache = {};
+                    
+                    let tasks = [];
+                    const addTask = (id, data) => {
+                        const str = JSON.stringify(data);
+                        if (window._cloudCache[id] !== str) tasks.push({ id, data, str });
+                    };
+
+                    const rChunkSize = 300; let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
+                    for (let i = 0; i < rTotalParts; i++) addTask(`records_part_${i}`, { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) });
+                    addTask("records_meta", { totalParts: rTotalParts });
+
+                    if (tasks.length === 0) return; // لا يوجد جديد للرفع
+
+                    for (let task of tasks) {
+                        await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
+                        window._cloudCache[task.id] = task.str; 
+                    }
+                }
+            } catch (e) {
+                console.log("حفظ السجلات خلفياً:", e);
+            }
+        }
 
         // ================== QUICK INFO FRONTEND RENDER ==================
         function openQuickInfo() {
@@ -1819,8 +1852,8 @@
             let mainImgHtml = qi.img ? `<div class="my-5 text-center"><img src="${qi.img}" class="max-h-80 rounded-2xl mx-auto object-contain border-2 shadow-md"></div>` : '';
             let attachmentsHtml = '';
             if (qi.attachments && qi.attachments.length > 0) {
-                let btns = qi.attachments.map(att => `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2 text-xs"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${formatText(att.label || 'اطّلع على', qi.tashkeel)}</a>`).join('');
-                attachmentsHtml = `<div class="flex flex-wrap gap-2 pt-1 pb-2">${btns}</div>`;
+                let btns = qi.attachments.map(att => `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-5 py-3 rounded-xl shadow transition flex items-center gap-2 text-sm sm:text-base"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${formatText(att.label || 'اطّلع على', qi.tashkeel)}</a>`).join('');
+                attachmentsHtml = `<div class="flex flex-wrap gap-3 pt-2 pb-3">${btns}</div>`;
             }
             let sectionsHtml = '';
             if (qi.sections) {
@@ -1831,15 +1864,18 @@
                         sec.subItems.forEach(sub => {
                             if (sub.active === false) return;
                             let subImgHtml = sub.img ? `<div class="my-4 text-center"><img src="${sub.img}" class="max-h-60 rounded-2xl mx-auto object-contain border-2"></div>` : '';
-                            subItemsHtml += `<div class="bg-white p-5 rounded-2xl border-2 space-y-3 mt-3 shadow-sm">${sub.title ? `<h5 class="font-black text-sky-950 text-lg">${formatText(sub.title, qi.tashkeel)}</h5>` : ''}${subImgHtml}<p class="text-slate-800 text-base whitespace-pre-line font-semibold">${formatText(sub.text || '', qi.tashkeel)}</p></div>`;
+                            // تم تكبير حجم الشرح هنا إلى text-lg sm:text-xl لراحة القراءة
+                            subItemsHtml += `<div class="bg-white p-6 rounded-2xl border-2 space-y-4 mt-4 shadow-sm">${sub.title ? `<h5 class="font-black text-sky-950 text-xl sm:text-2xl">${formatText(sub.title, qi.tashkeel)}</h5>` : ''}${subImgHtml}<p class="text-slate-900 text-lg sm:text-xl leading-relaxed whitespace-pre-line font-bold">${formatText(sub.text || '', qi.tashkeel)}</p></div>`;
                         });
                     }
                     if (subItemsHtml || sec.mainHeader) {
-                        sectionsHtml += `<div class="bg-amber-50/70 p-5 rounded-3xl border-3 border-amber-300 space-y-4 shadow-sm">${sec.mainHeader ? `<h4 class="font-black text-amber-950 text-xl border-b-2 border-amber-300 pb-3"><i class="fa-solid fa-bookmark text-amber-600 ml-2"></i>${formatText(sec.mainHeader, qi.tashkeel)}</h4>` : ''}<div class="space-y-4">${subItemsHtml}</div></div>`;
+                        // تم تكبير العناوين الرئيسية للأقسام
+                        sectionsHtml += `<div class="bg-amber-50/70 p-6 rounded-3xl border-3 border-amber-300 space-y-5 shadow-sm">${sec.mainHeader ? `<h4 class="font-black text-amber-950 text-2xl sm:text-3xl border-b-2 border-amber-300 pb-3"><i class="fa-solid fa-bookmark text-amber-600 ml-2"></i>${formatText(sec.mainHeader, qi.tashkeel)}</h4>` : ''}<div class="space-y-5">${subItemsHtml}</div></div>`;
                     }
                 });
             }
-            return `<div class="bg-white p-6 rounded-3xl border-3 border-sky-200 space-y-5 shadow-lg"><h3 class="font-black text-sky-950 text-2xl border-b-4 border-amber-500 pb-3">${formatText(qi.title, qi.tashkeel)}</h3>${attachmentsHtml}${mainImgHtml}<div class="space-y-6">${sectionsHtml}</div></div>`;
+            // تم تكبير عنوان البطاقة الرئيسي إلى text-2xl sm:text-3xl
+            return `<div class="bg-white p-8 rounded-3xl border-3 border-sky-200 space-y-6 shadow-lg"><h3 class="font-black text-sky-950 text-2xl sm:text-3xl border-b-4 border-amber-500 pb-4">${formatText(qi.title, qi.tashkeel)}</h3>${attachmentsHtml}${mainImgHtml}<div class="space-y-6">${sectionsHtml}</div></div>`;
         }
 
         // ================== CASCADING DROPDOWNS & SMART SKIP ==================
@@ -2407,7 +2443,10 @@
                 document.getElementById('cert-btn-container').classList.add('hidden'); 
             }
 
-            saveState().catch(e => console.log("التحديث السحابي في الخلفية:", e));
+           // حفظ سجل الطالب في الخلفية بصمت مطبق ودون إظهار أي رسائل للطالب
+setTimeout(() => {
+    saveStudentRecordsBackground();
+}, 10);
         }
 
         function openCertModal() {
@@ -2443,7 +2482,8 @@
                 let isAnswered = userAns !== null && userAns !== undefined && userAns !== "";
                 let isCorrect = isAnswered && userAns === q.ans;
                 
-                let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">';
+                // تم تكبير حجم خيارات الإجابة وزيادة وضوحها لراحة الطالب
+                let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4">';
                 q.opts.forEach(opt => {
                     let isThisCorrect = opt === q.ans; 
                     let isThisUser = opt === userAns; 
@@ -2452,24 +2492,25 @@
                     
                     if (isThisCorrect) { 
                         optStyle = "bg-emerald-100 border-emerald-400"; 
-                        optBadge = '<span class="text-emerald-800 text-xs mt-2 block font-bold">✓ الإجابة الصحيحة</span>'; 
+                        optBadge = '<span class="text-emerald-800 text-sm mt-2 block font-extrabold">✓ الإجابة الصحيحة</span>'; 
                     } else if (isThisUser && !isCorrect) { 
                         optStyle = "bg-rose-100 border-rose-400"; 
-                        optBadge = '<span class="text-rose-800 text-xs mt-2 block font-bold">✗ إجابتك الخاطئة</span>'; 
+                        optBadge = '<span class="text-rose-800 text-sm mt-2 block font-extrabold">✗ إجابتك الخاطئة</span>'; 
                     }
-                    optsHtml += `<div class="p-4 rounded-2xl border-2 ${optStyle} font-bold">• ${formatText(opt, q.tashkeel)}${optBadge}</div>`;
+                    optsHtml += `<div class="p-5 rounded-2xl border-2 ${optStyle} text-base sm:text-lg font-bold">• ${formatText(opt, q.tashkeel)}${optBadge}</div>`;
                 });
                 optsHtml += '</div>';
                 
-                let statusBadge = isAnswered ? (isCorrect ? '<span class="text-emerald-600 font-black">صحيحة ✓</span>' : '<span class="text-rose-600 font-black">خاطئة ✗</span>') : '<span class="text-amber-600 font-black">لم يجب عليها</span>';
+                let statusBadge = isAnswered ? (isCorrect ? '<span class="text-emerald-600 font-black text-base">صحيحة ✓</span>' : '<span class="text-rose-600 font-black text-base">خاطئة ✗</span>') : '<span class="text-amber-600 font-black text-base">لم يجب عليها</span>';
 
-                html += `<div class="bg-white p-6 rounded-3xl border-3 shadow-lg space-y-3">
-                    <div class="flex justify-between items-center border-b pb-2">
-                        <h4 class="font-black text-lg text-sky-950">س${idx+1}: ${formatText(q.q, q.tashkeel)}</h4>
+                // تم تكبير نص السؤال إلى text-xl sm:text-2xl وتكبير التعليل والشرح
+                html += `<div class="bg-white p-8 rounded-3xl border-3 shadow-lg space-y-4">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <h4 class="font-black text-xl sm:text-2xl text-sky-950">س${idx+1}: ${formatText(q.q, q.tashkeel)}</h4>
                         <span>${statusBadge}</span>
                     </div>
                     ${optsHtml}
-                    ${q.exp ? `<div class="p-4 bg-sky-50 rounded-2xl border text-xs sm:text-sm text-sky-950 font-bold"><strong>التعليل والشرح:</strong> ${formatText(q.exp, q.tashkeel)}</div>` : ''}
+                    ${q.exp ? `<div class="p-5 bg-sky-50 rounded-2xl border-2 border-sky-200 text-base sm:text-lg text-sky-950 font-bold leading-relaxed"><strong>التعليل والشرح:</strong> ${formatText(q.exp, q.tashkeel)}</div>` : ''}
                 </div>`;
             });
             html += '</div>'; 
@@ -3505,7 +3546,6 @@
         let currentAdminPrintIndex = -1;
 
         function openRecordDetailsModal(originalIndex) {
-            // حفظ رقم الطالب لكي نستخدمه عند طباعة الـ PDF
             currentAdminPrintIndex = originalIndex;
             
             const rec = studentRecords[originalIndex];
@@ -3518,42 +3558,45 @@
             rec.breakdown.forEach(b => { if (b.userAnswer !== "لم يجب") actualAnswered++; });
             let finalAnsweredCount = rec.answeredCount || `${actualAnswered} من ${rec.total}`;
 
-            let html = `<div class="bg-sky-50 p-4 rounded-2xl border border-sky-200 text-sky-950 font-bold mb-4 space-y-1">
-                <div><strong>الطالب:</strong> ${escapeHTML(rec.name)}</div>
+            // تكبير خطوط ملخص معلومات الطالب في الأعلى لراحة عين المعلم
+            let html = `<div class="bg-sky-50 p-6 rounded-3xl border-2 border-sky-200 text-sky-950 font-bold mb-6 space-y-2 text-lg sm:text-xl">
+                <div><strong>الطالب:</strong> <span class="text-sky-900">${escapeHTML(rec.name)}</span></div>
                 <div><strong>المسار:</strong> ${escapeHTML(rec.stageGrade || rec.topic)}</div>
-                <div><strong>النتيجة:</strong> ${rec.score} من ${rec.total} (${rec.pct}٪) - الحالة: ${rec.status}</div>
+                <div><strong>النتيجة:</strong> ${rec.score} من ${rec.total} (${rec.pct}٪) - الحالة: <span class="${rec.status === 'ناجح' ? 'text-emerald-700' : 'text-rose-700'}">${rec.status}</span></div>
                 <div><strong>الأسئلة المُجابة:</strong> <span class="text-indigo-700 font-black">${finalAnsweredCount}</span></div>
                 <div><strong>تاريخ الاختبار:</strong> ${rec.date} (المدة: ${rec.duration})</div>
             </div>`;
 
             rec.breakdown.forEach((item) => {
-                let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2">';
+                // تكبير خيارات الإجابة لتصبح بخط كبير وواضح (text-lg sm:text-xl)
+                let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-5">';
                 item.options.forEach(opt => {
                     let optStyle = "bg-white border-slate-200 text-slate-800";
                     let optBadge = "";
                     if (opt === item.correctAnswer) {
                         optStyle = "bg-emerald-100 border-emerald-400 text-emerald-950 font-black";
-                        optBadge = '<span class="text-emerald-800 text-xs mt-1 block font-bold">✓ الإجابة الصحيحة</span>';
+                        optBadge = '<span class="text-emerald-800 text-base mt-2 block font-extrabold">✓ الإجابة الصحيحة</span>';
                     } else if (opt === item.userAnswer && !item.isCorrect) {
                         optStyle = "bg-rose-100 border-rose-400 text-rose-950 font-black";
-                        optBadge = '<span class="text-rose-800 text-xs mt-1 block font-bold">✗ إجابة الطالب الخاطئة</span>';
+                        optBadge = '<span class="text-rose-800 text-base mt-2 block font-extrabold">✗ إجابة الطالب الخاطئة</span>';
                     }
-                    optsHtml += `<div class="p-3 rounded-xl border-2 ${optStyle} text-xs font-bold">• ${escapeHTML(opt)}${optBadge}</div>`;
+                    optsHtml += `<div class="p-5 rounded-2xl border-2 ${optStyle} text-lg sm:text-xl font-bold">• ${escapeHTML(opt)}${optBadge}</div>`;
                 });
                 optsHtml += '</div>';
 
                 let statusBadge = item.userAnswer !== "لم يجب" ? 
-                    (item.isCorrect ? '<span class="text-emerald-600 font-black">صحيحة ✓</span>' : '<span class="text-rose-600 font-black">خاطئة ✗</span>') : 
-                    '<span class="text-amber-600 font-black">لم يجب عليها</span>';
+                    (item.isCorrect ? '<span class="text-emerald-600 font-black text-lg">صحيحة ✓</span>' : '<span class="text-rose-600 font-black text-lg">خاطئة ✗</span>') : 
+                    '<span class="text-amber-600 font-black text-lg">لم يجب عليها</span>';
 
-                html += `<div class="bg-white p-5 rounded-2xl border-2 shadow-sm space-y-2 mb-4">
-                    <div class="flex justify-between items-center border-b pb-2">
-                        <h4 class="font-black text-base text-sky-950">س${item.qIndex}: ${escapeHTML(item.qText)}</h4>
+                // تكبير عنوان السؤال الرئيسي ونص إجابة الطالب والتعليل بشكل واضح جداً
+                html += `<div class="bg-white p-8 rounded-3xl border-2 border-slate-200 shadow-sm space-y-4 mb-6">
+                    <div class="flex justify-between items-center border-b pb-4">
+                        <h4 class="font-black text-2xl sm:text-3xl text-sky-950">س${item.qIndex}: ${escapeHTML(item.qText)}</h4>
                         <span>${statusBadge}</span>
                     </div>
-                    <div class="text-xs text-slate-600">إجابة الطالب: <strong>${escapeHTML(item.userAnswer)}</strong></div>
+                    <div class="text-lg sm:text-xl text-slate-700 font-bold">إجابة الطالب: <strong class="text-sky-900">${escapeHTML(item.userAnswer)}</strong></div>
                     ${optsHtml}
-                    ${item.explanation ? `<div class="p-3 bg-sky-50/70 rounded-xl border text-xs text-sky-950 font-bold"><strong>التعليل والشرح:</strong> ${escapeHTML(item.explanation)}</div>` : ''}
+                    ${item.explanation ? `<div class="p-5 bg-sky-50/70 rounded-2xl border-2 border-sky-200 text-lg sm:text-xl text-sky-950 font-bold leading-relaxed"><strong>التعليل والشرح:</strong> ${escapeHTML(item.explanation)}</div>` : ''}
                 </div>`;
             });
 
