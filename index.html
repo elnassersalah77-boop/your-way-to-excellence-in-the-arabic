@@ -59,7 +59,8 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- html2canvas Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
+    <!-- html2pdf Library (لتحويل الواجهة إلى PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
@@ -129,8 +130,8 @@
 
     <!-- Header -->
     <header class="bg-sky-900 text-white shadow-lg border-b-4 border-amber-500 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between relative">
+            <div class="flex items-center gap-3 z-10">
                 <div class="bg-amber-500 text-sky-950 p-2.5 rounded-2xl shadow font-extrabold text-xl flex items-center justify-center">
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
@@ -139,7 +140,13 @@
                     <p id="header-branch-name" class="text-xs sm:text-sm text-sky-200 font-bold">طَرِيقُ التَّفَوُّقِ فِي اللُّغَةِ العَرَبِيَّةِ</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
+            
+            <!-- النصيحة / العبارة التشجيعية (في المنتصف) -->
+            <div class="hidden lg:flex absolute inset-0 items-center justify-center pointer-events-none z-0">
+                <span id="header-advice-text" class="text-amber-100 text-xl xl:text-2xl font-bold tracking-wide drop-shadow-md" style="font-family: 'Amiri', serif;"></span>
+            </div>
+
+            <div class="flex items-center gap-2 z-10">
                 <div id="header-logo-container" class="hidden">
                     <img id="header-logo-img" src="" alt="شعار" class="h-10 w-auto object-contain mx-2">
                 </div>
@@ -185,9 +192,9 @@
                 <div id="start-logo-left-container" class="hidden"><img id="start-logo-left" src="" alt="" class="h-16 w-auto object-contain"></div>
             </div>
 
-            <div class="space-y-3">
-                <h2 id="start-exam-title" class="text-3xl sm:text-5xl font-black text-sky-950 tracking-tight">أَنْتَ فِي طَرِيقِكَ لِلتَّفَوُّقِ فِي اللُّغَةِ العَرَبِيَّةِ</h2>
-                <p id="start-exam-subtitle" class="text-slate-700 text-lg sm:text-xl font-black">اخْتَبِرْ مَعْلُومَاتِكَ، وَقِسْ قُدْرَاتِكَ، وَحَقِّقْ أَعْلَى الدَّرَجَاتِ!</p>
+            <div class="space-y-6 sm:space-y-8 my-4">
+                <h2 id="start-exam-title" class="text-3xl sm:text-5xl font-black text-sky-950 tracking-tight leading-snug">أَنْتَ فِي طَرِيقِكَ لِلتَّفَوُّقِ فِي اللُّغَةِ العَرَبِيَّةِ</h2>
+                <p id="start-exam-subtitle" class="text-slate-700 text-lg sm:text-xl font-black pt-3">اخْتَبِرْ مَعْلُومَاتِكَ، وَقِسْ قُدْرَاتِكَ، وَحَقِّقْ أَعْلَى الدَّرَجَاتِ!</p>
             </div>
 
             <div id="start-expired-box" class="hidden bg-rose-100 text-rose-800 p-4 rounded-2xl border-2 border-rose-300 font-bold text-center text-base">
@@ -212,7 +219,7 @@
             <div id="start-form-container" class="max-w-md mx-auto space-y-5 pt-2">
                 <div class="text-right">
                     <label for="student-name-input" class="block text-sm font-black text-slate-800 mb-1.5 mr-1">اسْمُ الطَّالِبِ (الْمُسْتَخْدِمُ):</label>
-                    <input type="text" id="student-name-input" placeholder="اكْتُبِ اسْمَكَ بِالعَرَبِيَّةِ هُنَا..." oninput="validateArabicName(this)" class="w-full px-5 py-4 rounded-2xl border-3 border-slate-300 focus:border-sky-600 focus:outline-none font-black text-slate-900 text-xl transition text-center shadow-inner">
+                    <input type="text" id="student-name-input" placeholder="اكْتُبِ اسْمَكَ هُنَا..." oninput="validateArabicName(this)" class="w-full px-5 py-4 rounded-2xl border-3 border-slate-300 focus:border-sky-600 focus:outline-none font-black text-slate-900 text-xl transition text-center shadow-inner">
                     <span id="name-error-msg" class="text-rose-600 text-xs font-bold hidden mt-1">يرجى كتابة الاسم بالحروف (عربية/إنجليزية) فقط بدون أرقام أو رموز.</span>
                 </div>
 
@@ -320,10 +327,14 @@
         </div>
     </div>
 
-    <!-- أزرار المراجعة والشهادة -->
+    <!-- أزرار المراجعة والشهادة وتصدير PDF -->
     <div class="flex flex-wrap gap-3 justify-center w-full max-w-md">
         <button type="button" onclick="openStudentReviewModal()" class="flex-1 min-w-[130px] bg-sky-600 hover:bg-sky-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer text-sm flex items-center justify-center gap-2">
-            <i class="fa-solid fa-magnifying-glass"></i> مراجعة الإجابات والتعليلات
+            <i class="fa-solid fa-magnifying-glass"></i> مراجعة الإجابات
+        </button>
+        <!-- الزر الجديد لتصدير الـ PDF -->
+        <button type="button" id="student-pdf-btn" onclick="exportStudentReviewPDF()" class="hidden flex-1 min-w-[130px] bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer text-sm flex items-center justify-center gap-2">
+            <i class="fa-solid fa-file-pdf"></i> تحميل كـ PDF
         </button>
         <div id="cert-btn-container" class="hidden w-full">
             <button type="button" onclick="openCertModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-sky-950 font-extrabold py-3 px-4 rounded-2xl shadow transition cursor-pointer">
@@ -445,10 +456,15 @@
                         <div><label class="block mb-1 text-slate-700">اسم المعلم:</label><input type="text" id="admin-teacher-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         <div><label class="block mb-1 text-slate-700">عنوان الاختبار:</label><input type="text" id="admin-exam-title-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         <div><label class="block mb-1 text-slate-700">نص زر بدء الاختبار:</label><input type="text" id="admin-start-btn-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
-                        <div><label class="block mb-1 text-slate-700">نبذة عن مضمون الاختبار (العنوان الفرعي):</label><input type="text" id="admin-branch-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
+                        <div><label class="block mb-1 text-slate-700">مسمى التخصص (في الشريط العلوي):</label><input type="text" id="admin-branch-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
+                        <div><label class="block mb-1 text-slate-700">العبارة التشجيعية (أسفل عنوان الاختبار):</label><input type="text" id="admin-exam-subtitle-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         <div><label class="block mb-1 text-slate-700">عنوان تبويب المتصفح (Title):</label><input type="text" id="admin-pagetitle-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
                         <div><label class="block mb-1 text-slate-700">مسمى زر/عنوان (المعلومة السريعة):</label><input type="text" id="admin-quickinfo-label-input" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white"></div>
-                        
+                        <div class="sm:col-span-2 bg-amber-50 p-4 rounded-xl border border-amber-200">
+    <label class="block mb-1 text-amber-950 font-bold text-sm">رسالة الشريط العلوي (نصيحة بخط أميري جميل - اتركها فارغة للإخفاء):</label>
+    <input type="text" id="admin-header-advice-input" class="w-full p-3 rounded-xl border border-amber-300 bg-white text-lg font-bold" style="font-family: 'Amiri', serif;" placeholder="مثال: لُغَتُكَ هُوِيَّتُكَ، فَاحْرِصْ عَلَى تَعَلُّمِهَا...">
+</div>
+
                         <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
                             <label class="block mb-1 text-emerald-900">إظهار بطاقة بنك الأسئلة (صفحة البداية):</label>
                             <select id="admin-show-bank-card" class="w-full p-2.5 rounded-xl border border-emerald-300 bg-white font-black text-emerald-800">
@@ -563,6 +579,10 @@
                                 <input type="checkbox" id="admin-require-password" class="w-5 h-5 text-rose-600 rounded cursor-pointer">
                                 <label for="admin-require-password" class="cursor-pointer font-black text-rose-950 text-xs">حماية بكلمة مرور للطلاب</label>
                             </div>
+                            <div class="flex items-center gap-2 mt-2 sm:mt-0">
+                                <input type="checkbox" id="admin-enable-student-pdf" class="w-5 h-5 text-rose-600 rounded cursor-pointer" checked>
+                                <label for="admin-enable-student-pdf" class="cursor-pointer font-black text-rose-950 text-xs">تفعيل زر تحميل PDF للطلاب</label>
+                            </div>
                         </div>
 
                         <div class="sm:col-span-2 flex flex-wrap gap-3 pt-2 border-t border-slate-200">
@@ -639,9 +659,9 @@
 <!-- TAB 5: QUESTIONS -->
                 <div id="admin-tab-questions" class="space-y-5 hidden">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800 text-sm">إدارة بنك الأسئلة</h3>
-                        <button type="button" onclick="saveAppSettings()" class="bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-floppy-disk ml-1"></i> حفظ التغييرات</button>
-                    </div>
+    <h3 class="font-bold text-slate-800 text-sm">إدارة بنك الأسئلة</h3>
+    <button type="button" onclick="saveQuestionsState()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-floppy-disk ml-1"></i> حفظ الأسئلة فقط</button>
+</div>
 
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
                         <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض الأسئلة:</h3>
@@ -691,9 +711,12 @@
                 <!-- TAB 6: PARAGRAPHS -->
                 <div id="admin-tab-paragraphs" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800">إدارة النصوص القرائية والفقرات</h3>
-                        <button type="button" onclick="openParagraphModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة فقرة جديدة</button>
-                    </div>
+    <h3 class="font-bold text-slate-800">إدارة النصوص القرائية والفقرات</h3>
+    <div class="flex gap-2">
+        <button type="button" onclick="saveParagraphsState()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-floppy-disk ml-1"></i> حفظ الفقرات فقط</button>
+        <button type="button" onclick="openParagraphModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة فقرة جديدة</button>
+    </div>
+</div>
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
                         <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض الفقرات:</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
@@ -713,9 +736,12 @@
                 <!-- TAB 7: QUICK INFO -->
                 <div id="admin-tab-quickinfo" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800">بطاقات المعلومة السريعة</h3>
-                        <button type="button" onclick="openQuickInfoModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة بطاقة جديدة</button>
-                    </div>
+    <h3 class="font-bold text-slate-800">بطاقات المعلومة السريعة</h3>
+    <div class="flex gap-2">
+        <button type="button" onclick="saveQuickInfoState()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-floppy-disk ml-1"></i> حفظ البطاقات فقط</button>
+        <button type="button" onclick="openQuickInfoModalForAdd()" class="bg-sky-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة بطاقة جديدة</button>
+    </div>
+</div>
                     <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 space-y-3">
                         <h3 class="font-black text-sky-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-sky-600"></i> تصفية وعرض البطاقات:</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
@@ -735,9 +761,12 @@
                 <!-- TAB 8: STUDENTS (NEW) -->
                 <div id="admin-tab-students" class="space-y-4 hidden">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-rose-900">إدارة حسابات الطلاب (نظام كلمات المرور)</h3>
-                        <button type="button" onclick="openStudentModalForAdd()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-user-plus ml-1"></i> إضافة طالب جديد</button>
-                    </div>
+    <h3 class="font-bold text-rose-900">إدارة حسابات الطلاب (نظام كلمات المرور)</h3>
+    <div class="flex gap-2">
+        <button type="button" onclick="saveStudentsState()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-floppy-disk ml-1"></i> حفظ الطلاب فقط</button>
+        <button type="button" onclick="openStudentModalForAdd()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-user-plus ml-1"></i> إضافة طالب جديد</button>
+    </div>
+</div>
                     <div class="bg-rose-50 p-4 rounded-2xl border-2 border-rose-200 space-y-3">
                         <p class="text-xs font-bold text-rose-800 leading-relaxed"><i class="fa-solid fa-circle-info ml-1"></i> لإجبار الطلاب على إدخال كلمة المرور قبل بدء الاختبار، تأكد من تفعيل خيار <strong class="text-rose-950">(حماية بكلمة مرور للطلاب)</strong> من تبويب الإعدادات.</p>
                         <div class="flex gap-2 flex-wrap pt-2 border-t border-rose-200">
@@ -846,7 +875,7 @@
                     <i class="fa-solid fa-circle-info text-amber-400 text-2xl"></i> تفاصيل إجابة الطالب المفصلة
                 </h3>
                 <div class="flex gap-3">
-                    <button type="button" onclick="exportStudentDetailsImage()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-2"><i class="fa-solid fa-image"></i> تصدير كـ صورة</button>
+                    <button type="button" onclick="exportStudentDetailsPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-2"><i class="fa-solid fa-file-pdf"></i> تصدير كـ PDF</button>
                     <button type="button" onclick="document.getElementById('modal-record-details').classList.add('hidden'); document.getElementById('modal-record-details').classList.remove('flex');" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-1"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
@@ -1149,12 +1178,14 @@
                     <textarea id="modal-q-text" rows="3" class="w-full p-3 rounded-xl border bg-white font-black text-sm leading-relaxed" placeholder="اكتب نص السؤال هنا..."></textarea>
                 </div>
 
-                <div class="space-y-2.5 border-t pt-4">
-                    <label class="block text-slate-700 text-sm font-black">خيارات الإجابة الأربعة:</label>
-                    <div><input type="text" id="modal-opt-0" class="w-full p-3 rounded-xl border mb-2 bg-white text-sm" placeholder="الخيار الأول"></div>
-                    <div><input type="text" id="modal-opt-1" class="w-full p-3 rounded-xl border mb-2 bg-white text-sm" placeholder="الخيار الثاني"></div>
-                    <div><input type="text" id="modal-opt-2" class="w-full p-3 rounded-xl border mb-2 bg-white text-sm" placeholder="الخيار الثالث"></div>
-                    <div><input type="text" id="modal-opt-3" class="w-full p-3 rounded-xl border mb-2 bg-white text-sm" placeholder="الخيار الرابع"></div>
+                <div class="space-y-3 border-t pt-4">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-slate-700 text-sm font-black">خيارات الإجابة (يمكنك زيادتها):</label>
+                        <button type="button" onclick="addOptionInput()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm"><i class="fa-solid fa-plus ml-1"></i> إضافة خيار</button>
+                    </div>
+                    <div id="dynamic-options-container" class="space-y-2">
+                        <!-- تُضاف الخيارات هنا ديناميكياً عبر الجافاسكربت -->
+                    </div>
                 </div>
 
                 <div>
@@ -1248,6 +1279,7 @@
             "startBtnText": "ابْدَأِ الِاخْتِبَارِ الْآنَ", "branch": "طَرِيقُ التَّفَوُّقِ فِي اللُّغَةِ العَرَبِيَّةِ", "pageTitle": "لَمَحَاتٌ وَقُطُوفٌ لُغَوِيَّةٌ",
             "examCount": 20, "examDuration": 20, "footerYear": "2026", "platformTheme": "default", "platformFont": "IBM Plex Sans Arabic",
             "quickInfoLabel": "مَعْلُومَةٌ سَرِيعَةٌ لِلدَّرْسِ", "showBankCard": "true", "bankCardStyle": "detailed",
+            "headerAdvice": "لُغَتُكَ هُوِيَّتُكَ، فَاحْرِصْ عَلَى تَعَلُّمِهَا...", // <-- أضف هذا السطر هنا
             "adminPass": "12300123", "shuffleQuestions": true, "shuffleOptions": true, "enableTashkeel": true, "requireStudentPassword": false,
             "stTitleSize": "text-3xl sm:text-5xl", "stTitleWeight": "font-black", "useDifficultyFilter": false, "diffSelectionMode": "balanced",
             "diffEasyCount": 5, "diffMediumCount": 10, "diffHardCount": 3, "diffVeryHardCount": 2,
@@ -1285,6 +1317,47 @@
         }
 
         // ================== CLOUD SYNC & LAZY LOADING ==================
+        function updateCloudCacheSnapshot() {
+            if (!window._cloudCache) window._cloudCache = {};
+            const cleanObj = (obj) => JSON.parse(JSON.stringify(obj || {}));
+            
+            window._cloudCache["settings"] = JSON.stringify({
+                stagesData: cleanObj(stagesData), gradeStatus: cleanObj(gradeStatus),
+                branchesData: cleanObj(branchesData), topicsData: cleanObj(topicsData),
+                appSettings: cleanObj(appSettings)
+            });
+
+            const qChunkSize = 300; let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
+            for (let i = 0; i < qTotalParts; i++) {
+                window._cloudCache[`questions_part_${i}`] = JSON.stringify({ chunk: (questionBank || []).slice(i * qChunkSize, (i + 1) * qChunkSize) });
+            }
+            window._cloudCache["questions_meta"] = JSON.stringify({ totalParts: qTotalParts });
+
+            const pChunkSize = 300; let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
+            for (let i = 0; i < pTotalParts; i++) {
+                window._cloudCache[`paragraphs_part_${i}`] = JSON.stringify({ chunk: (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize) });
+            }
+            window._cloudCache["paragraphs_meta"] = JSON.stringify({ totalParts: pTotalParts });
+
+            const qiChunkSize = 300; let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
+            for (let i = 0; i < qiTotalParts; i++) {
+                window._cloudCache[`quickinfo_part_${i}`] = JSON.stringify({ chunk: (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
+            }
+            window._cloudCache["quickinfo_meta"] = JSON.stringify({ totalParts: qiTotalParts });
+
+            const stChunkSize = 300; let stTotalParts = Math.ceil((studentsAccounts || []).length / stChunkSize) || 1;
+            for (let i = 0; i < stTotalParts; i++) {
+                window._cloudCache[`students_part_${i}`] = JSON.stringify({ chunk: (studentsAccounts || []).slice(i * stChunkSize, (i + 1) * stChunkSize) });
+            }
+            window._cloudCache["students_meta"] = JSON.stringify({ totalParts: stTotalParts });
+
+            const rChunkSize = 300; let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
+            for (let i = 0; i < rTotalParts; i++) {
+                window._cloudCache[`records_part_${i}`] = JSON.stringify({ chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) });
+            }
+            window._cloudCache["records_meta"] = JSON.stringify({ totalParts: rTotalParts });
+        }
+
         async function loadDataFromCloud() {
             toggleCloudLoading(true, "جَارِي تَحْمِيلِ البَيَانَاتِ...");
             try {
@@ -1329,6 +1402,10 @@
                     for (let i = 0; i < stTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap.exists() && snap.data().chunk) studentsAccounts = studentsAccounts.concat(snap.data().chunk); }
                 }
             } catch (e) { console.log("استخدام البيانات المحلية:", e); }
+            
+            // تحديث الذاكرة الذكية بالنسخة المحملة فوراً
+            updateCloudCacheSnapshot();
+            
             toggleCloudLoading(false); initApp();
         }
 
@@ -1352,38 +1429,77 @@
         async function saveState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
-                    const db = window.firebaseDb; const doc = window.firebaseDoc; const setDoc = window.firebaseSetDoc;
-                    let savePromises = []; 
+                    const db = window.firebaseDb; 
+                    const textEl = document.getElementById('cloud-loading-text');
+                    
+                    if (!window._cloudCache) updateCloudCacheSnapshot();
+                    
+                    let tasks = [];
+                    const addTask = (id, data) => {
+                        const str = JSON.stringify(data);
+                        if (window._cloudCache[id] !== str) {
+                            tasks.push({ id, data, str });
+                        }
+                    };
 
-                    savePromises.push(setDoc(doc(db, "platformData", "settings"), {
-                        stagesData: JSON.parse(JSON.stringify(stagesData || {})), gradeStatus: JSON.parse(JSON.stringify(gradeStatus || {})),
-                        branchesData: JSON.parse(JSON.stringify(branchesData || [])), topicsData: JSON.parse(JSON.stringify(topicsData || [])),
-                        appSettings: JSON.parse(JSON.stringify(appSettings || {}))
-                    }));
+                    const cleanObj = (obj) => JSON.parse(JSON.stringify(obj || {}));
 
-                    const qChunkSize = 40; let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
-                    for (let i = 0; i < qTotalParts; i++) { let chunk = (questionBank || []).slice(i * qChunkSize, (i + 1) * qChunkSize); savePromises.push(setDoc(doc(db, "platformData", `questions_part_${i}`), { chunk: JSON.parse(JSON.stringify(chunk)) })); }
-                    savePromises.push(setDoc(doc(db, "platformData", "questions_meta"), { totalParts: qTotalParts }));
+                    addTask("settings", {
+                        stagesData: cleanObj(stagesData), gradeStatus: cleanObj(gradeStatus),
+                        branchesData: cleanObj(branchesData), topicsData: cleanObj(topicsData),
+                        appSettings: cleanObj(appSettings)
+                    });
 
-                    const pChunkSize = 40; let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
-                    for (let i = 0; i < pTotalParts; i++) { let chunk = (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize); savePromises.push(setDoc(doc(db, "platformData", `paragraphs_part_${i}`), { chunk: JSON.parse(JSON.stringify(chunk)) })); }
-                    savePromises.push(setDoc(doc(db, "platformData", "paragraphs_meta"), { totalParts: pTotalParts }));
+                    const qChunkSize = 300; let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
+                    for (let i = 0; i < qTotalParts; i++) addTask(`questions_part_${i}`, { chunk: (questionBank || []).slice(i * qChunkSize, (i + 1) * qChunkSize) });
+                    addTask("questions_meta", { totalParts: qTotalParts });
 
-                    const qiChunkSize = 40; let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
-                    for (let i = 0; i < qiTotalParts; i++) { let chunk = (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize); savePromises.push(setDoc(doc(db, "platformData", `quickinfo_part_${i}`), { chunk: JSON.parse(JSON.stringify(chunk)) })); }
-                    savePromises.push(setDoc(doc(db, "platformData", "quickinfo_meta"), { totalParts: qiTotalParts }));
+                    const pChunkSize = 300; let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
+                    for (let i = 0; i < pTotalParts; i++) addTask(`paragraphs_part_${i}`, { chunk: (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize) });
+                    addTask("paragraphs_meta", { totalParts: pTotalParts });
 
-                    const stChunkSize = 40; let stTotalParts = Math.ceil((studentsAccounts || []).length / stChunkSize) || 1;
-                    for (let i = 0; i < stTotalParts; i++) { let chunk = (studentsAccounts || []).slice(i * stChunkSize, (i + 1) * stChunkSize); savePromises.push(setDoc(doc(db, "platformData", `students_part_${i}`), { chunk: JSON.parse(JSON.stringify(chunk)) })); }
-                    savePromises.push(setDoc(doc(db, "platformData", "students_meta"), { totalParts: stTotalParts }));
+                    const qiChunkSize = 300; let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
+                    for (let i = 0; i < qiTotalParts; i++) addTask(`quickinfo_part_${i}`, { chunk: (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
+                    addTask("quickinfo_meta", { totalParts: qiTotalParts });
 
-                    const rChunkSize = 40; let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
-                    for (let i = 0; i < rTotalParts; i++) { let chunk = (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize); savePromises.push(setDoc(doc(db, "platformData", `records_part_${i}`), { chunk: JSON.parse(JSON.stringify(chunk)) })); }
-                    savePromises.push(setDoc(doc(db, "platformData", "records_meta"), { totalParts: rTotalParts }));
+                    const stChunkSize = 300; let stTotalParts = Math.ceil((studentsAccounts || []).length / stChunkSize) || 1;
+                    for (let i = 0; i < stTotalParts; i++) addTask(`students_part_${i}`, { chunk: (studentsAccounts || []).slice(i * stChunkSize, (i + 1) * stChunkSize) });
+                    addTask("students_meta", { totalParts: stTotalParts });
 
-                    await Promise.all(savePromises);
+                    const rChunkSize = 300; let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
+                    for (let i = 0; i < rTotalParts; i++) addTask(`records_part_${i}`, { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) });
+                    addTask("records_meta", { totalParts: rTotalParts });
+
+                    let totalTasks = tasks.length;
+                    
+                    if (totalTasks === 0) {
+                        toggleCloudLoading(true, "لَمْ يَحْدُث أيُّ تَغْيِير (تَمَّ التحقق محلياً بِنَجَاح).");
+                        setTimeout(() => { toggleCloudLoading(false); }, 700);
+                        return; 
+                    }
+
+                    toggleCloudLoading(true, `جَارِي رَفْع التَّعْدِيلَات الحقيقيَّة (${totalTasks} مِلَفّاً)...`);
+                    let completedTasks = 0;
+
+                    for (let task of tasks) {
+                        await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
+                        window._cloudCache[task.id] = task.str; 
+                        completedTasks++;
+                        let pct = Math.round((completedTasks / totalTasks) * 100);
+                        if (textEl) {
+                            textEl.textContent = `جَارِي رَفْع المُتَغَيِّرَات... ${pct}% (${completedTasks}/${totalTasks})`;
+                        }
+                    }
+                    
+                    if (textEl) textEl.textContent = "تَمَّ الْحِفْظُ وَالتَّحْدِيثُ بِنَجَاح!";
+                    setTimeout(() => { toggleCloudLoading(false); }, 1000);
                 }
-            } catch (e) { console.error("خطأ الحفظ:", e); alert("رمز الخطأ: " + e.code); }
+            } catch (e) { 
+                console.error("خطأ الحفظ:", e); 
+                const textEl = document.getElementById('cloud-loading-text');
+                if (textEl) textEl.textContent = "حَدَثَ خَطَأٌ فِي الحِفْظ!";
+                alert("تعذر الحفظ السحابي: " + e.message); 
+            }
         }
 // ================== GENERAL, INIT & SETTINGS ==================
         function validateArabicName(inputEl) {
@@ -1443,8 +1559,12 @@
             }
             applyPlatformThemeAndFont();
             document.getElementById('header-teacher-name').textContent = appSettings.teacherName;
-            document.getElementById('header-branch-name').textContent = appSettings.branch;
+            const adviceEl = document.getElementById('header-advice-text');
+            if (adviceEl) adviceEl.textContent = appSettings.headerAdvice || "";
+                     document.getElementById('header-branch-name').textContent = appSettings.branch;
             document.getElementById('start-exam-title').textContent = appSettings.examTitle;
+            const subtitleEl = document.getElementById('start-exam-subtitle');
+            if (subtitleEl) subtitleEl.textContent = appSettings.examSubtitle || "اخْتَبِرْ مَعْلُومَاتِكَ، وَقِسْ قُدْرَاتِكَ، وَحَقِّقْ أَعْلَى الدَّرَجَاتِ!";
             document.getElementById('footer-year').textContent = appSettings.footerYear || "2026";
             document.getElementById('display-exam-count-desc').textContent = appSettings.examCount || 20;
             document.getElementById('display-exam-time-desc').textContent = `${appSettings.examDuration || 20} دَقِيقَةٌ`;
@@ -1475,18 +1595,15 @@
             setTimeout(() => {
                 appSettings.teacherName = document.getElementById('admin-teacher-input').value.trim() || appSettings.teacherName;
                 appSettings.examTitle = document.getElementById('admin-exam-title-input').value.trim() || appSettings.examTitle;
-                
-                // حفظ القيم المحدثة
+                if(document.getElementById('admin-exam-subtitle-input')) appSettings.examSubtitle = document.getElementById('admin-exam-subtitle-input').value.trim() || "اخْتَبِرْ مَعْلُومَاتِكَ، وَقِسْ قُدْرَاتِكَ، وَحَقِّقْ أَعْلَى الدَّرَجَاتِ!";
                 if(document.getElementById('admin-start-btn-input')) appSettings.startBtnText = document.getElementById('admin-start-btn-input').value.trim() || "ابْدَأِ الِاخْتِبَارِ الْآنَ";
                 appSettings.branch = document.getElementById('admin-branch-input').value.trim();
                 if(document.getElementById('admin-pagetitle-input')) appSettings.pageTitle = document.getElementById('admin-pagetitle-input').value.trim() || "لَمَحَاتٌ وَقُطُوفٌ لُغَوِيَّةٌ";
                 if(document.getElementById('admin-quickinfo-label-input')) appSettings.quickInfoLabel = document.getElementById('admin-quickinfo-label-input').value.trim() || "مَعْلُومَةٌ سَرِيعَةٌ لِلدَّرْسِ";
-
                 appSettings.examCount = parseInt(document.getElementById('admin-exam-count-input').value) || 20;
                 appSettings.examDuration = parseInt(document.getElementById('admin-exam-duration-input').value) || 20;
                 appSettings.expiryDate = document.getElementById('admin-expiry-date-input').value;
                 appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
-                
                 if(document.getElementById('admin-show-bank-card')) appSettings.showBankCard = document.getElementById('admin-show-bank-card').value === "true";
                 if(document.getElementById('admin-bank-card-style')) appSettings.bankCardStyle = document.getElementById('admin-bank-card-style').value;
                 if(document.getElementById('admin-use-difficulty-filter')) appSettings.useDifficultyFilter = document.getElementById('admin-use-difficulty-filter').checked;
@@ -1504,6 +1621,8 @@
                 if(document.getElementById('admin-enable-tashkeel')) appSettings.enableTashkeel = document.getElementById('admin-enable-tashkeel').checked;
                 if(document.getElementById('admin-require-password')) appSettings.requireStudentPassword = document.getElementById('admin-require-password').checked;
                 
+                if(document.getElementById('admin-enable-student-pdf')) appSettings.enableStudentPDF = document.getElementById('admin-enable-student-pdf').checked; // الإضافة الجديدة للحفظ
+                
                 if(document.getElementById('admin-logo-header-input')) appSettings.logoHeader = document.getElementById('admin-logo-header-input').value.trim();
                 if(document.getElementById('admin-logo-right-input')) appSettings.logoRight = document.getElementById('admin-logo-right-input').value.trim();
                 if(document.getElementById('admin-logo-left-input')) appSettings.logoLeft = document.getElementById('admin-logo-left-input').value.trim();
@@ -1511,17 +1630,167 @@
                 if(document.getElementById('admin-mid-img-input-2')) appSettings.midImg2 = document.getElementById('admin-mid-img-input-2').value.trim();
                 if(document.getElementById('admin-bottom-img-input-right')) appSettings.bottomImgRight = document.getElementById('admin-bottom-img-input-right').value.trim();
                 if(document.getElementById('admin-bottom-img-input-left')) appSettings.bottomImgLeft = document.getElementById('admin-bottom-img-input-left').value.trim();
-                            if(document.getElementById('admin-success-msg-input')) appSettings.successMessage = document.getElementById('admin-success-msg-input').value.trim() || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز.";
-                           if(document.getElementById('admin-fail-msg-input')) appSettings.failMessage = document.getElementById('admin-fail-msg-input').value.trim() || "لا تتراجع! المحاولة هي البداية الحقيقية للنجاح، حاول مرة أخرى.";
+                if(document.getElementById('admin-success-msg-input')) appSettings.successMessage = document.getElementById('admin-success-msg-input').value.trim() || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز.";
+                if(document.getElementById('admin-fail-msg-input')) appSettings.failMessage = document.getElementById('admin-fail-msg-input').value.trim() || "لا تتراجع! المحاولة هي البداية الحقيقية للنجاح، حاول مرة أخرى.";
 
                 let newPwd = document.getElementById('admin-new-password') ? document.getElementById('admin-new-password').value.trim() : "";
                 if (newPwd) appSettings.adminPass = newPwd;
 
-                saveState().then(() => {
+              saveState().then(() => {
                     alert("تم حفظ الإعدادات بنجاح!");
-                    location.reload(); 
                 });
             }, 150);
+        }
+// دالة مخصصة لحفظ "الأسئلة" وحدها فقط
+        async function saveQuestionsState() {
+            try {
+                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+                    const db = window.firebaseDb; 
+                    toggleCloudLoading(true, "جَارِي حِفْظِ بَنْكِ الْأَسْئِلَةِ...");
+                    if (!window._cloudCache) window._cloudCache = {};
+                    
+                    let tasks = [];
+                    const addTask = (id, data) => {
+                        const str = JSON.stringify(data);
+                        if (window._cloudCache[id] !== str) tasks.push({ id, data, str });
+                    };
+
+                    const qChunkSize = 300; let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
+                    for (let i = 0; i < qTotalParts; i++) addTask(`questions_part_${i}`, { chunk: (questionBank || []).slice(i * qChunkSize, (i + 1) * qChunkSize) });
+                    addTask("questions_meta", { totalParts: qTotalParts });
+
+                    if (tasks.length === 0) {
+                        toggleCloudLoading(true, "لَمْ يَتَغَيَّر أيُّ سُؤال (تَمَّ الحِفْظُ).");
+                        setTimeout(() => toggleCloudLoading(false), 800);
+                        return;
+                    }
+
+                    for (let task of tasks) {
+                        await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
+                        window._cloudCache[task.id] = task.str; 
+                    }
+                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْأَسْئِلَةِ بِنَجَاح!");
+                    setTimeout(() => toggleCloudLoading(false), 1000);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("خطأ في حفظ الأسئلة: " + e.message);
+                toggleCloudLoading(false);
+            }
+        }
+
+        // دالة مخصصة لحفظ "الفقرات" وحدها فقط
+        async function saveParagraphsState() {
+            try {
+                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+                    const db = window.firebaseDb; 
+                    toggleCloudLoading(true, "جَارِي حِفْظِ الْفِقَرَاتِ...");
+                    if (!window._cloudCache) window._cloudCache = {};
+                    
+                    let tasks = [];
+                    const addTask = (id, data) => {
+                        const str = JSON.stringify(data);
+                        if (window._cloudCache[id] !== str) tasks.push({ id, data, str });
+                    };
+
+                    const pChunkSize = 300; let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
+                    for (let i = 0; i < pTotalParts; i++) addTask(`paragraphs_part_${i}`, { chunk: (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize) });
+                    addTask("paragraphs_meta", { totalParts: pTotalParts });
+
+                    if (tasks.length === 0) {
+                        toggleCloudLoading(true, "لَمْ تَتَغَيَّر أيُّ فِقْرَة (تَمَّ الحِفْظُ).");
+                        setTimeout(() => toggleCloudLoading(false), 800);
+                        return;
+                    }
+
+                    for (let task of tasks) {
+                        await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
+                        window._cloudCache[task.id] = task.str; 
+                    }
+                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْفِقَرَاتِ بِنَجَاح!");
+                    setTimeout(() => toggleCloudLoading(false), 1000);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("خطأ في حفظ الفقرات: " + e.message);
+                toggleCloudLoading(false);
+            }
+        }
+
+        // دالة مخصصة لحفظ "المعلومة السريعة" وحدها فقط
+        async function saveQuickInfoState() {
+            try {
+                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+                    const db = window.firebaseDb; 
+                    toggleCloudLoading(true, "جَارِي حِفْظِ بَطَاقَاتِ الْمَعْلُومَةِ...");
+                    if (!window._cloudCache) window._cloudCache = {};
+                    
+                    let tasks = [];
+                    const addTask = (id, data) => {
+                        const str = JSON.stringify(data);
+                        if (window._cloudCache[id] !== str) tasks.push({ id, data, str });
+                    };
+
+                    const qiChunkSize = 300; let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
+                    for (let i = 0; i < qiTotalParts; i++) addTask(`quickinfo_part_${i}`, { chunk: (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
+                    addTask("quickinfo_meta", { totalParts: qiTotalParts });
+
+                    if (tasks.length === 0) {
+                        toggleCloudLoading(true, "لَمْ تَتَغَيَّر أيُّ بَطَاقَة (تَمَّ الحِفْظُ).");
+                        setTimeout(() => toggleCloudLoading(false), 800);
+                        return;
+                    }
+
+                    for (let task of tasks) {
+                        await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
+                        window._cloudCache[task.id] = task.str; 
+                    }
+                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْبَطَاقَاتِ بِنَجَاح!");
+                    setTimeout(() => toggleCloudLoading(false), 1000);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("خطأ في حفظ البطاقات: " + e.message);
+                toggleCloudLoading(false);
+            }
+        }
+
+        // دالة مخصصة لحفظ "الطلاب" وحدها فقط
+        async function saveStudentsState() {
+            try {
+                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+                    const db = window.firebaseDb; 
+                    toggleCloudLoading(true, "جَارِي حِفْظِ حِسَابَاتِ الطُّلَّابِ...");
+                    if (!window._cloudCache) window._cloudCache = {};
+                    
+                    let tasks = [];
+                    const addTask = (id, data) => {
+                        const str = JSON.stringify(data);
+                        if (window._cloudCache[id] !== str) tasks.push({ id, data, str });
+                    };
+
+                    const stChunkSize = 300; let stTotalParts = Math.ceil((studentsAccounts || []).length / stChunkSize) || 1;
+                    for (let i = 0; i < stTotalParts; i++) addTask(`students_part_${i}`, { chunk: (studentsAccounts || []).slice(i * stChunkSize, (i + 1) * stChunkSize) });
+                    addTask("students_meta", { totalParts: stTotalParts });
+
+                    if (tasks.length === 0) {
+                        toggleCloudLoading(true, "لَمْ يَتَغَيَّر أيُّ طَالِب (تَمَّ الحِفْظُ).");
+                        setTimeout(() => toggleCloudLoading(false), 800);
+                        return;
+                    }
+
+                    for (let task of tasks) {
+                        await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
+                        window._cloudCache[task.id] = task.str; 
+                    }
+                    toggleCloudLoading(true, "تَمَّ حِفْظُ حِسَابَاتِ الطُّلَّابِ بِنَجَاح!");
+                    setTimeout(() => toggleCloudLoading(false), 1000);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("خطأ في حفظ الطلاب: " + e.message);
+                toggleCloudLoading(false);
+            }
         }
 
         // ================== QUICK INFO FRONTEND RENDER ==================
@@ -1991,8 +2260,11 @@
 
         function renderQuestion() {
             const idx = quizState.currentIndex; const q = quizState.questions[idx];
-            document.getElementById('display-q-idx').textContent = idx + 1; document.getElementById('question-text').textContent = formatText(q.q, q.tashkeel);
-            const readBox = document.getElementById('readtext-box-container'); const titleEl = document.getElementById('display-para-title');
+            document.getElementById('display-q-idx').textContent = idx + 1; 
+            document.getElementById('question-text').textContent = formatText(q.q, q.tashkeel);
+            
+            const readBox = document.getElementById('readtext-box-container'); 
+            const titleEl = document.getElementById('display-para-title');
             if (q.paragraphId) {
                 const para = paragraphs.find(p => p.id === q.paragraphId && p.active !== false);
                 if (para) {
@@ -2002,16 +2274,30 @@
                 } else { readBox.classList.add('hidden'); }
             } else { readBox.classList.add('hidden'); }
 
-            const optsContainer = document.getElementById('options-container'); optsContainer.innerHTML = '';
+            const optsContainer = document.getElementById('options-container'); 
+            optsContainer.innerHTML = '';
+            
             q.opts.forEach(opt => {
                 const isSelected = quizState.answers[idx] === opt;
                 const btn = document.createElement('button'); btn.type = 'button';
                 btn.className = `w-full text-right p-4 rounded-2xl font-bold transition flex items-center justify-between border-2 cursor-pointer text-lg ${isSelected ? 'bg-sky-50 border-sky-600 text-sky-950 shadow-md' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}`;
-                btn.onclick = () => { quizState.answers[idx] = opt; renderQuestion(); };
+                
+                // التعديل الذكي لإلغاء التحديد: إذا تم الضغط على نفس الخيار المظلل، يتم تفريغ الإجابة
+                btn.onclick = () => { 
+                    if (quizState.answers[idx] === opt) {
+                        quizState.answers[idx] = null; 
+                    } else {
+                        quizState.answers[idx] = opt; 
+                    }
+                    renderQuestion(); 
+                };
+                
                 btn.innerHTML = `<span>${formatText(opt, q.tashkeel)}</span><i class="fa-regular ${isSelected ? 'fa-circle-check text-sky-600' : 'fa-circle text-slate-300'}"></i>`;
                 optsContainer.appendChild(btn);
             });
-            document.getElementById('prev-btn').disabled = idx === 0; document.getElementById('next-btn').classList.toggle('hidden', idx === quizState.questions.length - 1);
+            
+            document.getElementById('prev-btn').disabled = idx === 0; 
+            document.getElementById('next-btn').classList.toggle('hidden', idx === quizState.questions.length - 1);
             renderPalette();
         }
 
@@ -2071,41 +2357,51 @@
                 breakdown: breakdownDetails 
             });
 
-            // إظهار شاشة النتيجة للطالب
             document.getElementById('view-quiz').classList.add('hidden'); 
             const resView = document.getElementById('view-result');
             document.getElementById('quick-info-top-btn').classList.add('hidden');
             
             document.getElementById('res-score').textContent = `${score} / ${total}`; 
             document.getElementById('res-pct').textContent = `${pct}٪`;
+            
             const answeredEl = document.getElementById('display-answered-count');
             if (answeredEl) answeredEl.textContent = `${answeredCount} من ${total}`;
 
             document.getElementById('res-pass-fail').textContent = isPassed ? "ناجح" : "راسب"; 
             document.getElementById('res-pass-fail').className = `text-lg font-black ${isPassed ? 'text-emerald-600' : 'text-rose-600'}`;
 
+            // التحكم بظهور زر الـ PDF الخاص بالطالب بناءً على الإعداد
+            const pdfBtn = document.getElementById('student-pdf-btn');
+            if (pdfBtn) {
+                if (appSettings.enableStudentPDF !== false) { 
+                    pdfBtn.classList.remove('hidden'); 
+                    pdfBtn.classList.add('flex'); 
+                } else { 
+                    pdfBtn.classList.add('hidden'); 
+                    pdfBtn.classList.remove('flex'); 
+                }
+            }
+
             const iconContainer = document.getElementById('res-icon-container');
             const iconEl = document.getElementById('res-icon-i');
             const resMsg = document.getElementById('res-msg');
 
             if (isPassed) {
-                // حالة النجاح تم تعديل hidden إلى flex
                 resView.className = "flex flex-col items-center justify-center text-center space-y-6 bg-emerald-50/60 rounded-3xl p-8 shadow-xl border-2 border-emerald-200 transition-all duration-300";
                 iconContainer.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-emerald-100 text-amber-500 border-4 border-emerald-300";
                 iconEl.className = "fa-solid fa-trophy";
                 
-                resMsg.textContent = `${appSettings.successMessage || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز."} (أجبت عن ${answeredCount} من ${total} سؤالاً)`;
+                resMsg.textContent = appSettings.successMessage || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز.";
                 resMsg.className = "text-emerald-800 font-extrabold text-sm sm:text-base leading-relaxed";
                 
                 document.getElementById('cert-btn-container').classList.remove('hidden'); 
                 if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); 
             } else {
-                // حالة الرسوب تم تعديل hidden إلى flex
                 resView.className = "flex flex-col items-center justify-center text-center space-y-6 bg-rose-50/60 rounded-3xl p-8 shadow-xl border-2 border-rose-200 transition-all duration-300";
                 iconContainer.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-rose-100 text-rose-600 border-4 border-rose-300";
                 iconEl.className = "fa-solid fa-xmark";
                 
-                resMsg.textContent = `${appSettings.failMessage || "لا تتراجع! المحاولة هي البداية الحقيقية للنجاح، حاول مرة أخرى."} (أجبت عن ${answeredCount} من ${total} سؤالاً)`;
+                resMsg.textContent = appSettings.failMessage || "لا تتراجع! المحاولة هي البداية الحقيقية للنجاح، حاول مرة أخرى.";
                 resMsg.className = "text-rose-800 font-extrabold text-sm sm:text-base leading-relaxed";
                 
                 document.getElementById('cert-btn-container').classList.add('hidden'); 
@@ -2218,18 +2514,16 @@
         function loadAdminData() {
             document.getElementById('admin-teacher-input').value = appSettings.teacherName || "";
             document.getElementById('admin-exam-title-input').value = appSettings.examTitle || "";
-            
-            // ربط الحقول الثلاثة لتظهر في لوحة الإدارة
+            if(document.getElementById('admin-exam-subtitle-input')) document.getElementById('admin-exam-subtitle-input').value = appSettings.examSubtitle || "اخْتَبِرْ مَعْلُومَاتِكَ، وَقِسْ قُدْرَاتِكَ، وَحَقِّقْ أَعْلَى الدَّرَجَاتِ!";
             if(document.getElementById('admin-start-btn-input')) document.getElementById('admin-start-btn-input').value = appSettings.startBtnText || "ابْدَأِ الِاخْتِبَارِ الْآنَ";
             document.getElementById('admin-branch-input').value = appSettings.branch || "";
             if(document.getElementById('admin-pagetitle-input')) document.getElementById('admin-pagetitle-input').value = appSettings.pageTitle || "لَمَحَاتٌ وَقُطُوفٌ لُغَوِيَّةٌ";
             if(document.getElementById('admin-quickinfo-label-input')) document.getElementById('admin-quickinfo-label-input').value = appSettings.quickInfoLabel || "مَعْلُومَةٌ سَرِيعَةٌ لِلدَّرْسِ";
-
+           if(document.getElementById('admin-header-advice-input')) document.getElementById('admin-header-advice-input').value = appSettings.headerAdvice || "";
             document.getElementById('admin-exam-count-input').value = appSettings.examCount || 20;
             document.getElementById('admin-exam-duration-input').value = appSettings.examDuration || 20;
             document.getElementById('admin-expiry-date-input').value = appSettings.expiryDate || "";
             document.getElementById('admin-footer-year-input').value = appSettings.footerYear || "2026";
-            
             if(document.getElementById('admin-show-bank-card')) document.getElementById('admin-show-bank-card').value = (appSettings.showBankCard === false || appSettings.showBankCard === "false") ? "false" : "true";
             if(document.getElementById('admin-bank-card-style')) document.getElementById('admin-bank-card-style').value = appSettings.bankCardStyle || "style1";
             if(document.getElementById('admin-use-difficulty-filter')) { document.getElementById('admin-use-difficulty-filter').checked = !!appSettings.useDifficultyFilter; toggleDifficultySettingsView(!!appSettings.useDifficultyFilter); }
@@ -2237,7 +2531,9 @@
             if(document.getElementById('admin-shuffle-options')) document.getElementById('admin-shuffle-options').checked = appSettings.shuffleOptions !== false;
             if(document.getElementById('admin-enable-tashkeel')) document.getElementById('admin-enable-tashkeel').checked = appSettings.enableTashkeel !== false;
             if(document.getElementById('admin-require-password')) document.getElementById('admin-require-password').checked = !!appSettings.requireStudentPassword;
-
+            
+            if(document.getElementById('admin-enable-student-pdf')) document.getElementById('admin-enable-student-pdf').checked = appSettings.enableStudentPDF !== false; // الإضافة الجديدة هنا
+            
             if(document.getElementById('admin-logo-header-input')) document.getElementById('admin-logo-header-input').value = appSettings.logoHeader || "";
             if(document.getElementById('admin-logo-right-input')) document.getElementById('admin-logo-right-input').value = appSettings.logoRight || "";
             if(document.getElementById('admin-logo-left-input')) document.getElementById('admin-logo-left-input').value = appSettings.logoLeft || "";
@@ -2245,8 +2541,8 @@
             if(document.getElementById('admin-mid-img-input-2')) document.getElementById('admin-mid-img-input-2').value = appSettings.midImg2 || "";
             if(document.getElementById('admin-bottom-img-input-right')) document.getElementById('admin-bottom-img-input-right').value = appSettings.bottomImgRight || "";
             if(document.getElementById('admin-bottom-img-input-left')) document.getElementById('admin-bottom-img-input-left').value = appSettings.bottomImgLeft || "";
-                    if(document.getElementById('admin-success-msg-input')) document.getElementById('admin-success-msg-input').value = appSettings.successMessage || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز.";
-                    if(document.getElementById('admin-fail-msg-input')) document.getElementById('admin-fail-msg-input').value = appSettings.failMessage || "لا تتراجع! المحاولة هي البداية الحقيقية للنجاح، حاول مرة أخرى.";
+            if(document.getElementById('admin-success-msg-input')) document.getElementById('admin-success-msg-input').value = appSettings.successMessage || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز.";
+            if(document.getElementById('admin-fail-msg-input')) document.getElementById('admin-fail-msg-input').value = appSettings.failMessage || "لا تتراجع! المحاولة هي البداية الحقيقية للنجاح، حاول مرة أخرى.";
 
             renderAdminStagesList();
             switchAdminTab('settings');
@@ -2485,7 +2781,12 @@
             pool.forEach(t => topicSel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`);
             renderAdminQuestionsList();
         }
-        function renderAdminQuestionsList() {
+        let currentAdminQuestionsLimit = 50;
+
+        function renderAdminQuestionsList(isLoadMore = false) {
+            // إعادة ضبط العداد إلى 50 سؤال عند التصفية أو التبديل بين التبويبات
+            if (isLoadMore !== true) currentAdminQuestionsLimit = 50;
+            
             const container = document.getElementById('admin-questions-list'); if (!container) return; 
             const fStage = document.getElementById('filter-q-stage')?.value || ''; const fGrade = document.getElementById('filter-q-grade')?.value || ''; const fBranch = document.getElementById('filter-q-branch')?.value || ''; const fTopic = document.getElementById('filter-q-topic')?.value || '';
             const filtered = questionBank.map((q, idx) => ({...q, originalIdx: idx})).filter(q => {
@@ -2494,9 +2795,12 @@
             });
             if (filtered.length === 0) { container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد أسئلة.</p>'; return; }
             
-            let htmlString = ''; // المتغير السحري لتسريع الطباعة
+            let htmlString = '';
             
-            filtered.forEach((q, qIdx) => {
+            // اقتطاع العدد المطلوب فقط لتسريع المتصفح
+            const itemsToRender = filtered.slice(0, currentAdminQuestionsLimit);
+            
+            itemsToRender.forEach((q, loopIdx) => {
                 const globalIdx = q.originalIdx; const isActive = q.active !== false; const isTashkeel = q.tashkeel !== false;
                 let gradeTopicBadge = `<span class="bg-sky-50 text-sky-900 px-2 py-0.5 rounded-md font-bold text-[11px] border border-sky-200 mt-1.5 w-fit">${q.stage} ➔ ${q.grade} ➔ ${q.branch} ➔ ${q.topic}</span>`;
                 
@@ -2509,10 +2813,16 @@
                     }
                 }
 
-                htmlString += `<div class="bg-white p-3.5 rounded-xl border space-y-2 text-xs shadow-2xs mb-2"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex flex-col gap-1"><div class="flex items-center gap-2 flex-wrap"><input type="checkbox" value="${globalIdx}" class="q-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0"><button type="button" onclick="toggleQuestionActivation(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${isActive ? 'مفعل' : 'مخفي'}</button><button type="button" onclick="toggleQuestionTashkeel(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}">${isTashkeel ? 'تشكيل' : 'بدون تشكيل'}</button><span class="font-black text-sky-950 text-sm leading-relaxed">س${qIdx+1}: ${escapeHTML(q.q)}</span></div><div class="flex flex-wrap gap-1.5">${gradeTopicBadge}${paraBadge}</div></div><div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1"><button type="button" onclick="moveQuestionFiltered(${qIdx}, -1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveQuestionFiltered(${qIdx}, 1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="previewSingleQuestion(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button><button type="button" onclick="duplicateQuestion(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button><button type="button" onclick="openEditQuestionModal(${globalIdx})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button><button type="button" onclick="deleteSingleQuestion(${globalIdx})" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i> حذف</button></div></div></div>`;
+                htmlString += `<div class="bg-white p-3.5 rounded-xl border space-y-2 text-xs shadow-2xs mb-2"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex flex-col gap-1"><div class="flex items-center gap-2 flex-wrap"><input type="checkbox" value="${globalIdx}" class="q-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0"><button type="button" onclick="toggleQuestionActivation(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${isActive ? 'مفعل' : 'مخفي'}</button><button type="button" onclick="toggleQuestionTashkeel(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}">${isTashkeel ? 'تشكيل' : 'بدون تشكيل'}</button><span class="font-black text-sky-950 text-sm leading-relaxed">س${loopIdx+1}: ${escapeHTML(q.q)}</span></div><div class="flex flex-wrap gap-1.5">${gradeTopicBadge}${paraBadge}</div></div><div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1"><button type="button" onclick="moveQuestionFiltered(${loopIdx}, -1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveQuestionFiltered(${loopIdx}, 1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="previewSingleQuestion(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button><button type="button" onclick="duplicateQuestion(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button><button type="button" onclick="openEditQuestionModal(${globalIdx})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button><button type="button" onclick="deleteSingleQuestion(${globalIdx})" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i> حذف</button></div></div></div>`;
             });
             
-            container.innerHTML = htmlString; // طباعة كل شيء مرة واحدة
+            // إضافة زر عرض المزيد إذا كان هناك بقية أسئلة
+            if (filtered.length > currentAdminQuestionsLimit) {
+                const remaining = filtered.length - currentAdminQuestionsLimit;
+                htmlString += `<div class="text-center pt-3 pb-5"><button type="button" onclick="currentAdminQuestionsLimit += 50; renderAdminQuestionsList(true)" class="bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold px-6 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-sm border border-sky-300 w-full sm:w-auto cursor-pointer"><i class="fa-solid fa-angles-down ml-1"></i> عرض المزيد من الأسئلة (${remaining} متبقية)</button></div>`;
+            }
+
+            container.innerHTML = htmlString; 
         }
         function toggleQuestionActivation(idx) { questionBank[idx].active = !questionBank[idx].active; saveState(); renderAdminQuestionsList(); }
         function toggleQuestionTashkeel(idx) { questionBank[idx].tashkeel = !questionBank[idx].tashkeel; saveState(); renderAdminQuestionsList(); }
@@ -2527,9 +2837,119 @@
         function populateModalBranches() { const st = document.getElementById('modal-q-stage').value; const gr = document.getElementById('modal-q-grade').value; const sel = document.getElementById('modal-q-branch'); sel.innerHTML = '<option value="">اختر</option>'; if (st && gr) branchesData.filter(b => b.active !== false && b.targetGrades && b.targetGrades.some(tg => tg.stage===st && tg.grade===gr)).forEach(b => sel.innerHTML += `<option value="${b.branch}">${b.branch}</option>`); }
         function populateModalTopics() { const st = document.getElementById('modal-q-stage').value; const gr = document.getElementById('modal-q-grade').value; const br = document.getElementById('modal-q-branch').value; const sel = document.getElementById('modal-q-topic'); sel.innerHTML = '<option value="">اختر</option>'; if (st && gr && br) topicsData.filter(t => t.active !== false && t.targetBranches && t.targetBranches.some(tb => tb.stage===st && tb.grade===gr && tb.branch===br)).forEach(t => sel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`); populateModalParagraphs(); }
         function populateModalParagraphs() { const sel = document.getElementById('modal-q-paragraph'); if(!sel) return; sel.innerHTML = '<option value="">بدون فقرة</option>'; paragraphs.forEach(p => { if (p.active !== false) sel.innerHTML += `<option value="${p.id}">${p.name || p.title}</option>`; }); }
-        function openQuestionModalForAdd() { document.getElementById('edit-q-index').value = "-1"; populateModalStages(); document.getElementById('modal-question-edit').classList.remove('hidden'); document.getElementById('modal-question-edit').classList.add('flex'); }
-        function openEditQuestionModal(idx) { const q = questionBank[idx]; document.getElementById('edit-q-index').value = idx; populateModalStages(); document.getElementById('modal-q-stage').value = q.stage; populateModalGrades(); document.getElementById('modal-q-grade').value = q.grade; populateModalBranches(); document.getElementById('modal-q-branch').value = q.branch; populateModalTopics(); document.getElementById('modal-q-topic').value = q.topic; populateModalParagraphs(); document.getElementById('modal-q-paragraph').value = q.paragraphId || ""; document.getElementById('modal-q-text').value = q.q; document.getElementById('modal-opt-0').value = q.opts[0] || ''; document.getElementById('modal-opt-1').value = q.opts[1] || ''; document.getElementById('modal-opt-2').value = q.opts[2] || ''; document.getElementById('modal-opt-3').value = q.opts[3] || ''; document.getElementById('modal-q-ans').value = q.ans; document.getElementById('modal-q-exp').value = q.exp || ""; document.getElementById('modal-question-edit').classList.remove('hidden'); document.getElementById('modal-question-edit').classList.add('flex'); }
-        function saveQuestionFromModal() { const idx = parseInt(document.getElementById('edit-q-index').value); const stage = document.getElementById('modal-q-stage').value; const grade = document.getElementById('modal-q-grade').value; const branch = document.getElementById('modal-q-branch').value; const topic = document.getElementById('modal-q-topic').value; const qText = document.getElementById('modal-q-text').value.trim(); const ans = document.getElementById('modal-q-ans').value.trim(); const exp = document.getElementById('modal-q-exp').value.trim(); const paragraphId = document.getElementById('modal-q-paragraph').value; const difficulty = document.getElementById('modal-q-difficulty').value; const active = document.getElementById('modal-q-active').checked; const tashkeel = document.getElementById('modal-q-tashkeel').checked; const opts = [ document.getElementById('modal-opt-0').value.trim(), document.getElementById('modal-opt-1').value.trim(), document.getElementById('modal-opt-2').value.trim(), document.getElementById('modal-opt-3').value.trim() ]; if (!stage || !grade || !branch || !topic || !qText || !opts[0] || !ans) { alert("أكمل البيانات"); return; } const obj = { stage, grade, branch, topic, q: qText, opts, ans, exp, paragraphId, difficulty, active, tashkeel }; if (idx === -1) questionBank.push(obj); else questionBank[idx] = obj; saveState(); renderAdminQuestionsList(); document.getElementById('modal-question-edit').classList.add('hidden'); document.getElementById('modal-question-edit').classList.remove('flex'); alert("تم الحفظ بنجاح!"); }
+        // دوال بناء خانات الخيارات ديناميكياً
+        function renderOptionsEditUI(opts) {
+            const container = document.getElementById('dynamic-options-container');
+            container.innerHTML = '';
+            // الافتراضي وضع 4 خانات فارغة لتسهيل العمل
+            if (!opts || opts.length === 0) opts = ['', '', '', '']; 
+            opts.forEach(optText => {
+                addOptionInput(optText);
+            });
+        }
+
+        function addOptionInput(val = '') {
+            const container = document.getElementById('dynamic-options-container');
+            const div = document.createElement('div');
+            div.className = "flex gap-2 items-center option-input-wrapper";
+            div.innerHTML = `<input type="text" class="q-dynamic-opt w-full p-3 rounded-xl border bg-white text-sm font-bold" placeholder="اكتب الخيار هنا..." value="${escapeHTML(val)}">
+                             <button type="button" onclick="removeOptionInput(this)" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-3 rounded-xl transition shadow-sm" title="حذف الخيار"><i class="fa-solid fa-trash"></i></button>`;
+            container.appendChild(div);
+        }
+
+        function removeOptionInput(btn) {
+            const container = document.getElementById('dynamic-options-container');
+            // منع الحذف إذا لم يتبق سوى خيارين (لأن السؤال يحتاج خيارين على الأقل)
+            if (container.querySelectorAll('.option-input-wrapper').length <= 2) {
+                alert("لا يمكن الحذف! يجب أن يحتوي السؤال على خيارين كحد أدنى.");
+                return;
+            }
+            btn.closest('.option-input-wrapper').remove();
+        }
+
+        function openQuestionModalForAdd() { 
+            document.getElementById('edit-q-index').value = "-1"; 
+            populateModalStages(); 
+            document.getElementById('modal-q-text').value = "";
+            document.getElementById('modal-q-ans').value = "";
+            document.getElementById('modal-q-exp').value = "";
+            renderOptionsEditUI(['', '', '', '']); // عرض 4 خانات فارغة كبداية
+            document.getElementById('modal-question-edit').classList.remove('hidden'); 
+            document.getElementById('modal-question-edit').classList.add('flex'); 
+        }
+
+        function openEditQuestionModal(idx) { 
+            const q = questionBank[idx]; 
+            document.getElementById('edit-q-index').value = idx; 
+            populateModalStages(); 
+            document.getElementById('modal-q-stage').value = q.stage; 
+            populateModalGrades(); 
+            document.getElementById('modal-q-grade').value = q.grade; 
+            populateModalBranches(); 
+            document.getElementById('modal-q-branch').value = q.branch; 
+            populateModalTopics(); 
+            document.getElementById('modal-q-topic').value = q.topic; 
+            populateModalParagraphs(); 
+            document.getElementById('modal-q-paragraph').value = q.paragraphId || ""; 
+            document.getElementById('modal-q-difficulty').value = q.difficulty || ""; 
+            document.getElementById('modal-q-active').checked = q.active !== false; 
+            document.getElementById('modal-q-tashkeel').checked = q.tashkeel !== false; 
+            
+            document.getElementById('modal-q-text').value = q.q; 
+            renderOptionsEditUI(q.opts); // تحميل خيارات السؤال الفعلية (سواء كانت 2، 4، أو 6)
+            
+            document.getElementById('modal-q-ans').value = q.ans; 
+            document.getElementById('modal-q-exp').value = q.exp || ""; 
+            
+            document.getElementById('modal-question-edit').classList.remove('hidden'); 
+            document.getElementById('modal-question-edit').classList.add('flex'); 
+        }
+
+        function saveQuestionFromModal() { 
+            const idx = parseInt(document.getElementById('edit-q-index').value); 
+            const stage = document.getElementById('modal-q-stage').value; 
+            const grade = document.getElementById('modal-q-grade').value; 
+            const branch = document.getElementById('modal-q-branch').value; 
+            const topic = document.getElementById('modal-q-topic').value; 
+            const qText = document.getElementById('modal-q-text').value.trim(); 
+            const ans = document.getElementById('modal-q-ans').value.trim(); 
+            const exp = document.getElementById('modal-q-exp').value.trim(); 
+            const paragraphId = document.getElementById('modal-q-paragraph').value; 
+            const difficulty = document.getElementById('modal-q-difficulty').value; 
+            const active = document.getElementById('modal-q-active').checked; 
+            const tashkeel = document.getElementById('modal-q-tashkeel').checked; 
+            
+            // قراءة الخيارات الديناميكية من جميع الخانات المتاحة واستبعاد الخانات الفارغة
+            const optInputs = document.querySelectorAll('.q-dynamic-opt');
+            let opts = [];
+            optInputs.forEach(input => {
+                let val = input.value.trim();
+                if (val !== "") opts.push(val);
+            });
+
+            // التحقق من صحة البيانات
+            if (!stage || !grade || !branch || !topic || !qText || opts.length < 2 || !ans) { 
+                alert("يرجى إكمال البيانات (نص السؤال، إجابة صحيحة، وخيارين على الأقل لتكوين السؤال)."); 
+                return; 
+            } 
+            
+            // التأكد من أن الإجابة الصحيحة موجودة ضمن الخيارات
+            if (!opts.includes(ans)) {
+                alert("تنبيه: الإجابة الصحيحة المكتوبة غير مطابقة لأي من الخيارات التي أدخلتها. يرجى التأكد من تطابق النص تماماً.");
+                return;
+            }
+
+            const obj = { stage, grade, branch, topic, q: qText, opts, ans, exp, paragraphId, difficulty, active, tashkeel }; 
+            
+            if (idx === -1) questionBank.push(obj); 
+            else questionBank[idx] = obj; 
+            
+            saveState(); 
+            renderAdminQuestionsList(); 
+            document.getElementById('modal-question-edit').classList.add('hidden'); 
+            document.getElementById('modal-question-edit').classList.remove('flex'); 
+            alert("تم الحفظ بنجاح!"); 
+        }
         function saveDirectBatchQuestions() { const rawTxt = document.getElementById('direct-batch-input').value.trim(); const fStage = document.getElementById('filter-q-stage').value; const fGrade = document.getElementById('filter-q-grade').value; const fBranch = document.getElementById('filter-q-branch').value; const fTopic = document.getElementById('filter-q-topic').value; const defDiff = document.getElementById('batch-default-difficulty').value; if (!fStage || !fGrade || !fBranch || !fTopic) { alert("حدد الفلاتر الأربعة أولاً"); return; } if (!rawTxt) return; try { let fixedTxt = rawTxt.replace(/[“”„‘’]/g, '"').replace(/,\s*([\]}])/g, '$1').trim(); if (!fixedTxt.startsWith('[') && !fixedTxt.startsWith('{')) fixedTxt = '[' + fixedTxt + ']'; else if (fixedTxt.startsWith('{') && !fixedTxt.endsWith(']')) fixedTxt = '[' + fixedTxt + ']'; fixedTxt = fixedTxt.replace(/}\s*{/g, "},{"); let parsed = eval("(" + fixedTxt + ")"); if (!Array.isArray(parsed)) parsed = [parsed]; let count = 0; parsed.forEach(item => { if (item.q && item.opts && item.ans) { questionBank.push({ stage: fStage, grade: fGrade, branch: fBranch, topic: fTopic, active: true, tashkeel: true, paragraphId: item.paragraphId || "", q: item.q, opts: item.opts, ans: item.ans, exp: item.exp || "", difficulty: item.difficulty || defDiff || "" }); count++; } }); if (count > 0) { saveState(); renderAdminQuestionsList(); document.getElementById('direct-batch-input').value = ''; alert(`تمت إضافة ${count} سؤال`); } } catch(e) { alert("خطأ في تنسيق الكود: " + e.message); } }
         function exportTopicQuestionsJson() { const fTopic = document.getElementById('filter-q-topic').value; if (!fTopic) return; let tq = questionBank.filter(q => q.topic === fTopic); let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tq, null, 2)); let a = document.createElement('a'); a.href = dataStr; a.download = `${fTopic}_questions.json`; a.click(); }
         function importQuestionsJsonFile(event) { let file = event.target.files[0]; if (!file) return; let reader = new FileReader(); reader.onload = function(e) { try { let imp = JSON.parse(e.target.result); if (Array.isArray(imp)) { const fStage = document.getElementById('filter-q-stage').value; const fGrade = document.getElementById('filter-q-grade').value; const fBranch = document.getElementById('filter-q-branch').value; const fTopic = document.getElementById('filter-q-topic').value; imp.forEach(q => { if (fStage) q.stage = fStage; if (fGrade) q.grade = fGrade; if (fBranch) q.branch = fBranch; if (fTopic) q.topic = fTopic; q.active = true; q.tashkeel = q.tashkeel !== false; questionBank.push(q); }); saveState(); renderAdminQuestionsList(); alert("تم الاستيراد بنجاح"); } } catch(err) { alert("خطأ"); } event.target.value = ''; }; reader.readAsText(file); }
@@ -2566,15 +2986,19 @@
             pool.forEach(t => topicSel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`);
             renderAdminParagraphsList();
         }
-        function renderAdminParagraphsList() {
+        let currentAdminParasLimit = 50;
+
+        function renderAdminParagraphsList(isLoadMore = false) {
+            if (isLoadMore !== true) currentAdminParasLimit = 50;
             const container = document.getElementById('admin-paragraphs-list'); if (!container) return; 
             const fStage = document.getElementById('filter-para-stage')?.value || ''; const fGrade = document.getElementById('filter-para-grade')?.value || ''; const fBranch = document.getElementById('filter-para-branch')?.value || ''; const fTopic = document.getElementById('filter-para-topic')?.value || '';
             const filtered = paragraphs.map((p, idx) => ({...p, originalIdx: idx})).filter(p => { if (fStage && p.stage !== fStage) return false; if (fGrade && p.grade !== fGrade) return false; if (fBranch && p.branch !== fBranch) return false; if (fTopic && p.topic !== fTopic) return false; return true; });
             if (filtered.length === 0) { container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد فقرات.</p>'; return; }
             
             let htmlString = '';
+            const itemsToRender = filtered.slice(0, currentAdminParasLimit);
 
-            filtered.forEach((p, pIdx) => {
+            itemsToRender.forEach((p, pIdx) => {
                 const globalIdx = p.originalIdx; const isActive = p.active !== false; const isTashkeel = p.tashkeel !== false;
                 let gradeTopicBadge = `<span class="bg-sky-50 text-sky-900 px-2 py-0.5 rounded-md font-bold text-[11px] border border-sky-200 mt-1.5 w-fit">${p.stage} ➔ ${p.grade} ➔ ${p.branch} ➔ ${p.topic}</span>`;
                 
@@ -2589,6 +3013,12 @@
 
                 htmlString += `<div class="bg-white p-3.5 rounded-xl border space-y-2 text-xs shadow-2xs mb-2"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex flex-col gap-1"><div class="flex items-center gap-2 flex-wrap"><button type="button" onclick="toggleParagraphVisibility(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${isActive ? 'مفعلة' : 'مخفية'}</button><button type="button" onclick="toggleParagraphTashkeel(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}">${isTashkeel ? 'تشكيل' : 'بدون تشكيل'}</button><span class="font-black text-sky-950 text-sm">${escapeHTML(p.name || p.title)}</span></div><div class="flex flex-wrap gap-1.5">${gradeTopicBadge}${qsBadge}</div></div><div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1"><button type="button" onclick="moveParagraphFiltered(${pIdx}, -1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveParagraphFiltered(${pIdx}, 1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="previewParagraph(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button><button type="button" onclick="duplicateParagraph(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button><button type="button" onclick="openEditParagraphModal('${p.id}')" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button><button type="button" onclick="deleteParagraph('${p.id}')" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i> حذف</button></div></div><p class="text-slate-600 line-clamp-2 mt-2 pt-2 border-t border-slate-100">${escapeHTML(p.text)}</p></div>`;
             });
+            
+            if (filtered.length > currentAdminParasLimit) {
+                const remaining = filtered.length - currentAdminParasLimit;
+                htmlString += `<div class="text-center pt-3 pb-5"><button type="button" onclick="currentAdminParasLimit += 50; renderAdminParagraphsList(true)" class="bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold px-6 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-sm border border-sky-300 w-full sm:w-auto cursor-pointer"><i class="fa-solid fa-angles-down ml-1"></i> عرض المزيد من الفقرات (${remaining} متبقية)</button></div>`;
+            }
+
             container.innerHTML = htmlString;
         }
         function toggleParagraphVisibility(idx) { paragraphs[idx].active = !paragraphs[idx].active; saveState(); renderAdminParagraphsList(); }
@@ -2646,20 +3076,30 @@
             pool.forEach(t => topicSel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`);
             renderAdminQuickInfoList();
         }
-       function renderAdminQuickInfoList() {
+       let currentAdminQiLimit = 50;
+
+        function renderAdminQuickInfoList(isLoadMore = false) {
+            if (isLoadMore !== true) currentAdminQiLimit = 50;
             const container = document.getElementById('admin-quickinfo-list'); if (!container) return; 
             const fStage = document.getElementById('filter-qi-stage')?.value || ''; const fGrade = document.getElementById('filter-qi-grade')?.value || ''; const fBranch = document.getElementById('filter-qi-branch')?.value || ''; const fTopic = document.getElementById('filter-qi-topic')?.value || '';
             const filtered = quickInfoList.map((qi, idx) => ({...qi, originalIdx: idx})).filter(qi => { if (fStage && qi.stage !== fStage) return false; if (fGrade && qi.grade !== fGrade) return false; if (fBranch && qi.branch !== fBranch) return false; if (fTopic && qi.topic !== fTopic) return false; return true; });
             if (filtered.length === 0) { container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد بطاقات.</p>'; return; }
             
             let htmlString = '';
+            const itemsToRender = filtered.slice(0, currentAdminQiLimit);
 
-            filtered.forEach((qi, qIdx) => {
+            itemsToRender.forEach((qi, qIdx) => {
                 const globalIdx = qi.originalIdx; const isActive = qi.active !== false; const isTashkeel = qi.tashkeel !== false;
                 let gradeTopicBadge = `<span class="bg-sky-50 text-sky-900 px-2 py-0.5 rounded-md font-bold text-[11px] border border-sky-200 mt-1.5 w-fit flex items-center gap-1"><i class="fa-solid fa-route"></i> ${qi.stage} ➔ ${qi.grade} ➔ ${qi.branch} ➔ ${qi.topic || '(الفرع كاملاً)'}</span>`;
 
                 htmlString += `<div class="bg-white p-3.5 rounded-xl border space-y-2 text-xs shadow-2xs mb-2"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex flex-col gap-1"><div class="flex items-center gap-2 flex-wrap"><button type="button" onclick="toggleQuickInfoVisibility(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${isActive ? 'مفعلة' : 'مخفية'}</button><button type="button" onclick="toggleQuickInfoTashkeel(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}">${isTashkeel ? 'تشكيل' : 'بدون تشكيل'}</button><span class="font-black text-sky-950 text-sm">${escapeHTML(qi.title)}</span></div>${gradeTopicBadge}</div><div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1"><button type="button" onclick="moveQuickInfoFiltered(${qIdx}, -1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveQuickInfoFiltered(${qIdx}, 1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="previewQuickInfo(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button><button type="button" onclick="duplicateQuickInfo(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button><button type="button" onclick="openEditQuickInfoModal(${globalIdx})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button><button type="button" onclick="deleteQuickInfo(${globalIdx})" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i> حذف</button></div></div></div>`;
             });
+
+            if (filtered.length > currentAdminQiLimit) {
+                const remaining = filtered.length - currentAdminQiLimit;
+                htmlString += `<div class="text-center pt-3 pb-5"><button type="button" onclick="currentAdminQiLimit += 50; renderAdminQuickInfoList(true)" class="bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold px-6 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-sm border border-sky-300 w-full sm:w-auto cursor-pointer"><i class="fa-solid fa-angles-down ml-1"></i> عرض المزيد من البطاقات (${remaining} متبقية)</button></div>`;
+            }
+
             container.innerHTML = htmlString;
         }
         function toggleQuickInfoVisibility(idx) { quickInfoList[idx].active = !quickInfoList[idx].active; saveState(); renderAdminQuickInfoList(); }
@@ -2714,10 +3154,140 @@
         function moveQiSectionBlock(btn, direction) { const block = btn.closest('.qi-section-block'); const parent = block.parentNode; if (direction === -1 && block.previousElementSibling) parent.insertBefore(block, block.previousElementSibling); else if (direction === 1 && block.nextElementSibling) parent.insertBefore(block, block.nextElementSibling.nextElementSibling); }
         function moveQiSubItemBlock(btn, direction) { const block = btn.closest('.qi-subitem-block'); const parent = block.parentNode; if (direction === -1 && block.previousElementSibling) parent.insertBefore(block, block.previousElementSibling); else if (direction === 1 && block.nextElementSibling) parent.insertBefore(block, block.nextElementSibling.nextElementSibling); }
         function addQiAttachmentBlock(label = "", url = "") { const container = document.getElementById('quickinfo-attachments-builder-container'); if (!container) return; const div = document.createElement('div'); div.className = "qi-attachment-block flex items-center gap-2 bg-white p-2.5 rounded-xl border text-xs"; div.innerHTML = `<input type="text" class="qi-att-label p-2 rounded-lg border text-xs font-bold w-1/3 bg-amber-50/50" placeholder="مسمى الزر" value="${label}"><input type="text" class="qi-att-url p-2 rounded-lg border text-xs dir-ltr flex-grow bg-slate-50" placeholder="الرابط (https://...)" value="${url}"><button type="button" onclick="this.closest('.qi-attachment-block').remove()" class="text-rose-600 px-2"><i class="fa-solid fa-trash"></i></button>`; container.appendChild(div); }
-        function exportTopicQuickInfoJson() { const fTopic = document.getElementById('filter-qi-topic').value; if (!fTopic) return; let tq = quickInfoList.filter(q => q.topic === fTopic); let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tq, null, 2)); let a = document.createElement('a'); a.href = dataStr; a.download = `${fTopic}_quickinfo.json`; a.click(); }
-        function importQuickInfoJsonFile(event) { let file = event.target.files[0]; if (!file) return; let reader = new FileReader(); reader.onload = function(e) { try { let imp = JSON.parse(e.target.result); if (Array.isArray(imp)) { quickInfoList = quickInfoList.concat(imp); saveState(); renderAdminQuickInfoList(); alert("تم الاستيراد بنجاح"); } } catch(err) { alert("خطأ"); } event.target.value = ''; }; reader.readAsText(file); }
-        function exportSingleQuickInfoJson() { let obj = { title: document.getElementById('modal-qi-title').value.trim(), img: document.getElementById('modal-qi-img').value.trim(), active: document.getElementById('modal-qi-active').checked, tashkeel: document.getElementById('modal-qi-tashkeel').checked, sections: [], attachments: [] }; document.querySelectorAll('.qi-section-block').forEach(secBlock => { let mainHeader = secBlock.querySelector('.qi-sec-main-header').value.trim(); let mainActive = secBlock.querySelector('.qi-sec-active').checked; let subItems = []; secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => { let subTitle = subBlock.querySelector('.qi-sub-title').value.trim(); let subText = subBlock.querySelector('.qi-sub-text').value.trim(); let subImg = subBlock.querySelector('.qi-sub-img').value.trim(); let subActive = subBlock.querySelector('.qi-sub-active').checked; if (subTitle || subText) subItems.push({ title: subTitle, text: subText, img: subImg, active: subActive }); }); if (mainHeader || subItems.length > 0) obj.sections.push({ mainHeader, active: mainActive, subItems }); }); document.querySelectorAll('.qi-attachment-block').forEach(attBlock => { let label = attBlock.querySelector('.qi-att-label').value.trim(); let url = attBlock.querySelector('.qi-att-url').value.trim(); if (url) obj.attachments.push({ label: label || "اطّلع على", url }); }); let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj, null, 2)); let a = document.createElement('a'); a.href = dataStr; a.download = `single_quickinfo.json`; a.click(); }
-        function importSingleQuickInfoJson(event) { let file = event.target.files[0]; if (!file) return; let reader = new FileReader(); reader.onload = function(e) { try { let imp = JSON.parse(e.target.result); if (imp && !Array.isArray(imp)) { if (imp.title !== undefined) document.getElementById('modal-qi-title').value = imp.title; alert("تم الاستيراد للنافذة."); } } catch(err) { alert("خطأ"); } event.target.value = ''; }; reader.readAsText(file); }
+        function exportTopicQuickInfoJson() { 
+            const fTopic = document.getElementById('filter-qi-topic').value; 
+            if (!fTopic) {
+                alert("يرجى تحديد الموضوع من الفلاتر بالأعلى أولاً لتصدير بطاقاته.");
+                return;
+            }
+            let tq = quickInfoList.filter(q => q.topic === fTopic); 
+            if (tq.length === 0) {
+                alert("لا توجد بطاقات في هذا الموضوع لتصديرها.");
+                return;
+            }
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tq, null, 2)); 
+            let a = document.createElement('a'); 
+            a.href = dataStr; 
+            a.download = `${fTopic.replace(/\s+/g, '_')}_quickinfo.json`; 
+            a.click(); 
+        }
+
+        function importQuickInfoJsonFile(event) { 
+            let file = event.target.files[0]; 
+            if (!file) return; 
+            let reader = new FileReader(); 
+            reader.onload = function(e) { 
+                try { 
+                    let imp = JSON.parse(e.target.result); 
+                    // الحل الذكي: جعلها مصفوفة دائماً، سواء كانت بطاقة واحدة أو عدة بطاقات
+                    let itemsArray = Array.isArray(imp) ? imp : [imp];
+                    
+                    if (itemsArray.length > 0) { 
+                        const fStage = document.getElementById('filter-qi-stage').value;
+                        const fGrade = document.getElementById('filter-qi-grade').value;
+                        const fBranch = document.getElementById('filter-qi-branch').value;
+                        const fTopic = document.getElementById('filter-qi-topic').value;
+
+                        itemsArray.forEach(qi => {
+                            if (fStage) qi.stage = fStage;
+                            if (fGrade) qi.grade = fGrade;
+                            if (fBranch) qi.branch = fBranch;
+                            if (fTopic) qi.topic = fTopic;
+                            // التأكد من وجود خصائص التفعيل
+                            qi.active = qi.active !== false;
+                            qi.tashkeel = qi.tashkeel !== false;
+                            quickInfoList.push(qi);
+                        });
+                        
+                        saveState(); 
+                        renderAdminQuickInfoList(); 
+                        alert("تم الاستيراد وربط البطاقات بنجاح!"); 
+                    } else {
+                        alert("الملف فارغ أو غير صالح.");
+                    }
+                } catch(err) { 
+                    alert("خطأ أثناء الاستيراد: تأكد من أن الملف بصيغة JSON صحيحة."); 
+                } 
+                event.target.value = ''; 
+            }; 
+            reader.readAsText(file); 
+        }
+
+        function exportSingleQuickInfoJson() { 
+            let obj = { 
+                title: document.getElementById('modal-qi-title').value.trim(), 
+                img: document.getElementById('modal-qi-img').value.trim(), 
+                active: document.getElementById('modal-qi-active').checked, 
+                tashkeel: document.getElementById('modal-qi-tashkeel').checked, 
+                sections: [], 
+                attachments: [] 
+            }; 
+            document.querySelectorAll('.qi-section-block').forEach(secBlock => { 
+                let mainHeader = secBlock.querySelector('.qi-sec-main-header').value.trim(); 
+                let mainActive = secBlock.querySelector('.qi-sec-active').checked; 
+                let subItems = []; 
+                secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => { 
+                    let subTitle = subBlock.querySelector('.qi-sub-title').value.trim(); 
+                    let subText = subBlock.querySelector('.qi-sub-text').value.trim(); 
+                    let subImg = subBlock.querySelector('.qi-sub-img').value.trim(); 
+                    let subActive = subBlock.querySelector('.qi-sub-active').checked; 
+                    if (subTitle || subText) subItems.push({ title: subTitle, text: subText, img: subImg, active: subActive }); 
+                }); 
+                if (mainHeader || subItems.length > 0) obj.sections.push({ mainHeader, active: mainActive, subItems }); 
+            }); 
+            document.querySelectorAll('.qi-attachment-block').forEach(attBlock => { 
+                let label = attBlock.querySelector('.qi-att-label').value.trim(); 
+                let url = attBlock.querySelector('.qi-att-url').value.trim(); 
+                if (url) obj.attachments.push({ label: label || "اطّلع على", url }); 
+            }); 
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj, null, 2)); 
+            let a = document.createElement('a'); 
+            a.href = dataStr; 
+            a.download = `single_quickinfo.json`; 
+            a.click(); 
+        }
+
+        function importSingleQuickInfoJson(event) { 
+            let file = event.target.files[0]; 
+            if (!file) return; 
+            let reader = new FileReader(); 
+            reader.onload = function(e) { 
+                try { 
+                    let imp = JSON.parse(e.target.result); 
+                    // الحل الذكي: إذا استورد المستخدم مصفوفة بالخطأ، نأخذ أول بطاقة منها فقط
+                    let singleItem = Array.isArray(imp) ? imp[0] : imp;
+
+                    if (singleItem && typeof singleItem === 'object') { 
+                        if (singleItem.title !== undefined) document.getElementById('modal-qi-title').value = singleItem.title; 
+                        if (singleItem.img !== undefined) document.getElementById('modal-qi-img').value = singleItem.img;
+                        if (singleItem.active !== undefined) document.getElementById('modal-qi-active').checked = singleItem.active;
+                        if (singleItem.tashkeel !== undefined) document.getElementById('modal-qi-tashkeel').checked = singleItem.tashkeel;
+                        
+                        const container = document.getElementById('quickinfo-sections-builder-container');
+                        container.innerHTML = "";
+                        if (singleItem.sections && Array.isArray(singleItem.sections) && singleItem.sections.length > 0) {
+                            singleItem.sections.forEach(sec => addQuickInfoSectionBlock(sec.mainHeader || "", sec.active !== false, sec.subItems || []));
+                        } else {
+                            addQuickInfoSectionBlock("", true, []);
+                        }
+                        
+                        const attContainer = document.getElementById('quickinfo-attachments-builder-container');
+                        attContainer.innerHTML = "";
+                        if (singleItem.attachments && Array.isArray(singleItem.attachments)) {
+                            singleItem.attachments.forEach(att => addQiAttachmentBlock(att.label || "", att.url || ""));
+                        }
+
+                        alert("تم استيراد تفاصيل البطاقة للنافذة بنجاح!"); 
+                    } else {
+                        alert("بيانات الملف غير صالحة للاستيراد.");
+                    }
+                } catch(err) { 
+                    alert("خطأ أثناء الاستيراد: تأكد من أن الملف بصيغة JSON صحيحة."); 
+                } 
+                event.target.value = ''; 
+            }; 
+            reader.readAsText(file); 
+        }
 
         // --- STUDENTS ACCOUNTS MANAGEMENT ---
         function populateStudentModalGrades(selectedGrade = "") {
@@ -2731,10 +3301,12 @@
             });
         }
 
-        function renderAdminStudentsList() {
+        let currentAdminStudentsLimit = 50;
+
+        function renderAdminStudentsList(isLoadMore = false) {
+            if (isLoadMore !== true) currentAdminStudentsLimit = 50;
             const tbody = document.getElementById('admin-students-tbody'); if (!tbody) return; 
             
-            // تعبئة فلتر الصفوف تلقائياً إذا كان فارغاً
             const gradeFilterSelect = document.getElementById('student-grade-filter');
             if (gradeFilterSelect && gradeFilterSelect.options.length <= 1) {
                 Object.keys(stagesData).forEach(stage => {
@@ -2759,7 +3331,9 @@
             }
 
             let htmlString = '';
-            filtered.forEach((st, fIdx) => {
+            const itemsToRender = filtered.slice(0, currentAdminStudentsLimit);
+
+            itemsToRender.forEach((st, fIdx) => {
                 const globalIdx = st.originalIdx;
                 const stGrade = st.grade || '<span class="text-rose-500 text-[10px]">غير محدد (يجب تعديله)</span>';
                 
@@ -2779,6 +3353,12 @@
                     </td>
                 </tr>`;
             });
+            
+            if (filtered.length > currentAdminStudentsLimit) {
+                const remaining = filtered.length - currentAdminStudentsLimit;
+                htmlString += `<tr><td colspan="5" class="p-3 text-center"><button type="button" onclick="currentAdminStudentsLimit += 50; renderAdminStudentsList(true)" class="bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold px-6 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-sm border border-sky-300 cursor-pointer"><i class="fa-solid fa-angles-down ml-1"></i> عرض المزيد من الطلاب (${remaining} متبقية)</button></td></tr>`;
+            }
+
             tbody.innerHTML = htmlString;
         }
 
@@ -2864,29 +3444,85 @@
         function onAdminRecBranchChange() { const st = document.getElementById('admin-rec-stage-filter').value; const gr = document.getElementById('admin-rec-grade-filter').value; const br = document.getElementById('admin-rec-branch-filter').value; const sel = document.getElementById('admin-rec-topic-filter'); sel.innerHTML = '<option value="">الكل</option>'; if(st && gr && br) topicsData.filter(t=>t.targetBranches && t.targetBranches.some(tb=>tb.stage===st&&tb.grade===gr&&tb.branch===br)).forEach(t => sel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`); renderAdminRecordsTable(); }
         function renderAdminRecordsTable() {
             const tbody = document.getElementById('admin-tbody'); tbody.innerHTML = '';
-            const fSt = document.getElementById('admin-rec-stage-filter').value; const fGr = document.getElementById('admin-rec-grade-filter').value; const fBr = document.getElementById('admin-rec-branch-filter').value; const fTo = document.getElementById('admin-rec-topic-filter').value;
-            const filtered = studentRecords.filter(r => { if(fSt && r.stage !== fSt) return false; if(fGr && r.grade !== fGr) return false; if(fBr && r.branch !== fBr) return false; if(fTo && r.topic !== fTo) return false; return true; });
-            if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500 font-bold">لا توجد سجلات.</td></tr>'; document.getElementById('pagination-info').textContent = 'الصفحة 1 من 1'; document.getElementById('prev-page-btn').disabled = true; document.getElementById('next-page-btn').disabled = true; return; }
-            const totalPages = Math.ceil(filtered.length / recordsPerPage) || 1; if (currentRecordsPage > totalPages) currentRecordsPage = totalPages; if (currentRecordsPage < 1) currentRecordsPage = 1;
-            const startIndex = (currentRecordsPage - 1) * recordsPerPage; const endIndex = Math.min(startIndex + recordsPerPage, filtered.length); const pageRecords = filtered.slice(startIndex, endIndex);
-            pageRecords.forEach((rec, pageIdx) => {
-                const globalIdx = startIndex + pageIdx; const originalIndex = studentRecords.indexOf(rec);
-                tbody.innerHTML += `<tr class="hover:bg-slate-50 transition border-b text-xs"><td class="p-3 font-black text-slate-500">${globalIdx + 1}</td><td class="p-3 font-black text-sky-950 text-sm">${escapeHTML(rec.name)}</td><td class="p-3 font-bold text-slate-700">${rec.stageGrade || `${rec.stage} ➔ ${rec.grade} ➔ ${rec.branch} ➔ ${rec.topic}`}</td><td class="p-3"><span class="px-2.5 py-1 rounded-full font-black ${rec.status === 'ناجح' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${rec.status}</span></td><td class="p-3 font-black text-sky-900">${rec.score} / ${rec.total} (${rec.pct}%)</td><td class="p-3 text-slate-600 font-mono">📅 ${rec.date}<br>⏱️ ${rec.duration}</td><td class="p-3"><button type="button" onclick="openRecordDetailsModal(${originalIndex})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer shadow transition">التفاصيل</button></td></tr>`;
+            const fSt = document.getElementById('admin-rec-stage-filter').value; 
+            const fGr = document.getElementById('admin-rec-grade-filter').value; 
+            const fBr = document.getElementById('admin-rec-branch-filter').value; 
+            const fTo = document.getElementById('admin-rec-topic-filter').value;
+            
+            const filtered = studentRecords.filter(r => { 
+                if(fSt && r.stage !== fSt) return false; 
+                if(fGr && r.grade !== fGr) return false; 
+                if(fBr && r.branch !== fBr) return false; 
+                if(fTo && r.topic !== fTo) return false; 
+                return true; 
             });
-            document.getElementById('pagination-info').textContent = `الصفحة ${currentRecordsPage} من ${totalPages}`; document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1; document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
+            
+            if (filtered.length === 0) { 
+                tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500 font-bold">لا توجد سجلات.</td></tr>'; 
+                document.getElementById('pagination-info').textContent = 'الصفحة 1 من 1'; 
+                document.getElementById('prev-page-btn').disabled = true; 
+                document.getElementById('next-page-btn').disabled = true; 
+                return; 
+            }
+            
+            const totalPages = Math.ceil(filtered.length / recordsPerPage) || 1; 
+            if (currentRecordsPage > totalPages) currentRecordsPage = totalPages; 
+            if (currentRecordsPage < 1) currentRecordsPage = 1;
+            
+            const startIndex = (currentRecordsPage - 1) * recordsPerPage; 
+            const endIndex = Math.min(startIndex + recordsPerPage, filtered.length); 
+            const pageRecords = filtered.slice(startIndex, endIndex);
+            
+            pageRecords.forEach((rec, pageIdx) => {
+                const globalIdx = startIndex + pageIdx; 
+                const originalIndex = studentRecords.indexOf(rec);
+                
+                // حساب ذكي لعدد الأسئلة المجابة للسجلات
+                let actualAnswered = 0;
+                if (rec.breakdown) {
+                    rec.breakdown.forEach(b => { if (b.userAnswer !== "لم يجب") actualAnswered++; });
+                }
+                const finalAnswered = rec.answeredCount || `${actualAnswered} من ${rec.total}`;
+                
+                tbody.innerHTML += `<tr class="hover:bg-slate-50 transition border-b text-xs">
+                    <td class="p-3 font-black text-slate-500">${globalIdx + 1}</td>
+                    <td class="p-3 font-black text-sky-950 text-sm">${escapeHTML(rec.name)}</td>
+                    <td class="p-3 font-bold text-slate-700">${rec.stageGrade || `${rec.stage} ➔ ${rec.grade} ➔ ${rec.branch} ➔ ${rec.topic}`}</td>
+                    <td class="p-3"><span class="px-2.5 py-1 rounded-full font-black ${rec.status === 'ناجح' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${rec.status}</span></td>
+                    <td class="p-3">
+                        <div class="font-black text-sky-900">${rec.score} / ${rec.total} (${rec.pct}%)</div>
+                        <div class="text-[10.5px] text-slate-500 font-bold mt-1">أجاب عن: <span class="text-indigo-600">${finalAnswered}</span></div>
+                    </td>
+                    <td class="p-3 text-slate-600 font-mono">📅 ${rec.date}<br>⏱️ ${rec.duration}</td>
+                    <td class="p-3"><button type="button" onclick="openRecordDetailsModal(${originalIndex})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer shadow transition">التفاصيل</button></td>
+                </tr>`;
+            });
+            document.getElementById('pagination-info').textContent = `الصفحة ${currentRecordsPage} من ${totalPages}`; 
+            document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1; 
+            document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
         }
-function openRecordDetailsModal(originalIndex) {
+// متغير لحفظ رقم الطالب الذي يتم عرض تفاصيله حالياً في لوحة الإدارة
+        let currentAdminPrintIndex = -1;
+
+        function openRecordDetailsModal(originalIndex) {
+            // حفظ رقم الطالب لكي نستخدمه عند طباعة الـ PDF
+            currentAdminPrintIndex = originalIndex;
+            
             const rec = studentRecords[originalIndex];
             if (!rec || !rec.breakdown) {
                 alert("عذراً، لا توجد تفاصيل مفصلة مسجلة لهذا السجل (قد يكون مسجلاً بنسخة قديمة).");
                 return;
             }
 
+            let actualAnswered = 0;
+            rec.breakdown.forEach(b => { if (b.userAnswer !== "لم يجب") actualAnswered++; });
+            let finalAnsweredCount = rec.answeredCount || `${actualAnswered} من ${rec.total}`;
+
             let html = `<div class="bg-sky-50 p-4 rounded-2xl border border-sky-200 text-sky-950 font-bold mb-4 space-y-1">
                 <div><strong>الطالب:</strong> ${escapeHTML(rec.name)}</div>
                 <div><strong>المسار:</strong> ${escapeHTML(rec.stageGrade || rec.topic)}</div>
                 <div><strong>النتيجة:</strong> ${rec.score} من ${rec.total} (${rec.pct}٪) - الحالة: ${rec.status}</div>
-                <div><strong>الأسئلة المُجابة:</strong> ${rec.answeredCount || 'غير متوفر'}</div>
+                <div><strong>الأسئلة المُجابة:</strong> <span class="text-indigo-700 font-black">${finalAnsweredCount}</span></div>
                 <div><strong>تاريخ الاختبار:</strong> ${rec.date} (المدة: ${rec.duration})</div>
             </div>`;
 
@@ -2983,6 +3619,191 @@ function openRecordDetailsModal(originalIndex) {
         }
 
         window.addEventListener('DOMContentLoaded', loadDataFromCloud);
+             function exportStudentDetailsPDF() {
+            // العودة للطريقة الأصلية العبقرية: تصوير نافذة المراجعة المعروضة مباشرة!
+            const element = document.getElementById('record-details-printable-area');
+            if (!element || element.innerHTML.trim() === '') {
+                alert("لا توجد تفاصيل لتصديرها!");
+                return;
+            }
+
+            const pdfBtn = document.querySelector('button[onclick="exportStudentDetailsPDF()"]');
+            const originalBtnHtml = pdfBtn ? pdfBtn.innerHTML : '';
+            if (pdfBtn) {
+                pdfBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التجهيز...';
+                pdfBtn.disabled = true;
+                pdfBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            }
+
+            // إخفاء أشرطة التمرير مؤقتاً لضمان التقاط كامل الصفحة الطويلة
+            const originalOverflow = element.style.overflow;
+            const originalHeight = element.style.height;
+            element.style.overflow = 'visible';
+            element.style.height = 'max-content';
+
+            // محاولة جلب اسم الطالب لتسمية الملف
+            let studentName = "الطالب";
+            try {
+                if (currentAdminPrintIndex !== -1 && studentRecords[currentAdminPrintIndex]) {
+                    studentName = studentRecords[currentAdminPrintIndex].name.replace(/\s+/g, '_');
+                }
+            } catch (e) {}
+
+            const opt = {
+                margin:       10,
+                filename:     `تفاصيل_اختبار_${studentName}.pdf`,
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            setTimeout(() => {
+                html2pdf().set(opt).from(element).save().then(() => {
+                    element.style.overflow = originalOverflow;
+                    element.style.height = originalHeight;
+                    if (pdfBtn) {
+                        pdfBtn.innerHTML = originalBtnHtml;
+                        pdfBtn.disabled = false;
+                        pdfBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    }
+                }).catch(err => {
+                    console.error("خطأ أثناء تصدير الـ PDF:", err);
+                    element.style.overflow = originalOverflow;
+                    element.style.height = originalHeight;
+                    if (pdfBtn) {
+                        pdfBtn.innerHTML = originalBtnHtml;
+                        pdfBtn.disabled = false;
+                        pdfBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    }
+                });
+            }, 100);
+        }
+function exportStudentReviewPDF() {
+            const pdfBtn = document.getElementById('student-pdf-btn');
+            const originalBtnHtml = '<i class="fa-solid fa-file-pdf"></i> تحميل كـ PDF';
+            
+            if (pdfBtn) {
+                pdfBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التجهيز...';
+                pdfBtn.disabled = true;
+                pdfBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            }
+
+            try {
+                const total = quizState.questions.length;
+                let score = 0;
+                quizState.questions.forEach((q, i) => { if (quizState.answers[i] === q.ans) score++; });
+                const pct = Math.round((score / total) * 100);
+                const isPassed = pct >= 50;
+
+                // بناء قالب متطابق 100% مع نافذة المراجعة الأصلية الأنيقة
+                let html = `<div class="bg-white p-6 rounded-3xl border-4 border-sky-200 text-sky-950 font-bold mb-6 shadow-md">
+                    <h2 class="text-3xl font-black mb-4 text-center border-b-2 border-slate-100 pb-4 text-sky-900">تَقْرِيرُ النَّتِيجَةِ وَمُرَاجَعَةُ الْإِجَابَاتِ</h2>
+                    <div class="grid grid-cols-2 gap-4 text-base">
+                        <div><span class="text-slate-500">الطالب:</span> <strong class="text-sky-900 text-lg">${escapeHTML(quizState.name)}</strong></div>
+                        <div><span class="text-slate-500">المسار:</span> <strong>${escapeHTML(quizState.stage)} ➔ ${escapeHTML(quizState.grade)} ➔ ${escapeHTML(quizState.branch)} ➔ ${escapeHTML(quizState.topic)}</strong></div>
+                        <div><span class="text-slate-500">النتيجة:</span> <strong class="${isPassed ? 'text-emerald-600' : 'text-rose-600'} text-xl">${score} من ${total} (${pct}٪)</strong></div>
+                        <div><span class="text-slate-500">التاريخ:</span> <strong>${new Date().toLocaleDateString('ar-EG')}</strong></div>
+                    </div>
+                </div>`;
+
+                quizState.questions.forEach((q, idx) => {
+                    let userAns = quizState.answers[idx]; 
+                    let isAnswered = userAns !== null && userAns !== undefined && userAns !== "";
+                    let isCorrect = isAnswered && userAns === q.ans;
+                    
+                    let optsHtml = '<div class="grid grid-cols-2 gap-3 my-3">';
+                    q.opts.forEach(opt => {
+                        let isThisCorrect = opt === q.ans; 
+                        let isThisUser = opt === userAns; 
+                        let optStyle = "bg-white border-slate-200 text-slate-800"; 
+                        let optBadge = "";
+                        
+                        if (isThisCorrect) { 
+                            optStyle = "bg-emerald-100 border-emerald-400 text-emerald-950"; 
+                            optBadge = '<span class="text-emerald-800 text-xs mt-1 block font-bold">✓ الإجابة الصحيحة</span>'; 
+                        } else if (isThisUser && !isCorrect) { 
+                            optStyle = "bg-rose-100 border-rose-400 text-rose-950"; 
+                            optBadge = '<span class="text-rose-800 text-xs mt-1 block font-bold">✗ إجابتك الخاطئة</span>'; 
+                        }
+                        optsHtml += `<div class="p-4 rounded-xl border-2 ${optStyle} text-sm font-bold shadow-sm">• ${formatText(opt, q.tashkeel)}${optBadge}</div>`;
+                    });
+                    optsHtml += '</div>';
+                    
+                    let statusBadge = isAnswered ? (isCorrect ? '<span class="text-emerald-600 font-black px-3 py-1 bg-emerald-100 rounded-lg text-sm">صحيحة ✓</span>' : '<span class="text-rose-600 font-black px-3 py-1 bg-rose-100 rounded-lg text-sm">خاطئة ✗</span>') : '<span class="text-amber-600 font-black px-3 py-1 bg-amber-100 rounded-lg text-sm">لم يجب عليها</span>';
+
+                    html += `<div class="bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-sm space-y-3 mb-6 break-inside-avoid">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                            <h4 class="font-black text-base text-sky-950">س${idx+1}: ${formatText(q.q, q.tashkeel)}</h4>
+                            <span>${statusBadge}</span>
+                        </div>
+                        ${optsHtml}
+                        ${q.exp ? `<div class="p-4 bg-sky-50 rounded-xl border border-sky-100 text-sm text-sky-900 font-bold mt-2"><strong>التعليل:</strong> ${formatText(q.exp, q.tashkeel)}</div>` : ''}
+                    </div>`;
+                });
+
+                // --- الحيلة السحرية لحل الشاشة البيضاء ---
+                
+                // 1. حاوية التقرير: نضعها في أعلى الشاشة تماماً لكي تراها الكاميرا بوضوح
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'absolute';
+                wrapper.style.top = '0';
+                wrapper.style.left = '0';
+                wrapper.style.width = '100%';
+                wrapper.style.backgroundColor = '#f1f5f9';
+                wrapper.style.zIndex = '99998'; // رقم مرتفع جداً
+                wrapper.dir = 'rtl';
+                
+                const printableArea = document.createElement('div');
+                printableArea.style.width = '800px';
+                printableArea.style.margin = '0 auto';
+                printableArea.style.padding = '30px';
+                printableArea.style.fontFamily = "'IBM Plex Sans Arabic', sans-serif";
+                printableArea.innerHTML = html;
+                
+                wrapper.appendChild(printableArea);
+                document.body.appendChild(wrapper);
+
+                // 2. شاشة التحميل الوهمية: نضعها "فوق" حاوية التقرير لتغطيتها عن عين المستخدم
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.style.position = 'fixed';
+                loadingOverlay.style.inset = '0';
+                loadingOverlay.style.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+                loadingOverlay.style.display = 'flex';
+                loadingOverlay.style.alignItems = 'center';
+                loadingOverlay.style.justifyContent = 'center';
+                loadingOverlay.style.color = '#fff';
+                loadingOverlay.style.fontSize = '20px';
+                loadingOverlay.style.fontWeight = 'bold';
+                loadingOverlay.style.zIndex = '99999'; // أعلى من التقرير برقم واحد
+                loadingOverlay.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-3 text-3xl text-amber-400"></i> جاري طباعة التقرير عالي الدقة...';
+                document.body.appendChild(loadingOverlay);
+
+                setTimeout(() => {
+                    const opt = {
+                        margin:       10,
+                        filename:     `تقرير_اختبار_${quizState.name.replace(/\s+/g, '_')}.pdf`,
+                        image:        { type: 'jpeg', quality: 1 },
+                        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    };
+
+                    // تصوير التقرير المخفي تحت شاشة التحميل
+                    html2pdf().set(opt).from(printableArea).save().then(() => {
+                        document.body.removeChild(wrapper);
+                        document.body.removeChild(loadingOverlay);
+                        if (pdfBtn) { pdfBtn.innerHTML = originalBtnHtml; pdfBtn.disabled = false; pdfBtn.classList.remove('opacity-75', 'cursor-not-allowed'); }
+                    }).catch(err => {
+                        console.error(err);
+                        document.body.removeChild(wrapper);
+                        document.body.removeChild(loadingOverlay);
+                        if (pdfBtn) { pdfBtn.innerHTML = originalBtnHtml; pdfBtn.disabled = false; pdfBtn.classList.remove('opacity-75', 'cursor-not-allowed'); }
+                    });
+                }, 400); // تأخير بسيط لضمان رسم العناصر بالكامل
+            } catch (error) {
+                console.error(error);
+                if (pdfBtn) { pdfBtn.innerHTML = originalBtnHtml; pdfBtn.disabled = false; pdfBtn.classList.remove('opacity-75', 'cursor-not-allowed'); }
+            }
+        }
     </script>
 </body>
 </html>
