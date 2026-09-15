@@ -1315,10 +1315,21 @@ select, select option {
             return text;
         }
 
+        let allowCloudLoadingOverlay = false; // قفل إلزامي لمنع ظهور رسالة الرفع في غير محلها
+
         function toggleCloudLoading(show, customText = "جَارِي الاتِّصَال بِالسَّحَابَةِ...") {
+            // إذا لم نسمح صراحة بإظهار الرسالة، امنع ظهورها تماماً واجعلها تعمل في الخلفية بصمت
+            if (show && !allowCloudLoadingOverlay) {
+                console.log("حفظ خلفي صامت:", customText);
+                return; 
+            }
+            
             const overlay = document.getElementById('cloud-loading-overlay');
             const textEl = document.getElementById('cloud-loading-text');
-            if (overlay && textEl) { textEl.textContent = customText; overlay.style.display = show ? 'flex' : 'none'; }
+            if (overlay && textEl) { 
+                textEl.textContent = customText; 
+                overlay.style.display = show ? 'flex' : 'none'; 
+            }
         }
 
         // ================== CLOUD SYNC & LAZY LOADING ==================
@@ -1431,7 +1442,7 @@ select, select option {
             } catch(e) { console.log("خطأ في جلب السجلات:", e); }
         }
 
-        async function saveState() {
+        async function saveState(showLoading = true) {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
                     const db = window.firebaseDb; 
@@ -1478,12 +1489,18 @@ select, select option {
                     let totalTasks = tasks.length;
                     
                     if (totalTasks === 0) {
-                        toggleCloudLoading(true, "لَمْ يَحْدُث أيُّ تَغْيِير (تَمَّ التحقق محلياً بِنَجَاح).");
-                        setTimeout(() => { toggleCloudLoading(false); }, 700);
+                        if (showLoading) {
+                            toggleCloudLoading(true, "لَمْ يَحْدُث أيُّ تَغْيِير (تَمَّ التحقق محلياً بِنَجَاح).");
+                            setTimeout(() => { toggleCloudLoading(false); }, 700);
+                        }
                         return; 
                     }
 
-                    toggleCloudLoading(true, `جَارِي رَفْع التَّعْدِيلَات الحقيقيَّة (${totalTasks} مِلَفّاً)...`);
+                    // تظهر رسالة الرفع فقط إذا كان الحفظ ناتجاً عن ضغط زر "حفظ" صريح
+                    if (showLoading) {
+                        toggleCloudLoading(true, `جَارِي رَفْع التَّعْدِيلَات حقيقيَّة (${totalTasks} مِلَفّاً)...`);
+                    }
+
                     let completedTasks = 0;
 
                     for (let task of tasks) {
@@ -1491,19 +1508,24 @@ select, select option {
                         window._cloudCache[task.id] = task.str; 
                         completedTasks++;
                         let pct = Math.round((completedTasks / totalTasks) * 100);
-                        if (textEl) {
+                        if (showLoading && textEl) {
                             textEl.textContent = `جَارِي رَفْع المُتَغَيِّرَات... ${pct}% (${completedTasks}/${totalTasks})`;
                         }
                     }
                     
-                    if (textEl) textEl.textContent = "تَمَّ الْحِفْظُ وَالتَّحْدِيثُ بِنَجَاح!";
-                    setTimeout(() => { toggleCloudLoading(false); }, 1000);
+                    if (showLoading) {
+                        if (textEl) textEl.textContent = "تَمَّ الْحِفْظُ وَالتَّحْدِيثُ بِنَجَاح!";
+                        setTimeout(() => { toggleCloudLoading(false); }, 1000);
+                    }
                 }
             } catch (e) { 
                 console.error("خطأ الحفظ:", e); 
-                const textEl = document.getElementById('cloud-loading-text');
-                if (textEl) textEl.textContent = "حَدَثَ خَطَأٌ فِي الحِفْظ!";
-                alert("تعذر الحفظ السحابي: " + e.message); 
+                if (showLoading) {
+                    const textEl = document.getElementById('cloud-loading-text');
+                    if (textEl) textEl.textContent = "حَدَثَ خَطَأٌ فِي الحِفْظ!";
+                    alert("تعذر الحفظ السحابي: " + e.message); 
+                    toggleCloudLoading(false);
+                }
             }
         }
 // ================== GENERAL, INIT & SETTINGS ==================
@@ -1596,6 +1618,9 @@ select, select option {
         }
 
         function saveAppSettings() {
+            // تفعيل القفل صراحة للسماح بظهور رسالة الرفع لأن المعلم ضغط على زر الحفظ
+            allowCloudLoadingOverlay = true;
+            
             toggleCloudLoading(true, "جَارِي حِفْظِ الإِعْدَادَاتِ...");
             setTimeout(() => {
                 appSettings.teacherName = document.getElementById('admin-teacher-input').value.trim() || appSettings.teacherName;
@@ -1626,7 +1651,7 @@ select, select option {
                 if(document.getElementById('admin-enable-tashkeel')) appSettings.enableTashkeel = document.getElementById('admin-enable-tashkeel').checked;
                 if(document.getElementById('admin-require-password')) appSettings.requireStudentPassword = document.getElementById('admin-require-password').checked;
                 
-                if(document.getElementById('admin-enable-student-pdf')) appSettings.enableStudentPDF = document.getElementById('admin-enable-student-pdf').checked; // الإضافة الجديدة للحفظ
+                if(document.getElementById('admin-enable-student-pdf')) appSettings.enableStudentPDF = document.getElementById('admin-enable-student-pdf').checked; 
                 
                 if(document.getElementById('admin-logo-header-input')) appSettings.logoHeader = document.getElementById('admin-logo-header-input').value.trim();
                 if(document.getElementById('admin-logo-right-input')) appSettings.logoRight = document.getElementById('admin-logo-right-input').value.trim();
@@ -1641,8 +1666,11 @@ select, select option {
                 let newPwd = document.getElementById('admin-new-password') ? document.getElementById('admin-new-password').value.trim() : "";
                 if (newPwd) appSettings.adminPass = newPwd;
 
-              saveState().then(() => {
+                saveState(true).then(() => {
+                    allowCloudLoadingOverlay = false; // إغلاق القفل بعد اتمام الحفظ بنجاح
                     alert("تم حفظ الإعدادات بنجاح!");
+                }).catch(e => {
+                    allowCloudLoadingOverlay = false; // إغلاق القفل حتى لو حدث خطأ لضمان عودة المنصة للوضع الصامت
                 });
             }, 150);
         }
@@ -1650,6 +1678,9 @@ select, select option {
         async function saveQuestionsState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+                    // تفعيل القفل صراحة للسماح بظهور رسالة الرفع عند الحفظ اليدوي للأسئلة
+                    allowCloudLoadingOverlay = true;
+
                     const db = window.firebaseDb; 
                     toggleCloudLoading(true, "جَارِي حِفْظِ بَنْكِ الْأَسْئِلَةِ...");
                     if (!window._cloudCache) window._cloudCache = {};
@@ -1665,8 +1696,11 @@ select, select option {
                     addTask("questions_meta", { totalParts: qTotalParts });
 
                     if (tasks.length === 0) {
-                        toggleCloudLoading(true, "لَمْ يَتَغَيَّر أيُّ سُؤال (تَمَّ الحِفْظُ).");
-                        setTimeout(() => toggleCloudLoading(false), 800);
+                        toggleCloudLoading(true, "لَمْ يَتَغَيَّر أيُّ سُؤال (تَمَّ الحِفْظُ).");
+                        setTimeout(() => {
+                            allowCloudLoadingOverlay = false; // إغلاق القفل
+                            toggleCloudLoading(false);
+                        }, 800);
                         return;
                     }
 
@@ -1674,10 +1708,15 @@ select, select option {
                         await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
                         window._cloudCache[task.id] = task.str; 
                     }
-                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْأَسْئِلَةِ بِنَجَاح!");
-                    setTimeout(() => toggleCloudLoading(false), 1000);
+                    
+                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْأَسْئِلَةِ بِنَجَاح!");
+                    setTimeout(() => {
+                        allowCloudLoadingOverlay = false; // إغلاق القفل بعد الانتهاء بنجاح
+                        toggleCloudLoading(false);
+                    }, 1000);
                 }
             } catch (e) {
+                allowCloudLoadingOverlay = false; // إغلاق القفل حتى لو حدث خطأ لضمان عودة المنصة للوضع الصامت
                 console.error(e);
                 alert("خطأ في حفظ الأسئلة: " + e.message);
                 toggleCloudLoading(false);
@@ -1688,6 +1727,7 @@ select, select option {
         async function saveParagraphsState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+                    allowCloudLoadingOverlay = true; // تفعيل القفل للحفظ اليدوي الصريح
                     const db = window.firebaseDb; 
                     toggleCloudLoading(true, "جَارِي حِفْظِ الْفِقَرَاتِ...");
                     if (!window._cloudCache) window._cloudCache = {};
@@ -1703,8 +1743,11 @@ select, select option {
                     addTask("paragraphs_meta", { totalParts: pTotalParts });
 
                     if (tasks.length === 0) {
-                        toggleCloudLoading(true, "لَمْ تَتَغَيَّر أيُّ فِقْرَة (تَمَّ الحِفْظُ).");
-                        setTimeout(() => toggleCloudLoading(false), 800);
+                        toggleCloudLoading(true, "لَمْ تَتَغَيَّر أيُّ فِقْرَة (تَمَّ الحِفْظُ).");
+                        setTimeout(() => {
+                            allowCloudLoadingOverlay = false;
+                            toggleCloudLoading(false);
+                        }, 800);
                         return;
                     }
 
@@ -1712,10 +1755,14 @@ select, select option {
                         await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
                         window._cloudCache[task.id] = task.str; 
                     }
-                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْفِقَرَاتِ بِنَجَاح!");
-                    setTimeout(() => toggleCloudLoading(false), 1000);
+                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْفِقَرَاتِ بِنَجَاح!");
+                    setTimeout(() => {
+                        allowCloudLoadingOverlay = false;
+                        toggleCloudLoading(false);
+                    }, 1000);
                 }
             } catch (e) {
+                allowCloudLoadingOverlay = false;
                 console.error(e);
                 alert("خطأ في حفظ الفقرات: " + e.message);
                 toggleCloudLoading(false);
@@ -1726,6 +1773,7 @@ select, select option {
         async function saveQuickInfoState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+                    allowCloudLoadingOverlay = true; // تفعيل القفل للحفظ اليدوي الصريح
                     const db = window.firebaseDb; 
                     toggleCloudLoading(true, "جَارِي حِفْظِ بَطَاقَاتِ الْمَعْلُومَةِ...");
                     if (!window._cloudCache) window._cloudCache = {};
@@ -1741,8 +1789,11 @@ select, select option {
                     addTask("quickinfo_meta", { totalParts: qiTotalParts });
 
                     if (tasks.length === 0) {
-                        toggleCloudLoading(true, "لَمْ تَتَغَيَّر أيُّ بَطَاقَة (تَمَّ الحِفْظُ).");
-                        setTimeout(() => toggleCloudLoading(false), 800);
+                        toggleCloudLoading(true, "لَمْ تَتَغَيَّر أيُّ بَطَاقَة (تَمَّ الحِفْظُ).");
+                        setTimeout(() => {
+                            allowCloudLoadingOverlay = false;
+                            toggleCloudLoading(false);
+                        }, 800);
                         return;
                     }
 
@@ -1750,10 +1801,14 @@ select, select option {
                         await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
                         window._cloudCache[task.id] = task.str; 
                     }
-                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْبَطَاقَاتِ بِنَجَاح!");
-                    setTimeout(() => toggleCloudLoading(false), 1000);
+                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْبَطَاقَاتِ بِنَجَاح!");
+                    setTimeout(() => {
+                        allowCloudLoadingOverlay = false;
+                        toggleCloudLoading(false);
+                    }, 1000);
                 }
             } catch (e) {
+                allowCloudLoadingOverlay = false;
                 console.error(e);
                 alert("خطأ في حفظ البطاقات: " + e.message);
                 toggleCloudLoading(false);
@@ -1764,8 +1819,9 @@ select, select option {
         async function saveStudentsState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+                    allowCloudLoadingOverlay = true; // تفعيل القفل للحفظ اليدوي الصريح
                     const db = window.firebaseDb; 
-                    toggleCloudLoading(true, "جَارِي حِفْظِ حِسَابَاتِ الطُّلَّابِ...");
+                    toggleCloudLoading(true, "جَارِي حِفْظِ حِسَابَاتِ الطُّلَّابِ...");
                     if (!window._cloudCache) window._cloudCache = {};
                     
                     let tasks = [];
@@ -1779,8 +1835,11 @@ select, select option {
                     addTask("students_meta", { totalParts: stTotalParts });
 
                     if (tasks.length === 0) {
-                        toggleCloudLoading(true, "لَمْ يَتَغَيَّر أيُّ طَالِب (تَمَّ الحِفْظُ).");
-                        setTimeout(() => toggleCloudLoading(false), 800);
+                        toggleCloudLoading(true, "لَمْ يَتَغَيَّر أيُّ طَالِب (تَمَّ الحِفْظُ).");
+                        setTimeout(() => {
+                            allowCloudLoadingOverlay = false;
+                            toggleCloudLoading(false);
+                        }, 800);
                         return;
                     }
 
@@ -1788,10 +1847,14 @@ select, select option {
                         await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
                         window._cloudCache[task.id] = task.str; 
                     }
-                    toggleCloudLoading(true, "تَمَّ حِفْظُ حِسَابَاتِ الطُّلَّابِ بِنَجَاح!");
-                    setTimeout(() => toggleCloudLoading(false), 1000);
+                    toggleCloudLoading(true, "تَمَّ حِفْظُ حِسَابَاتِ الطُّلَّابِ بِنَجَاح!");
+                    setTimeout(() => {
+                        allowCloudLoadingOverlay = false;
+                        toggleCloudLoading(false);
+                    }, 1000);
                 }
             } catch (e) {
+                allowCloudLoadingOverlay = false;
                 console.error(e);
                 alert("خطأ في حفظ الطلاب: " + e.message);
                 toggleCloudLoading(false);
