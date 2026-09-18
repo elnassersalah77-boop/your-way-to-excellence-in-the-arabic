@@ -173,6 +173,7 @@ select, select option {
     <main class="max-w-5xl mx-auto px-4 py-6 w-full flex-grow flex flex-col justify-center">
 <!-- VIEW 1: START SCREEN -->
         <div id="view-start" class="bg-white rounded-3xl p-6 sm:p-12 shadow-xl border border-slate-200 text-center space-y-8 relative overflow-hidden">
+            
             <div class="flex justify-between items-center px-4">
                 <div id="start-mid-img-container-1" class="hidden"><img id="start-mid-img-1" src="" alt="صورة اليمين" class="max-h-24 rounded-2xl object-contain"></div>
                 <div id="start-mid-img-container-2" class="hidden"><img id="start-mid-img-2" src="" alt="صورة اليسار" class="max-h-24 rounded-2xl object-contain"></div>
@@ -183,45 +184,77 @@ select, select option {
                 <div id="start-bottom-img-container-left" class="hidden"><img id="start-bottom-img-left" src="" alt="صورة أسفل اليسار" class="max-h-20 rounded-xl object-contain"></div>
             </div>
 
-            <div class="flex justify-between items-center border-b border-slate-100 pb-5">
+            <!-- 1. العنوان (يظهر في الأعلى) -->
+            <div class="space-y-4 my-2">
+                <h2 id="start-exam-title" class="text-3xl sm:text-5xl font-black text-sky-950 tracking-tight leading-snug">أَنْتَ فِي طَرِيقِكَ لِلتَّفَوُّقِ فِي اللُّغَةِ العَرَبِيَّةِ</h2>
+                <p id="start-exam-subtitle" class="text-slate-700 text-lg sm:text-xl font-black pt-1">اخْتَبِرْ مَعْلُومَاتِكَ، وَقِسْ قُدْرَاتِكَ، وَحَقِّقْ أَعْلَى الدَّرَجَاتِ!</p>
+            </div>
+
+            <!-- 2. القوائم المنسدلة (تحت العنوان مباشرة) -->
+            <div class="flex justify-between items-center border-b border-slate-100 pb-8">
                 <div id="start-logo-right-container" class="hidden"><img id="start-logo-right" src="" alt="" class="h-16 w-auto object-contain"></div>
                 
-                <!-- التحديث المتسلسل الذكي: المرحلة ➔ الصف ➔ الفرع (إن وجد) ➔ الموضوع -->
-                <div class="mx-auto flex flex-col sm:flex-row flex-wrap gap-3 justify-center items-center">
-    <select id="start-stage-select" onchange="onStageChange()" class="bg-sky-100 text-sky-950 px-5 py-4 rounded-2xl border-3 border-sky-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر المرحلة</option></select>
-    <select id="start-grade-select" onchange="onGradeChange()" class="bg-amber-100 text-amber-950 px-5 py-4 rounded-2xl border-3 border-amber-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الصف</option></select>
-    <select id="start-branch-select" onchange="onBranchChange()" class="bg-indigo-100 text-indigo-950 px-5 py-4 rounded-2xl border-3 border-indigo-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الفرع</option></select>
-    <select id="start-topic-select" onchange="onTopicChange()" class="bg-emerald-100 text-emerald-950 px-5 py-4 rounded-2xl border-3 border-emerald-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الموضوع</option></select>
-</div>
+                <div class="mx-auto flex flex-col sm:flex-row flex-wrap gap-3 justify-center items-center flex-grow">
+                    <select id="start-stage-select" onchange="onStageChange()" class="bg-sky-100 text-sky-950 px-5 py-4 rounded-2xl border-3 border-sky-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر المرحلة</option></select>
+                    <select id="start-grade-select" onchange="onGradeChange()" class="bg-amber-100 text-amber-950 px-5 py-4 rounded-2xl border-3 border-amber-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الصف</option></select>
+                    <select id="start-branch-select" onchange="onBranchChange()" class="bg-indigo-100 text-indigo-950 px-5 py-4 rounded-2xl border-3 border-indigo-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الفرع</option></select>
+                    <select id="start-topic-select" onchange="onTopicChange()" class="bg-emerald-100 text-emerald-950 px-5 py-4 rounded-2xl border-3 border-emerald-500 cursor-pointer focus:outline-none shadow-lg text-lg sm:text-xl font-black hidden transition-all duration-300 w-full sm:w-auto text-center"><option value="">اختر الموضوع</option></select>
+                </div>
 
                 <div id="start-logo-left-container" class="hidden"><img id="start-logo-left" src="" alt="" class="h-16 w-auto object-contain"></div>
             </div>
 
-            <div class="space-y-6 sm:space-y-8 my-4">
-                <h2 id="start-exam-title" class="text-3xl sm:text-5xl font-black text-sky-950 tracking-tight leading-snug">أَنْتَ فِي طَرِيقِكَ لِلتَّفَوُّقِ فِي اللُّغَةِ العَرَبِيَّةِ</h2>
-                <p id="start-exam-subtitle" class="text-slate-700 text-lg sm:text-xl font-black pt-3">اخْتَبِرْ مَعْلُومَاتِكَ، وَقِسْ قُدْرَاتِكَ، وَحَقِّقْ أَعْلَى الدَّرَجَاتِ!</p>
-            </div>
-
-            <div id="start-expired-box" class="hidden bg-rose-100 text-rose-800 p-4 rounded-2xl border-2 border-rose-300 font-bold text-center text-base">
-                <i class="fa-solid fa-triangle-exclamation ml-2"></i> عذراً، لقد انتهى وقت غلق الاختبار المحدد ولا يمكن البدء به الآن.
-            </div>
-
-            <div class="grid grid-cols-2 gap-5 max-w-md mx-auto my-6 text-slate-800 font-black text-base">
-                <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 flex flex-col items-center shadow-sm">
-                    <i class="fa-solid fa-list-check text-sky-600 text-2xl mb-1.5"></i>
-                    <span class="text-xs text-slate-500 font-bold">عَدَدُ الأَسْئِلَةِ</span>
-                    <span id="display-exam-count-desc" class="text-sky-950 font-black text-2xl">20</span>
+            <!-- 3. التبويبان (تحت القوائم المنسدلة) -->
+            <div id="student-dual-portal-container" class="hidden space-y-4 w-full pt-2">
+                <div class="text-center space-y-1 mb-4">
+                    <h2 class="text-lg sm:text-xl font-black text-sky-950">أهلاً بك، اختر وجهتك التعليمية:</h2>
                 </div>
-                <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 flex flex-col items-center shadow-sm">
-                    <i class="fa-solid fa-clock text-amber-600 text-2xl mb-1.5"></i>
-                    <span class="text-xs text-slate-500 font-bold">زَمَنُ الِاخْتِبَارِ</span>
-                    <span id="display-exam-time-desc" class="text-amber-950 font-black text-2xl">20 دَقِيقَةٌ</span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
+                    <button type="button" onclick="selectPortalMode('explanation')" id="portal-tab-explanation" class="portal-tab-btn flex items-center gap-3 p-4 rounded-2xl border-2 border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer text-right shadow-sm group w-full">
+                        <div class="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center text-lg shrink-0 shadow-sm group-hover:scale-105 transition">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <div>
+                            <div class="font-black text-sky-950 text-sm">شرح وقواعد (معلومات سريعة)</div>
+                            <div class="text-[11px] text-slate-600 mt-0.5">الانتقال للبطاقات الإثرائية والشرح المفصل للموضوع</div>
+                        </div>
+                    </button>
+                    <button type="button" onclick="selectPortalMode('training')" id="portal-tab-training" class="portal-tab-btn flex items-center gap-3 p-4 rounded-2xl border-2 border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer text-right shadow-sm group w-full">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-lg shrink-0 shadow-sm group-hover:scale-105 transition">
+                            <i class="fa-solid fa-pen-clip"></i>
+                        </div>
+                        <div>
+                            <div class="font-black text-slate-900 text-sm">تدريبات واختبارات (بنك الأسئلة)</div>
+                            <div class="text-[11px] text-slate-600 mt-0.5">الانتقال للاختبارات والأسئلة التفاعلية للموضوع</div>
+                        </div>
+                    </button>
                 </div>
             </div>
 
-            <div id="topic-bank-stats-card" class="hidden"></div>
+            <!-- حاوية الإحصائيات (تختفي وتظهر بذكاء) -->
+            <div id="stats-wrapper" class="space-y-6 w-full hidden">
+                <div id="start-expired-box" class="hidden bg-rose-100 text-rose-800 p-4 rounded-2xl border-2 border-rose-300 font-bold text-center text-base">
+                    <i class="fa-solid fa-triangle-exclamation ml-2"></i> عذراً، لقد انتهى وقت غلق الاختبار المحدد ولا يمكن البدء به الآن.
+                </div>
 
-            <div id="start-form-container" class="max-w-md mx-auto space-y-5 pt-2">
+                <div class="grid grid-cols-2 gap-5 max-w-md mx-auto my-6 text-slate-800 font-black text-base">
+                    <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 flex flex-col items-center shadow-sm">
+                        <i class="fa-solid fa-list-check text-sky-600 text-2xl mb-1.5"></i>
+                        <span class="text-xs text-slate-500 font-bold">عَدَدُ الأَسْئِلَةِ</span>
+                        <span id="display-exam-count-desc" class="text-sky-950 font-black text-2xl">20</span>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 flex flex-col items-center shadow-sm">
+                        <i class="fa-solid fa-clock text-amber-600 text-2xl mb-1.5"></i>
+                        <span class="text-xs text-slate-500 font-bold">زَمَنُ الِاخْتِبَارِ</span>
+                        <span id="display-exam-time-desc" class="text-amber-950 font-black text-2xl">20 دَقِيقَةٌ</span>
+                    </div>
+                </div>
+
+                <div id="topic-bank-stats-card" class="hidden"></div>
+            </div>
+
+            <!-- 4. حاوية تسجيل الدخول (لن تظهر إلا بعد اختيار التبويب) -->
+            <div id="start-form-container" class="max-w-md mx-auto space-y-5 pt-4 hidden">
                 <div class="text-right">
                     <label for="student-name-input" class="block text-sm font-black text-slate-800 mb-1.5 mr-1">اسْمُ الطَّالِبِ (الْمُسْتَخْدِمُ):</label>
                     <input type="text" id="student-name-input" placeholder="اكْتُبِ اسْمَكَ هُنَا..." oninput="validateArabicName(this)" class="w-full px-5 py-4 rounded-2xl border-3 border-slate-300 focus:border-sky-600 focus:outline-none font-black text-slate-900 text-xl transition text-center shadow-inner">
@@ -241,6 +274,7 @@ select, select option {
                 <button type="button" onclick="startQuiz()" id="start-btn-text" class="w-full bg-gradient-to-r from-sky-600 to-sky-800 hover:from-sky-700 hover:to-sky-900 text-white px-6 rounded-2xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-0.5 cursor-pointer py-4 text-xl sm:text-2xl font-black">ابْدَأِ الِاخْتِبَارِ الْآنَ <i class="fa-solid fa-play mr-2"></i></button>
             </div>
         </div>
+
 <!-- VIEW 2: QUIZ SCREEN -->
 <div id="view-quiz" class="hidden flex-col space-y-6 bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200">
     <div class="flex justify-between items-center border-b pb-4">
@@ -398,21 +432,36 @@ select, select option {
     </div>
 </div>
 
-    <!-- FLOATING MODAL: QUICK INFO -->
-    <div id="view-quick-info" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
-        <div id="modal-content-quick-info" class="bg-white rounded-3xl max-w-6xl w-full h-[95vh] flex flex-col shadow-2xl border-4 border-amber-400 overflow-hidden modal-animate-in">
-            <div class="bg-sky-900 text-white p-5 sm:p-6 flex justify-between items-center border-b-4 border-amber-500 shadow">
-                <h2 id="display-quickinfo-header-title" class="text-2xl sm:text-3xl font-black text-amber-300 flex items-center gap-3">
-                    <i class="fa-solid fa-lightbulb text-amber-400 text-3xl"></i> مَعْلُومَاتٌ سَرِيعَةٌ لِلدَّرْسِ
-                </h2>
-                <button type="button" onclick="confirmCloseQuickInfo()" class="text-sky-200 hover:text-white text-3xl cursor-pointer p-2"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="quick-info-content-container" class="p-6 sm:p-10 overflow-y-auto space-y-8 flex-grow bg-slate-50"></div>
-            <div class="p-5 bg-slate-100 border-t-2 border-slate-200 flex flex-wrap gap-4 justify-center">
-                <button type="button" onclick="confirmCloseQuickInfo()" class="bg-sky-700 hover:bg-sky-800 text-white font-black px-8 py-3.5 rounded-2xl text-lg shadow-lg cursor-pointer transition">إِغْلَاقُ النَّافِذَةِ</button>
-            </div>
-        </div>
+    <!-- VIEW 3: QUICK INFO SCREEN (صفحة الشرح المستقلة) -->
+<div id="view-quick-info" class="hidden flex-col bg-white rounded-3xl p-6 sm:p-12 shadow-xl border border-slate-200 text-center space-y-8 relative w-full">
+    
+    <!-- الترويسة العلوية لصفحة الشرح (ستعرض اسم الدرس تلقائياً) -->
+    <div class="flex justify-center items-center border-b border-slate-200 pb-5 mb-2">
+        <h2 id="quick-info-dynamic-title" class="text-2xl sm:text-3xl font-black text-sky-950 flex items-center gap-3">
+            <!-- سيتم وضع اسم الدرس هنا برمجياً بدلاً من العبارة الثابتة -->
+        </h2>
     </div>
+
+    <!-- محتوى الشرح (سيتولد هنا تلقائياً) -->
+    <div id="quick-info-content-container" class="flex-grow text-right text-slate-800 text-lg leading-relaxed space-y-6 pb-8 min-h-[40vh]">
+        <!-- يضاف المحتوى بواسطة الجافاسكريبت -->
+    </div>
+
+    <!-- أزرار التنقل السفلية -->
+    <div class="flex flex-col sm:flex-row justify-between gap-4 mt-auto pt-6 border-t border-slate-200">
+        <!-- زر الانتقال للاختبار وبدء الوقت -->
+       <button type="button" id="info-action-btn" onclick="handleInfoActionButton()" class="bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white px-8 py-4 rounded-2xl font-black text-xl transition flex items-center justify-center gap-3 w-full sm:w-auto shadow-xl cursor-pointer">
+    <i class="fa-solid fa-play" id="info-action-icon"></i>
+    <span id="info-action-text">انْتَقِلْ إِلَى الِاخْتِبَارِ</span>
+</button>
+        
+        <!-- زر الرجوع للرئيسية -->
+        <button type="button" onclick="restartHome()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-8 py-4 rounded-2xl font-black text-xl transition flex items-center justify-center gap-3 w-full sm:w-auto shadow-sm cursor-pointer border-2 border-slate-200">
+            <i class="fa-solid fa-house"></i>
+            الصَّفْحَةُ الرَّئِيسِيَّةُ
+        </button>
+    </div>
+</div>
 
     <!-- نافذة مراجعة الإجابات للطالب -->
     <div id="modal-student-review" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6">
@@ -541,6 +590,17 @@ select, select option {
                             </select>
                         </div>
                         <div>
+<!-- إعداد تفعيل بوابة التوجيه الثنائية في صفحة البداية -->
+                        <div class="mt-4 p-4 rounded-2xl border border-sky-200 bg-sky-50/50 flex items-center justify-between">
+                            <div>
+                                <h4 class="font-black text-sky-950 text-xs sm:text-sm">بوابة التوجيه الثنائية (شرح وتدريبات)</h4>
+                                <p class="text-slate-500 text-[11px] mt-0.5">تفعيل تبويبي (شرح) و(تدريبات) في صفحة البداية قبل القوائم المنسدلة.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                <input type="checkbox" id="admin-toggle-dual-portal" onchange="toggleDualPortalSetting(this)" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                            </label>
+                        </div>
                             <label class="block mb-1 text-slate-700">لون / خلفية المنصة (Platform Theme):</label>
                             <select id="admin-platform-theme" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white">
                                 <option value="default">افتراضي (أزرق سماوي وأنيق)</option>
@@ -1296,17 +1356,143 @@ select, select option {
         
         let paragraphs = [{"id":"para_1","name":"فقرة الخطاب الإشهارى والتوجيهى","stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","branch":"النصوص","topic":"أنواع الخطاب","active":true,"tashkeel":true,"title":"اقْرَأْ ثُمَّ أَجِبْ:","text":"الخطاب الإشهاري يسعى إلى التأثير..."}];
         let questionBank = [{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","branch":"النحو","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"paragraphId":"","q":"قَالَ الشَّاعِرُ الطَّائِيُّ: (وَبِئْرِي ذُو حَفَرْتُ وَذُو طَوَيْتُ). مَا الْحُكْمُ النَّحْوِيُّ لِكَلِمَةِ (ذُو)؟","opts":["تُعْرَبُ إِعْرَابَ الْأَسْمَاءِ الْخَمْسَةِ","تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","تُبْنَى عَلَى السُّكُونِ فِي مَحَلِّ رَفْعٍ","تُعْرَبُ بِحَرَكَاتٍ مُقَدَّرَةٍ"],"ans":"تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","exp":"لُغَةُ طَيِّئٍ تُلْزِمُ كَلِمَةَ (ذُو) الْوَاوَ.","difficulty":"صعب جدا"}];
-        let quickInfoList = [{"title": "أنواع الخطاب", "stage":"ثانوية", "grade":"الصف الثاني الثانوي بكالوريا", "branch":"النصوص", "topic": "أنواع الخطاب", "active": true, "tashkeel": true, "sections": [{"mainHeader": "مفهوم الخطاب الإشهاري والتوجيهي", "active": true, "subItems": [{"title": "الخطاب الإشهاري", "active": true, "text": "يسعى إلى التأثير في المتلقي...", "img": ""}]}], "attachments": []}];
+       let quickInfoList = [{"title": "أنواع الخطاب", "stage":"ثانوية", "grade":"الصف الثاني الثانوي بكالوريا", "branch":"النصوص", "topic": "أنواع الخطاب", "active": true, "tashkeel": true, "sections": [{"mainHeader": "مفهوم الخطاب الإشهاري والتوجيهي", "active": true, "subItems": [{"title": "الخطاب الإشهاري", "active": true, "text": "يسعى إلى التأثير في المتلقي...", "img": ""}]}], "attachments": []}];
 
         let studentRecords = [];
         let quizState = { name: "", stage: "", grade: "", branch: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
+
+        // كائن تخزين روابط الصور العامة للمنصة
+        let siteImages = {
+            topBar: "",
+            right1: "",
+            right2: "",
+            right3: "",
+            left1: "",
+            left2: "",
+            left3: ""
+        };
+
+        // دالة تطبيق الصور على الواجهتين (الرئيسية وصفحة الشرح) تلقائياً
+        function applyGlobalImages() {
+            const mapping = [
+                { key: 'topBar', homeId: 'top-bar-img', qiId: 'qi-top-bar-img' },
+                { key: 'right1', homeId: 'right-img-1', qiId: 'qi-right-img-1' },
+                { key: 'right2', homeId: 'right-img-2', qiId: 'qi-right-img-2' },
+                { key: 'right3', homeId: 'right-img-3', qiId: 'qi-right-img-3' },
+                { key: 'left1', homeId: 'left-img-1', qiId: 'qi-left-img-1' },
+                { key: 'left2', homeId: 'left-img-2', qiId: 'qi-left-img-2' },
+                { key: 'left3', homeId: 'left-img-3', qiId: 'qi-left-img-3' }
+            ];
+
+            mapping.forEach(item => {
+                const url = siteImages[item.key];
+                
+                // تحديث صورة الصفحة الرئيسية
+                const homeEl = document.getElementById(item.homeId);
+                if (homeEl) {
+                    if (url) { homeEl.src = url; homeEl.classList.remove('hidden'); }
+                    else { homeEl.classList.add('hidden'); }
+                }
+
+                // تحديث صورة صفحة الشرح البديلة
+                const qiEl = document.getElementById(item.qiId);
+                if (qiEl) {
+                    if (url) { qiEl.src = url; qiEl.classList.remove('hidden'); }
+                    else { qiEl.classList.add('hidden'); }
+                }
+            });
+        }
+
         /* -- DATA_END -- */
+
+        // ================== DUAL PORTAL LOGIC ==================
+        let currentStudentPortalMode = null; 
+        let dualPortalActive = false;
+
+        function selectPortalMode(mode) {
+            const topic = document.getElementById('start-topic-select')?.value;
+            // منع الطالب من الضغط على الشرح أو التدريب قبل اختيار الدرس
+            if (!topic) {
+                alert("يرجى اختيار المرحلة والصف والموضوع أولاً قبل تحديد وجهتك!");
+                return; 
+            }
+
+            currentStudentPortalMode = mode;
+            const expBtn = document.getElementById('portal-tab-explanation');
+            const trnBtn = document.getElementById('portal-tab-training');
+            
+            const statsWrapper = document.getElementById('stats-wrapper');
+            const bankCard = document.getElementById('topic-bank-stats-card');
+            const startForm = document.getElementById('start-form-container');
+            const startBtn = document.getElementById('start-btn-text');
+
+            // بمجرد اختيار التبويب (بعد تحديد الموضوع)، يظهر نموذج الدخول (الاسم والرقم السري)
+            if (startForm) startForm.classList.remove('hidden');
+
+            if (expBtn && trnBtn) {
+                if (mode === 'explanation') {
+                    expBtn.className = "portal-tab-btn flex items-center gap-3 p-4 rounded-2xl border-2 border-sky-500 bg-sky-100/80 transition cursor-pointer text-right shadow-sm group w-full";
+                    trnBtn.className = "portal-tab-btn flex items-center gap-3 p-4 rounded-2xl border-2 border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer text-right shadow-sm group w-full";
+                    
+                    if (statsWrapper) statsWrapper.classList.add('hidden');
+                    if (bankCard) bankCard.classList.add('hidden');
+                    if (startBtn) startBtn.innerHTML = 'دُخُولُ لِلشَّرْحِ <i class="fa-solid fa-book-open mr-2"></i>';
+                } else {
+                    trnBtn.className = "portal-tab-btn flex items-center gap-3 p-4 rounded-2xl border-2 border-indigo-500 bg-indigo-100/80 transition cursor-pointer text-right shadow-sm group w-full";
+                    expBtn.className = "portal-tab-btn flex items-center gap-3 p-4 rounded-2xl border-2 border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer text-right shadow-sm group w-full";
+                    
+                    if (statsWrapper) statsWrapper.classList.remove('hidden');
+                    if (startBtn) startBtn.innerHTML = (appSettings.startBtnText || 'ابْدَأِ الِاخْتِبَارِ الْآنَ') + ' <i class="fa-solid fa-play mr-2"></i>';
+                    updateTopicBankCard();
+                }
+            }
+        }
+
+        function toggleDualPortalSetting(checkbox) {
+            dualPortalActive = checkbox.checked;
+            checkAndRenderDualPortal();
+        }
+
+        function checkAndRenderDualPortal() {
+            const portalContainer = document.getElementById('student-dual-portal-container');
+            const statsWrapper = document.getElementById('stats-wrapper');
+            const startForm = document.getElementById('start-form-container');
+            const startBtn = document.getElementById('start-btn-text');
+
+            if (!portalContainer) return;
+            
+            if (dualPortalActive) {
+                portalContainer.classList.remove('hidden');
+                currentStudentPortalMode = null; 
+                
+                if (statsWrapper) statsWrapper.classList.add('hidden');
+                if (startForm) startForm.classList.add('hidden');
+                
+                const expBtn = document.getElementById('portal-tab-explanation');
+                const trnBtn = document.getElementById('portal-tab-training');
+                if(expBtn) expBtn.className = "portal-tab-btn flex items-center gap-3 p-4 rounded-2xl border-2 border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer text-right shadow-sm group w-full";
+                if(trnBtn) trnBtn.className = "portal-tab-btn flex items-center gap-3 p-4 rounded-2xl border-2 border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer text-right shadow-sm group w-full";
+                
+            } else {
+                portalContainer.classList.add('hidden');
+                currentStudentPortalMode = 'training';
+                
+                if (statsWrapper) statsWrapper.classList.remove('hidden');
+                const topic = document.getElementById('start-topic-select')?.value;
+                if (topic && startForm) startForm.classList.remove('hidden');
+                else if (startForm) startForm.classList.add('hidden');
+                
+                if (startBtn) startBtn.innerHTML = (appSettings.startBtnText || 'ابْدَأِ الِاخْتِبَارِ الْآنَ') + ' <i class="fa-solid fa-play mr-2"></i>';
+                updateTopicBankCard();
+            }
+        }
+        // =======================================================
 
         let currentRecordsPage = 1;
         const recordsPerPage = 20;
 
         window.addEventListener('beforeunload', function (e) {
-            if (quizState.questions.length > 0 && document.getElementById('view-quiz') && !document.getElementById('view-quiz').classList.contains('hidden')) { e.preventDefault(); e.returnValue = ''; }
+        if (quizState.questions.length > 0 && document.getElementById('view-quiz') && !document.getElementById('view-quiz').classList.contains('hidden')) { e.preventDefault(); e.returnValue = ''; }
         });
 
         function formatText(text, itemTashkeel) {
@@ -1315,11 +1501,13 @@ select, select option {
             return text;
         }
 
-        let allowCloudLoadingOverlay = false; // قفل إلزامي لمنع ظهور رسالة الرفع في غير محلها
+       let allowCloudLoadingOverlay = false; // قفل إلزامي للتحكم بعمليات الحفظ اليدوي
 
-        function toggleCloudLoading(show, customText = "جَارِي الاتِّصَال بِالسَّحَابَةِ...") {
-            // إذا لم نسمح صراحة بإظهار الرسالة، امنع ظهورها تماماً واجعلها تعمل في الخلفية بصمت
-            if (show && !allowCloudLoadingOverlay) {
+        function toggleCloudLoading(show, customText = "جَارِي الِاتِّصَالِ بِالسَّحَابَةِ...") {
+            // استثناء صفحة البداية أو التحميل الأولي لكي تظهر دائماً بسلاسة
+            const isInitialLoading = customText.includes("جَارِي التَّحْمِيل");
+
+            if (show && !allowCloudLoadingOverlay && !isInitialLoading) {
                 console.log("حفظ خلفي صامت:", customText);
                 return; 
             }
@@ -1331,6 +1519,27 @@ select, select option {
                 overlay.style.display = show ? 'flex' : 'none'; 
             }
         }
+
+// 1. إظهار شاشة التحميل فور فتح الصفحة لتهيئة القوائم والبيانات
+toggleCloudLoading(true, "جَارِي التَّحْمِيل...");
+
+// 2. كود جلب البيانات وملء القوائم المنسدلة (دالة التحميل الأولية لديك)
+async function initializePlatformData() {
+    try {
+        // ... هنا يتم جلب البيانات من الـ Firebase أو التخزين المحلي وملء القوائم المنسدلة ...
+        
+        // بعد التأكد من اكتمال تحميل كل شيء وجهوزية القوائم:
+        toggleCloudLoading(false); // إخفاء شاشة التحميل لتظهر المنصة للطالب جاهزة
+    } catch (e) {
+        console.error("خطأ في التحميل الأولي:", e);
+        toggleCloudLoading(false);
+    }
+}
+
+// استدعاء دالة التهيئة عند فتح الصفحة
+window.addEventListener('DOMContentLoaded', () => {
+    initializePlatformData();
+});
 
         // ================== CLOUD SYNC & LAZY LOADING ==================
         function updateCloudCacheSnapshot() {
@@ -1374,8 +1583,10 @@ select, select option {
             window._cloudCache["records_meta"] = JSON.stringify({ totalParts: rTotalParts });
         }
 
-        async function loadDataFromCloud() {
-            toggleCloudLoading(true, "جَارِي تَحْمِيلِ البَيَانَاتِ...");
+       async function loadDataFromCloud() {
+            // إظهار شاشة التحميل بانتظام
+            toggleCloudLoading(true, "جَارِي التَّحْمِيل...");
+            
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseGetDoc) {
                     const db = window.firebaseDb; const doc = window.firebaseDoc; const getDoc = window.firebaseGetDoc;
@@ -1417,13 +1628,20 @@ select, select option {
                     for (let i = 0; i < qiTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap.exists() && snap.data().chunk) quickInfoList = quickInfoList.concat(snap.data().chunk); }
                     for (let i = 0; i < stTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap.exists() && snap.data().chunk) studentsAccounts = studentsAccounts.concat(snap.data().chunk); }
                 }
-            } catch (e) { console.log("استخدام البيانات المحلية:", e); }
+            } catch (e) { 
+                console.log("استخدام البيانات المحلية:", e); 
+            }
             
-            // تحديث الذاكرة الذكية بالنسخة المحملة فوراً
+            // تحديث الكاش وإخفاء شاشة التحميل الإجبارية لتظهر القوائم فوراً
             updateCloudCacheSnapshot();
-            
-            toggleCloudLoading(false); initApp();
+            toggleCloudLoading(false); 
+            initApp();
         }
+
+        // التأكد من تشغيل التحميل عند اكتمال تحميل الصفحة مباشرة
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDataFromCloud();
+        });
 
         async function loadAdminRecordsFromCloud() {
             try {
@@ -1585,6 +1803,12 @@ select, select option {
                 if (icon) icon.className = "fa-solid fa-sun text-amber-400";
             }
             applyPlatformThemeAndFont();
+            
+            // --- السطران المضافان لتفعيل البوابة الثنائية ---
+            dualPortalActive = appSettings.dualPortalActive === true;
+            checkAndRenderDualPortal();
+            // ------------------------------------------------
+
             document.getElementById('header-teacher-name').textContent = appSettings.teacherName;
             const adviceEl = document.getElementById('header-advice-text');
             if (adviceEl) adviceEl.textContent = appSettings.headerAdvice || "";
@@ -1633,6 +1857,11 @@ select, select option {
                 appSettings.examCount = parseInt(document.getElementById('admin-exam-count-input').value) || 20;
                 appSettings.examDuration = parseInt(document.getElementById('admin-exam-duration-input').value) || 20;
                 appSettings.expiryDate = document.getElementById('admin-expiry-date-input').value;
+                
+                // --- إضافة حفظ البوابة الثنائية ---
+                if(document.getElementById('admin-toggle-dual-portal')) appSettings.dualPortalActive = document.getElementById('admin-toggle-dual-portal').checked;
+                // -----------------------------------
+
                 appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
                 if(document.getElementById('admin-show-bank-card')) appSettings.showBankCard = document.getElementById('admin-show-bank-card').value === "true";
                 if(document.getElementById('admin-bank-card-style')) appSettings.bankCardStyle = document.getElementById('admin-bank-card-style').value;
@@ -1674,192 +1903,291 @@ select, select option {
                 });
             }, 150);
         }
-// دالة مخصصة لحفظ "الأسئلة" وحدها فقط
-        async function saveQuestionsState() {
+async function saveQuestionsState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
-                    // تفعيل القفل صراحة للسماح بظهور رسالة الرفع عند الحفظ اليدوي للأسئلة
-                    allowCloudLoadingOverlay = true;
-
                     const db = window.firebaseDb; 
-                    toggleCloudLoading(true, "جَارِي حِفْظِ بَنْكِ الْأَسْئِلَةِ...");
+                    const textEl = document.getElementById('cloud-loading-text');
+                    const overlay = document.getElementById('cloud-loading-overlay');
                     if (!window._cloudCache) window._cloudCache = {};
                     
+                    allowCloudLoadingOverlay = true;
+                    if (textEl) textEl.textContent = "جَارِي فَحْصِ بَنْكِ الْأَسْئِلَةِ...";
+                    if (overlay) overlay.style.display = 'flex';
+
                     let tasks = [];
                     const addTask = (id, data) => {
                         const str = JSON.stringify(data);
-                        if (window._cloudCache[id] !== str) tasks.push({ id, data, str });
+                        tasks.push({ id, data, str });
                     };
 
-                    const qChunkSize = 300; let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
-                    for (let i = 0; i < qTotalParts; i++) addTask(`questions_part_${i}`, { chunk: (questionBank || []).slice(i * qChunkSize, (i + 1) * qChunkSize) });
-                    addTask("questions_meta", { totalParts: qTotalParts });
+                    const qChunkSize = 300; 
+                    let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
+                    
+                    for (let i = 0; i < qTotalParts; i++) {
+                        addTask(`questions_part_${i}`, { chunk: (questionBank || []).slice(i * qChunkSize, (i + 1) * qChunkSize) });
+                    }
+                    addTask("questions_meta", { totalParts: qTotalParts, totalCount: (questionBank || []).length });
 
-                    if (tasks.length === 0) {
-                        toggleCloudLoading(true, "لَمْ يَتَغَيَّر أيُّ سُؤال (تَمَّ الحِفْظُ).");
+                    let currentCacheKey = JSON.stringify(questionBank || []);
+                    let cacheKeyMeta = "questions_full_cache_string";
+                    
+                    if (window._cloudCache[cacheKeyMeta] === currentCacheKey) {
+                        if (textEl) textEl.textContent = "لَمْ يَتَمَّ إِضَافَةُ مِلَفَّاتٍ جَدِيدَةٍ لِحِفْظِهَا";
                         setTimeout(() => {
-                            allowCloudLoadingOverlay = false; // إغلاق القفل
-                            toggleCloudLoading(false);
-                        }, 800);
+                            allowCloudLoadingOverlay = false;
+                            if (overlay) overlay.style.display = 'none';
+                        }, 1500);
                         return;
                     }
+
+                    let totalTasks = tasks.length;
+                    let completedTasks = 0;
 
                     for (let task of tasks) {
                         await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
                         window._cloudCache[task.id] = task.str; 
+                        completedTasks++;
+                        
+                        let pct = Math.round((completedTasks / totalTasks) * 100);
+                        if (textEl) {
+                            textEl.textContent = `جَارِي رَفْع الأَسْئِلَة... ${pct}% (${completedTasks}/${totalTasks})`;
+                        }
                     }
                     
-                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْأَسْئِلَةِ بِنَجَاح!");
+                    window._cloudCache[cacheKeyMeta] = currentCacheKey;
+
+                    if (textEl) textEl.textContent = "تَمَّ حِفْظُ الْأَسْئِلَةِ بِنَجَاح!";
                     setTimeout(() => {
-                        allowCloudLoadingOverlay = false; // إغلاق القفل بعد الانتهاء بنجاح
-                        toggleCloudLoading(false);
-                    }, 1000);
+                        allowCloudLoadingOverlay = false;
+                        if (overlay) overlay.style.display = 'none';
+                    }, 1200);
                 }
             } catch (e) {
-                allowCloudLoadingOverlay = false; // إغلاق القفل حتى لو حدث خطأ لضمان عودة المنصة للوضع الصامت
+                allowCloudLoadingOverlay = false;
                 console.error(e);
                 alert("خطأ في حفظ الأسئلة: " + e.message);
-                toggleCloudLoading(false);
+                const overlay = document.getElementById('cloud-loading-overlay');
+                if (overlay) overlay.style.display = 'none';
             }
         }
 
-        // دالة مخصصة لحفظ "الفقرات" وحدها فقط
         async function saveParagraphsState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
-                    allowCloudLoadingOverlay = true; // تفعيل القفل للحفظ اليدوي الصريح
                     const db = window.firebaseDb; 
-                    toggleCloudLoading(true, "جَارِي حِفْظِ الْفِقَرَاتِ...");
+                    const textEl = document.getElementById('cloud-loading-text');
+                    const overlay = document.getElementById('cloud-loading-overlay');
                     if (!window._cloudCache) window._cloudCache = {};
                     
+                    allowCloudLoadingOverlay = true;
+                    if (textEl) textEl.textContent = "جَارِي فَحْصِ الْفِقَرَاتِ...";
+                    if (overlay) overlay.style.display = 'flex';
+
                     let tasks = [];
                     const addTask = (id, data) => {
                         const str = JSON.stringify(data);
-                        if (window._cloudCache[id] !== str) tasks.push({ id, data, str });
+                        tasks.push({ id, data, str });
                     };
 
-                    const pChunkSize = 300; let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
-                    for (let i = 0; i < pTotalParts; i++) addTask(`paragraphs_part_${i}`, { chunk: (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize) });
-                    addTask("paragraphs_meta", { totalParts: pTotalParts });
+                    const pChunkSize = 300; 
+                    let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
+                    
+                    for (let i = 0; i < pTotalParts; i++) {
+                        addTask(`paragraphs_part_${i}`, { chunk: (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize) });
+                    }
+                    addTask("paragraphs_meta", { totalParts: pTotalParts, totalCount: (paragraphs || []).length });
 
-                    if (tasks.length === 0) {
-                        toggleCloudLoading(true, "لَمْ تَتَغَيَّر أيُّ فِقْرَة (تَمَّ الحِفْظُ).");
+                    let currentCacheKey = JSON.stringify(paragraphs || []);
+                    let cacheKeyMeta = "paragraphs_full_cache_string";
+                    
+                    if (window._cloudCache[cacheKeyMeta] === currentCacheKey) {
+                        if (textEl) textEl.textContent = "لَمْ يَتَمَّ إِضَافَةُ مِلَفَّاتٍ جَدِيدَةٍ لِحِفْظِهَا";
                         setTimeout(() => {
                             allowCloudLoadingOverlay = false;
-                            toggleCloudLoading(false);
-                        }, 800);
+                            if (overlay) overlay.style.display = 'none';
+                        }, 1500);
                         return;
                     }
+
+                    let totalTasks = tasks.length;
+                    let completedTasks = 0;
 
                     for (let task of tasks) {
                         await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
                         window._cloudCache[task.id] = task.str; 
+                        completedTasks++;
+                        
+                        let pct = Math.round((completedTasks / totalTasks) * 100);
+                        if (textEl) {
+                            textEl.textContent = `جَارِي رَفْع الْفِقَرَات... ${pct}% (${completedTasks}/${totalTasks})`;
+                        }
                     }
-                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْفِقَرَاتِ بِنَجَاح!");
+                    
+                    window._cloudCache[cacheKeyMeta] = currentCacheKey;
+
+                    if (textEl) textEl.textContent = "تَمَّ حِفْظُ الْفِقَرَاتِ بِنَجَاح!";
                     setTimeout(() => {
                         allowCloudLoadingOverlay = false;
-                        toggleCloudLoading(false);
-                    }, 1000);
+                        if (overlay) overlay.style.display = 'none';
+                    }, 1200);
                 }
             } catch (e) {
                 allowCloudLoadingOverlay = false;
                 console.error(e);
                 alert("خطأ في حفظ الفقرات: " + e.message);
-                toggleCloudLoading(false);
+                const overlay = document.getElementById('cloud-loading-overlay');
+                if (overlay) overlay.style.display = 'none';
             }
         }
 
-        // دالة مخصصة لحفظ "المعلومة السريعة" وحدها فقط
-        async function saveQuickInfoState() {
+           async function saveQuickInfoState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
-                    allowCloudLoadingOverlay = true; // تفعيل القفل للحفظ اليدوي الصريح
                     const db = window.firebaseDb; 
-                    toggleCloudLoading(true, "جَارِي حِفْظِ بَطَاقَاتِ الْمَعْلُومَةِ...");
+                    const textEl = document.getElementById('cloud-loading-text');
+                    const overlay = document.getElementById('cloud-loading-overlay');
                     if (!window._cloudCache) window._cloudCache = {};
                     
+                    allowCloudLoadingOverlay = true;
+                    if (textEl) textEl.textContent = "جَارِي فَحْصِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
+                    if (overlay) overlay.style.display = 'flex';
+
                     let tasks = [];
                     const addTask = (id, data) => {
                         const str = JSON.stringify(data);
-                        if (window._cloudCache[id] !== str) tasks.push({ id, data, str });
+                        tasks.push({ id, data, str });
                     };
 
-                    const qiChunkSize = 300; let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
-                    for (let i = 0; i < qiTotalParts; i++) addTask(`quickinfo_part_${i}`, { chunk: (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
-                    addTask("quickinfo_meta", { totalParts: qiTotalParts });
+                    const qiChunkSize = 300; 
+                    let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
+                    
+                    for (let i = 0; i < qiTotalParts; i++) {
+                        addTask(`quickinfo_part_${i}`, { chunk: (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
+                    }
+                    addTask("quickinfo_meta", { totalParts: qiTotalParts, totalCount: (quickInfoList || []).length });
 
-                    if (tasks.length === 0) {
-                        toggleCloudLoading(true, "لَمْ تَتَغَيَّر أيُّ بَطَاقَة (تَمَّ الحِفْظُ).");
+                    let currentCacheKey = JSON.stringify(quickInfoList || []);
+                    let cacheKeyMeta = "quickinfo_full_cache_string";
+                    
+                    if (window._cloudCache[cacheKeyMeta] === currentCacheKey) {
+                        if (textEl) textEl.textContent = "لَمْ يَتَمَّ إِضَافَةُ مِلَفَّاتٍ جَدِيدَةٍ لِحِفْظِهَا";
                         setTimeout(() => {
                             allowCloudLoadingOverlay = false;
-                            toggleCloudLoading(false);
-                        }, 800);
+                            if (overlay) overlay.style.display = 'none';
+                        }, 1500);
                         return;
                     }
+
+                    let totalTasks = tasks.length;
+                    let completedTasks = 0;
 
                     for (let task of tasks) {
                         await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
                         window._cloudCache[task.id] = task.str; 
+                        completedTasks++;
+                        
+                        let pct = Math.round((completedTasks / totalTasks) * 100);
+                        if (textEl) {
+                            textEl.textContent = `جَارِي رَفْع الْمَعْلُومَات... ${pct}% (${completedTasks}/${totalTasks})`;
+                        }
                     }
-                    toggleCloudLoading(true, "تَمَّ حِفْظُ الْبَطَاقَاتِ بِنَجَاح!");
+                    
+                    window._cloudCache[cacheKeyMeta] = currentCacheKey;
+
+                    if (textEl) textEl.textContent = "تَمَّ حِفْظُ الْمَعْلُومَاتِ بِنَجَاح!";
                     setTimeout(() => {
                         allowCloudLoadingOverlay = false;
-                        toggleCloudLoading(false);
-                    }, 1000);
+                        if (overlay) overlay.style.display = 'none';
+                    }, 1200);
                 }
             } catch (e) {
                 allowCloudLoadingOverlay = false;
                 console.error(e);
-                alert("خطأ في حفظ البطاقات: " + e.message);
-                toggleCloudLoading(false);
+                alert("خطأ في حفظ المعلومات السريعة: " + e.message);
+                const overlay = document.getElementById('cloud-loading-overlay');
+                if (overlay) overlay.style.display = 'none';
             }
         }
 
-        // دالة مخصصة لحفظ "الطلاب" وحدها فقط
+// دالة حفظ "الطلاب" المحسنة لرصد أي طالب جديد أو تعديل فوراً
         async function saveStudentsState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
-                    allowCloudLoadingOverlay = true; // تفعيل القفل للحفظ اليدوي الصريح
                     const db = window.firebaseDb; 
-                    toggleCloudLoading(true, "جَارِي حِفْظِ حِسَابَاتِ الطُّلَّابِ...");
+                    const textEl = document.getElementById('cloud-loading-text');
+                    const overlay = document.getElementById('cloud-loading-overlay');
                     if (!window._cloudCache) window._cloudCache = {};
                     
+                    // 1. تفعيل القفل وإظهار شاشة الفحص
+                    allowCloudLoadingOverlay = true;
+                    if (textEl) textEl.textContent = "جَارِي فَحْصِ حِسَابَاتِ الطُّلَّابِ...";
+                    if (overlay) overlay.style.display = 'flex';
+
                     let tasks = [];
                     const addTask = (id, data) => {
                         const str = JSON.stringify(data);
-                        if (window._cloudCache[id] !== str) tasks.push({ id, data, str });
+                        // نقارن البيانات، وإذا أردنا ضمان حفظ الطلاب دائماً عند الضغط اليدوي الصريح في حال وجود إضافة:
+                        tasks.push({ id, data, str });
                     };
 
-                    const stChunkSize = 300; let stTotalParts = Math.ceil((studentsAccounts || []).length / stChunkSize) || 1;
-                    for (let i = 0; i < stTotalParts; i++) addTask(`students_part_${i}`, { chunk: (studentsAccounts || []).slice(i * stChunkSize, (i + 1) * stChunkSize) });
-                    addTask("students_meta", { totalParts: stTotalParts });
+                    const stChunkSize = 300; 
+                    let stTotalParts = Math.ceil((studentsAccounts || []).length / stChunkSize) || 1;
+                    
+                    for (let i = 0; i < stTotalParts; i++) {
+                        addTask(`students_part_${i}`, { chunk: (studentsAccounts || []).slice(i * stChunkSize, (i + 1) * stChunkSize) });
+                    }
+                    addTask("students_meta", { totalParts: stTotalParts, totalCount: (studentsAccounts || []).length });
 
-                    if (tasks.length === 0) {
-                        toggleCloudLoading(true, "لَمْ يَتَغَيَّر أيُّ طَالِب (تَمَّ الحِفْظُ).");
+                    // التحقق مما إذا تغير الحجم الكلي أو البيانات تماماً
+                    let currentCacheKey = JSON.stringify(studentsAccounts || []);
+                    let cacheKeyMeta = "students_full_cache_string";
+                    
+                    if (window._cloudCache[cacheKeyMeta] === currentCacheKey && tasks.length === 0) {
+                        // إذا لم يتغير شيء حقاً
+                        if (textEl) textEl.textContent = "لَمْ يَتَمَّ إِضَافَةُ مِلَفَّاتٍ جَدِيدَةٍ لِحِفْظِهَا";
                         setTimeout(() => {
                             allowCloudLoadingOverlay = false;
-                            toggleCloudLoading(false);
-                        }, 800);
+                            if (overlay) overlay.style.display = 'none';
+                        }, 1500);
                         return;
                     }
+
+                    // 2. في حالة وجود طالب جديد أو تعديل، نبدأ الرفع مع النسبة المئوية (%) الظاهرة فوراً
+                    let totalTasks = tasks.length;
+                    let completedTasks = 0;
 
                     for (let task of tasks) {
                         await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
                         window._cloudCache[task.id] = task.str; 
+                        completedTasks++;
+                        
+                        // تحديث النسبة المئوية وعدد الملفات أمام عينك مباشرة
+                        let pct = Math.round((completedTasks / totalTasks) * 100);
+                        if (textEl) {
+                            textEl.textContent = `جَارِي رَفْع حِسَابَاتِ الطُّلَّابِ... ${pct}% (${completedTasks}/${totalTasks})`;
+                        }
                     }
-                    toggleCloudLoading(true, "تَمَّ حِفْظُ حِسَابَاتِ الطُّلَّابِ بِنَجَاح!");
+                    
+                    // تحديث الكاش العام للطلاب
+                    window._cloudCache[cacheKeyMeta] = currentCacheKey;
+
+                    // 3. رسالة النجاح
+                    if (textEl) textEl.textContent = "تَمَّ حِفْظُ حِسَابَاتِ الطُّلَّابِ بِنَجَاح!";
                     setTimeout(() => {
                         allowCloudLoadingOverlay = false;
-                        toggleCloudLoading(false);
-                    }, 1000);
+                        if (overlay) overlay.style.display = 'none';
+                    }, 1200);
                 }
             } catch (e) {
                 allowCloudLoadingOverlay = false;
                 console.error(e);
                 alert("خطأ في حفظ الطلاب: " + e.message);
-                toggleCloudLoading(false);
+                const overlay = document.getElementById('cloud-loading-overlay');
+                if (overlay) overlay.style.display = 'none';
             }
         }
+
 // دالة حفظ سجلات الطلاب في الخلفية بصمت تام بدون أي شاشات تحميل
         async function saveStudentRecordsBackground() {
             try {
@@ -1887,28 +2215,6 @@ select, select option {
             } catch (e) {
                 console.log("حفظ السجلات خلفياً:", e);
             }
-        }
-
-        // ================== QUICK INFO FRONTEND RENDER ==================
-        function openQuickInfo() {
-            const container = document.getElementById('quick-info-content-container');
-            container.innerHTML = '';
-            const topic = quizState.topic || document.getElementById('start-topic-select').value;
-            const branch = getSelectedBranch() || quizState.branch;
-
-            const filtered = quickInfoList.filter(qi => qi.active !== false && (qi.topic === topic || (!qi.topic && qi.branch === branch)));
-
-            if (filtered.length === 0) {
-                container.innerHTML = '<p class="text-center text-slate-500 text-xl font-bold py-10">لا توجد معلومات سريعة مخصصة لهذا الدرس.</p>';
-            } else {
-                filtered.forEach(qi => {
-                    let htmlContent = generateQuickInfoCardHtml(qi);
-                    const card = document.createElement('div');
-                    card.innerHTML = htmlContent;
-                    container.appendChild(card.firstElementChild);
-                });
-            }
-            document.getElementById('view-quick-info').classList.remove('hidden');
         }
 
         function generateQuickInfoCardHtml(qi) {
@@ -2060,13 +2366,41 @@ select, select option {
             const topic = document.getElementById('start-topic-select').value; 
             const branch = getSelectedBranch(); 
             const qiBtn = document.getElementById('quick-info-top-btn');
+            const startForm = document.getElementById('start-form-container');
             
             if (qiBtn) {
-                if (topic || branch) {
-                    const hasInfo = quickInfoList.some(qi => qi.active !== false && (qi.topic === topic || (!qi.topic && qi.branch === branch)));
-                    qiBtn.classList.toggle('hidden', !hasInfo);
-                } else { qiBtn.classList.add('hidden'); }
+                // إخفاء زر المعلومة السريعة من صفحة البداية دائماً إذا كانت البوابة الثنائية مفعلة
+                if (typeof dualPortalActive !== 'undefined' && dualPortalActive) {
+                    qiBtn.classList.add('hidden'); 
+                } else {
+                    if (topic || branch) {
+                        const hasInfo = quickInfoList.some(qi => qi.active !== false && (qi.topic === topic || (!qi.topic && qi.branch === branch)));
+                        qiBtn.classList.toggle('hidden', !hasInfo);
+                    } else { 
+                        qiBtn.classList.add('hidden'); 
+                    }
+                }
             }
+
+            // إخفاء/إظهار نموذج تسجيل الدخول بناءً على اختيار الموضوع
+            if (typeof dualPortalActive !== 'undefined' && dualPortalActive) {
+                if (startForm) startForm.classList.add('hidden'); // إخفاء النموذج حتى يختار التبويب
+                currentStudentPortalMode = null; // تصفير الاختيار
+                
+                // إعادة التبويبات للون الافتراضي (غير محدد)
+                const expBtn = document.getElementById('portal-tab-explanation');
+                const trnBtn = document.getElementById('portal-tab-training');
+                if(expBtn) expBtn.className = "portal-tab-btn flex items-center gap-3 p-4 rounded-2xl border-2 border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer text-right shadow-sm group w-full";
+                if(trnBtn) trnBtn.className = "portal-tab-btn flex items-center gap-3 p-4 rounded-2xl border-2 border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer text-right shadow-sm group w-full";
+                
+                const statsWrapper = document.getElementById('stats-wrapper');
+                if (statsWrapper) statsWrapper.classList.add('hidden');
+            } else {
+                // إذا البوابة معطلة من الإدارة (الصفحة الأصلية)، يظهر النموذج بمجرد اختيار الموضوع
+                if (topic && startForm) startForm.classList.remove('hidden');
+                else if (startForm) startForm.classList.add('hidden');
+            }
+
             updateTopicBankCard();
         }
 
@@ -2232,8 +2566,15 @@ select, select option {
         function getAnsweredQuestionsSet(topic) { try { let saved = localStorage.getItem(getAnsweredQuestionsKey(topic)); return saved ? JSON.parse(saved) : []; } catch(e) { return []; } }
         function markQuestionAsAnswered(topic, qText) { try { let answered = getAnsweredQuestionsSet(topic); if (!answered.includes(qText)) { answered.push(qText); localStorage.setItem(getAnsweredQuestionsKey(topic), JSON.stringify(answered)); } } catch(e) {} }
 
-        // ================== QUIZ ENGINE ==================
+// ================== QUIZ ENGINE ==================
         function startQuiz() {
+            // إظهار زر المعلومة السريعة بعد اختيار الموضوع وبدء الاختبار
+            const quickInfoBtn = document.getElementById('quick-info-top-btn');
+            if (quickInfoBtn) {
+                quickInfoBtn.classList.remove('hidden');
+            }
+
+            // باقي كود الدالة الموجود لديك أصلاً
             const nameInput = document.getElementById('student-name-input');
             const name = nameInput ? nameInput.value.trim() : "";
             const stage = document.getElementById('start-stage-select')?.value || ""; 
@@ -2257,9 +2598,24 @@ select, select option {
             }
 
             if (!stage || !grade || !topic) {
-                alert("يرجى التأكد من اختيار المرحلة والصف والموضوع بشكل كامل قبل بدء الاختبار!");
+                alert("يرجى التأكد من اختيار المرحلة والصف والموضوع بشكل كامل قبل البدء!");
                 return;
             }
+
+            // =========================================================
+            // التعديل الجديد: توجيه الطالب بناءً على التبويب المختار في البوابة
+            // =========================================================
+            if (typeof dualPortalActive !== 'undefined' && dualPortalActive) {
+                if (currentStudentPortalMode === 'explanation') {
+                    
+                    // فتح نافذة "المعلومات السريعة" مباشرة بناءً على الدالة الخاصة بك
+                    openQuickInfo(); 
+                    
+                    return; // إيقاف الكود هنا حتى لا يبدأ الاختبار، ويكتفي بالشرح!
+                }
+            }
+            // =========================================================            
+            // ... (هنا يبقى باقي كود دالة startQuiz الأصلي الخاص بك كما هو، والذي يقوم ببدء الاختبار) ...
 
             // تصفية بنك الأسئلة بناءً على الاختيارات
             let pool = questionBank.filter(q => q.stage === stage && q.grade === grade && (!branch || q.branch === branch) && q.topic === topic && q.active !== false);
@@ -2337,24 +2693,62 @@ select, select option {
             document.getElementById('display-total-q').textContent = sessionQuestions.length; 
             document.getElementById('quiz-topic-header-title').textContent = `${branch ? branch + ' ➔ ' : ''}${topic}`;
             
-            document.getElementById('view-start').classList.add('hidden'); 
-            document.getElementById('view-quiz').classList.remove('hidden'); 
-            document.getElementById('view-quiz').classList.add('flex'); 
-            document.getElementById('quick-info-top-btn').classList.remove('hidden');
+           document.getElementById('view-start').classList.add('hidden'); 
             
-            renderQuestion(); 
-            renderPalette(); 
-            startExamTimer();
+            // إظهار زر المعلومة السريعة داخل الاختبار/التدريب بقوة وتنسيق سليم
+            const qiBtn = document.getElementById('quick-info-top-btn');
+            if (qiBtn) {
+                const hasInfo = quickInfoList.some(qi => qi.active !== false && (qi.topic === topic || (!qi.topic && qi.branch === branch)));
+                if (hasInfo) {
+                    qiBtn.classList.remove('hidden');
+                    qiBtn.style.display = 'flex'; 
+                } else {
+                    qiBtn.classList.add('hidden');
+                    qiBtn.style.display = 'none'; 
+                }
+            }
+            
+            // التوجيه الذكي: إذا كان الطالب اختار "شرح"، نذهب به للشرح أولاً بدون بدء المؤقت!
+            if (typeof currentStudentPortalMode !== 'undefined' && currentStudentPortalMode === 'explanation') {
+                openQuickInfo();
+            } else {
+                // الوضع الطبيعي (التدريب): إظهار الاختبار وبدء المؤقت
+                document.getElementById('view-quiz').classList.remove('hidden'); 
+                document.getElementById('view-quiz').classList.add('flex'); 
+                renderQuestion(); 
+                renderPalette(); 
+                startExamTimer();
+            }
         }
 
         function startExamTimer() {
             let timerSeconds = (appSettings.examDuration || 20) * 60;
             const display = document.getElementById('display-timer');
-            if (quizState.timerInterval) clearInterval(quizState.timerInterval);
-            quizState.timerInterval = setInterval(() => {
-                if (timerSeconds <= 0) { clearInterval(quizState.timerInterval); alert("انتهى الوقت!"); finishQuizSubmission(); } 
-                else { let mins = Math.floor(timerSeconds / 60); let secs = timerSeconds % 60; display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`; timerSeconds--; }
-            }, 1000);
+            
+            // إيقاف أي عداد قديم لعدم تداخل التواقيت وتجنب التجمد
+            if (quizState && quizState.timerInterval) {
+                clearInterval(quizState.timerInterval);
+                quizState.timerInterval = null;
+            }
+            
+            // بدء العداد الجديد وضمان تحديثه فوراً على الشاشة
+            if (quizState) {
+                quizState.timerInterval = setInterval(() => {
+                    if (timerSeconds <= 0) { 
+                        clearInterval(quizState.timerInterval); 
+                        quizState.timerInterval = null;
+                        alert("انتهى الوقت!"); 
+                        finishQuizSubmission(); 
+                    } else { 
+                        let mins = Math.floor(timerSeconds / 60); 
+                        let secs = timerSeconds % 60; 
+                        if (display) {
+                            display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                        }
+                        timerSeconds--; 
+                    }
+                }, 1000);
+            }
         }
 
         function renderQuestion() {
@@ -2582,8 +2976,234 @@ setTimeout(() => {
             document.getElementById('modal-student-review').classList.add('flex');
         }
 
-        function restartHome() { initApp(); }
-        function closeQuickInfo() { document.getElementById('view-quick-info').classList.add('hidden'); }
+       function restartHome() {
+            // التحقق مما إذا كنا في شاشة النتيجة بالفعل، أو إذا انتهى الاختبار
+            const resView = document.getElementById('view-result');
+            const isResultShown = resView && !resView.classList.contains('hidden');
+
+            if (!isResultShown && typeof quizState !== 'undefined' && quizState && quizState.questions && quizState.questions.length > 0) {
+                let confirmSubmit = confirm("لديك اختبار نشط. هل تريد إنهاء الاختبار واحتساب النتيجة وعرضها الآن؟");
+                if (confirmSubmit) {
+                    const viewQuickInfo = document.getElementById('view-quick-info');
+                    if (viewQuickInfo) {
+                        viewQuickInfo.classList.add('hidden');
+                        viewQuickInfo.classList.remove('flex');
+                    }
+                    if (typeof finishQuizSubmission === 'function') {
+                        finishQuizSubmission();
+                        return;
+                    }
+                } else {
+                    return; // إلغاء الخروج والبقاء في الصفحة
+                }
+            }
+
+            // العودة الطبيعية للرئيسية وتصفير حالة الاختبار إن أمكن
+            const quickInfoBtn = document.getElementById('quick-info-top-btn');
+            if (quickInfoBtn) {
+                quickInfoBtn.classList.add('hidden');
+            }
+
+            const viewQuickInfo = document.getElementById('view-quick-info');
+            if (viewQuickInfo) {
+                viewQuickInfo.classList.add('hidden');
+                viewQuickInfo.classList.remove('flex');
+            }
+            
+            if (resView) {
+                resView.classList.add('hidden');
+            }
+
+            // إعادة تهيئة أو تصفير حالة الاختبار لضمان عدم تكرار المشكلة
+            if (typeof quizState !== 'undefined') {
+                quizState = { questions: [], answers: {}, currentIndex: 0 };
+            }
+
+            if (typeof initApp === 'function') {
+                initApp();
+            }
+        }
+        // ================== نظام عرض الشرح (المعلومة السريعة) ==================
+
+        function openQuickInfo() {
+            const topic = document.getElementById('start-topic-select').value; 
+            const branch = getSelectedBranch(); 
+            
+            const qiData = quickInfoList.find(qi => qi.active !== false && (qi.topic === topic || (!qi.topic && qi.branch === branch)));
+            
+            if (!qiData) {
+                alert("عذراً، لا توجد معلومات أو شرح مضاف لهذا الدرس حالياً.");
+                proceedToQuizFromInfo(); // إذا لم يجد شرحاً، يحوله للاختبار فوراً
+                return;
+            }
+
+            const container = document.getElementById('quick-info-content-container');
+            if (container) {
+                container.innerHTML = generateQuickInfoCardHtml(qiData);
+            }
+
+            // تحديث العنوان ليحمل اسم الدرس بشكل ديناميكي
+            const titleEl = document.getElementById('quick-info-dynamic-title');
+            if (titleEl) {
+                titleEl.innerHTML = `<i class="fa-solid fa-book-open text-sky-600"></i> ${branch ? branch + ' ➔ ' : ''}${topic}`;
+            }
+
+            // إخفاء الشاشات الأخرى
+            const viewStart = document.getElementById('view-start');
+            const viewQuiz = document.getElementById('view-quiz');
+            if (viewStart) viewStart.classList.add('hidden');
+            if (viewQuiz) {
+                viewQuiz.classList.add('hidden');
+                viewQuiz.classList.remove('flex');
+            }
+
+            // إظهار صفحة الشرح
+            const viewQi = document.getElementById('view-quick-info');
+            if (viewQi) {
+                viewQi.classList.remove('hidden');
+                viewQi.classList.add('flex');
+            }
+
+            // تحديث حالة ونَص زر الانتقال/العودة للاختبار ديناميكياً
+            updateInfoActionButtonState();
+        }
+
+        // دالة الرجوع (استجابة لزر إغلاق أو رجوع أو الصفحة الرئيسية)
+        function closeQuickInfo() {  
+            // إذا كان الطالب داخل اختبار نشط (المؤقت يعمل)، نرجعه للاختبار فقط دون تصفير
+            if (typeof quizState !== 'undefined' && quizState && quizState.timerInterval) {
+                const viewQi = document.getElementById('view-quick-info');
+                if (viewQi) {
+                    viewQi.classList.add('hidden'); 
+                    viewQi.classList.remove('flex');
+                }
+                const viewQuiz = document.getElementById('view-quiz');
+                if (viewQuiz) {
+                    viewQuiz.classList.remove('hidden');
+                    viewQuiz.classList.add('flex');
+                }
+            } else {
+                // إذا لم يكن هناك اختبار نشط أو أراد العودة للرئيسية، نستدعي restartHome لتفعيل شرط الحفظ واحتساب النتيجة بأمان
+                restartHome();
+            }
+        }
+
+        // دالة الانتقال المباشر والفوري من الشرح إلى الاختبار
+        function directToQuiz() {
+            // 1. إخفاء صفحة الشرح المستقلة
+            const viewQi = document.getElementById('view-quick-info');
+            if (viewQi) {
+                viewQi.classList.add('hidden'); 
+                viewQi.classList.remove('flex');
+            }
+
+            // 2. إذا كان الاختبار جاهزاً ومفتوحاً مسبقاً، نظهره فقط لنحافظ على إجابات الطالب
+            if (typeof quizState !== 'undefined' && quizState && quizState.questions && quizState.questions.length > 0) {
+                const viewQuiz = document.getElementById('view-quiz');
+                if (viewQuiz) {
+                    viewQuiz.classList.remove('hidden');
+                    viewQuiz.classList.add('flex');
+                }
+                if (!quizState.timerInterval) {
+                    startExamTimer();
+                }
+                return;
+            }
+
+            // 3. التحويل لوضع التدريب مؤقتاً واستدعاء دالة startQuiz الضخمة لتشغيل الاختبار بكفاءة
+            if (typeof currentStudentPortalMode !== 'undefined') {
+                currentStudentPortalMode = 'quiz';
+            }
+
+            if (typeof startQuiz === 'function') {
+                startQuiz();
+            } else {
+                alert("عذراً، حدث خطأ في تشغيل الاختبار.");
+                restartHome();
+            }
+        }
+
+        // ================== QUICK INFO & ACTION BUTTON HANDLERS ==================
+
+        // دالة موحدة للتعامل مع زر صفحة الشرح بناءً على حالة الطالب (مستقلة تماماً)
+        function handleInfoActionButton() {
+            if (typeof quizState !== 'undefined' && quizState && quizState.questions && quizState.questions.length > 0) {
+                const viewQi = document.getElementById('view-quick-info');
+                if (viewQi) {
+                    viewQi.classList.add('hidden'); 
+                    viewQi.classList.remove('flex');
+                }
+                const viewQuiz = document.getElementById('view-quiz');
+                if (viewQuiz) {
+                    viewQuiz.classList.remove('hidden');
+                    viewQuiz.classList.add('flex');
+                }
+                if (!quizState.timerInterval) {
+                    startExamTimer();
+                }
+                return;
+            }
+            directToQuiz();
+        }
+
+        // دالة لتحديث نص الزر وأيقونته تلقائياً (مستقلة تماماً)
+        function updateInfoActionButtonState() {
+            const btnText = document.getElementById('info-action-text');
+            const btnIcon = document.getElementById('info-action-icon');
+            
+            if (typeof quizState !== 'undefined' && quizState && quizState.questions && quizState.questions.length > 0) {
+                if (btnText) {
+                    btnText.parentElement.classList.remove('hidden');
+                    btnText.textContent = "الْعَوْدَةُ إِلَى الِاخْتِبَارِ";
+                }
+                if (btnIcon) btnIcon.className = "fa-solid fa-arrow-rotate-left";
+            } else {
+                const nameInput = document.getElementById('student-name-input');
+                const studentName = nameInput ? nameInput.value.trim() : "";
+
+                if (!studentName) {
+                    if (btnText) btnText.parentElement.classList.add('hidden');
+                } else {
+                    if (btnText) {
+                        btnText.parentElement.classList.remove('hidden');
+                        btnText.textContent = "انْتَقِلْ إِلَى الِاخْتِبَارِ";
+                    }
+                    if (btnIcon) btnIcon.className = "fa-solid fa-play";
+                }
+            }
+        }
+
+        // دالة الانتقال المباشر والفوري من الشرح إلى الاختبار
+        function directToQuiz() {
+            const viewQi = document.getElementById('view-quick-info');
+            if (viewQi) {
+                viewQi.classList.add('hidden'); 
+                viewQi.classList.remove('flex');
+            }
+
+            if (typeof quizState !== 'undefined' && quizState && quizState.questions && quizState.questions.length > 0) {
+                const viewQuiz = document.getElementById('view-quiz');
+                if (viewQuiz) {
+                    viewQuiz.classList.remove('hidden');
+                    viewQuiz.classList.add('flex');
+                }
+                if (!quizState.timerInterval) {
+                    startExamTimer();
+                }
+                return;
+            }
+
+            if (typeof currentStudentPortalMode !== 'undefined') {
+                currentStudentPortalMode = 'quiz';
+            }
+
+            if (typeof startQuiz === 'function') {
+                startQuiz();
+            } else {
+                alert("عذراً، حدث خطأ في تشغيل الاختبار.");
+                restartHome();
+            }
+        }
 // ================== ADMIN CORE & TABS ==================
         function handleAdminAccess() {
             document.getElementById('admin-login-pwd-input').value = "";
@@ -2600,13 +3220,31 @@ setTimeout(() => {
             const pwd = document.getElementById('admin-login-pwd-input').value;
             if (pwd === "12300123" || pwd === appSettings.adminPass) {
                 closeAdminLoginModal();
-                toggleCloudLoading(true, "تَحْمِيلِ بَيَانَاتِ الْإِدَارَةِ...");
-                await loadAdminRecordsFromCloud();
-                toggleCloudLoading(false);
-                document.getElementById('view-admin').classList.remove('hidden');
-                document.getElementById('view-admin').classList.add('flex');
-                loadAdminData();
-            } else { alert("كلمة المرور خاطئة!"); }
+                
+                // 1. إظهار شاشة التحميل فوراً أمام الطالب وقبل أي شيء
+                toggleCloudLoading(true, "جَارِي التَّحْمِيل...");
+                
+                // 2. إعطاء مهلة قصيرة جداً للمتصفح لكي يظهر الشاشة على الشاشة بسلاسة
+                setTimeout(async () => {
+                    try {
+                        // جلب السجلات والبيانات الإدارية من السحابة في الخلفية
+                        await loadAdminRecordsFromCloud();
+                        
+                        // فتح لوحة الإدارة وتعبئة البيانات
+                        document.getElementById('view-admin').classList.remove('hidden');
+                        document.getElementById('view-admin').classList.add('flex');
+                        loadAdminData();
+                    } catch (e) {
+                        console.error("خطأ في تحميل الإدارة:", e);
+                    } finally {
+                        // 3. إخفاء شاشة التحميل فور اكتمال كل شيء وفتح اللوحة
+                        toggleCloudLoading(false);
+                    }
+                }, 100);
+
+            } else { 
+                alert("كلمة المرور خاطئة!"); 
+            }
         }
 
         function exitAdmin() {
@@ -2628,6 +3266,11 @@ setTimeout(() => {
             document.getElementById('admin-exam-duration-input').value = appSettings.examDuration || 20;
             document.getElementById('admin-expiry-date-input').value = appSettings.expiryDate || "";
             document.getElementById('admin-footer-year-input').value = appSettings.footerYear || "2026";
+            
+            // --- إضافة استرجاع حالة البوابة الثنائية ---
+            if(document.getElementById('admin-toggle-dual-portal')) document.getElementById('admin-toggle-dual-portal').checked = !!appSettings.dualPortalActive;
+            // ------------------------------------------
+
             if(document.getElementById('admin-show-bank-card')) document.getElementById('admin-show-bank-card').value = (appSettings.showBankCard === false || appSettings.showBankCard === "false") ? "false" : "true";
             if(document.getElementById('admin-bank-card-style')) document.getElementById('admin-bank-card-style').value = appSettings.bankCardStyle || "style1";
             if(document.getElementById('admin-use-difficulty-filter')) { document.getElementById('admin-use-difficulty-filter').checked = !!appSettings.useDifficultyFilter; toggleDifficultySettingsView(!!appSettings.useDifficultyFilter); }
@@ -2636,7 +3279,7 @@ setTimeout(() => {
             if(document.getElementById('admin-enable-tashkeel')) document.getElementById('admin-enable-tashkeel').checked = appSettings.enableTashkeel !== false;
             if(document.getElementById('admin-require-password')) document.getElementById('admin-require-password').checked = !!appSettings.requireStudentPassword;
             
-            if(document.getElementById('admin-enable-student-pdf')) document.getElementById('admin-enable-student-pdf').checked = appSettings.enableStudentPDF !== false; // الإضافة الجديدة هنا
+            if(document.getElementById('admin-enable-student-pdf')) document.getElementById('admin-enable-student-pdf').checked = appSettings.enableStudentPDF !== false; 
             
             if(document.getElementById('admin-logo-header-input')) document.getElementById('admin-logo-header-input').value = appSettings.logoHeader || "";
             if(document.getElementById('admin-logo-right-input')) document.getElementById('admin-logo-right-input').value = appSettings.logoRight || "";
@@ -2885,27 +3528,78 @@ setTimeout(() => {
             pool.forEach(t => topicSel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`);
             renderAdminQuestionsList();
         }
-        let currentAdminQuestionsLimit = 50;
 
-        function renderAdminQuestionsList(isLoadMore = false) {
-            // إعادة ضبط العداد إلى 50 سؤال عند التصفية أو التبديل بين التبويبات
-            if (isLoadMore !== true) currentAdminQuestionsLimit = 50;
+       // دالة الترقيم العامة
+        function renderPaginationHtml(totalItems, itemsPerPage, currentPage, changePageCallbackName) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+            if (totalPages <= 1) return '';
+
+            let html = `<div class="flex items-center justify-between flex-wrap gap-2 bg-white p-3 rounded-2xl border border-slate-200 mt-4 shadow-2xs text-xs">`;
             
+            // مجموعة أزرار التنقل (البداية والسابق)
+            html += `<div class="flex items-center gap-1.5">`;
+            html += `<button type="button" onclick="${changePageCallbackName}(1 - ${currentPage})" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-3 py-2 rounded-xl transition disabled:opacity-40 cursor-pointer" ${currentPage === 1 ? 'disabled' : ''}><i class="fa-solid fa-angles-right"></i> البداية</button>`;
+            html += `<button type="button" onclick="${changePageCallbackName}(-1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-3 py-2 rounded-xl transition disabled:opacity-40 cursor-pointer" ${currentPage === 1 ? 'disabled' : ''}>السابق</button>`;
+            html += `</div>`;
+
+            // رقم الصفحة الحالية
+            html += `<span class="font-black text-slate-700 bg-sky-50 px-3 py-1.5 rounded-xl border border-sky-200 text-sky-900">الصفحة ${currentPage} من ${totalPages}</span>`;
+
+            // خانة الانتقال السريع برقم الصفحة
+            const uniqueInputId = 'page_jump_' + Math.random().toString(36).substr(2, 5);
+            html += `<div class="flex items-center gap-1">`;
+            html += `<input type="number" id="${uniqueInputId}" min="1" max="${totalPages}" placeholder="رقم" class="w-14 px-2 py-1.5 text-center border rounded-xl bg-slate-50 focus:outline-none focus:ring-1 focus:ring-sky-500 font-bold">`;
+            html += `<button type="button" onclick="const p = parseInt(document.getElementById('${uniqueInputId}').value); if(p >= 1 && p <= ${totalPages}) { ${changePageCallbackName}(p - ${currentPage}); }" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">انتقال</button>`;
+            html += `</div>`;
+
+            // مجموعة أزرار التنقل (التالي والنهاية)
+            html += `<div class="flex items-center gap-1.5">`;
+            html += `<button type="button" onclick="${changePageCallbackName}(1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-3 py-2 rounded-xl transition disabled:opacity-40 cursor-pointer" ${currentPage === totalPages ? 'disabled' : ''}>التالي</button>`;
+            html += `<button type="button" onclick="${changePageCallbackName}(${totalPages} - ${currentPage})" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-3 py-2 rounded-xl transition disabled:opacity-40 cursor-pointer" ${currentPage === totalPages ? 'disabled' : ''}>النهاية <i class="fa-solid fa-angles-left"></i></button>`;
+            html += `</div>`;
+
+            html += `</div>`;
+            return html;
+        }
+
+        let currentAdminQuestionsPage = 1;
+        const adminItemsPerPage = 20;
+
+        // دالة عرض الأسئلة المحدثة بنظام الصفحات الحقيقي (النسخة النهائية النظيفة)
+        function renderAdminQuestionsList() {
             const container = document.getElementById('admin-questions-list'); if (!container) return; 
-            const fStage = document.getElementById('filter-q-stage')?.value || ''; const fGrade = document.getElementById('filter-q-grade')?.value || ''; const fBranch = document.getElementById('filter-q-branch')?.value || ''; const fTopic = document.getElementById('filter-q-topic')?.value || '';
+            const fStage = document.getElementById('filter-q-stage')?.value || ''; 
+            const fGrade = document.getElementById('filter-q-grade')?.value || ''; 
+            const fBranch = document.getElementById('filter-q-branch')?.value || ''; 
+            const fTopic = document.getElementById('filter-q-topic')?.value || '';
+            
             const filtered = questionBank.map((q, idx) => ({...q, originalIdx: idx})).filter(q => {
-                if (fStage && q.stage !== fStage) return false; if (fGrade && q.grade !== fGrade) return false;
-                if (fBranch && q.branch !== fBranch) return false; if (fTopic && q.topic !== fTopic) return false; return true;
+                if (fStage && q.stage !== fStage) return false; 
+                if (fGrade && q.grade !== fGrade) return false;
+                if (fBranch && q.branch !== fBranch) return false; 
+                if (fTopic && q.topic !== fTopic) return false; 
+                return true;
             });
-            if (filtered.length === 0) { container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد أسئلة.</p>'; return; }
+
+            if (filtered.length === 0) { 
+                container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد أسئلة مطابقة.</p>'; 
+                return; 
+            }
             
+            const totalPages = Math.ceil(filtered.length / adminItemsPerPage) || 1;
+            if (currentAdminQuestionsPage > totalPages) currentAdminQuestionsPage = totalPages;
+            if (currentAdminQuestionsPage < 1) currentAdminQuestionsPage = 1;
+
+            const startIndex = (currentAdminQuestionsPage - 1) * adminItemsPerPage;
+            const endIndex = Math.min(startIndex + adminItemsPerPage, filtered.length);
+            const pageItems = filtered.slice(startIndex, endIndex);
+
             let htmlString = '';
-            
-            // اقتطاع العدد المطلوب فقط لتسريع المتصفح
-            const itemsToRender = filtered.slice(0, currentAdminQuestionsLimit);
-            
-            itemsToRender.forEach((q, loopIdx) => {
-                const globalIdx = q.originalIdx; const isActive = q.active !== false; const isTashkeel = q.tashkeel !== false;
+            pageItems.forEach((q, loopIdx) => {
+                const globalIdx = q.originalIdx; 
+                const absoluteNum = startIndex + loopIdx + 1; 
+                const isActive = q.active !== false; 
+                const isTashkeel = q.tashkeel !== false;
                 let gradeTopicBadge = `<span class="bg-sky-50 text-sky-900 px-2 py-0.5 rounded-md font-bold text-[11px] border border-sky-200 mt-1.5 w-fit">${q.stage} ➔ ${q.grade} ➔ ${q.branch} ➔ ${q.topic}</span>`;
                 
                 let paraBadge = '';
@@ -2917,16 +3611,34 @@ setTimeout(() => {
                     }
                 }
 
-                htmlString += `<div class="bg-white p-3.5 rounded-xl border space-y-2 text-xs shadow-2xs mb-2"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex flex-col gap-1"><div class="flex items-center gap-2 flex-wrap"><input type="checkbox" value="${globalIdx}" class="q-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0"><button type="button" onclick="toggleQuestionActivation(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${isActive ? 'مفعل' : 'مخفي'}</button><button type="button" onclick="toggleQuestionTashkeel(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}">${isTashkeel ? 'تشكيل' : 'بدون تشكيل'}</button><span class="font-black text-sky-950 text-sm leading-relaxed">س${loopIdx+1}: ${escapeHTML(q.q)}</span></div><div class="flex flex-wrap gap-1.5">${gradeTopicBadge}${paraBadge}</div></div><div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1"><button type="button" onclick="moveQuestionFiltered(${loopIdx}, -1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveQuestionFiltered(${loopIdx}, 1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="previewSingleQuestion(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button><button type="button" onclick="duplicateQuestion(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button><button type="button" onclick="openEditQuestionModal(${globalIdx})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button><button type="button" onclick="deleteSingleQuestion(${globalIdx})" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i> حذف</button></div></div></div>`;
+                htmlString += `<div class="bg-white p-3.5 rounded-xl border space-y-2 text-xs shadow-2xs mb-2">
+                    <div class="flex justify-between items-start flex-wrap gap-2">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <input type="checkbox" value="${globalIdx}" class="q-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0">
+                                <button type="button" onclick="toggleQuestionActivation(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${isActive ? 'مفعل' : 'مخفي'}</button>
+                                <button type="button" onclick="toggleQuestionTashkeel(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}">${isTashkeel ? 'تشكيل' : 'بدون تشكيل'}</button>
+                                <span class="font-black text-sky-950 text-sm leading-relaxed">س${absoluteNum}: ${escapeHTML(q.q)}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1.5">${gradeTopicBadge}${paraBadge}</div>
+                        </div>
+                        <div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1">
+                            <button type="button" onclick="previewSingleQuestion(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button>
+                            <button type="button" onclick="duplicateQuestion(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button>
+                            <button type="button" onclick="openEditQuestionModal(${globalIdx})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button>
+                            <button type="button" onclick="deleteSingleQuestion(${globalIdx})" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i> حذف</button>
+                        </div>
+                    </div>
+                </div>`;
             });
-            
-            // إضافة زر عرض المزيد إذا كان هناك بقية أسئلة
-            if (filtered.length > currentAdminQuestionsLimit) {
-                const remaining = filtered.length - currentAdminQuestionsLimit;
-                htmlString += `<div class="text-center pt-3 pb-5"><button type="button" onclick="currentAdminQuestionsLimit += 50; renderAdminQuestionsList(true)" class="bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold px-6 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-sm border border-sky-300 w-full sm:w-auto cursor-pointer"><i class="fa-solid fa-angles-down ml-1"></i> عرض المزيد من الأسئلة (${remaining} متبقية)</button></div>`;
-            }
 
+            htmlString += renderPaginationHtml(filtered.length, adminItemsPerPage, currentAdminQuestionsPage, 'changeQuestionsPage');
             container.innerHTML = htmlString; 
+        }
+
+        function changeQuestionsPage(dir) {
+            currentAdminQuestionsPage += dir;
+            renderAdminQuestionsList();
         }
         function toggleQuestionActivation(idx) { questionBank[idx].active = !questionBank[idx].active; saveState(); renderAdminQuestionsList(); }
         function toggleQuestionTashkeel(idx) { questionBank[idx].tashkeel = !questionBank[idx].tashkeel; saveState(); renderAdminQuestionsList(); }
@@ -3090,20 +3802,55 @@ setTimeout(() => {
             pool.forEach(t => topicSel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`);
             renderAdminParagraphsList();
         }
-        let currentAdminParasLimit = 50;
+      let currentAdminParasPage = 1;
 
-        function renderAdminParagraphsList(isLoadMore = false) {
-            if (isLoadMore !== true) currentAdminParasLimit = 50;
-            const container = document.getElementById('admin-paragraphs-list'); if (!container) return; 
-            const fStage = document.getElementById('filter-para-stage')?.value || ''; const fGrade = document.getElementById('filter-para-grade')?.value || ''; const fBranch = document.getElementById('filter-para-branch')?.value || ''; const fTopic = document.getElementById('filter-para-topic')?.value || '';
-            const filtered = paragraphs.map((p, idx) => ({...p, originalIdx: idx})).filter(p => { if (fStage && p.stage !== fStage) return false; if (fGrade && p.grade !== fGrade) return false; if (fBranch && p.branch !== fBranch) return false; if (fTopic && p.topic !== fTopic) return false; return true; });
-            if (filtered.length === 0) { container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد فقرات.</p>'; return; }
+        // دالة عرض الفقرات الشاملة مع نظام الصفحات والحذف الجماعي
+
+        function renderAdminParagraphsList() {
+            const container = document.getElementById('admin-paragraphs-list'); 
+            if (!container) return;
             
-            let htmlString = '';
-            const itemsToRender = filtered.slice(0, currentAdminParasLimit);
+            const fStage = document.getElementById('filter-para-stage')?.value || ''; 
+            const fGrade = document.getElementById('filter-para-grade')?.value || ''; 
+            const fBranch = document.getElementById('filter-para-branch')?.value || ''; 
+            const fTopic = document.getElementById('filter-para-topic')?.value || '';
+            
+            const filtered = paragraphs.map((p, idx) => ({...p, originalIdx: idx})).filter(p => { 
+                if (fStage && p.stage !== fStage) return false; 
+                if (fGrade && p.grade !== fGrade) return false; 
+                if (fBranch && p.branch !== fBranch) return false; 
+                if (fTopic && p.topic !== fTopic) return false; 
+                return true; 
+            });
 
-            itemsToRender.forEach((p, pIdx) => {
-                const globalIdx = p.originalIdx; const isActive = p.active !== false; const isTashkeel = p.tashkeel !== false;
+            if (filtered.length === 0) { 
+                container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد فقرات مطابقة.</p>'; 
+                return; 
+            }
+            
+            const totalPages = Math.ceil(filtered.length / adminItemsPerPage) || 1;
+            if (currentAdminParasPage > totalPages) currentAdminParasPage = totalPages;
+            if (currentAdminParasPage < 1) currentAdminParasPage = 1;
+
+            const startIndex = (currentAdminParasPage - 1) * adminItemsPerPage;
+            const endIndex = Math.min(startIndex + adminItemsPerPage, filtered.length);
+            const pageItems = filtered.slice(startIndex, endIndex);
+
+            let htmlString = '';
+
+            // شريط تحديد الكل وحذف المحددة (جديد ومطابق لقسم الأسئلة)
+            htmlString += `<div class="flex items-center justify-between bg-sky-50/70 p-2.5 rounded-xl border border-sky-200 mb-2 text-xs font-bold">
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="select-all-para-checkbox" onclick="toggleSelectAllParagraphs(this)" class="w-4 h-4 text-sky-600 rounded cursor-pointer">
+                    <label for="select-all-para-checkbox" class="cursor-pointer text-sky-950">تحديد كل فقرات الصفحة</label>
+                </div>
+                <button type="button" onclick="deleteSelectedParagraphs()" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl cursor-pointer shadow-xs transition">حذف الفقرات المحددة</button>
+            </div>`;
+
+            pageItems.forEach((p, pIdx) => {
+                const globalIdx = p.originalIdx; 
+                const isActive = p.active !== false; 
+                const isTashkeel = p.tashkeel !== false;
                 let gradeTopicBadge = `<span class="bg-sky-50 text-sky-900 px-2 py-0.5 rounded-md font-bold text-[11px] border border-sky-200 mt-1.5 w-fit">${p.stage} ➔ ${p.grade} ➔ ${p.branch} ➔ ${p.topic}</span>`;
                 
                 let linkedQs = questionBank.map((q, idx) => ({...q, globalIdx: idx})).filter(q => q.paragraphId === p.id);
@@ -3115,38 +3862,332 @@ setTimeout(() => {
                     qsBadge = `<span class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-bold text-[11px] border border-slate-200 flex items-center gap-1 w-fit mt-1.5"><i class="fa-solid fa-unlink"></i> غير مرتبطة بأسئلة</span>`;
                 }
 
-                htmlString += `<div class="bg-white p-3.5 rounded-xl border space-y-2 text-xs shadow-2xs mb-2"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex flex-col gap-1"><div class="flex items-center gap-2 flex-wrap"><button type="button" onclick="toggleParagraphVisibility(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${isActive ? 'مفعلة' : 'مخفية'}</button><button type="button" onclick="toggleParagraphTashkeel(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}">${isTashkeel ? 'تشكيل' : 'بدون تشكيل'}</button><span class="font-black text-sky-950 text-sm">${escapeHTML(p.name || p.title)}</span></div><div class="flex flex-wrap gap-1.5">${gradeTopicBadge}${qsBadge}</div></div><div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1"><button type="button" onclick="moveParagraphFiltered(${pIdx}, -1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveParagraphFiltered(${pIdx}, 1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="previewParagraph(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button><button type="button" onclick="duplicateParagraph(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button><button type="button" onclick="openEditParagraphModal('${p.id}')" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button><button type="button" onclick="deleteParagraph('${p.id}')" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i> حذف</button></div></div><p class="text-slate-600 line-clamp-2 mt-2 pt-2 border-t border-slate-100">${escapeHTML(p.text)}</p></div>`;
+                htmlString += `<div class="bg-white p-3.5 rounded-xl border space-y-2 text-xs shadow-2xs mb-2">
+                    <div class="flex justify-between items-start flex-wrap gap-2">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <input type="checkbox" value="${globalIdx}" class="para-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0 cursor-pointer">
+                                <button type="button" onclick="toggleParagraphVisibility(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${isActive ? 'مفعلة' : 'مخفية'}</button>
+                                <button type="button" onclick="toggleParagraphTashkeel(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}">${isTashkeel ? 'تشكيل' : 'بدون تشكيل'}</button>
+                                <span class="font-black text-sky-950 text-sm">${escapeHTML(p.name || p.title)}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1.5">${gradeTopicBadge}${qsBadge}</div>
+                        </div>
+                        <div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1">
+                            <button type="button" onclick="previewParagraph(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button>
+                            <button type="button" onclick="duplicateParagraph(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button>
+                            <button type="button" onclick="openEditParagraphModal('${p.id}')" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button>
+                            <button type="button" onclick="deleteParagraph('${p.id}')" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i> حذف</button>
+                        </div>
+                    </div>
+                    <p class="text-slate-600 line-clamp-2 mt-2 pt-2 border-t border-slate-100">${escapeHTML(p.text)}</p>
+                </div>`;
             });
-            
-            if (filtered.length > currentAdminParasLimit) {
-                const remaining = filtered.length - currentAdminParasLimit;
-                htmlString += `<div class="text-center pt-3 pb-5"><button type="button" onclick="currentAdminParasLimit += 50; renderAdminParagraphsList(true)" class="bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold px-6 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-sm border border-sky-300 w-full sm:w-auto cursor-pointer"><i class="fa-solid fa-angles-down ml-1"></i> عرض المزيد من الفقرات (${remaining} متبقية)</button></div>`;
-            }
 
+            htmlString += renderPaginationHtml(filtered.length, adminItemsPerPage, currentAdminParasPage, 'changeParasPage');
             container.innerHTML = htmlString;
         }
-        function toggleParagraphVisibility(idx) { paragraphs[idx].active = !paragraphs[idx].active; saveState(); renderAdminParagraphsList(); }
-        function toggleParagraphTashkeel(idx) { paragraphs[idx].tashkeel = !paragraphs[idx].tashkeel; saveState(); renderAdminParagraphsList(); }
-        function moveParagraphFiltered(filteredIdx, dir, fStage, fGrade, fBranch, fTopic) {
-            let filtered = paragraphs.map((p, idx) => ({...p, originalIdx: idx})).filter(p => { if (fStage && p.stage !== fStage) return false; if (fGrade && p.grade !== fGrade) return false; if (fBranch && p.branch !== fBranch) return false; if (fTopic && p.topic !== fTopic) return false; return true; });
-            let target = filtered[filteredIdx]; let swap = filtered[filteredIdx + dir]; if (!target || !swap) return;
-            let temp = paragraphs[target.originalIdx]; paragraphs[target.originalIdx] = paragraphs[swap.originalIdx]; paragraphs[swap.originalIdx] = temp; saveState(); renderAdminParagraphsList();
+
+        function changeParasPage(dir) {
+            currentAdminParasPage += dir;
+            renderAdminParagraphsList();
         }
-        function duplicateParagraph(idx) { let copy = JSON.parse(JSON.stringify(paragraphs[idx])); copy.id = "para_" + Date.now(); copy.name += " (نسخة)"; paragraphs.push(copy); saveState(); renderAdminParagraphsList(); }
-        function deleteParagraph(id) { if(confirm("حذف الفقرة؟")) { paragraphs = paragraphs.filter(p => p.id !== id); saveState(); renderAdminParagraphsList(); } }
-        function previewParagraph(idx) { let p = paragraphs[idx]; let imgHtml = p.img ? `<div class="text-center my-3"><img src="${p.img}" class="max-h-60 rounded-xl mx-auto object-contain border"></div>` : ''; document.getElementById('preview-card-body').innerHTML = `<div class="text-[11px] font-bold text-sky-700 bg-sky-50 p-2 rounded mb-3">${p.stage} ➔ ${p.grade} ➔ ${p.branch} ➔ ${p.topic}</div><h4 class="font-black text-amber-800 text-lg border-b pb-3">${formatText(p.title, p.tashkeel)}</h4>${imgHtml}<p class="text-slate-800 text-base whitespace-pre-line leading-relaxed">${formatText(p.text, p.tashkeel)}</p>`; document.getElementById('modal-preview-card').classList.remove('hidden'); document.getElementById('modal-preview-card').classList.add('flex'); }
-        function populateParaModalStages() { const sel = document.getElementById('modal-para-stage'); sel.innerHTML = '<option value="">اختر</option>'; Object.keys(stagesData).forEach(s => { if(gradeStatus[`stage_active_${s}`] !== false) sel.innerHTML += `<option value="${s}">${s}</option>`; }); }
-        function populateParaModalGrades() { const st = document.getElementById('modal-para-stage').value; const sel = document.getElementById('modal-para-grade'); sel.innerHTML = '<option value="">اختر</option>'; if (st && stagesData[st]) stagesData[st].forEach(g => { if(gradeStatus[`${st}_${g}`] !== false) sel.innerHTML += `<option value="${g}">${g}</option>`; }); }
-        function populateParaModalBranches() { const st = document.getElementById('modal-para-stage').value; const gr = document.getElementById('modal-para-grade').value; const sel = document.getElementById('modal-para-branch'); sel.innerHTML = '<option value="">اختر</option>'; if (st && gr) branchesData.filter(b => b.active !== false && b.targetGrades && b.targetGrades.some(tg => tg.stage===st && tg.grade===gr)).forEach(b => sel.innerHTML += `<option value="${b.branch}">${b.branch}</option>`); }
-        function populateParaModalTopics() { const st = document.getElementById('modal-para-stage').value; const gr = document.getElementById('modal-para-grade').value; const br = document.getElementById('modal-para-branch').value; const sel = document.getElementById('modal-para-topic'); sel.innerHTML = '<option value="">اختر</option>'; if (st && gr && br) topicsData.filter(t => t.active !== false && t.targetBranches && t.targetBranches.some(tb => tb.stage===st && tb.grade===gr && tb.branch===br)).forEach(t => sel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`); populateParaModalQuestions(); }
-        function populateParaModalQuestions(currentParaId = "") { const st = document.getElementById('modal-para-stage').value; const gr = document.getElementById('modal-para-grade').value; const br = document.getElementById('modal-para-branch').value; const to = document.getElementById('modal-para-topic').value; const container = document.getElementById('modal-para-questions-container'); if (!container) return; if (!st || !gr || !br || !to) { container.innerHTML = '<p class="text-slate-400 text-xs text-center py-2">يرجى تحديد الفلاتر لعرض الأسئلة.</p>'; return; } const matchedQs = questionBank.map((q, idx) => ({...q, originalIdx: idx})).filter(q => q.stage === st && q.grade === gr && q.branch === br && q.topic === to); if (matchedQs.length === 0) { container.innerHTML = '<p class="text-slate-400 text-xs text-center py-2">لا توجد أسئلة.</p>'; return; } let qHtml = ''; matchedQs.forEach((q, qIdx) => { let isLinked = currentParaId ? (q.paragraphId === currentParaId) : false; let bgClass = isLinked ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-black' : 'bg-white border-slate-200 text-slate-800'; qHtml += `<label class="flex items-center gap-2 p-2 rounded-xl border ${bgClass} cursor-pointer text-xs transition"><input type="checkbox" name="para_q_checkbox" value="${q.originalIdx}" ${isLinked ? 'checked' : ''} class="w-4 h-4 text-emerald-600 rounded"><span><strong>س${qIdx + 1}:</strong> ${q.q.substring(0, 65)}...</span></label>`; }); container.innerHTML = qHtml; }
-        function openParagraphModalForAdd() { populateParaModalStages(); document.getElementById('edit-paragraph-id').value = ""; document.getElementById('modal-para-name').value = ""; document.getElementById('modal-para-text').value = ""; document.getElementById('modal-paragraph-edit').classList.remove('hidden'); document.getElementById('modal-paragraph-edit').classList.add('flex'); }
-        function openEditParagraphModal(id) { populateParaModalStages(); let p = paragraphs.find(item => item.id === id); if (!p) return; document.getElementById('edit-paragraph-id').value = p.id; document.getElementById('modal-para-stage').value = p.stage; populateParaModalGrades(); document.getElementById('modal-para-grade').value = p.grade; populateParaModalBranches(); document.getElementById('modal-para-branch').value = p.branch; populateParaModalTopics(); document.getElementById('modal-para-topic').value = p.topic; document.getElementById('modal-para-name').value = p.name || ""; document.getElementById('modal-para-title').value = p.title || "اقْرَأْ ثُمَّ أَجِبْ:"; document.getElementById('modal-para-img').value = p.img || ""; document.getElementById('modal-para-text').value = p.text || ""; document.getElementById('modal-para-active').checked = p.active !== false; document.getElementById('modal-para-tashkeel').checked = p.tashkeel !== false; populateParaModalQuestions(p.id); document.getElementById('modal-paragraph-edit').classList.remove('hidden'); document.getElementById('modal-paragraph-edit').classList.add('flex'); }
-        function saveParagraphFromModal() { let id = document.getElementById('edit-paragraph-id').value; let stage = document.getElementById('modal-para-stage').value; let grade = document.getElementById('modal-para-grade').value; let branch = document.getElementById('modal-para-branch').value; let topic = document.getElementById('modal-para-topic').value; let name = document.getElementById('modal-para-name').value.trim(); let title = document.getElementById('modal-para-title').value.trim(); let img = document.getElementById('modal-para-img').value.trim(); let text = document.getElementById('modal-para-text').value.trim(); let active = document.getElementById('modal-para-active').checked; let tashkeel = document.getElementById('modal-para-tashkeel').checked; if (!stage || !grade || !branch || !topic || !text) { alert("أكمل الفلاتر والنص."); return; } if (!id) { id = "para_" + Date.now(); paragraphs.push({ id, stage, grade, branch, topic, name, title, img, text, active, tashkeel }); } else { let p = paragraphs.find(item => item.id === id); if (p) { p.stage = stage; p.grade = grade; p.branch = branch; p.topic = topic; p.name = name; p.title = title; p.img = img; p.text = text; p.active = active; p.tashkeel = tashkeel; } } let selectedIndices = Array.from(document.querySelectorAll('input[name="para_q_checkbox"]:checked')).map(cb => parseInt(cb.value)); questionBank.forEach((q, qIdx) => { if (q.stage === stage && q.grade === grade && q.branch === branch && q.topic === topic) { if (selectedIndices.includes(qIdx)) q.paragraphId = id; else if (q.paragraphId === id) q.paragraphId = ""; } }); saveState(); renderAdminParagraphsList(); document.getElementById('modal-paragraph-edit').classList.add('hidden'); document.getElementById('modal-paragraph-edit').classList.remove('flex'); alert("تم الحفظ بنجاح!"); }
-        function exportTopicParagraphsJson() { const fTopic = document.getElementById('filter-para-topic').value; if (!fTopic) return; let tq = paragraphs.filter(q => q.topic === fTopic); let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tq, null, 2)); let a = document.createElement('a'); a.href = dataStr; a.download = `${fTopic}_paragraphs.json`; a.click(); }
-        function importParagraphsJsonFile(event) { let file = event.target.files[0]; if (!file) return; let reader = new FileReader(); reader.onload = function(e) { try { let imp = JSON.parse(e.target.result); if (Array.isArray(imp)) { imp.forEach(p => { p.id = "para_" + Date.now() + Math.floor(Math.random()*1000); paragraphs.push(p); }); saveState(); renderAdminParagraphsList(); alert("تم الاستيراد بنجاح"); } } catch(err) { alert("خطأ"); } event.target.value = ''; }; reader.readAsText(file); }
-        function exportSingleParagraphJson() { let pObj = { name: document.getElementById('modal-para-name').value.trim(), title: document.getElementById('modal-para-title').value.trim(), img: document.getElementById('modal-para-img').value.trim(), text: document.getElementById('modal-para-text').value.trim(), active: document.getElementById('modal-para-active').checked, tashkeel: document.getElementById('modal-para-tashkeel').checked }; let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pObj, null, 2)); let a = document.createElement('a'); a.href = dataStr; a.download = `single_paragraph.json`; a.click(); }
-        function importSingleParagraphJson(event) { let file = event.target.files[0]; if (!file) return; let reader = new FileReader(); reader.onload = function(e) { try { let imp = JSON.parse(e.target.result); if (imp && !Array.isArray(imp)) { if (imp.name !== undefined) document.getElementById('modal-para-name').value = imp.name; if (imp.text !== undefined) document.getElementById('modal-para-text').value = imp.text; alert("تم الاستيراد للنافذة."); } } catch(err) { alert("خطأ"); } event.target.value = ''; }; reader.readAsText(file); }
+
+        function toggleParagraphVisibility(idx) { 
+            paragraphs[idx].active = !paragraphs[idx].active; 
+            saveState(); 
+            renderAdminParagraphsList(); 
+        }
+
+        function toggleParagraphTashkeel(idx) { 
+            paragraphs[idx].tashkeel = !paragraphs[idx].tashkeel; 
+            saveState(); 
+            renderAdminParagraphsList(); 
+        }
+
+        function moveParagraphFiltered(filteredIdx, dir, fStage, fGrade, fBranch, fTopic) {
+            let filtered = paragraphs.map((p, idx) => ({...p, originalIdx: idx})).filter(p => { 
+                if (fStage && p.stage !== fStage) return false; 
+                if (fGrade && p.grade !== fGrade) return false; 
+                if (fBranch && p.branch !== fBranch) return false; 
+                if (fTopic && p.topic !== fTopic) return false; 
+                return true; 
+            });
+            let target = filtered[filteredIdx]; 
+            let swap = filtered[filteredIdx + dir]; 
+            if (!target || !swap) return;
+            let temp = paragraphs[target.originalIdx]; 
+            paragraphs[target.originalIdx] = paragraphs[swap.originalIdx]; 
+            paragraphs[swap.originalIdx] = temp; 
+            saveState(); 
+            renderAdminParagraphsList();
+        }
+
+        function duplicateParagraph(idx) { 
+            let copy = JSON.parse(JSON.stringify(paragraphs[idx])); 
+            copy.id = "para_" + Date.now(); 
+            copy.name += " (نسخة)"; 
+            paragraphs.push(copy); 
+            saveState(); 
+            renderAdminParagraphsList(); 
+        }
+
+        function deleteParagraph(id) { 
+            if(confirm("حذف الفقرة؟")) { 
+                paragraphs = paragraphs.filter(p => p.id !== id); 
+                saveState(); 
+                renderAdminParagraphsList(); 
+            } 
+        }
+
+        function toggleSelectAllParagraphs(masterCb) {
+            document.querySelectorAll('.para-select-checkbox').forEach(cb => cb.checked = masterCb.checked);
+        }
+
+        function deleteSelectedParagraphs() {
+            let selected = document.querySelectorAll('.para-select-checkbox:checked');
+            if (selected.length === 0) {
+                alert("يرجى تحديد فقرة واحدة على الأقل للحذف.");
+                return;
+            }
+            if (confirm(`هل أنت متأكد من حذف ${selected.length} فقرة محددة؟`)) {
+                let indicesToDel = Array.from(selected).map(cb => parseInt(cb.value));
+                paragraphs = paragraphs.filter((_, idx) => !indicesToDel.includes(idx));
+                saveState();
+                renderAdminParagraphsList();
+                alert("تم حذف الفقرات المحددة بنجاح!");
+            }
+        }
+
+        function previewParagraph(idx) { 
+            let p = paragraphs[idx]; 
+            let imgHtml = p.img ? `<div class="text-center my-3"><img src="${p.img}" class="max-h-60 rounded-xl mx-auto object-contain border"></div>` : ''; 
+            document.getElementById('preview-card-body').innerHTML = `<div class="text-[11px] font-bold text-sky-700 bg-sky-50 p-2 rounded mb-3">${p.stage} ➔ ${p.grade} ➔ ${p.branch} ➔ ${p.topic}</div><h4 class="font-black text-amber-800 text-lg border-b pb-3">${formatText(p.title, p.tashkeel)}</h4>${imgHtml}<p class="text-slate-800 text-base whitespace-pre-line leading-relaxed">${formatText(p.text, p.tashkeel)}</p>`; 
+            document.getElementById('modal-preview-card').classList.remove('hidden'); 
+            document.getElementById('modal-preview-card').classList.add('flex'); 
+        }
+
+        function populateParaModalStages() { 
+            const sel = document.getElementById('modal-para-stage'); 
+            if (!sel) return;
+            sel.innerHTML = '<option value="">اختر</option>'; 
+            Object.keys(stagesData).forEach(s => { 
+                if(gradeStatus[`stage_active_${s}`] !== false) sel.innerHTML += `<option value="${s}">${s}</option>`; 
+            }); 
+        }
+
+        function populateParaModalGrades() { 
+            const st = document.getElementById('modal-para-stage')?.value; 
+            const sel = document.getElementById('modal-para-grade'); 
+            if (!sel) return;
+            sel.innerHTML = '<option value="">اختر</option>'; 
+            if (st && stagesData[st]) {
+                stagesData[st].forEach(g => { 
+                    if(gradeStatus[`${st}_${g}`] !== false) sel.innerHTML += `<option value="${g}">${g}</option>`; 
+                });
+            }
+        }
+
+        function populateParaModalBranches() { 
+            const st = document.getElementById('modal-para-stage')?.value; 
+            const gr = document.getElementById('modal-para-grade')?.value; 
+            const sel = document.getElementById('modal-para-branch'); 
+            if (!sel) return;
+            sel.innerHTML = '<option value="">اختر</option>'; 
+            if (st && gr) {
+                branchesData.filter(b => b.active !== false && b.targetGrades && b.targetGrades.some(tg => tg.stage === st && tg.grade === gr)).forEach(b => sel.innerHTML += `<option value="${b.branch}">${b.branch}</option>`);
+            }
+        }
+
+        function populateParaModalTopics() { 
+            const st = document.getElementById('modal-para-stage')?.value; 
+            const gr = document.getElementById('modal-para-grade')?.value; 
+            const br = document.getElementById('modal-para-branch')?.value; 
+            const sel = document.getElementById('modal-para-topic'); 
+            if (!sel) return;
+            sel.innerHTML = '<option value="">اختر</option>'; 
+            if (st && gr && br) {
+                topicsData.filter(t => t.active !== false && t.targetBranches && t.targetBranches.some(tb => tb.stage === st && tb.grade === gr && tb.branch === br)).forEach(t => sel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`);
+            }
+            populateParaModalQuestions(); 
+        }
+
+        function populateParaModalQuestions(currentParaId = "") { 
+            const st = document.getElementById('modal-para-stage')?.value; 
+            const gr = document.getElementById('modal-para-grade')?.value; 
+            const br = document.getElementById('modal-para-branch')?.value; 
+            const to = document.getElementById('modal-para-topic')?.value; 
+            const container = document.getElementById('modal-para-questions-container'); 
+            if (!container) return; 
+            if (!st || !gr || !br || !to) { 
+                container.innerHTML = '<p class="text-slate-400 text-xs text-center py-2">يرجى تحديد الفلاتر لعرض الأسئلة.</p>'; 
+                return; 
+            } 
+            const matchedQs = questionBank.map((q, idx) => ({...q, originalIdx: idx})).filter(q => q.stage === st && q.grade === gr && q.branch === br && q.topic === to); 
+            if (matchedQs.length === 0) { 
+                container.innerHTML = '<p class="text-slate-400 text-xs text-center py-2">لا توجد أسئلة.</p>'; 
+                return; 
+            } 
+            let qHtml = ''; 
+            matchedQs.forEach((q, qIdx) => { 
+                let isLinked = currentParaId ? (q.paragraphId === currentParaId) : false; 
+                let bgClass = isLinked ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-black' : 'bg-white border-slate-200 text-slate-800'; 
+                qHtml += `<label class="flex items-center gap-2 p-2 rounded-xl border ${bgClass} cursor-pointer text-xs transition"><input type="checkbox" name="para_q_checkbox" value="${q.originalIdx}" ${isLinked ? 'checked' : ''} class="w-4 h-4 text-emerald-600 rounded"><span><strong>س${qIdx + 1}:</strong> ${escapeHTML(q.q.substring(0, 65))}...</span></label>`; 
+            }); 
+            container.innerHTML = qHtml; 
+        }
+
+        function openParagraphModalForAdd() { 
+            populateParaModalStages(); 
+            const elId = document.getElementById('edit-paragraph-id'); if(elId) elId.value = ""; 
+            const elName = document.getElementById('modal-para-name'); if(elName) elName.value = ""; 
+            const elText = document.getElementById('modal-para-text'); if(elText) elText.value = ""; 
+            const modal = document.getElementById('modal-paragraph-edit'); 
+            if(modal) {
+                modal.classList.remove('hidden'); 
+                modal.classList.add('flex'); 
+            }
+        }
+
+        function openEditParagraphModal(id) { 
+            populateParaModalStages(); 
+            let p = paragraphs.find(item => item.id === id); 
+            if (!p) return; 
+            document.getElementById('edit-paragraph-id').value = p.id; 
+            document.getElementById('modal-para-stage').value = p.stage; 
+            populateParaModalGrades(); 
+            document.getElementById('modal-para-grade').value = p.grade; 
+            populateParaModalBranches(); 
+            document.getElementById('modal-para-branch').value = p.branch; 
+            populateParaModalTopics(); 
+            document.getElementById('modal-para-topic').value = p.topic; 
+            document.getElementById('modal-para-name').value = p.name || ""; 
+            document.getElementById('modal-para-title').value = p.title || "اقْرَأْ ثُمَّ أَجِبْ:"; 
+            document.getElementById('modal-para-img').value = p.img || ""; 
+            document.getElementById('modal-para-text').value = p.text || ""; 
+            document.getElementById('modal-para-active').checked = p.active !== false; 
+            document.getElementById('modal-para-tashkeel').checked = p.tashkeel !== false; 
+            populateParaModalQuestions(p.id); 
+            const modal = document.getElementById('modal-paragraph-edit');
+            if(modal) {
+                modal.classList.remove('hidden'); 
+                modal.classList.add('flex'); 
+            }
+        }
+
+        function saveParagraphFromModal() { 
+            let id = document.getElementById('edit-paragraph-id')?.value; 
+            let stage = document.getElementById('modal-para-stage')?.value; 
+            let grade = document.getElementById('modal-para-grade')?.value; 
+            let branch = document.getElementById('modal-para-branch')?.value; 
+            let topic = document.getElementById('modal-para-topic')?.value; 
+            let name = document.getElementById('modal-para-name')?.value.trim() || ''; 
+            let title = document.getElementById('modal-para-title')?.value.trim() || ''; 
+            let img = document.getElementById('modal-para-img')?.value.trim() || ''; 
+            let text = document.getElementById('modal-para-text')?.value.trim() || ''; 
+            let active = document.getElementById('modal-para-active')?.checked ?? true; 
+            let tashkeel = document.getElementById('modal-para-tashkeel')?.checked ?? true; 
+            
+            if (!stage || !grade || !branch || !topic || !text) { 
+                alert("أكمل الفلاتر والنص."); 
+                return; 
+            } 
+            if (!id) { 
+                id = "para_" + Date.now(); 
+                paragraphs.push({ id, stage, grade, branch, topic, name, title, img, text, active, tashkeel }); 
+            } else { 
+                let p = paragraphs.find(item => item.id === id); 
+                if (p) { 
+                    p.stage = stage; p.grade = grade; p.branch = branch; p.topic = topic; p.name = name; p.title = title; p.img = img; p.text = text; p.active = active; p.tashkeel = tashkeel; 
+                } 
+            } 
+            let selectedIndices = Array.from(document.querySelectorAll('input[name="para_q_checkbox"]:checked')).map(cb => parseInt(cb.value)); 
+            questionBank.forEach((q, qIdx) => { 
+                if (q.stage === stage && q.grade === grade && q.branch === branch && q.topic === topic) { 
+                    if (selectedIndices.includes(qIdx)) q.paragraphId = id; 
+                    else if (q.paragraphId === id) q.paragraphId = ""; 
+                } 
+            }); 
+            saveState(); 
+            renderAdminParagraphsList(); 
+            const modal = document.getElementById('modal-paragraph-edit');
+            if(modal) {
+                modal.classList.add('hidden'); 
+                modal.classList.remove('flex'); 
+            }
+            alert("تم الحفظ بنجاح!"); 
+        }
+
+        function exportTopicParagraphsJson() { 
+            const fTopic = document.getElementById('filter-para-topic')?.value; 
+            if (!fTopic) return; 
+            let tq = paragraphs.filter(q => q.topic === fTopic); 
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tq, null, 2)); 
+            let a = document.createElement('a'); 
+            a.href = dataStr; 
+            a.download = `${fTopic}_paragraphs.json`; 
+            a.click(); 
+        }
+
+        function importParagraphsJsonFile(event) { 
+            let file = event.target.files[0]; 
+            if (!file) return; 
+            let reader = new FileReader(); 
+            reader.onload = function(e) { 
+                try { 
+                    let imp = JSON.parse(e.target.result); 
+                    if (Array.isArray(imp)) { 
+                        imp.forEach(p => { 
+                            p.id = "para_" + Date.now() + Math.floor(Math.random()*1000); 
+                            paragraphs.push(p); 
+                        }); 
+                        saveState(); 
+                        renderAdminParagraphsList(); 
+                        alert("تم الاستيراد بنجاح"); 
+                    } 
+                } catch(err) { 
+                    alert("خطأ في ملف JSON"); 
+                } 
+                event.target.value = ''; 
+            }; 
+            reader.readAsText(file); 
+        }
+
+        function exportSingleParagraphJson() { 
+            let pObj = { 
+                name: document.getElementById('modal-para-name')?.value.trim() || '', 
+                title: document.getElementById('modal-para-title')?.value.trim() || '', 
+                img: document.getElementById('modal-para-img')?.value.trim() || '', 
+                text: document.getElementById('modal-para-text')?.value.trim() || '', 
+                active: document.getElementById('modal-para-active')?.checked ?? true, 
+                tashkeel: document.getElementById('modal-para-tashkeel')?.checked ?? true 
+            }; 
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pObj, null, 2)); 
+            let a = document.createElement('a'); 
+            a.href = dataStr; 
+            a.download = `single_paragraph.json`; 
+            a.click(); 
+        }
+
+        function importSingleParagraphJson(event) { 
+            let file = event.target.files[0]; 
+            if (!file) return; 
+            let reader = new FileReader(); 
+            reader.onload = function(e) { 
+                try { 
+                    let imp = JSON.parse(e.target.result); 
+                    if (imp && !Array.isArray(imp)) { 
+                        if (imp.name !== undefined) document.getElementById('modal-para-name').value = imp.name; 
+                        if (imp.text !== undefined) document.getElementById('modal-para-text').value = imp.text; 
+                        alert("تم الاستيراد للنافذة."); 
+                    } 
+                } catch(err) { 
+                    alert("خطأ في قراءة الملف"); 
+                } 
+                event.target.value = ''; 
+            }; 
+            reader.readAsText(file); 
+        }
 
         // --- QUICK INFO (WITH MOVE/ORDER BUTTONS & PREVIEW FIX) ---
         function populateQiAdminFilters() {
@@ -3180,32 +4221,105 @@ setTimeout(() => {
             pool.forEach(t => topicSel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`);
             renderAdminQuickInfoList();
         }
-       let currentAdminQiLimit = 50;
+       let currentAdminQiPage = 1;
 
-        function renderAdminQuickInfoList(isLoadMore = false) {
-            if (isLoadMore !== true) currentAdminQiLimit = 50;
-            const container = document.getElementById('admin-quickinfo-list'); if (!container) return; 
-            const fStage = document.getElementById('filter-qi-stage')?.value || ''; const fGrade = document.getElementById('filter-qi-grade')?.value || ''; const fBranch = document.getElementById('filter-qi-branch')?.value || ''; const fTopic = document.getElementById('filter-qi-topic')?.value || '';
-            const filtered = quickInfoList.map((qi, idx) => ({...qi, originalIdx: idx})).filter(qi => { if (fStage && qi.stage !== fStage) return false; if (fGrade && qi.grade !== fGrade) return false; if (fBranch && qi.branch !== fBranch) return false; if (fTopic && qi.topic !== fTopic) return false; return true; });
-            if (filtered.length === 0) { container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد بطاقات.</p>'; return; }
+        // دالة عرض بطاقات المعلومات السريعة الشاملة مع نظام الصفحات والحذف الجماعي
+        function renderAdminQuickInfoList() {
+            const container = document.getElementById('admin-quickinfo-list'); 
+            if (!container) return; 
             
-            let htmlString = '';
-            const itemsToRender = filtered.slice(0, currentAdminQiLimit);
-
-            itemsToRender.forEach((qi, qIdx) => {
-                const globalIdx = qi.originalIdx; const isActive = qi.active !== false; const isTashkeel = qi.tashkeel !== false;
-                let gradeTopicBadge = `<span class="bg-sky-50 text-sky-900 px-2 py-0.5 rounded-md font-bold text-[11px] border border-sky-200 mt-1.5 w-fit flex items-center gap-1"><i class="fa-solid fa-route"></i> ${qi.stage} ➔ ${qi.grade} ➔ ${qi.branch} ➔ ${qi.topic || '(الفرع كاملاً)'}</span>`;
-
-                htmlString += `<div class="bg-white p-3.5 rounded-xl border space-y-2 text-xs shadow-2xs mb-2"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex flex-col gap-1"><div class="flex items-center gap-2 flex-wrap"><button type="button" onclick="toggleQuickInfoVisibility(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${isActive ? 'مفعلة' : 'مخفية'}</button><button type="button" onclick="toggleQuickInfoTashkeel(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}">${isTashkeel ? 'تشكيل' : 'بدون تشكيل'}</button><span class="font-black text-sky-950 text-sm">${escapeHTML(qi.title)}</span></div>${gradeTopicBadge}</div><div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1"><button type="button" onclick="moveQuickInfoFiltered(${qIdx}, -1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveQuickInfoFiltered(${qIdx}, 1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="previewQuickInfo(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button><button type="button" onclick="duplicateQuickInfo(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button><button type="button" onclick="openEditQuickInfoModal(${globalIdx})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button><button type="button" onclick="deleteQuickInfo(${globalIdx})" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i> حذف</button></div></div></div>`;
+            const fStage = document.getElementById('filter-qi-stage')?.value || ''; 
+            const fGrade = document.getElementById('filter-qi-grade')?.value || ''; 
+            const fBranch = document.getElementById('filter-qi-branch')?.value || ''; 
+            const fTopic = document.getElementById('filter-qi-topic')?.value || '';
+            
+            const filtered = quickInfoList.map((qi, idx) => ({...qi, originalIdx: idx})).filter(qi => { 
+                if (fStage && qi.stage !== fStage) return false; 
+                if (fGrade && qi.grade !== fGrade) return false; 
+                if (fBranch && qi.branch !== fBranch) return false; 
+                if (fTopic && qi.topic !== fTopic) return false; 
+                return true; 
             });
 
-            if (filtered.length > currentAdminQiLimit) {
-                const remaining = filtered.length - currentAdminQiLimit;
-                htmlString += `<div class="text-center pt-3 pb-5"><button type="button" onclick="currentAdminQiLimit += 50; renderAdminQuickInfoList(true)" class="bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold px-6 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-sm border border-sky-300 w-full sm:w-auto cursor-pointer"><i class="fa-solid fa-angles-down ml-1"></i> عرض المزيد من البطاقات (${remaining} متبقية)</button></div>`;
+            if (filtered.length === 0) { 
+                container.innerHTML = '<p class="text-slate-500 text-xs text-center p-4">لا توجد بطاقات مطابقة.</p>'; 
+                return; 
             }
+            
+            const totalPages = Math.ceil(filtered.length / adminItemsPerPage) || 1;
+            if (currentAdminQiPage > totalPages) currentAdminQiPage = totalPages;
+            if (currentAdminQiPage < 1) currentAdminQiPage = 1;
 
+            const startIndex = (currentAdminQiPage - 1) * adminItemsPerPage;
+            const endIndex = Math.min(startIndex + adminItemsPerPage, filtered.length);
+            const pageItems = filtered.slice(startIndex, endIndex);
+
+            let htmlString = '';
+
+            // شريط تحديد الكل وحذف المحددة للبطاقات
+            htmlString += `<div class="flex items-center justify-between bg-sky-50/70 p-2.5 rounded-xl border border-sky-200 mb-2 text-xs font-bold">
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="select-all-qi-checkbox" onclick="toggleSelectAllQuickInfo(this)" class="w-4 h-4 text-sky-600 rounded cursor-pointer">
+                    <label for="select-all-qi-checkbox" class="cursor-pointer text-sky-950">تحديد كل بطاقات الصفحة</label>
+                </div>
+                <button type="button" onclick="deleteSelectedQuickInfo()" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl cursor-pointer shadow-xs transition">حذف البطاقات المحددة</button>
+            </div>`;
+
+            pageItems.forEach((qi, qIdx) => {
+                const globalIdx = qi.originalIdx; 
+                const isActive = qi.active !== false; 
+                const isTashkeel = qi.tashkeel !== false;
+                let gradeTopicBadge = `<span class="bg-sky-50 text-sky-900 px-2 py-0.5 rounded-md font-bold text-[11px] border border-sky-200 mt-1.5 w-fit flex items-center gap-1"><i class="fa-solid fa-route"></i> ${qi.stage} ➔ ${qi.grade} ➔ ${qi.branch} ➔ ${qi.topic || '(الفرع كاملاً)'}</span>`;
+
+                htmlString += `<div class="bg-white p-3.5 rounded-xl border space-y-2 text-xs shadow-2xs mb-2">
+                    <div class="flex justify-between items-start flex-wrap gap-2">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <input type="checkbox" value="${globalIdx}" class="qi-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0 cursor-pointer">
+                                <button type="button" onclick="toggleQuickInfoVisibility(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${isActive ? 'مفعلة' : 'مخفية'}</button>
+                                <button type="button" onclick="toggleQuickInfoTashkeel(${globalIdx})" class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'}">${isTashkeel ? 'تشكيل' : 'بدون تشكيل'}</button>
+                                <span class="font-black text-sky-950 text-sm">${escapeHTML(qi.title)}</span>
+                            </div>
+                            ${gradeTopicBadge}
+                        </div>
+                        <div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1">
+                            <button type="button" onclick="previewQuickInfo(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button>
+                            <button type="button" onclick="duplicateQuickInfo(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button>
+                            <button type="button" onclick="openEditQuickInfoModal(${globalIdx})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button>
+                            <button type="button" onclick="deleteQuickInfo(${globalIdx})" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i> حذف</button>
+                        </div>
+                    </div>
+                </div>`;
+            });
+
+            htmlString += renderPaginationHtml(filtered.length, adminItemsPerPage, currentAdminQiPage, 'changeQiPage');
             container.innerHTML = htmlString;
         }
+
+        function changeQiPage(dir) {
+            currentAdminQiPage += dir;
+            renderAdminQuickInfoList();
+        }
+
+        function toggleSelectAllQuickInfo(masterCb) {
+            document.querySelectorAll('.qi-select-checkbox').forEach(cb => cb.checked = masterCb.checked);
+        }
+
+        function deleteSelectedQuickInfo() {
+            let selected = document.querySelectorAll('.qi-select-checkbox:checked');
+            if (selected.length === 0) {
+                alert("يرجى تحديد بطاقة واحدة على الأقل للحذف.");
+                return;
+            }
+            if (confirm(`هل أنت متأكد من حذف ${selected.length} بطاقة محددة؟`)) {
+                let indicesToDel = Array.from(selected).map(cb => parseInt(cb.value));
+                quickInfoList = quickInfoList.filter((_, idx) => !indicesToDel.includes(idx));
+                saveState();
+                renderAdminQuickInfoList();
+                alert("تم حذف البطاقات المحددة بنجاح!");
+            }
+        }
+
         function toggleQuickInfoVisibility(idx) { quickInfoList[idx].active = !quickInfoList[idx].active; saveState(); renderAdminQuickInfoList(); }
         function toggleQuickInfoTashkeel(idx) { quickInfoList[idx].tashkeel = !quickInfoList[idx].tashkeel; saveState(); renderAdminQuickInfoList(); }
         function moveQuickInfoFiltered(filteredIdx, dir, fStage, fGrade, fBranch, fTopic) {
@@ -3215,6 +4329,7 @@ setTimeout(() => {
         }
         function duplicateQuickInfo(idx) { let copy = JSON.parse(JSON.stringify(quickInfoList[idx])); copy.title += " (نسخة)"; quickInfoList.push(copy); saveState(); renderAdminQuickInfoList(); }
         function deleteQuickInfo(idx) { if(confirm("حذف البطاقة؟")) { quickInfoList.splice(idx, 1); saveState(); renderAdminQuickInfoList(); } }
+        
         function previewQuickInfo(idx) {
             const qi = quickInfoList[idx];
             if (!qi) return;
@@ -3226,11 +4341,14 @@ setTimeout(() => {
             const modal = document.getElementById('modal-preview-card');
             if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
         }
-        function populateQiModalStages() { const sel = document.getElementById('modal-qi-stage'); sel.innerHTML = '<option value="">اختر</option>'; Object.keys(stagesData).forEach(s => { if(gradeStatus[`stage_active_${s}`] !== false) sel.innerHTML += `<option value="${s}">${s}</option>`; }); }
-        function populateQiModalGrades() { const st = document.getElementById('modal-qi-stage').value; const sel = document.getElementById('modal-qi-grade'); sel.innerHTML = '<option value="">اختر</option>'; if (st && stagesData[st]) stagesData[st].forEach(g => { if(gradeStatus[`${st}_${g}`] !== false) sel.innerHTML += `<option value="${g}">${g}</option>`; }); }
-        function populateQiModalBranches() { const st = document.getElementById('modal-qi-stage').value; const gr = document.getElementById('modal-qi-grade').value; const sel = document.getElementById('modal-qi-branch'); sel.innerHTML = '<option value="">اختر</option>'; if (st && gr) branchesData.filter(b => b.active !== false && b.targetGrades && b.targetGrades.some(tg => tg.stage===st && tg.grade===gr)).forEach(b => sel.innerHTML += `<option value="${b.branch}">${b.branch}</option>`); }
-        function populateQiModalTopics() { const st = document.getElementById('modal-qi-stage').value; const gr = document.getElementById('modal-qi-grade').value; const br = document.getElementById('modal-qi-branch').value; const sel = document.getElementById('modal-qi-topic-select'); sel.innerHTML = '<option value="">اختر</option>'; if (st && gr && br) topicsData.filter(t => t.active !== false && t.targetBranches && t.targetBranches.some(tb => tb.stage===st && tb.grade===gr && tb.branch===br)).forEach(t => sel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`); }
+
+        function populateQiModalStages() { const sel = document.getElementById('modal-qi-stage'); if(!sel) return; sel.innerHTML = '<option value="">اختر</option>'; Object.keys(stagesData).forEach(s => { if(gradeStatus[`stage_active_${s}`] !== false) sel.innerHTML += `<option value="${s}">${s}</option>`; }); }
+        function populateQiModalGrades() { const st = document.getElementById('modal-qi-stage')?.value; const sel = document.getElementById('modal-qi-grade'); if(!sel) return; sel.innerHTML = '<option value="">اختر</option>'; if (st && stagesData[st]) stagesData[st].forEach(g => { if(gradeStatus[`${st}_${g}`] !== false) sel.innerHTML += `<option value="${g}">${g}</option>`; }); }
+        function populateQiModalBranches() { const st = document.getElementById('modal-qi-stage')?.value; const gr = document.getElementById('modal-qi-grade')?.value; const sel = document.getElementById('modal-qi-branch'); if(!sel) return; sel.innerHTML = '<option value="">اختر</option>'; if (st && gr) branchesData.filter(b => b.active !== false && b.targetGrades && b.targetGrades.some(tg => tg.stage===st && tg.grade===gr)).forEach(b => sel.innerHTML += `<option value="${b.branch}">${b.branch}</option>`); }
+        function populateQiModalTopics() { const st = document.getElementById('modal-qi-stage')?.value; const gr = document.getElementById('modal-qi-grade')?.value; const br = document.getElementById('modal-qi-branch')?.value; const sel = document.getElementById('modal-qi-topic-select'); if(!sel) return; sel.innerHTML = '<option value="">اختر</option>'; if (st && gr && br) topicsData.filter(t => t.active !== false && t.targetBranches && t.targetBranches.some(tb => tb.stage===st && tb.grade===gr && tb.branch===br)).forEach(t => sel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`); }
+        
         function openQuickInfoModalForAdd() { populateQiModalStages(); document.getElementById('edit-quickinfo-id').value = "-1"; document.getElementById('modal-qi-title').value = ""; document.getElementById('quickinfo-sections-builder-container').innerHTML = ""; document.getElementById('quickinfo-attachments-builder-container').innerHTML = ""; addQuickInfoSectionBlock("", true, []); document.getElementById('modal-quickinfo-edit').classList.remove('hidden'); document.getElementById('modal-quickinfo-edit').classList.add('flex'); }
+        
         function openEditQuickInfoModal(idx) {
             populateQiModalStages(); let qi = quickInfoList[idx]; document.getElementById('edit-quickinfo-id').value = idx; document.getElementById('modal-qi-title').value = qi.title || ""; document.getElementById('modal-qi-img').value = qi.img || ""; document.getElementById('modal-qi-active').checked = qi.active !== false; document.getElementById('modal-qi-tashkeel').checked = qi.tashkeel !== false;
             document.getElementById('modal-qi-stage').value = qi.stage || ""; populateQiModalGrades(); document.getElementById('modal-qi-grade').value = qi.grade || ""; populateQiModalBranches(); document.getElementById('modal-qi-branch').value = qi.branch || ""; populateQiModalTopics(); document.getElementById('modal-qi-topic-select').value = qi.topic || "";
@@ -3238,6 +4356,7 @@ setTimeout(() => {
             const attContainer = document.getElementById('quickinfo-attachments-builder-container'); attContainer.innerHTML = ""; if (qi.attachments && Array.isArray(qi.attachments)) { qi.attachments.forEach(att => addQiAttachmentBlock(att.label || "", att.url || "")); }
             document.getElementById('modal-quickinfo-edit').classList.remove('hidden'); document.getElementById('modal-quickinfo-edit').classList.add('flex');
         }
+
         function saveQuickInfoFromModal() {
             let idx = parseInt(document.getElementById('edit-quickinfo-id').value); let title = document.getElementById('modal-qi-title').value.trim(); let stage = document.getElementById('modal-qi-stage').value; let grade = document.getElementById('modal-qi-grade').value; let branch = document.getElementById('modal-qi-branch').value; let topic = document.getElementById('modal-qi-topic-select').value; let img = document.getElementById('modal-qi-img').value.trim(); let active = document.getElementById('modal-qi-active').checked; let tashkeel = document.getElementById('modal-qi-tashkeel').checked;
             if (!title || !stage || !grade || !branch || !topic) { alert("أكمل الفلاتر والعنوان."); return; }
@@ -3247,71 +4366,54 @@ setTimeout(() => {
             if (idx === -1) quickInfoList.push(qiObj); else quickInfoList[idx] = qiObj;
             saveState(); renderAdminQuickInfoList(); document.getElementById('modal-quickinfo-edit').classList.add('hidden'); document.getElementById('modal-quickinfo-edit').classList.remove('flex'); alert("تم الحفظ بنجاح!");
         }
+
         function addQuickInfoSectionBlock(mainHeader = "", mainActive = true, subItems = []) {
             const container = document.getElementById('quickinfo-sections-builder-container'); if (!container) return; const sectionDiv = document.createElement('div'); sectionDiv.className = "qi-section-block bg-white p-4 rounded-2xl border-2 border-indigo-200 space-y-3 relative shadow-2xs"; let subItemsHtml = '';
             if (subItems && subItems.length > 0) subItems.forEach(sub => subItemsHtml += generateSubItemHtml(sub.title || "", sub.text || "", sub.img || "", sub.active !== false)); else subItemsHtml = generateSubItemHtml("", "", "", true);
             sectionDiv.innerHTML = `<div class="flex justify-between items-center bg-indigo-50 p-2.5 rounded-xl border gap-2 flex-wrap"><div class="flex items-center gap-2 flex-grow"><input type="checkbox" class="qi-sec-active w-5 h-5 text-emerald-600 rounded" ${mainActive !== false ? 'checked' : ''}><i class="fa-solid fa-bookmark text-indigo-600"></i><input type="text" class="qi-sec-main-header w-full p-2 rounded-lg border text-xs font-black bg-white" placeholder="العنوان الرئيسي..." value="${mainHeader}"></div><div class="flex items-center gap-1"><button type="button" onclick="moveQiSectionBlock(this, -1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveQiSectionBlock(this, 1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="this.closest('.qi-section-block').remove()" class="text-rose-600 text-xs font-bold px-2"><i class="fa-solid fa-trash ml-1"></i>حذف</button></div></div><div class="qi-subitems-container space-y-3 pr-2 border-r-2 border-indigo-200 mr-2">${subItemsHtml}</div><div class="pt-1"><button type="button" onclick="addSubItemToSection(this)" class="bg-sky-600 text-white font-bold text-[11px] px-3.5 py-2 rounded-xl"><i class="fa-solid fa-plus ml-1"></i> إضافة عنوان فرعي</button></div>`;
             container.appendChild(sectionDiv);
         }
+
         function generateSubItemHtml(title = "", text = "", img = "", active = true) { return `<div class="qi-subitem-block bg-slate-50 p-3.5 rounded-xl border space-y-2.5 relative"><div class="flex justify-between items-center flex-wrap gap-2"><div class="flex items-center gap-2"><input type="checkbox" class="qi-sub-active w-4 h-4 text-emerald-600 rounded" ${active !== false ? 'checked' : ''}><span class="font-bold text-sky-900 text-xs">فرعي</span></div><div class="flex items-center gap-1"><button type="button" onclick="moveQiSubItemBlock(this, -1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveQiSubItemBlock(this, 1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="this.closest('.qi-subitem-block').remove()" class="text-rose-500 text-xs font-bold"><i class="fa-solid fa-xmark ml-1"></i>حذف</button></div></div><div><input type="text" class="qi-sub-title w-full p-2 rounded-lg border text-xs font-bold" placeholder="العنوان الفرعي..." value="${title}"></div><div><textarea class="qi-sub-text w-full p-2 rounded-lg border text-xs" rows="2" placeholder="الشرح...">${text}</textarea></div><div><input type="text" class="qi-sub-img w-full p-2 rounded-lg border text-xs dir-ltr" placeholder="رابط صورة..." value="${img}"></div></div>`; }
         function addSubItemToSection(btnEl) { const subContainer = btnEl.closest('.qi-section-block').querySelector('.qi-subitems-container'); const tempDiv = document.createElement('div'); tempDiv.innerHTML = generateSubItemHtml("", "", "", true); subContainer.appendChild(tempDiv.firstElementChild); }
         function moveQiSectionBlock(btn, direction) { const block = btn.closest('.qi-section-block'); const parent = block.parentNode; if (direction === -1 && block.previousElementSibling) parent.insertBefore(block, block.previousElementSibling); else if (direction === 1 && block.nextElementSibling) parent.insertBefore(block, block.nextElementSibling.nextElementSibling); }
         function moveQiSubItemBlock(btn, direction) { const block = btn.closest('.qi-subitem-block'); const parent = block.parentNode; if (direction === -1 && block.previousElementSibling) parent.insertBefore(block, block.previousElementSibling); else if (direction === 1 && block.nextElementSibling) parent.insertBefore(block, block.nextElementSibling.nextElementSibling); }
         function addQiAttachmentBlock(label = "", url = "") { const container = document.getElementById('quickinfo-attachments-builder-container'); if (!container) return; const div = document.createElement('div'); div.className = "qi-attachment-block flex items-center gap-2 bg-white p-2.5 rounded-xl border text-xs"; div.innerHTML = `<input type="text" class="qi-att-label p-2 rounded-lg border text-xs font-bold w-1/3 bg-amber-50/50" placeholder="مسمى الزر" value="${label}"><input type="text" class="qi-att-url p-2 rounded-lg border text-xs dir-ltr flex-grow bg-slate-50" placeholder="الرابط (https://...)" value="${url}"><button type="button" onclick="this.closest('.qi-attachment-block').remove()" class="text-rose-600 px-2"><i class="fa-solid fa-trash"></i></button>`; container.appendChild(div); }
+        
         function exportTopicQuickInfoJson() { 
-            const fTopic = document.getElementById('filter-qi-topic').value; 
-            if (!fTopic) {
-                alert("يرجى تحديد الموضوع من الفلاتر بالأعلى أولاً لتصدير بطاقاته.");
-                return;
-            }
+            const fTopic = document.getElementById('filter-qi-topic')?.value; 
+            if (!fTopic) { alert("يرجى تحديد الموضوع من الفلاتر بالأعلى أولاً لتصدير بطاقاته."); return; }
             let tq = quickInfoList.filter(q => q.topic === fTopic); 
-            if (tq.length === 0) {
-                alert("لا توجد بطاقات في هذا الموضوع لتصديرها.");
-                return;
-            }
+            if (tq.length === 0) { alert("لا توجد بطاقات في هذا الموضوع لتصديرها."); return; }
             let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tq, null, 2)); 
-            let a = document.createElement('a'); 
-            a.href = dataStr; 
-            a.download = `${fTopic.replace(/\s+/g, '_')}_quickinfo.json`; 
-            a.click(); 
+            let a = document.createElement('a'); a.href = dataStr; a.download = `${fTopic.replace(/\s+/g, '_')}_quickinfo.json`; a.click(); 
         }
 
         function importQuickInfoJsonFile(event) { 
-            let file = event.target.files[0]; 
-            if (!file) return; 
+            let file = event.target.files[0]; if (!file) return; 
             let reader = new FileReader(); 
             reader.onload = function(e) { 
                 try { 
                     let imp = JSON.parse(e.target.result); 
-                    // الحل الذكي: جعلها مصفوفة دائماً، سواء كانت بطاقة واحدة أو عدة بطاقات
                     let itemsArray = Array.isArray(imp) ? imp : [imp];
-                    
                     if (itemsArray.length > 0) { 
-                        const fStage = document.getElementById('filter-qi-stage').value;
-                        const fGrade = document.getElementById('filter-qi-grade').value;
-                        const fBranch = document.getElementById('filter-qi-branch').value;
-                        const fTopic = document.getElementById('filter-qi-topic').value;
+                        const fStage = document.getElementById('filter-qi-stage')?.value;
+                        const fGrade = document.getElementById('filter-qi-grade')?.value;
+                        const fBranch = document.getElementById('filter-qi-branch')?.value;
+                        const fTopic = document.getElementById('filter-qi-topic')?.value;
 
                         itemsArray.forEach(qi => {
                             if (fStage) qi.stage = fStage;
                             if (fGrade) qi.grade = fGrade;
                             if (fBranch) qi.branch = fBranch;
                             if (fTopic) qi.topic = fTopic;
-                            // التأكد من وجود خصائص التفعيل
                             qi.active = qi.active !== false;
                             qi.tashkeel = qi.tashkeel !== false;
                             quickInfoList.push(qi);
                         });
-                        
-                        saveState(); 
-                        renderAdminQuickInfoList(); 
-                        alert("تم الاستيراد وربط البطاقات بنجاح!"); 
-                    } else {
-                        alert("الملف فارغ أو غير صالح.");
-                    }
-                } catch(err) { 
-                    alert("خطأ أثناء الاستيراد: تأكد من أن الملف بصيغة JSON صحيحة."); 
-                } 
+                        saveState(); renderAdminQuickInfoList(); alert("تم الاستيراد وربط البطاقات بنجاح!"); 
+                    } else { alert("الملف فارغ أو غير صالح."); }
+                } catch(err) { alert("خطأ أثناء الاستيراد: تأكد من أن الملف بصيغة JSON صحيحة."); } 
                 event.target.value = ''; 
             }; 
             reader.readAsText(file); 
@@ -3319,75 +4421,64 @@ setTimeout(() => {
 
         function exportSingleQuickInfoJson() { 
             let obj = { 
-                title: document.getElementById('modal-qi-title').value.trim(), 
-                img: document.getElementById('modal-qi-img').value.trim(), 
-                active: document.getElementById('modal-qi-active').checked, 
-                tashkeel: document.getElementById('modal-qi-tashkeel').checked, 
-                sections: [], 
-                attachments: [] 
+                title: document.getElementById('modal-qi-title')?.value.trim() || '', 
+                img: document.getElementById('modal-qi-img')?.value.trim() || '', 
+                active: document.getElementById('modal-qi-active')?.checked ?? true, 
+                tashkeel: document.getElementById('modal-qi-tashkeel')?.checked ?? true, 
+                sections: [], attachments: [] 
             }; 
             document.querySelectorAll('.qi-section-block').forEach(secBlock => { 
-                let mainHeader = secBlock.querySelector('.qi-sec-main-header').value.trim(); 
-                let mainActive = secBlock.querySelector('.qi-sec-active').checked; 
+                let mainHeader = secBlock.querySelector('.qi-sec-main-header')?.value.trim() || ''; 
+                let mainActive = secBlock.querySelector('.qi-sec-active')?.checked ?? true; 
                 let subItems = []; 
                 secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => { 
-                    let subTitle = subBlock.querySelector('.qi-sub-title').value.trim(); 
-                    let subText = subBlock.querySelector('.qi-sub-text').value.trim(); 
-                    let subImg = subBlock.querySelector('.qi-sub-img').value.trim(); 
-                    let subActive = subBlock.querySelector('.qi-sub-active').checked; 
+                    let subTitle = subBlock.querySelector('.qi-sub-title')?.value.trim() || ''; 
+                    let subText = subBlock.querySelector('.qi-sub-text')?.value.trim() || ''; 
+                    let subImg = subBlock.querySelector('.qi-sub-img')?.value.trim() || ''; 
+                    let subActive = subBlock.querySelector('.qi-sub-active')?.checked ?? true; 
                     if (subTitle || subText) subItems.push({ title: subTitle, text: subText, img: subImg, active: subActive }); 
                 }); 
                 if (mainHeader || subItems.length > 0) obj.sections.push({ mainHeader, active: mainActive, subItems }); 
             }); 
             document.querySelectorAll('.qi-attachment-block').forEach(attBlock => { 
-                let label = attBlock.querySelector('.qi-att-label').value.trim(); 
-                let url = attBlock.querySelector('.qi-att-url').value.trim(); 
+                let label = attBlock.querySelector('.qi-att-label')?.value.trim() || ''; 
+                let url = attBlock.querySelector('.qi-att-url')?.value.trim() || ''; 
                 if (url) obj.attachments.push({ label: label || "اطّلع على", url }); 
             }); 
             let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj, null, 2)); 
-            let a = document.createElement('a'); 
-            a.href = dataStr; 
-            a.download = `single_quickinfo.json`; 
-            a.click(); 
+            let a = document.createElement('a'); a.href = dataStr; a.download = `single_quickinfo.json`; a.click(); 
         }
 
         function importSingleQuickInfoJson(event) { 
-            let file = event.target.files[0]; 
-            if (!file) return; 
+            let file = event.target.files[0]; if (!file) return; 
             let reader = new FileReader(); 
             reader.onload = function(e) { 
                 try { 
                     let imp = JSON.parse(e.target.result); 
-                    // الحل الذكي: إذا استورد المستخدم مصفوفة بالخطأ، نأخذ أول بطاقة منها فقط
                     let singleItem = Array.isArray(imp) ? imp[0] : imp;
-
                     if (singleItem && typeof singleItem === 'object') { 
-                        if (singleItem.title !== undefined) document.getElementById('modal-qi-title').value = singleItem.title; 
-                        if (singleItem.img !== undefined) document.getElementById('modal-qi-img').value = singleItem.img;
-                        if (singleItem.active !== undefined) document.getElementById('modal-qi-active').checked = singleItem.active;
-                        if (singleItem.tashkeel !== undefined) document.getElementById('modal-qi-tashkeel').checked = singleItem.tashkeel;
+                        if (singleItem.title !== undefined && document.getElementById('modal-qi-title')) document.getElementById('modal-qi-title').value = singleItem.title; 
+                        if (singleItem.img !== undefined && document.getElementById('modal-qi-img')) document.getElementById('modal-qi-img').value = singleItem.img;
+                        if (singleItem.active !== undefined && document.getElementById('modal-qi-active')) document.getElementById('modal-qi-active').checked = singleItem.active;
+                        if (singleItem.tashkeel !== undefined && document.getElementById('modal-qi-tashkeel')) document.getElementById('modal-qi-tashkeel').checked = singleItem.tashkeel;
                         
                         const container = document.getElementById('quickinfo-sections-builder-container');
-                        container.innerHTML = "";
-                        if (singleItem.sections && Array.isArray(singleItem.sections) && singleItem.sections.length > 0) {
-                            singleItem.sections.forEach(sec => addQuickInfoSectionBlock(sec.mainHeader || "", sec.active !== false, sec.subItems || []));
-                        } else {
-                            addQuickInfoSectionBlock("", true, []);
+                        if (container) {
+                            container.innerHTML = "";
+                            if (singleItem.sections && Array.isArray(singleItem.sections) && singleItem.sections.length > 0) {
+                                singleItem.sections.forEach(sec => addQuickInfoSectionBlock(sec.mainHeader || "", sec.active !== false, sec.subItems || []));
+                            } else { addQuickInfoSectionBlock("", true, []); }
                         }
-                        
                         const attContainer = document.getElementById('quickinfo-attachments-builder-container');
-                        attContainer.innerHTML = "";
-                        if (singleItem.attachments && Array.isArray(singleItem.attachments)) {
-                            singleItem.attachments.forEach(att => addQiAttachmentBlock(att.label || "", att.url || ""));
+                        if (attContainer) {
+                            attContainer.innerHTML = "";
+                            if (singleItem.attachments && Array.isArray(singleItem.attachments)) {
+                                singleItem.attachments.forEach(att => addQiAttachmentBlock(att.label || "", att.url || ""));
+                            }
                         }
-
                         alert("تم استيراد تفاصيل البطاقة للنافذة بنجاح!"); 
-                    } else {
-                        alert("بيانات الملف غير صالحة للاستيراد.");
-                    }
-                } catch(err) { 
-                    alert("خطأ أثناء الاستيراد: تأكد من أن الملف بصيغة JSON صحيحة."); 
-                } 
+                    } else { alert("بيانات الملف غير صالحة للاستيراد."); }
+                } catch(err) { alert("خطأ أثناء الاستيراد: تأكد من أن الملف بصيغة JSON صحيحة."); } 
                 event.target.value = ''; 
             }; 
             reader.readAsText(file); 
@@ -3405,11 +4496,12 @@ setTimeout(() => {
             });
         }
 
-        let currentAdminStudentsLimit = 50;
+        let currentAdminStudentsPage = 1;
+        const studentsPerPage = 20;
 
-        function renderAdminStudentsList(isLoadMore = false) {
-            if (isLoadMore !== true) currentAdminStudentsLimit = 50;
-            const tbody = document.getElementById('admin-students-tbody'); if (!tbody) return; 
+        function renderAdminStudentsList() {
+            const tbody = document.getElementById('admin-students-tbody'); 
+            if (!tbody) return; 
             
             const gradeFilterSelect = document.getElementById('student-grade-filter');
             if (gradeFilterSelect && gradeFilterSelect.options.length <= 1) {
@@ -3429,20 +4521,50 @@ setTimeout(() => {
                 return true;
             });
 
-            if (filtered.length === 0) { 
-                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500 font-bold">لا توجد حسابات مطابقة.</td></tr>'; 
-                return; 
+            // شريط علوي صغير لتحديد الكل وحذف المحددة داخل قسم الطلاب (يُعرض فوق الجدول أو تحكمه)
+            let existingTopBar = document.getElementById('students-bulk-action-bar');
+            if (!existingTopBar) {
+                existingTopBar = document.createElement('div');
+                existingTopBar.id = 'students-bulk-action-bar';
+                existingTopBar.className = "flex items-center justify-between bg-sky-50/70 p-2.5 rounded-xl border border-sky-200 mb-2 text-xs font-bold";
+                existingTopBar.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="select-all-students-checkbox" onclick="toggleSelectAllStudents(this)" class="w-4 h-4 text-sky-600 rounded cursor-pointer">
+                        <label for="select-all-students-checkbox" class="cursor-pointer text-sky-950">تحديد كل طلاب الصفحة</label>
+                    </div>
+                    <button type="button" onclick="deleteSelectedStudents()" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl cursor-pointer shadow-xs transition">حذف الطلاب المحددين</button>
+                `;
+                tbody.closest('.overflow-x-auto')?.before(existingTopBar) || tbody.parentElement.before(existingTopBar);
             }
 
-            let htmlString = '';
-            const itemsToRender = filtered.slice(0, currentAdminStudentsLimit);
+            if (filtered.length === 0) { 
+                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500 font-bold">لا توجد حسابات مطابقة.</td></tr>'; 
+                let existingPagDiv = document.getElementById('students-pagination-container');
+                if (existingPagDiv) existingPagDiv.innerHTML = '';
+                if (existingTopBar) existingTopBar.style.display = 'none';
+                return; 
+            } else {
+                if (existingTopBar) existingTopBar.style.display = 'flex';
+            }
 
-            itemsToRender.forEach((st, fIdx) => {
+            const totalPages = Math.ceil(filtered.length / studentsPerPage) || 1;
+            if (currentAdminStudentsPage > totalPages) currentAdminStudentsPage = totalPages;
+            if (currentAdminStudentsPage < 1) currentAdminStudentsPage = 1;
+
+            const startIndex = (currentAdminStudentsPage - 1) * studentsPerPage;
+            const endIndex = Math.min(startIndex + studentsPerPage, filtered.length);
+            const pageItems = filtered.slice(startIndex, endIndex);
+
+            let htmlString = '';
+            pageItems.forEach((st, fIdx) => {
                 const globalIdx = st.originalIdx;
                 const stGrade = st.grade || '<span class="text-rose-500 text-[10px]">غير محدد (يجب تعديله)</span>';
                 
                 htmlString += `<tr class="hover:bg-slate-50 transition border-b text-xs">
-                    <td class="p-3 font-bold text-slate-900">${escapeHTML(st.name)}</td>
+                    <td class="p-3 font-bold text-slate-900 flex items-center gap-2">
+                        <input type="checkbox" value="${globalIdx}" class="student-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0 cursor-pointer">
+                        ${escapeHTML(st.name)}
+                    </td>
                     <td class="p-3 font-mono text-indigo-700">${escapeHTML(st.password)}</td>
                     <td class="p-3 font-black text-sky-800">${stGrade}</td>
                     <td class="p-3 text-slate-500">${st.date || '--'}</td>
@@ -3452,18 +4574,48 @@ setTimeout(() => {
                             <button type="button" onclick="moveStudentFiltered(${fIdx}, 1, '${escapeHTML(filterGrade)}', '${escapeHTML(searchVal)}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button>
                             <button type="button" onclick="duplicateStudent(${globalIdx})" class="bg-indigo-500 text-white px-2 py-1 rounded text-xs" title="تكرار"><i class="fa-solid fa-copy"></i></button>
                             <button type="button" onclick="openEditStudentModal(${globalIdx})" class="bg-amber-500 text-white px-2 py-1 rounded text-xs" title="تعديل"><i class="fa-solid fa-pen"></i></button>
-                            <button type="button" onclick="deleteStudent(${globalIdx})" class="bg-rose-500 text-white px-2 py-1 rounded text-xs" title="حذف"><i class="fa-solid fa-trash"></i></button>
+                            <button type="button" onclick="deleteStudent(${globalIdx})" class="bg-rose-500 text-white px-2.5 py-1 rounded text-xs" title="حذف"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </td>
                 </tr>`;
             });
-            
-            if (filtered.length > currentAdminStudentsLimit) {
-                const remaining = filtered.length - currentAdminStudentsLimit;
-                htmlString += `<tr><td colspan="5" class="p-3 text-center"><button type="button" onclick="currentAdminStudentsLimit += 50; renderAdminStudentsList(true)" class="bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold px-6 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-sm border border-sky-300 cursor-pointer"><i class="fa-solid fa-angles-down ml-1"></i> عرض المزيد من الطلاب (${remaining} متبقية)</button></td></tr>`;
-            }
 
             tbody.innerHTML = htmlString;
+
+            let paginationHtml = renderPaginationHtml(filtered.length, studentsPerPage, currentAdminStudentsPage, 'changeStudentsPage');
+            
+            const parentContainer = tbody.closest('.overflow-x-auto') || tbody.parentElement;
+            let existingPagDiv = document.getElementById('students-pagination-container');
+            if (!existingPagDiv) {
+                existingPagDiv = document.createElement('div');
+                existingPagDiv.id = 'students-pagination-container';
+                parentContainer.after(existingPagDiv);
+            }
+            existingPagDiv.innerHTML = paginationHtml;
+        }
+
+        function changeStudentsPage(dir) {
+            currentAdminStudentsPage += dir;
+            renderAdminStudentsList();
+        }
+
+        function toggleSelectAllStudents(masterCb) {
+            document.querySelectorAll('.student-select-checkbox').forEach(cb => cb.checked = masterCb.checked);
+        }
+
+        function deleteSelectedStudents() {
+            let selected = document.querySelectorAll('.student-select-checkbox:checked');
+            if (selected.length === 0) {
+                alert("يرجى تحديد طالب واحد على الأقل للحذف.");
+                return;
+            }
+            if (confirm(`هل أنت متأكد من حذف ${selected.length} طالب محدد؟`)) {
+                let indicesToDel = Array.from(selected).map(cb => parseInt(cb.value));
+                studentsAccounts = studentsAccounts.filter((_, idx) => !indicesToDel.includes(idx));
+                saveState();
+                renderAdminStudentsList();
+                alert("تم حذف الطلاب المحددين بنجاح!");
+            }
         }
 
         function moveStudentFiltered(filteredIdx, dir, filterGrade, searchVal) {
@@ -3547,11 +4699,14 @@ setTimeout(() => {
         function onAdminRecGradeChange() { const st = document.getElementById('admin-rec-stage-filter').value; const gr = document.getElementById('admin-rec-grade-filter').value; const sel = document.getElementById('admin-rec-branch-filter'); sel.innerHTML = '<option value="">الكل</option>'; if(st && gr) branchesData.filter(b=>b.targetGrades && b.targetGrades.some(tg=>tg.stage===st&&tg.grade===gr)).forEach(b => sel.innerHTML += `<option value="${b.branch}">${b.branch}</option>`); onAdminRecBranchChange(); }
         function onAdminRecBranchChange() { const st = document.getElementById('admin-rec-stage-filter').value; const gr = document.getElementById('admin-rec-grade-filter').value; const br = document.getElementById('admin-rec-branch-filter').value; const sel = document.getElementById('admin-rec-topic-filter'); sel.innerHTML = '<option value="">الكل</option>'; if(st && gr && br) topicsData.filter(t=>t.targetBranches && t.targetBranches.some(tb=>tb.stage===st&&tb.grade===gr&&tb.branch===br)).forEach(t => sel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`); renderAdminRecordsTable(); }
         function renderAdminRecordsTable() {
-            const tbody = document.getElementById('admin-tbody'); tbody.innerHTML = '';
-            const fSt = document.getElementById('admin-rec-stage-filter').value; 
-            const fGr = document.getElementById('admin-rec-grade-filter').value; 
-            const fBr = document.getElementById('admin-rec-branch-filter').value; 
-            const fTo = document.getElementById('admin-rec-topic-filter').value;
+            const tbody = document.getElementById('admin-tbody'); 
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            const fSt = document.getElementById('admin-rec-stage-filter')?.value || ''; 
+            const fGr = document.getElementById('admin-rec-grade-filter')?.value || ''; 
+            const fBr = document.getElementById('admin-rec-branch-filter')?.value || ''; 
+            const fTo = document.getElementById('admin-rec-topic-filter')?.value || '';
             
             const filtered = studentRecords.filter(r => { 
                 if(fSt && r.stage !== fSt) return false; 
@@ -3561,12 +4716,31 @@ setTimeout(() => {
                 return true; 
             });
             
+            // شريط تحديد الكل وحذف السجلات المحددة
+            let existingTopBar = document.getElementById('records-bulk-action-bar');
+            if (!existingTopBar) {
+                existingTopBar = document.createElement('div');
+                existingTopBar.id = 'records-bulk-action-bar';
+                existingTopBar.className = "flex items-center justify-between bg-sky-50/70 p-2.5 rounded-xl border border-sky-200 mb-2 text-xs font-bold";
+                existingTopBar.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="select-all-records-checkbox" onclick="toggleSelectAllRecords(this)" class="w-4 h-4 text-sky-600 rounded cursor-pointer">
+                        <label for="select-all-records-checkbox" class="cursor-pointer text-sky-950">تحديد كل سجلات الصفحة</label>
+                    </div>
+                    <button type="button" onclick="deleteSelectedRecords()" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl cursor-pointer shadow-xs transition">حذف السجلات المحددة</button>
+                `;
+                tbody.closest('.overflow-x-auto')?.before(existingTopBar) || tbody.parentElement.before(existingTopBar);
+            }
+
             if (filtered.length === 0) { 
                 tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500 font-bold">لا توجد سجلات.</td></tr>'; 
-                document.getElementById('pagination-info').textContent = 'الصفحة 1 من 1'; 
-                document.getElementById('prev-page-btn').disabled = true; 
-                document.getElementById('next-page-btn').disabled = true; 
+                if(document.getElementById('pagination-info')) document.getElementById('pagination-info').textContent = 'الصفحة 1 من 1'; 
+                if(document.getElementById('prev-page-btn')) document.getElementById('prev-page-btn').disabled = true; 
+                if(document.getElementById('next-page-btn')) document.getElementById('next-page-btn').disabled = true; 
+                if(existingTopBar) existingTopBar.style.display = 'none';
                 return; 
+            } else {
+                if(existingTopBar) existingTopBar.style.display = 'flex';
             }
             
             const totalPages = Math.ceil(filtered.length / recordsPerPage) || 1; 
@@ -3581,7 +4755,6 @@ setTimeout(() => {
                 const globalIdx = startIndex + pageIdx; 
                 const originalIndex = studentRecords.indexOf(rec);
                 
-                // حساب ذكي لعدد الأسئلة المجابة للسجلات
                 let actualAnswered = 0;
                 if (rec.breakdown) {
                     rec.breakdown.forEach(b => { if (b.userAnswer !== "لم يجب") actualAnswered++; });
@@ -3589,7 +4762,10 @@ setTimeout(() => {
                 const finalAnswered = rec.answeredCount || `${actualAnswered} من ${rec.total}`;
                 
                 tbody.innerHTML += `<tr class="hover:bg-slate-50 transition border-b text-xs">
-                    <td class="p-3 font-black text-slate-500">${globalIdx + 1}</td>
+                    <td class="p-3 font-black text-slate-500 flex items-center gap-2">
+                        <input type="checkbox" value="${originalIndex}" class="record-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0 cursor-pointer">
+                        ${globalIdx + 1}
+                    </td>
                     <td class="p-3 font-black text-sky-950 text-sm">${escapeHTML(rec.name)}</td>
                     <td class="p-3 font-bold text-slate-700">${rec.stageGrade || `${rec.stage} ➔ ${rec.grade} ➔ ${rec.branch} ➔ ${rec.topic}`}</td>
                     <td class="p-3"><span class="px-2.5 py-1 rounded-full font-black ${rec.status === 'ناجح' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${rec.status}</span></td>
@@ -3601,11 +4777,13 @@ setTimeout(() => {
                     <td class="p-3"><button type="button" onclick="openRecordDetailsModal(${originalIndex})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer shadow transition">التفاصيل</button></td>
                 </tr>`;
             });
-            document.getElementById('pagination-info').textContent = `الصفحة ${currentRecordsPage} من ${totalPages}`; 
-            document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1; 
-            document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
+            
+            if(document.getElementById('pagination-info')) document.getElementById('pagination-info').textContent = `الصفحة ${currentRecordsPage} من ${totalPages}`; 
+            if(document.getElementById('prev-page-btn')) document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1; 
+            if(document.getElementById('next-page-btn')) document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
         }
-// متغير لحفظ رقم الطالب الذي يتم عرض تفاصيله حالياً في لوحة الإدارة
+
+        // متغير لحفظ رقم الطالب الذي يتم عرض تفاصيله حالياً في لوحة الإدارة
         let currentAdminPrintIndex = -1;
 
         function openRecordDetailsModal(originalIndex) {
@@ -3621,7 +4799,6 @@ setTimeout(() => {
             rec.breakdown.forEach(b => { if (b.userAnswer !== "لم يجب") actualAnswered++; });
             let finalAnsweredCount = rec.answeredCount || `${actualAnswered} من ${rec.total}`;
 
-            // تكبير خطوط ملخص معلومات الطالب في الأعلى لراحة عين المعلم
             let html = `<div class="bg-sky-50 p-6 rounded-3xl border-2 border-sky-200 text-sky-950 font-bold mb-6 space-y-2 text-lg sm:text-xl">
                 <div><strong>الطالب:</strong> <span class="text-sky-900">${escapeHTML(rec.name)}</span></div>
                 <div><strong>المسار:</strong> ${escapeHTML(rec.stageGrade || rec.topic)}</div>
@@ -3631,7 +4808,6 @@ setTimeout(() => {
             </div>`;
 
             rec.breakdown.forEach((item) => {
-                // تكبير خيارات الإجابة لتصبح بخط كبير وواضح (text-lg sm:text-xl)
                 let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-5">';
                 item.options.forEach(opt => {
                     let optStyle = "bg-white border-slate-200 text-slate-800";
@@ -3651,7 +4827,6 @@ setTimeout(() => {
                     (item.isCorrect ? '<span class="text-emerald-600 font-black text-lg">صحيحة ✓</span>' : '<span class="text-rose-600 font-black text-lg">خاطئة ✗</span>') : 
                     '<span class="text-amber-600 font-black text-lg">لم يجب عليها</span>';
 
-                // تكبير عنوان السؤال الرئيسي ونص إجابة الطالب والتعليل بشكل واضح جداً
                 html += `<div class="bg-white p-8 rounded-3xl border-2 border-slate-200 shadow-sm space-y-4 mb-6">
                     <div class="flex justify-between items-center border-b pb-4">
                         <h4 class="font-black text-2xl sm:text-3xl text-sky-950">س${item.qIndex}: ${escapeHTML(item.qText)}</h4>
@@ -3672,8 +4847,38 @@ setTimeout(() => {
                 detailsModal.classList.add('flex');
             }
         }
-        function changeRecordsPage(dir) { currentRecordsPage += dir; renderAdminRecordsTable(); }
-        function clearRecords() { if (confirm("مسح جميع النتائج؟")) { studentRecords = []; saveState(); renderAdminRecordsTable(); } }
+
+        function changeRecordsPage(dir) { 
+            currentRecordsPage += dir; 
+            renderAdminRecordsTable(); 
+        }
+
+        function clearRecords() { 
+            if (confirm("مسح جميع النتائج؟")) { 
+                studentRecords = []; 
+                saveState(); 
+                renderAdminRecordsTable(); 
+            } 
+        }
+
+        function toggleSelectAllRecords(masterCb) {
+            document.querySelectorAll('.record-select-checkbox').forEach(cb => cb.checked = masterCb.checked);
+        }
+
+        function deleteSelectedRecords() {
+            let selected = document.querySelectorAll('.record-select-checkbox:checked');
+            if (selected.length === 0) {
+                alert("يرجى تحديد سجل واحد على الأقل للحذف.");
+                return;
+            }
+            if (confirm(`هل أنت متأكد من حذف ${selected.length} سجل محدد؟`)) {
+                let indicesToDel = Array.from(selected).map(cb => parseInt(cb.value));
+                studentRecords = studentRecords.filter((_, idx) => !indicesToDel.includes(idx));
+                saveState();
+                renderAdminRecordsTable();
+                alert("تم حذف السجلات المحددة بنجاح!");
+            }
+        }
 
         // --- BACKUP & OFFLINE EXPORT ---
         function exportFullSystemJson() {
@@ -3910,6 +5115,49 @@ function exportStudentReviewPDF() {
                 if (pdfBtn) { pdfBtn.innerHTML = originalBtnHtml; pdfBtn.disabled = false; pdfBtn.classList.remove('opacity-75', 'cursor-not-allowed'); }
             }
         }
+// 1. دالة حفظ إعدادات الصور من لوحة الإدارة
+        function saveSiteImagesFromAdmin() {
+            siteImages = {
+                topBar: document.getElementById('admin-top-bar-input')?.value || '',
+                right1: document.getElementById('admin-right-1-input')?.value || '',
+                right2: document.getElementById('admin-right-2-input')?.value || '',
+                right3: document.getElementById('admin-right-3-input')?.value || '',
+                left1: document.getElementById('admin-left-1-input')?.value || '',
+                left2: document.getElementById('admin-left-2-input')?.value || '',
+                left3: document.getElementById('admin-left-3-input')?.value || ''
+            };
+
+            // حفظ الروابط محلياً لتستمر حتى بعد تحديث الصفحة
+            localStorage.setItem('myPlatformSiteImages', JSON.stringify(siteImages));
+
+            // تطبيق الصور فوراً على الواجهتين
+            applyGlobalImages();
+
+            alert("تم حفظ وتحديث الصور بنجاح في كافة واجهات المنصة!");
+        }
+
+        // 2. استرجاع الصور تلقائياً فور تحميل المنصة
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedImages = localStorage.getItem('myPlatformSiteImages');
+            if (savedImages) {
+                try {
+                    siteImages = JSON.parse(savedImages);
+                    
+                    // تعبئة حقول لوحة الإدارة بالقيم المحفوظة إن وجدت
+                    if(document.getElementById('admin-top-bar-input')) document.getElementById('admin-top-bar-input').value = siteImages.topBar || '';
+                    if(document.getElementById('admin-right-1-input')) document.getElementById('admin-right-1-input').value = siteImages.right1 || '';
+                    if(document.getElementById('admin-right-2-input')) document.getElementById('admin-right-2-input').value = siteImages.right2 || '';
+                    if(document.getElementById('admin-right-3-input')) document.getElementById('admin-right-3-input').value = siteImages.right3 || '';
+                    if(document.getElementById('admin-left-1-input')) document.getElementById('admin-left-1-input').value = siteImages.left1 || '';
+                    if(document.getElementById('admin-left-2-input')) document.getElementById('admin-left-2-input').value = siteImages.left2 || '';
+                    if(document.getElementById('admin-left-3-input')) document.getElementById('admin-left-3-input').value = siteImages.left3 || '';
+
+                    applyGlobalImages();
+                } catch (e) {
+                    console.error("خطأ في قراءة الصور المخزنة:", e);
+                }
+            }
+        });
     </script>
 </body>
 </html>
