@@ -694,7 +694,7 @@ select, select option {
 
                     <div class="sm:col-span-2 mt-2">
                         <label class="block mb-1 text-slate-700 font-bold">كلمة مرور الإدارة الجديدة:</label>
-                        <input type="password" id="admin-new-password" placeholder="اتركها فارغة بدون تغيير (الافتراضية: 12300123)" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white">
+                        <input type="password" id="admin-new-password" placeholder="اتركها فارغة بدون تغيير (الافتراضية: 117283)" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white">
                     </div>
                 </div>
                 
@@ -2489,17 +2489,33 @@ async function saveQuestionsState() {
                         sec.subItems.forEach(sub => {
                             if (sub.active === false) return;
                             let subImgHtml = sub.img ? `<div class="my-4 text-center"><img src="${sub.img}" class="max-h-60 rounded-2xl mx-auto object-contain border-2"></div>` : '';
-                            // تم تكبير حجم الشرح هنا إلى text-lg sm:text-xl لراحة القراءة
-                            subItemsHtml += `<div class="bg-white p-6 rounded-2xl border-2 space-y-4 mt-4 shadow-sm">${sub.title ? `<h5 class="font-black text-sky-950 text-xl sm:text-2xl">${formatText(sub.title, qi.tashkeel)}</h5>` : ''}${subImgHtml}<p class="text-slate-900 text-lg sm:text-xl leading-relaxed whitespace-pre-line font-bold">${formatText(sub.text || '', qi.tashkeel)}</p></div>`;
+                            
+                            // دعم عرض الجدول إذا وجد في العنوان الفرعي وتنسيقه تلقائياً
+                            let tableHtml = '';
+                            if (sub.tableData && Array.isArray(sub.tableData) && sub.tableData.length > 0) {
+                                tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-slate-200 shadow-sm"><table class="w-full text-right border-collapse bg-white">`;
+                                sub.tableData.forEach((row, rIdx) => {
+                                    tableHtml += `<tr class="${rIdx === 0 ? 'bg-sky-900 text-white font-black' : 'border-b border-slate-100 hover:bg-slate-50 font-bold text-slate-800'}">`;
+                                    row.forEach(cell => {
+                                        if (rIdx === 0) {
+                                            tableHtml += `<th class="p-3 text-sm sm:text-base border-l border-sky-800 last:border-l-0">${formatText(cell, qi.tashkeel)}</th>`;
+                                        } else {
+                                            tableHtml += `<td class="p-3 text-sm sm:text-base border-l border-slate-100 last:border-l-0">${formatText(cell, qi.tashkeel)}</td>`;
+                                        }
+                                    });
+                                    tableHtml += `</tr>`;
+                                });
+                                tableHtml += `</table></div>`;
+                            }
+
+                            subItemsHtml += `<div class="bg-white p-6 rounded-2xl border-2 space-y-4 mt-4 shadow-sm">${sub.title ? `<h5 class="font-black text-sky-950 text-xl sm:text-2xl">${formatText(sub.title, qi.tashkeel)}</h5>` : ''}${subImgHtml}<p class="text-slate-900 text-lg sm:text-xl leading-relaxed whitespace-pre-line font-bold">${formatText(sub.text || '', qi.tashkeel)}</p>${tableHtml}</div>`;
                         });
                     }
                     if (subItemsHtml || sec.mainHeader) {
-                        // تم تكبير العناوين الرئيسية للأقسام
                         sectionsHtml += `<div class="bg-amber-50/70 p-6 rounded-3xl border-3 border-amber-300 space-y-5 shadow-sm">${sec.mainHeader ? `<h4 class="font-black text-amber-950 text-2xl sm:text-3xl border-b-2 border-amber-300 pb-3"><i class="fa-solid fa-bookmark text-amber-600 ml-2"></i>${formatText(sec.mainHeader, qi.tashkeel)}</h4>` : ''}<div class="space-y-5">${subItemsHtml}</div></div>`;
                     }
                 });
             }
-            // تم تكبير عنوان البطاقة الرئيسي إلى text-2xl sm:text-3xl
             return `<div class="bg-white p-8 rounded-3xl border-3 border-sky-200 space-y-6 shadow-lg"><h3 class="font-black text-sky-950 text-2xl sm:text-3xl border-b-4 border-amber-500 pb-4">${formatText(qi.title, qi.tashkeel)}</h3>${attachmentsHtml}${mainImgHtml}<div class="space-y-6">${sectionsHtml}</div></div>`;
         }
 
@@ -3465,34 +3481,37 @@ setTimeout(() => {
         }
         // ================== نظام عرض الشرح (المعلومة السريعة) ==================
 
-       // ================== شريط الرموز (Emojis) ==================
+      // ================== شريط الرموز (Emojis) ==================
 
-        // دالة إنشاء شريط الرموز المصغر والقائمة المنسدلة
+        // دالة إنشاء شريط الرموز الموسع ليضم أكبر عدد ممكن من الرموز التعليمية واللغوية مباشرة
         function getEmojiBarHtml() {
             return `
-            <div class="flex items-center gap-1 bg-white/80 px-1.5 py-0.5 rounded-lg border border-slate-200 w-fit mb-1 shadow-sm">
-                <button type="button" onclick="insertEmojiAtCursor(this, '📖')" class="hover:bg-slate-200 text-xs p-1 rounded cursor-pointer transition">📖</button>
-                <button type="button" onclick="insertEmojiAtCursor(this, '💡')" class="hover:bg-slate-200 text-xs p-1 rounded cursor-pointer transition">💡</button>
-                <button type="button" onclick="insertEmojiAtCursor(this, '✍️')" class="hover:bg-slate-200 text-xs p-1 rounded cursor-pointer transition">✍️</button>
-                <button type="button" onclick="insertEmojiAtCursor(this, '📌')" class="hover:bg-slate-200 text-xs p-1 rounded cursor-pointer transition">📌</button>
-                <div class="relative group inline-block">
-                    <button type="button" class="hover:bg-slate-200 text-slate-500 text-[10px] px-1.5 py-1 rounded cursor-pointer transition"><i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="absolute right-0 top-full mt-1 hidden group-hover:flex flex-wrap w-44 bg-white border border-slate-200 p-2 rounded-xl shadow-xl z-[60] gap-1 justify-end">
-                        <button type="button" onclick="insertEmojiAtCursor(this, '📚')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">📚</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '⚠️')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">⚠️</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '🎯')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">🎯</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '🏆')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">🏆</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '🌟')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">🌟</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '🎓')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">🎓</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '📝')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">📝</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '🧩')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">🧩</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '🧠')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">🧠</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '💬')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">💬</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '✅')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">✅</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '❌')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">❌</button>
-                        <button type="button" onclick="insertEmojiAtCursor(this, '✨')" class="hover:bg-slate-100 text-sm p-1.5 rounded cursor-pointer transition">✨</button>
-                    </div>
-                </div>
+            <div class="flex items-center gap-1 bg-white/90 px-2 py-1.5 rounded-xl border border-slate-200 w-full overflow-x-auto mb-1.5 shadow-xs flex-wrap">
+                <span class="text-[11px] font-bold text-slate-400 ml-1">إدراج رمز:</span>
+                <button type="button" onclick="insertEmojiAtCursor(this, '📖')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="كتاب">📖</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '📚')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="مكتبة">📚</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '💡')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="فكرة">💡</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '✍️')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="كتابة">✍️</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '📌')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="دبوس">📌</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '🎯')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="هدف">🎯</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '🏆')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="كأس">🏆</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '🌟')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="نجمة">🌟</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '🎓')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="تخرج">🎓</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '📝')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="مذكرة">📝</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '🧠')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="تفكير">🧠</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '💬')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="محادثة">💬</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '🗣️')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="تحدث">🗣️</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '🔍')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="بحث">🔍</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '📌')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="تثبيت">📌</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '⭐')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="ممتاز">⭐</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '✔️')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="صح">✔️</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '❌')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="خطأ">❌</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '❓')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="سؤال">❓</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '❗')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="تعجب">❗</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '✨')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="لمعان">✨</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '⚠️')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="تنبيه">⚠️</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '➡️')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="سهم يمين">➡️</button>
+                <button type="button" onclick="insertEmojiAtCursor(this, '⬅️')" class="hover:bg-slate-200 text-xs p-1.5 rounded-lg cursor-pointer transition" title="سهم يسار">⬅️</button>
             </div>`;
         }
 
@@ -4160,6 +4179,8 @@ setTimeout(() => {
                             <div class="flex flex-wrap gap-1.5">${gradeTopicBadge}${paraBadge}</div>
                         </div>
                         <div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1">
+<button type="button" onclick="moveQuestionFiltered(${globalIdx}, -1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
+<button type="button" onclick="moveQuestionFiltered(${globalIdx}, 1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
                             <button type="button" onclick="previewSingleQuestion(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button>
                             <button type="button" onclick="duplicateQuestion(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button>
                             <button type="button" onclick="openEditQuestionModal(${globalIdx})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button>
@@ -4183,6 +4204,45 @@ setTimeout(() => {
         function toggleSelectAllQuestions(masterCb) { document.querySelectorAll('.q-select-checkbox').forEach(cb => cb.checked = masterCb.checked); }
         function deleteSelectedQuestions() { let selected = document.querySelectorAll('.q-select-checkbox:checked'); if (selected.length === 0) return; if (confirm(`حذف ${selected.length} سؤال؟`)) { let indices = Array.from(selected).map(cb => parseInt(cb.value)); questionBank = questionBank.filter((_, idx) => !indices.includes(idx)); saveState(); renderAdminQuestionsList(); } }
         function duplicateQuestion(idx) { let copy = JSON.parse(JSON.stringify(questionBank[idx])); copy.q += " (نسخة)"; questionBank.push(copy); saveState(); renderAdminQuestionsList(); }
+// دالة تحريك بطاقات المعلومة السريعة صعوداً ونزولاً مع الحفاظ على الفلاتر
+        function moveQuickInfoFiltered(filteredIdx, dir, fStage, fGrade, fBranch, fTopic) {
+            let filtered = quickInfoList.map((qi, idx) => ({...qi, originalIdx: idx})).filter(qi => { 
+                if (fStage && qi.stage !== fStage) return false; 
+                if (fGrade && qi.grade !== fGrade) return false; 
+                if (fBranch && qi.branch !== fBranch) return false; 
+                if (fTopic && qi.topic !== fTopic) return false; 
+                return true; 
+            });
+            let target = filtered[filteredIdx]; 
+            let swap = filtered[filteredIdx + dir]; 
+            if (!target || !swap) return;
+            
+            let temp = quickInfoList[target.originalIdx]; 
+            quickInfoList[target.originalIdx] = quickInfoList[swap.originalIdx]; 
+            quickInfoList[swap.originalIdx] = temp; 
+            
+            saveState(); 
+            renderAdminQuickInfoList();
+        }
+
+        // دالة تحريك الأسئلة الموجودة لديك مسبقاً
+        function moveQuestionFiltered(filteredIdx, dir, fStage, fGrade, fBranch, fTopic) { 
+            let filtered = questionBank.map((q, idx) => ({...q, originalIdx: idx})).filter(q => { 
+                if (fStage && q.stage !== fStage) return false; 
+                if (fGrade && q.grade !== fGrade) return false; 
+                if (fBranch && q.branch !== fBranch) return false; 
+                if (fTopic && q.topic !== fTopic) return false; 
+                return true; 
+            }); 
+            let target = filtered[filteredIdx]; 
+            let swap = filtered[filteredIdx + dir]; 
+            if (!target || !swap) return; 
+            let temp = questionBank[target.originalIdx]; 
+            questionBank[target.originalIdx] = questionBank[swap.originalIdx]; 
+            questionBank[swap.originalIdx] = temp; 
+            saveState(); 
+            renderAdminQuestionsList(); 
+        }
         function moveQuestionFiltered(filteredIdx, dir, fStage, fGrade, fBranch, fTopic) { let filtered = questionBank.map((q, idx) => ({...q, originalIdx: idx})).filter(q => { if (fStage && q.stage !== fStage) return false; if (fGrade && q.grade !== fGrade) return false; if (fBranch && q.branch !== fBranch) return false; if (fTopic && q.topic !== fTopic) return false; return true; }); let target = filtered[filteredIdx]; let swap = filtered[filteredIdx + dir]; if (!target || !swap) return; let temp = questionBank[target.originalIdx]; questionBank[target.originalIdx] = questionBank[swap.originalIdx]; questionBank[swap.originalIdx] = temp; saveState(); renderAdminQuestionsList(); }
         function previewSingleQuestion(idx) { let q = questionBank[idx]; let optsHtml = ''; q.opts.forEach(opt => { let isAns = opt === q.ans; optsHtml += `<div class="p-3 rounded-xl border ${isAns ? 'bg-emerald-100 border-emerald-400 text-emerald-950 font-black' : 'bg-white text-slate-700'}">• ${formatText(opt, q.tashkeel)}</div>`; }); document.getElementById('preview-single-q-body').innerHTML = `<div class="text-[11px] font-bold text-sky-700 bg-sky-50 p-2 rounded mb-3">${q.stage} ➔ ${q.grade} ➔ ${q.branch} ➔ ${q.topic}</div><p class="font-black text-sky-950 text-lg mb-3">${formatText(q.q, q.tashkeel)}</p><div class="space-y-2 my-3">${optsHtml}</div>${q.exp ? `<div class="p-4 bg-sky-50 rounded-2xl border text-sm text-sky-950 mt-3 font-bold"><strong>التعليل:</strong> ${formatText(q.exp, q.tashkeel)}</div>` : ''}`; document.getElementById('modal-preview-single-q').classList.remove('hidden'); document.getElementById('modal-preview-single-q').classList.add('flex'); }
         function populateModalStages() { const sel = document.getElementById('modal-q-stage'); sel.innerHTML = '<option value="">اختر</option>'; Object.keys(stagesData).forEach(s => { if(gradeStatus[`stage_active_${s}`] !== false) sel.innerHTML += `<option value="${s}">${s}</option>`; }); }
@@ -4437,6 +4497,8 @@ setTimeout(() => {
                             <div class="flex flex-wrap gap-1.5">${gradeTopicBadge}${qsBadge}</div>
                         </div>
                         <div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1">
+<button type="button" onclick="moveParagraphFiltered(${pIdx}, -1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1.5 rounded-xl text-xs transition cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
+<button type="button" onclick="moveParagraphFiltered(${pIdx}, 1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1.5 rounded-xl text-xs transition cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
                             <button type="button" onclick="previewParagraph(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button>
                             <button type="button" onclick="duplicateParagraph(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button>
                             <button type="button" onclick="openEditParagraphModal('${p.id}')" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button>
@@ -4868,6 +4930,11 @@ setTimeout(() => {
                             ${gradeTopicBadge}
                         </div>
                         <div class="flex gap-1 items-center flex-wrap justify-end shrink-0 pt-1">
+                            <!-- أزرار الترتيب صعوداً ونزولاً الآمنة -->
+                            <button type="button" onclick="moveQuickInfoFiltered(${globalIdx}, -1, '${fStage || ''}', '${fGrade || ''}', '${fBranch || ''}', '${fTopic || ''}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button type="button" onclick="moveQuickInfoFiltered(${globalIdx}, 1, '${fStage || ''}', '${fGrade || ''}', '${fBranch || ''}', '${fTopic || ''}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
+                            
+                            <!-- الأزرار الأصلية -->
                             <button type="button" onclick="previewQuickInfo(${globalIdx})" class="bg-sky-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-eye"></i></button>
                             <button type="button" onclick="duplicateQuickInfo(${globalIdx})" class="bg-indigo-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-copy"></i></button>
                             <button type="button" onclick="openEditQuickInfoModal(${globalIdx})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-pen"></i> تعديل</button>
@@ -4951,7 +5018,98 @@ setTimeout(() => {
             // فتح الصفحة الجديدة المستقلة
             openAdminSectionPage('view-admin-quickinfo-edit'); 
         }
-        
+// دالة إضافة عنوان فرعي جديد داخل قسم المعلومة السريعة مع دعم الجدول التفاعلي وتبريز الخطوط
+        function addQiSubItemBlock(secIdx, sub = null) {
+            const container = document.getElementById(`qi-subitems-container-${secIdx}`);
+            if (!container) return;
+            const subId = 'sub_' + Math.random().toString(36).substr(2, 5);
+            
+            let titleVal = sub ? (sub.title || '') : '';
+            let textVal = sub ? (sub.text || '') : '';
+            let imgVal = sub ? (sub.img || '') : '';
+            let isActive = sub ? (sub.active !== false) : true;
+            let tableData = sub && sub.tableData ? sub.tableData : [];
+
+            let tableRowsHtml = '';
+            tableData.forEach((row, rIdx) => {
+                tableRowsHtml += `<div class="flex gap-2 items-center mb-2 qi-table-row">`;
+                row.forEach((cell, cIdx) => {
+                    tableRowsHtml += `<input type="text" value="${escapeHTML(cell)}" class="w-full p-2.5 rounded-xl border bg-white text-sm font-bold qi-table-cell" placeholder="${rIdx === 0 ? 'عنوان العمود' : 'بيان'}">`;
+                });
+                tableRowsHtml += `<button type="button" onclick="this.closest('.qi-table-row').remove()" class="bg-rose-100 text-rose-700 px-2.5 py-2 rounded-xl text-xs"><i class="fa-solid fa-trash"></i></button></div>`;
+            });
+
+            const div = document.createElement('div');
+            div.className = "bg-white p-4 rounded-2xl border-2 border-slate-200 space-y-3 qi-subitem-block";
+            div.setAttribute('data-sub-id', subId);
+            div.innerHTML = `
+                <div class="flex justify-between items-center border-b pb-2">
+                    <span class="font-bold text-xs text-sky-900">عنوان فرعي / فقرة شرح</span>
+                    <div class="flex items-center gap-2">
+                        <label class="flex items-center gap-1 text-[11px] font-bold"><input type="checkbox" class="qi-sub-active" ${isActive ? 'checked' : ''}> تفعيل</label>
+                        <button type="button" onclick="this.closest('.qi-subitem-block').remove()" class="bg-rose-100 text-rose-600 px-2 py-1 rounded-lg text-xs"><i class="fa-solid fa-trash"></i> حذف الفرع</button>
+                    </div>
+                </div>
+                <!-- تم تكبير الخط هنا ليطابق قسم الأسئلة -->
+                <input type="text" class="qi-sub-title w-full p-3 rounded-xl border text-sm font-black bg-slate-50 shadow-xs" placeholder="عنوان فرعي (اختياري)..." value="${escapeHTML(titleVal)}">
+                
+                <div class="input-with-emoji-wrapper">
+                    <div class="flex flex-col w-full">
+                        ${getEmojiBarHtml()}
+                        <!-- تم تكبير الخط ووضوح التنسيق هنا أيضاً -->
+                        <textarea rows="3" class="qi-sub-text w-full p-3.5 rounded-xl border text-sm font-bold leading-relaxed bg-white shadow-xs" placeholder="نص الشرح التفصيلي...">${escapeHTML(textVal)}</textarea>
+                    </div>
+                </div>
+
+                <input type="text" class="qi-sub-img w-full p-2.5 rounded-xl border dir-ltr text-left text-xs bg-slate-50" placeholder="رابط صورة توضيحية للفرع (اختياري)..." value="${escapeHTML(imgVal)}">
+                
+                <!-- قسم إدارة جدول الشرح التفاعلي -->
+                <div class="bg-sky-50/70 p-3 rounded-xl border border-sky-200 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="font-black text-sky-950 text-xs"><i class="fa-solid fa-table ml-1"></i> جدول الشرح (اختياري):</span>
+                        <div class="flex gap-1">
+                            <button type="button" onclick="addQiTableRow(this)" class="bg-sky-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-xs"><i class="fa-solid fa-plus ml-1"></i> إضافة صف</button>
+                            <button type="button" onclick="addQiTableCol(this)" class="bg-indigo-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-xs"><i class="fa-solid fa-plus ml-1"></i> إضافة عمود</button>
+                        </div>
+                    </div>
+                    <div class="qi-table-builder-container space-y-1 max-h-48 overflow-y-auto p-1 bg-white rounded-lg border">
+                        ${tableRowsHtml}
+                    </div>
+                </div>`;
+            container.appendChild(div);
+        }
+
+        // دالة إضافة صف جديد للجدول في لوحة التحكم
+        function addQiTableRow(btn) {
+            const block = btn.closest('.qi-subitem-block');
+            const container = block.querySelector('.qi-table-builder-container');
+            const firstRowCells = container.querySelector('.qi-table-row') ? container.querySelector('.qi-table-row').querySelectorAll('.qi-table-cell').length : 2;
+            
+            let rowHtml = `<div class="flex gap-2 items-center mb-2 qi-table-row">`;
+            for (let i = 0; i < (firstRowCells || 2); i++) {
+                rowHtml += `<input type="text" class="w-full p-2.5 rounded-xl border bg-white text-sm font-bold qi-table-cell" placeholder="بيان">`;
+            }
+            rowHtml += `<button type="button" onclick="this.closest('.qi-table-row').remove()" class="bg-rose-100 text-rose-700 px-2.5 py-2 rounded-xl text-xs"><i class="fa-solid fa-trash"></i></button></div>`;
+            container.insertAdjacentHTML('beforeend', rowHtml);
+        }
+
+        // دالة إضافة عمود جديد للجدول في لوحة التحكم
+        function addQiTableCol(btn) {
+            const block = btn.closest('.qi-subitem-block');
+            const container = block.querySelector('.qi-table-builder-container');
+            const rows = container.querySelectorAll('.qi-table-row');
+            if (rows.length === 0) {
+                // إذا لم يكن هناك صفوف، نضيف صفاً افتراضياً بعمودين
+                addQiTableRow(btn);
+                return;
+            }
+            rows.forEach((row, rIdx) => {
+                const deleteBtn = row.querySelector('button');
+                const newCellHtml = `<input type="text" class="w-full p-2.5 rounded-xl border bg-white text-sm font-bold qi-table-cell" placeholder="${rIdx === 0 ? 'عنوان العمود' : 'بيان'}">`;
+                deleteBtn.insertAdjacentHTML('beforebegin', newCellHtml);
+            });
+        }        
+
         function openEditQuickInfoModal(idx) {
             populateQiModalStages(); 
             let qi = quickInfoList[idx]; 
@@ -5003,14 +5161,29 @@ setTimeout(() => {
             document.querySelectorAll('.qi-section-block').forEach(secBlock => { 
                 let mainHeader = secBlock.querySelector('.qi-sec-main-header').value.trim(); 
                 let mainActive = secBlock.querySelector('.qi-sec-active').checked; 
-                let subItems = []; 
+                let subItems = [];
+                
                 secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => { 
                     let subTitle = subBlock.querySelector('.qi-sub-title').value.trim(); 
                     let subText = subBlock.querySelector('.qi-sub-text').value.trim(); 
                     let subImg = subBlock.querySelector('.qi-sub-img').value.trim(); 
                     let subActive = subBlock.querySelector('.qi-sub-active').checked; 
-                    if (subTitle || subText) subItems.push({ title: subTitle, text: subText, img: subImg, active: subActive }); 
+                    
+                    // جمع بيانات جدول الشرح التفاعلي إن وجد
+                    let tableData = [];
+                    subBlock.querySelectorAll('.qi-table-row').forEach(row => {
+                        let rowCells = [];
+                        row.querySelectorAll('.qi-table-cell').forEach(cell => {
+                            rowCells.push(cell.value.trim());
+                        });
+                        if (rowCells.some(c => c !== "")) tableData.push(rowCells);
+                    });
+
+                    if (subTitle || subText || tableData.length > 0) {
+                        subItems.push({ title: subTitle, text: subText, img: subImg, active: subActive, tableData: tableData });
+                    }
                 }); 
+                
                 if (mainHeader || subItems.length > 0) sections.push({ mainHeader, active: mainActive, subItems }); 
             });
             
@@ -5029,26 +5202,152 @@ setTimeout(() => {
             saveState(); 
             renderAdminQuickInfoList(); 
             
-            // العودة لقائمة بطاقات المعلومات فور الحفظ
             openAdminSectionPage('view-admin-quickinfo'); 
             alert("تم الحفظ بنجاح!");
         }
 
-       function addQuickInfoSectionBlock(mainHeader = "", mainActive = true, subItems = []) {
-            const container = document.getElementById('quickinfo-sections-builder-container'); if (!container) return; const sectionDiv = document.createElement('div'); sectionDiv.className = "qi-section-block bg-white p-4 rounded-2xl border-2 border-indigo-200 space-y-3 relative shadow-2xs"; let subItemsHtml = '';
-            if (subItems && subItems.length > 0) subItems.forEach(sub => subItemsHtml += generateSubItemHtml(sub.title || "", sub.text || "", sub.img || "", sub.active !== false)); else subItemsHtml = generateSubItemHtml("", "", "", true);
+       // دالة بناء القسم الرئيسي المحدثة لتدعم الجداول والعناوين الفرعية بشكل صحيح
+        function addQuickInfoSectionBlock(mainHeader = "", mainActive = true, subItems = []) {
+            const container = document.getElementById('quickinfo-sections-builder-container'); 
+            if (!container) return; 
             
-            sectionDiv.innerHTML = `<div class="flex justify-between items-center bg-indigo-50 p-2.5 rounded-xl border gap-2 flex-wrap"><div class="flex items-start gap-2 flex-grow input-with-emoji-wrapper"><input type="checkbox" class="qi-sec-active w-5 h-5 text-emerald-600 rounded mt-2.5" ${mainActive !== false ? 'checked' : ''}><div class="flex flex-col w-full">${getEmojiBarHtml()}<input type="text" class="qi-sec-main-header w-full p-2 rounded-lg border text-xs font-black bg-white" placeholder="العنوان الرئيسي..." value="${mainHeader}"></div></div><div class="flex items-center gap-1 mt-6"><button type="button" onclick="moveQiSectionBlock(this, -1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveQiSectionBlock(this, 1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="this.closest('.qi-section-block').remove()" class="text-rose-600 text-xs font-bold px-2"><i class="fa-solid fa-trash ml-1"></i>حذف</button></div></div><div class="qi-subitems-container space-y-3 pr-2 border-r-2 border-indigo-200 mr-2">${subItemsHtml}</div><div class="pt-1"><button type="button" onclick="addSubItemToSection(this)" class="bg-sky-600 text-white font-bold text-[11px] px-3.5 py-2 rounded-xl"><i class="fa-solid fa-plus ml-1"></i> إضافة عنوان فرعي</button></div>`;
+            // توليد معرف فريد لهذا القسم لربط العناوين الفرعية به بدقة
+            const secId = Math.random().toString(36).substr(2, 9);
+            
+            const sectionDiv = document.createElement('div'); 
+            sectionDiv.className = "qi-section-block bg-white p-4 rounded-2xl border-2 border-indigo-200 space-y-3 relative shadow-2xs"; 
+            
+            sectionDiv.innerHTML = `
+                <div class="flex justify-between items-center bg-indigo-50 p-2.5 rounded-xl border gap-2 flex-wrap">
+                    <div class="flex items-start gap-2 flex-grow input-with-emoji-wrapper">
+                        <input type="checkbox" class="qi-sec-active w-5 h-5 text-emerald-600 rounded mt-2.5" ${mainActive !== false ? 'checked' : ''}>
+                        <div class="flex flex-col w-full">
+                            ${getEmojiBarHtml()}
+                            <input type="text" class="qi-sec-main-header w-full p-2 rounded-lg border text-xs font-black bg-white" placeholder="العنوان الرئيسي..." value="${escapeHTML(mainHeader)}">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 mt-6">
+                        <button type="button" onclick="moveQiSectionBlock(this, -1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs cursor-pointer"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button type="button" onclick="moveQiSectionBlock(this, 1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs cursor-pointer"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button type="button" onclick="this.closest('.qi-section-block').remove()" class="text-rose-600 text-xs font-bold px-2 cursor-pointer"><i class="fa-solid fa-trash ml-1"></i>حذف</button>
+                    </div>
+                </div>
+                
+                <!-- حاوية العناوين الفرعية بمعرف فريد -->
+                <div id="qi-subitems-container-${secId}" class="qi-subitems-container space-y-3 pr-2 border-r-2 border-indigo-200 mr-2"></div>
+                
+                <div class="pt-1">
+                    <button type="button" onclick="addQiSubItemBlock('${secId}')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold text-[11px] px-3.5 py-2 rounded-xl cursor-pointer shadow-xs transition"><i class="fa-solid fa-plus ml-1"></i> إضافة عنوان فرعي</button>
+                </div>`;
+            
             container.appendChild(sectionDiv);
+
+            // تعبئة العناوين الفرعية (سواء عند التعديل أو عند الإضافة بفرع فارغ)
+            if (subItems && Array.isArray(subItems) && subItems.length > 0) {
+                subItems.forEach(sub => addQiSubItemBlock(secId, sub));
+            } else {
+                addQiSubItemBlock(secId, null);
+            }
         }
 
-        function generateSubItemHtml(title = "", text = "", img = "", active = true) { 
-            return `<div class="qi-subitem-block bg-slate-50 p-3.5 rounded-xl border space-y-2.5 relative"><div class="flex justify-between items-center flex-wrap gap-2"><div class="flex items-center gap-2"><input type="checkbox" class="qi-sub-active w-4 h-4 text-emerald-600 rounded" ${active !== false ? 'checked' : ''}><span class="font-bold text-sky-900 text-xs">فرعي</span></div><div class="flex items-center gap-1"><button type="button" onclick="moveQiSubItemBlock(this, -1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveQiSubItemBlock(this, 1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="this.closest('.qi-subitem-block').remove()" class="text-rose-500 text-xs font-bold"><i class="fa-solid fa-xmark ml-1"></i>حذف</button></div></div><div class="input-with-emoji-wrapper">${getEmojiBarHtml()}<input type="text" class="qi-sub-title w-full p-2 rounded-lg border text-xs font-bold" placeholder="العنوان الفرعي..." value="${title}"></div><div><textarea class="qi-sub-text w-full p-2 rounded-lg border text-xs" rows="2" placeholder="الشرح...">${text}</textarea></div><div><input type="text" class="qi-sub-img w-full p-2 rounded-lg border text-xs dir-ltr" placeholder="رابط صورة..." value="${img}"></div></div>`; 
+        // الدالة المحدثة لتوليد العنوان الفرعي ونصوص الشرح بشكل واسع وممتد مع شريط الرموز
+        function generateSubItemHtml(title = "", text = "", img = "", active = true) {
+            return `
+            <div class="qi-sub-item bg-slate-50 p-4 rounded-2xl border space-y-3 relative input-with-emoji-wrapper shadow-xs">
+                <div class="flex justify-between items-center gap-2 flex-wrap">
+                    <div class="flex items-center gap-2 flex-grow">
+                        <input type="checkbox" class="qi-sub-active w-4 h-4 text-emerald-600 rounded cursor-pointer" ${active !== false ? 'checked' : ''}>
+                        <div class="flex flex-col w-full">
+                            ${getEmojiBarHtml()}
+                            <input type="text" class="qi-sub-title w-full p-2.5 rounded-xl border text-xs font-bold bg-white" placeholder="العنوان الفرعي..." value="${escapeHTML(title)}">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="moveQiSubItemBlock(this, -1)" class="bg-slate-200 hover:bg-slate-300 px-2.5 py-1.5 rounded text-xs cursor-pointer"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button type="button" onclick="moveQiSubItemBlock(this, 1)" class="bg-slate-200 hover:bg-slate-300 px-2.5 py-1.5 rounded text-xs cursor-pointer"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button type="button" onclick="this.closest('.qi-sub-item').remove()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold px-2.5 py-1.5 rounded-xl cursor-pointer transition"><i class="fa-solid fa-trash ml-1"></i>حذف</button>
+                    </div>
+                </div>
+                
+                <!-- حقل الشرح الممتد والواسع مع شريط الرموز -->
+                <div class="flex flex-col w-full input-with-emoji-wrapper">
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">الشرح (ممتد ومريح للتحكم في الأسطر):</label>
+                    ${getEmojiBarHtml()}
+                    <textarea class="qi-sub-text w-full p-3.5 rounded-xl border-2 border-slate-200 text-xs font-bold bg-white leading-relaxed shadow-inner" rows="5" placeholder="الشرح...">${escapeHTML(text)}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">رابط صورة (اختياري):</label>
+                    <input type="text" class="qi-sub-img w-full p-2.5 rounded-xl border text-xs dir-ltr text-left bg-white" placeholder="رابط صورة..." value="${escapeHTML(img)}">
+                </div>
+            </div>`;
+        }
+
+        // دالة بناء القسم الرئيسي الصحيحة التي تربط العناوين الفرعية ومنشئ الجداول فوراً
+        function addQuickInfoSectionBlock(mainHeader = "", mainActive = true, subItems = []) {
+            const container = document.getElementById('quickinfo-sections-builder-container'); 
+            if (!container) return; 
+            
+            const secId = Math.random().toString(36).substr(2, 9);
+            const sectionDiv = document.createElement('div'); 
+            sectionDiv.className = "qi-section-block bg-white p-5 rounded-3xl border-2 border-indigo-200 space-y-4 relative shadow-sm"; 
+            
+            sectionDiv.innerHTML = `
+                <div class="flex justify-between items-center bg-indigo-50/80 p-3 rounded-2xl border border-indigo-200 gap-2 flex-wrap">
+                    <div class="flex items-start gap-2 flex-grow input-with-emoji-wrapper">
+                        <input type="checkbox" class="qi-sec-active w-5 h-5 text-emerald-600 rounded mt-3 cursor-pointer" ${mainActive !== false ? 'checked' : ''}>
+                        <div class="flex flex-col w-full">
+                            ${getEmojiBarHtml()}
+                            <input type="text" class="qi-sec-main-header w-full p-3 rounded-xl border text-xs font-black bg-white shadow-xs" placeholder="العنوان الرئيسي للقسم..." value="${escapeHTML(mainHeader)}">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 mt-6">
+                        <button type="button" onclick="moveQiSectionBlock(this, -1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1.5 rounded-xl text-xs transition cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button type="button" onclick="moveQiSectionBlock(this, 1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1.5 rounded-xl text-xs transition cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button type="button" onclick="this.closest('.qi-section-block').remove()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer"><i class="fa-solid fa-trash ml-1"></i>حذف القسم</button>
+                    </div>
+                </div>
+                <!-- حاوية العناوين الفرعية بمعرف فريد لربط الجداول بها -->
+                <div id="qi-subitems-container-${secId}" class="qi-subitems-container space-y-4 pr-3 border-r-3 border-indigo-200 mr-2"></div>
+                <div class="pt-2">
+                    <button type="button" onclick="addQiSubItemBlock('${secId}')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة عنوان فرعي جديد</button>
+                </div>
+            `;
+            container.appendChild(sectionDiv);
+
+            // تعبئة العناوين الفرعية مع دعم الجداول والتفاصيل بشكل سليم
+            if (subItems && Array.isArray(subItems) && subItems.length > 0) {
+                subItems.forEach(sub => addQiSubItemBlock(secId, sub));
+            } else { 
+                addQiSubItemBlock(secId, null); 
+            }
         }
         function addSubItemToSection(btnEl) { const subContainer = btnEl.closest('.qi-section-block').querySelector('.qi-subitems-container'); const tempDiv = document.createElement('div'); tempDiv.innerHTML = generateSubItemHtml("", "", "", true); subContainer.appendChild(tempDiv.firstElementChild); }
         function moveQiSectionBlock(btn, direction) { const block = btn.closest('.qi-section-block'); const parent = block.parentNode; if (direction === -1 && block.previousElementSibling) parent.insertBefore(block, block.previousElementSibling); else if (direction === 1 && block.nextElementSibling) parent.insertBefore(block, block.nextElementSibling.nextElementSibling); }
         function moveQiSubItemBlock(btn, direction) { const block = btn.closest('.qi-subitem-block'); const parent = block.parentNode; if (direction === -1 && block.previousElementSibling) parent.insertBefore(block, block.previousElementSibling); else if (direction === 1 && block.nextElementSibling) parent.insertBefore(block, block.nextElementSibling.nextElementSibling); }
-        function addQiAttachmentBlock(label = "", url = "") { const container = document.getElementById('quickinfo-attachments-builder-container'); if (!container) return; const div = document.createElement('div'); div.className = "qi-attachment-block flex items-center gap-2 bg-white p-2.5 rounded-xl border text-xs"; div.innerHTML = `<input type="text" class="qi-att-label p-2 rounded-lg border text-xs font-bold w-1/3 bg-amber-50/50" placeholder="مسمى الزر" value="${label}"><input type="text" class="qi-att-url p-2 rounded-lg border text-xs dir-ltr flex-grow bg-slate-50" placeholder="الرابط (https://...)" value="${url}"><button type="button" onclick="this.closest('.qi-attachment-block').remove()" class="text-rose-600 px-2"><i class="fa-solid fa-trash"></i></button>`; container.appendChild(div); }
+        function addQiAttachmentBlock(label = "", url = "") { 
+            const container = document.getElementById('quickinfo-attachments-builder-container'); 
+            if (!container) return; 
+            
+            const div = document.createElement('div'); 
+            div.className = "qi-attachment-block bg-slate-50 p-4 rounded-2xl border-2 border-amber-200 space-y-3 input-with-emoji-wrapper shadow-xs mb-3"; 
+            div.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="font-black text-amber-950 text-xs">رابط / ملف خارجي</span>
+                    <button type="button" onclick="this.closest('.qi-attachment-block').remove()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-2.5 py-1 rounded-xl text-xs font-bold transition cursor-pointer"><i class="fa-solid fa-trash ml-1"></i>حذف الرابط</button>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">وصف الرابط (عنوان الزر):</label>
+                    ${getEmojiBarHtml()}
+                    <input type="text" class="qi-att-label w-full p-3 rounded-xl border text-xs font-bold bg-white" placeholder="مثال: تحميل ملف القاعدة (PDF)..." value="${escapeHTML(label)}">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">رابط الـ URL (ممتد ومريح):</label>
+                    <textarea class="qi-att-url w-full p-3 rounded-xl border text-xs font-mono bg-white dir-ltr text-left" rows="2" placeholder="https://...">${escapeHTML(url)}</textarea>
+                </div>
+            `; 
+            container.appendChild(div); 
+        }
         
         function exportTopicQuickInfoJson() { 
             const fTopic = document.getElementById('filter-qi-topic')?.value; 
