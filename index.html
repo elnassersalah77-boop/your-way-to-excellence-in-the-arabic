@@ -694,7 +694,7 @@ select, select option {
 
                     <div class="sm:col-span-2 mt-2">
                         <label class="block mb-1 text-slate-700 font-bold">كلمة مرور الإدارة الجديدة:</label>
-                        <input type="password" id="admin-new-password" placeholder="اتركها فارغة بدون تغيير (الافتراضية: 117283)" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white">
+                        <input type="password" id="admin-new-password" placeholder="اتركها فارغة بدون تغيير (الافتراضية: 000000)" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white">
                     </div>
                 </div>
                 
@@ -3727,24 +3727,20 @@ setTimeout(() => {
 
         async function verifyAdminPassword() {
             const pwd = document.getElementById('admin-login-pwd-input').value;
-            if (pwd === "12300123" || pwd === appSettings.adminPass) {
+            // الاعتماد حصراً على كلمة المرور المخزنة في إعدادات المنصة فقط وإلغاء الافتراضية
+            if (pwd === appSettings.adminPass) {
                 closeAdminLoginModal();
                 
-                // 1. إظهار شاشة التحميل فوراً أمام الطالب وقبل أي شيء
                 toggleCloudLoading(true, "جَارِي التَّحْمِيل...");
                 
                 setTimeout(async () => {
                     try {
-                        // جلب السجلات والبيانات الإدارية من السحابة في الخلفية
                         await loadAdminRecordsFromCloud();
-                        
-                        // التعديل السحري هنا: نستخدم الدالة الجديدة لفتح لوحة الإدارة المستقلة
                         openAdminDashboard();
                         loadAdminData();
                     } catch (e) {
                         console.error("خطأ في تحميل الإدارة:", e);
                     } finally {
-                        // إخفاء شاشة التحميل فور اكتمال كل شيء وفتح اللوحة
                         toggleCloudLoading(false);
                     }
                 }, 100);
