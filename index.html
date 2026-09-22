@@ -1797,6 +1797,29 @@ window.addEventListener('DOMContentLoaded', () => {
     initializePlatformData();
 });
 
+// دالة تنظيف مصفوفة المعلومات السريعة وتحويل الجداول المتداخلة إلى نصوص آمنة لفايربيز
+        function sanitizeQuickInfoList(list) {
+            return (list || []).map(qi => {
+                let qiCopy = JSON.parse(JSON.stringify(qi));
+                if (qiCopy.sections) {
+                    qiCopy.sections.forEach(sec => {
+                        if (sec.subItems) {
+                            sec.subItems.forEach(sub => {
+                                if (sub.tableData) {
+                                    sub.tableDataJson = JSON.stringify(sub.tableData);
+                                    delete sub.tableData;
+                                }
+                            });
+                        }
+                    });
+                }
+                return qiCopy;
+            });
+        }
+
+        function updateCloudCacheSnapshot() {
+            // ... باقي كود الدالة هنا ...
+        }
         // ================== CLOUD SYNC & LAZY LOADING ==================
         function updateCloudCacheSnapshot() {
             if (!window._cloudCache) window._cloudCache = {};
@@ -1822,7 +1845,23 @@ window.addEventListener('DOMContentLoaded', () => {
 
             const qiChunkSize = 300; let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
             for (let i = 0; i < qiTotalParts; i++) {
-                window._cloudCache[`quickinfo_part_${i}`] = JSON.stringify({ chunk: (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
+                const qiChunk = (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize).map(qi => {
+                    let qiCopy = JSON.parse(JSON.stringify(qi));
+                    if (qiCopy.sections) {
+                        qiCopy.sections.forEach(sec => {
+                            if (sec.subItems) {
+                                sec.subItems.forEach(sub => {
+                                    if (sub.tableData) {
+                                        sub.tableDataJson = JSON.stringify(sub.tableData);
+                                        delete sub.tableData;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    return qiCopy;
+                });
+                window._cloudCache[`quickinfo_part_${i}`] = JSON.stringify({ chunk: qiChunk });
             }
             window._cloudCache["quickinfo_meta"] = JSON.stringify({ totalParts: qiTotalParts });
 
@@ -1881,7 +1920,31 @@ window.addEventListener('DOMContentLoaded', () => {
                     
                     for (let i = 0; i < qTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap.exists() && snap.data().chunk) questionBank = questionBank.concat(snap.data().chunk); }
                     for (let i = 0; i < pTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap.exists() && snap.data().chunk) paragraphs = paragraphs.concat(snap.data().chunk); }
-                    for (let i = 0; i < qiTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap.exists() && snap.data().chunk) quickInfoList = quickInfoList.concat(snap.data().chunk); }
+                    
+                    // معالجة وتحويل جداول المعلومة السريعة من JSON إلى مصفوفاتها الطبيعية
+                    for (let i = 0; i < qiTotal; i++) { 
+                        let snap = chunksSnaps[snapIndex++]; 
+                        if (snap.exists() && snap.data().chunk) {
+                            let loadedChunk = snap.data().chunk.map(qi => {
+                                if (qi.sections) {
+                                    qi.sections.forEach(sec => {
+                                        if (sec.subItems) {
+                                            sec.subItems.forEach(sub => {
+                                                if (sub.tableDataJson) {
+                                                    try {
+                                                        sub.tableData = JSON.parse(sub.tableDataJson);
+                                                    } catch(e) { sub.tableData = []; }
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                                return qi;
+                            });
+                            quickInfoList = quickInfoList.concat(loadedChunk); 
+                        } 
+                    }
+                    
                     for (let i = 0; i < stTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap.exists() && snap.data().chunk) studentsAccounts = studentsAccounts.concat(snap.data().chunk); }
                 }
             } catch (e) { 
@@ -1914,6 +1977,25 @@ window.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             } catch(e) { console.log("خطأ في جلب السجلات:", e); }
+        }
+              // دالة تنظيف مصفوفة المعلومات السريعة وتحويل الجداول المتداخلة إلى نصوص آمنة لفايربيز
+        function sanitizeQuickInfoList(list) {
+            return (list || []).map(qi => {
+                let qiCopy = JSON.parse(JSON.stringify(qi));
+                if (qiCopy.sections) {
+                    qiCopy.sections.forEach(sec => {
+                        if (sec.subItems) {
+                            sec.subItems.forEach(sub => {
+                                if (sub.tableData) {
+                                    sub.tableDataJson = JSON.stringify(sub.tableData);
+                                    delete sub.tableData;
+                                }
+                            });
+                        }
+                    });
+                }
+                return qiCopy;
+            });
         }
 
         async function saveState(showLoading = true) {
@@ -1948,8 +2030,13 @@ window.addEventListener('DOMContentLoaded', () => {
                     for (let i = 0; i < pTotalParts; i++) addTask(`paragraphs_part_${i}`, { chunk: (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize) });
                     addTask("paragraphs_meta", { totalParts: pTotalParts });
 
-                    const qiChunkSize = 300; let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
-                    for (let i = 0; i < qiTotalParts; i++) addTask(`quickinfo_part_${i}`, { chunk: (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
+                    // تنظيف ومعالجة مصفوفة المعلومات السريعة وجداولها لتفادي خطأ المصفوفات المتداخلة تماماً
+                    const qiChunkSize = 300; 
+                    let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
+                    const sanitizedQi = sanitizeQuickInfoList(quickInfoList);
+                    for (let i = 0; i < qiTotalParts; i++) {
+                        addTask(`quickinfo_part_${i}`, { chunk: sanitizedQi.slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
+                    }
                     addTask("quickinfo_meta", { totalParts: qiTotalParts });
 
                     const stChunkSize = 300; let stTotalParts = Math.ceil((studentsAccounts || []).length / stChunkSize) || 1;
@@ -1964,13 +2051,12 @@ window.addEventListener('DOMContentLoaded', () => {
                     
                     if (totalTasks === 0) {
                         if (showLoading) {
-                            toggleCloudLoading(true, "لَمْ يَحْدُث أيُّ تَغْيِير (تَمَّ التحقق محلياً بِنَجَاح).");
+                            toggleCloudLoading(true, "لَمْ يَحْدُث أيُّ تَغْيِير (تَمَّ التحقق محلياً بِنَجَاح).");
                             setTimeout(() => { toggleCloudLoading(false); }, 700);
                         }
                         return; 
                     }
 
-                    // تظهر رسالة الرفع فقط إذا كان الحفظ ناتجاً عن ضغط زر "حفظ" صريح
                     if (showLoading) {
                         toggleCloudLoading(true, `جَارِي رَفْع التَّعْدِيلَات حقيقيَّة (${totalTasks} مِلَفّاً)...`);
                     }
@@ -1983,12 +2069,12 @@ window.addEventListener('DOMContentLoaded', () => {
                         completedTasks++;
                         let pct = Math.round((completedTasks / totalTasks) * 100);
                         if (showLoading && textEl) {
-                            textEl.textContent = `جَارِي رَفْع المُتَغَيِّرَات... ${pct}% (${completedTasks}/${totalTasks})`;
+                            textEl.textContent = `جَارِي رَفْع المُتَغَيِّرَات... ${pct}% (${completedTasks}/${totalTasks})`;
                         }
                     }
                     
                     if (showLoading) {
-                        if (textEl) textEl.textContent = "تَمَّ الْحِفْظُ وَالتَّحْدِيثُ بِنَجَاح!";
+                        if (textEl) textEl.textContent = "تَمَّ الْحِفْظُ وَالتَّحْدِيثُ بِنَجَاح!";
                         setTimeout(() => { toggleCloudLoading(false); }, 1000);
                     }
                 }
@@ -2306,7 +2392,7 @@ async function saveQuestionsState() {
                     if (!window._cloudCache) window._cloudCache = {};
                     
                     allowCloudLoadingOverlay = true;
-                    if (textEl) textEl.textContent = "جَارِي فَحْصِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
+                    if (textEl) textEl.textContent = "جَارِي فَحْصِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
                     if (overlay) overlay.style.display = 'flex';
 
                     let tasks = [];
@@ -2319,7 +2405,23 @@ async function saveQuestionsState() {
                     let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
                     
                     for (let i = 0; i < qiTotalParts; i++) {
-                        addTask(`quickinfo_part_${i}`, { chunk: (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
+                        const qiChunk = (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize).map(qi => {
+                            let qiCopy = JSON.parse(JSON.stringify(qi));
+                            if (qiCopy.sections) {
+                                qiCopy.sections.forEach(sec => {
+                                    if (sec.subItems) {
+                                        sec.subItems.forEach(sub => {
+                                            if (sub.tableData) {
+                                                sub.tableDataJson = JSON.stringify(sub.tableData);
+                                                delete sub.tableData;
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            return qiCopy;
+                        });
+                        addTask(`quickinfo_part_${i}`, { chunk: qiChunk });
                     }
                     addTask("quickinfo_meta", { totalParts: qiTotalParts, totalCount: (quickInfoList || []).length });
 
@@ -2327,7 +2429,7 @@ async function saveQuestionsState() {
                     let cacheKeyMeta = "quickinfo_full_cache_string";
                     
                     if (window._cloudCache[cacheKeyMeta] === currentCacheKey) {
-                        if (textEl) textEl.textContent = "لَمْ يَتَمَّ إِضَافَةُ مِلَفَّاتٍ جَدِيدَةٍ لِحِفْظِهَا";
+                        if (textEl) textEl.textContent = "لَمْ يَتَمَّ إِضَافَةُ مِلَفَّاتٍ جَدِيدَةٍ لِحِفْظِهَا";
                         setTimeout(() => {
                             allowCloudLoadingOverlay = false;
                             if (overlay) overlay.style.display = 'none';
@@ -2351,7 +2453,7 @@ async function saveQuestionsState() {
                     
                     window._cloudCache[cacheKeyMeta] = currentCacheKey;
 
-                    if (textEl) textEl.textContent = "تَمَّ حِفْظُ الْمَعْلُومَاتِ بِنَجَاح!";
+                    if (textEl) textEl.textContent = "تَمَّ حِفْظُ الْمَعْلُومَاتِ بِنَجَاح!";
                     setTimeout(() => {
                         allowCloudLoadingOverlay = false;
                         if (overlay) overlay.style.display = 'none';
@@ -2366,7 +2468,7 @@ async function saveQuestionsState() {
             }
         }
 
-// دالة حفظ "الطلاب" المحسنة لرصد أي طالب جديد أو تعديل فوراً
+        // دالة حفظ "الطلاب" المحسنة لرصد أي طالب جديد أو تعديل فوراً
         async function saveStudentsState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
@@ -2401,7 +2503,7 @@ async function saveQuestionsState() {
                     
                     if (window._cloudCache[cacheKeyMeta] === currentCacheKey && tasks.length === 0) {
                         // إذا لم يتغير شيء حقاً
-                        if (textEl) textEl.textContent = "لَمْ يَتَمَّ إِضَافَةُ مِلَفَّاتٍ جَدِيدَةٍ لِحِفْظِهَا";
+                        if (textEl) textEl.textContent = "لَمْ يَتَمَّ إِضَافَةُ مِلَفَّاتٍ جَدِيدَةٍ لِحِفْظِهَا";
                         setTimeout(() => {
                             allowCloudLoadingOverlay = false;
                             if (overlay) overlay.style.display = 'none';
@@ -2429,7 +2531,7 @@ async function saveQuestionsState() {
                     window._cloudCache[cacheKeyMeta] = currentCacheKey;
 
                     // 3. رسالة النجاح
-                    if (textEl) textEl.textContent = "تَمَّ حِفْظُ حِسَابَاتِ الطُّلَّابِ بِنَجَاح!";
+                    if (textEl) textEl.textContent = "تَمَّ حِفْظُ حِسَابَاتِ الطُّلَّابِ بِنَجَاح!";
                     setTimeout(() => {
                         allowCloudLoadingOverlay = false;
                         if (overlay) overlay.style.display = 'none';
@@ -2474,23 +2576,28 @@ async function saveQuestionsState() {
         }
 
         function generateQuickInfoCardHtml(qi) {
+            let mainAlign = qi.titleAlign || 'text-right';
             let mainImgHtml = qi.img ? `<div class="my-5 text-center"><img src="${qi.img}" class="max-h-80 rounded-2xl mx-auto object-contain border-2 shadow-md"></div>` : '';
             let attachmentsHtml = '';
+            
             if (qi.attachments && qi.attachments.length > 0) {
                 let btns = qi.attachments.map(att => `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-5 py-3 rounded-xl shadow transition flex items-center gap-2 text-sm sm:text-base"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${formatText(att.label || 'اطّلع على', qi.tashkeel)}</a>`).join('');
                 attachmentsHtml = `<div class="flex flex-wrap gap-3 pt-2 pb-3">${btns}</div>`;
             }
+
             let sectionsHtml = '';
             if (qi.sections) {
                 qi.sections.forEach(sec => {
                     if (sec.active === false) return;
+                    let secAlign = sec.headerAlign || 'text-right';
                     let subItemsHtml = '';
+                    
                     if (sec.subItems) {
                         sec.subItems.forEach(sub => {
                             if (sub.active === false) return;
+                            let subAlign = sub.titleAlign || 'text-right';
                             let subImgHtml = sub.img ? `<div class="my-4 text-center"><img src="${sub.img}" class="max-h-60 rounded-2xl mx-auto object-contain border-2"></div>` : '';
                             
-                            // دعم عرض الجدول إذا وجد في العنوان الفرعي وتنسيقه تلقائياً
                             let tableHtml = '';
                             if (sub.tableData && Array.isArray(sub.tableData) && sub.tableData.length > 0) {
                                 tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-slate-200 shadow-sm"><table class="w-full text-right border-collapse bg-white">`;
@@ -2508,15 +2615,30 @@ async function saveQuestionsState() {
                                 tableHtml += `</table></div>`;
                             }
 
-                            subItemsHtml += `<div class="bg-white p-6 rounded-2xl border-2 space-y-4 mt-4 shadow-sm">${sub.title ? `<h5 class="font-black text-sky-950 text-xl sm:text-2xl">${formatText(sub.title, qi.tashkeel)}</h5>` : ''}${subImgHtml}<p class="text-slate-900 text-lg sm:text-xl leading-relaxed whitespace-pre-line font-bold">${formatText(sub.text || '', qi.tashkeel)}</p>${tableHtml}</div>`;
+                            subItemsHtml += `<div class="bg-white p-6 rounded-2xl border-2 space-y-4 mt-4 shadow-sm">
+                                ${sub.title ? `<h5 class="font-black text-sky-950 text-xl sm:text-2xl ${subAlign}">${formatText(sub.title, qi.tashkeel)}</h5>` : ''}
+                                ${subImgHtml}
+                                <p class="text-slate-900 text-lg sm:text-xl leading-relaxed whitespace-pre-line font-bold">${formatText(sub.text || '', qi.tashkeel)}</p>
+                                ${tableHtml}
+                            </div>`;
                         });
                     }
+
                     if (subItemsHtml || sec.mainHeader) {
-                        sectionsHtml += `<div class="bg-amber-50/70 p-6 rounded-3xl border-3 border-amber-300 space-y-5 shadow-sm">${sec.mainHeader ? `<h4 class="font-black text-amber-950 text-2xl sm:text-3xl border-b-2 border-amber-300 pb-3"><i class="fa-solid fa-bookmark text-amber-600 ml-2"></i>${formatText(sec.mainHeader, qi.tashkeel)}</h4>` : ''}<div class="space-y-5">${subItemsHtml}</div></div>`;
+                        sectionsHtml += `<div class="bg-amber-50/70 p-6 rounded-3xl border-3 border-amber-300 space-y-5 shadow-sm">
+                            ${sec.mainHeader ? `<h4 class="font-black text-amber-950 text-2xl sm:text-3xl border-b-2 border-amber-300 pb-3 ${secAlign}"><i class="fa-solid fa-bookmark text-amber-600 ml-2"></i>${formatText(sec.mainHeader, qi.tashkeel)}</h4>` : ''}
+                            <div class="space-y-5">${subItemsHtml}</div>
+                        </div>`;
                     }
                 });
             }
-            return `<div class="bg-white p-8 rounded-3xl border-3 border-sky-200 space-y-6 shadow-lg"><h3 class="font-black text-sky-950 text-2xl sm:text-3xl border-b-4 border-amber-500 pb-4">${formatText(qi.title, qi.tashkeel)}</h3>${attachmentsHtml}${mainImgHtml}<div class="space-y-6">${sectionsHtml}</div></div>`;
+
+            return `<div class="bg-white p-8 rounded-3xl border-3 border-sky-200 space-y-6 shadow-lg">
+                <h3 class="font-black text-sky-950 text-2xl sm:text-3xl border-b-4 border-amber-500 pb-4 ${mainAlign}">${formatText(qi.title, qi.tashkeel)}</h3>
+                ${attachmentsHtml}
+                ${mainImgHtml}
+                <div class="space-y-6">${sectionsHtml}</div>
+            </div>`;
         }
 
         // ================== CASCADING DROPDOWNS & SMART SKIP ==================
@@ -2873,19 +2995,13 @@ async function saveQuestionsState() {
                 return;
             }
 
-            // التعديل الجديد: توجيه الطالب بناءً على التبويب المختار في البوابة
-            // =========================================================
+            // توجيه الطالب بناءً على التبويب المختار في البوابة الثنائية
             if (typeof dualPortalActive !== 'undefined' && dualPortalActive) {
                 if (currentStudentPortalMode === 'explanation') {
-                    
-                    // فتح نافذة "المعلومات السريعة" مباشرة بناءً على الدالة الخاصة بك
                     openQuickInfo(); 
-                    
-                    return; // إيقاف الكود هنا حتى لا يبدأ الاختبار، ويكتفي بالشرح!
+                    return; 
                 }
             }
-            // =========================================================            
-            // ... (هنا يبقى باقي كود دالة startQuiz الأصلي الخاص بك كما هو، والذي يقوم ببدء الاختبار) ...
 
             // تصفية بنك الأسئلة بناءً على الاختيارات
             let pool = questionBank.filter(q => q.stage === stage && q.grade === grade && (!branch || q.branch === branch) && q.topic === topic && q.active !== false);
@@ -2894,17 +3010,12 @@ async function saveQuestionsState() {
                 return; 
             }
 
-            // فحص الأسئلة التي أجاب عليها الطالب سابقاً لهذا الموضوع
+            // فحص الأسئلة التي أجاب عليها الطالب سابقاً لتفعيل التباعد الذكي
             let answeredSet = getAnsweredQuestionsSet(topic);
-            
-            // محاولة البدء بالأسئلة التي لم يجب عليها الطالب (أو الأسئلة الأقدم في التباعد)
             let unassignedPool = pool.filter(q => !answeredSet.includes(q.q));
             
-            // إذا نفدت الأسئلة الجديدة ولم يتبق سوى ما أجاب عنه، نقوم بإعادة تدوير الذاكرة بذكاء
             let workingPool = [...unassignedPool];
             if (workingPool.length < (appSettings.examCount || 20)) {
-                // إذا كانت الأسئلة الجديدة غير كافية وحدها، نكمل الباقي من الأسئلة السابقة لضمان اكتمال العدد
-                let remainingNeeded = (appSettings.examCount || 20) - workingPool.length;
                 let otherPool = pool.filter(q => answeredSet.includes(q.q));
                 workingPool = [...workingPool, ...otherPool];
             }
@@ -2912,29 +3023,49 @@ async function saveQuestionsState() {
             const targetCount = appSettings.examCount || 20;
             let sessionQuestions = [];
 
-            // خوارزمية التباعد الذكي (Stratified / Interval Selection) على مصفوفة الأسئلة المتاحة
-            if (workingPool.length <= targetCount) {
-                sessionQuestions = [...workingPool];
-            } else {
-                let chunkSize = Math.floor(workingPool.length / targetCount);
-                for (let i = 0; i < targetCount; i++) {
-                    let startIdx = i * chunkSize;
-                    let endIdx = (i === targetCount - 1) ? workingPool.length : (i + 1) * chunkSize;
-                    let chunk = workingPool.slice(startIdx, endIdx);
-                    
-                    if (chunk.length > 0) {
-                        let randomIdx = Math.floor(Math.random() * chunk.length);
-                        sessionQuestions.push(chunk[randomIdx]);
+            // فصل أسئلة workingPool إلى فقرات وأسئلة عادية
+            let workingWithPara = workingPool.filter(q => q.paragraphId && q.paragraphId.trim() !== "");
+            let workingWithoutPara = workingPool.filter(q => !q.paragraphId || q.paragraphId.trim() === "");
+
+            // تجميع أسئلة الفقرات معاً مع وضع شرط ألا تزيد الفقرة الواحدة عن 6 أسئلة
+            let paraMap = {};
+            workingWithPara.forEach(q => {
+                if (!paraMap[q.paragraphId]) paraMap[q.paragraphId] = [];
+                if (paraMap[q.paragraphId].length < 6) {
+                    paraMap[q.paragraphId].push(q);
+                }
+            });
+
+            // إدراج مجموعات الفقرات أولاً لضمان ترابط النص القرائي وأسئلته
+            Object.keys(paraMap).forEach(paraId => {
+                if (sessionQuestions.length < targetCount) {
+                    let pGroup = paraMap[paraId];
+                    if (sessionQuestions.length + pGroup.length <= targetCount) {
+                        sessionQuestions = sessionQuestions.concat(pGroup);
+                    } else {
+                        let remainingSpace = targetCount - sessionQuestions.length;
+                        sessionQuestions = sessionQuestions.concat(pGroup.slice(0, remainingSpace));
                     }
                 }
+            });
+
+            // إكمال العدد المتبقي من الأسئلة العادية (بدون فقرات) لملء تارجت الاختبار
+            if (sessionQuestions.length < targetCount && workingWithoutPara.length > 0) {
+                let needed = targetCount - sessionQuestions.length;
+                sessionQuestions = sessionQuestions.concat(workingWithoutPara.slice(0, needed));
             }
 
-            // تطبيق خلط ترتيب الأسئلة المنتقاة
+            // ضمان عدم ترك الاختبار فارغاً إذا كان المجموع أقل من المطلوب
+            if (sessionQuestions.length === 0) {
+                sessionQuestions = pool.slice(0, targetCount);
+            }
+
+            // خلط ترتيب الأسئلة النهائية إذا كان الخلط مفَعلاً
             if (appSettings.shuffleQuestions !== false) {
                 sessionQuestions.sort(() => 0.5 - Math.random());
             }
 
-            // تطبيق خلط الاختيارات لكل سؤال بشكل ثابت وصحيح لتستجيب الأزرار فوراً
+            // تطبيق خلط الاختيارات لكل سؤال
             if (appSettings.shuffleOptions !== false) {
                 sessionQuestions = sessionQuestions.map(q => {
                     let qCopy = JSON.parse(JSON.stringify(q));
@@ -2963,9 +3094,8 @@ async function saveQuestionsState() {
             document.getElementById('display-total-q').textContent = sessionQuestions.length; 
             document.getElementById('quiz-topic-header-title').textContent = `${branch ? branch + ' ➔ ' : ''}${topic}`;
             
-           document.getElementById('view-start').classList.add('hidden'); 
+            document.getElementById('view-start').classList.add('hidden'); 
             
-            // إظهار زر المعلومة السريعة داخل الاختبار/التدريب بقوة وتنسيق سليم
             const qiBtn = document.getElementById('quick-info-top-btn');
             if (qiBtn) {
                 const hasInfo = quickInfoList.some(qi => qi.active !== false && (qi.topic === topic || (!qi.topic && qi.branch === branch)));
@@ -2978,11 +3108,9 @@ async function saveQuestionsState() {
                 }
             }
             
-            // التوجيه الذكي: إذا كان الطالب اختار "شرح"، نذهب به للشرح أولاً بدون بدء المؤقت!
             if (typeof currentStudentPortalMode !== 'undefined' && currentStudentPortalMode === 'explanation') {
                 openQuickInfo();
             } else {
-                // الوضع الطبيعي (التدريب): إظهار الاختبار وبدء المؤقت
                 document.getElementById('view-quiz').classList.remove('hidden'); 
                 document.getElementById('view-quiz').classList.add('flex'); 
                 renderQuestion(); 
@@ -5014,13 +5142,14 @@ setTimeout(() => {
             // فتح الصفحة الجديدة المستقلة
             openAdminSectionPage('view-admin-quickinfo-edit'); 
         }
-// دالة إضافة عنوان فرعي جديد داخل قسم المعلومة السريعة مع دعم الجدول التفاعلي وتبريز الخطوط
+// دالة إضافة عنوان فرعي جديد داخل قسم المعلومة السريعة مع دعم الجدول التفاعلي وشريط الرموز
         function addQiSubItemBlock(secIdx, sub = null) {
             const container = document.getElementById(`qi-subitems-container-${secIdx}`);
             if (!container) return;
             const subId = 'sub_' + Math.random().toString(36).substr(2, 5);
             
             let titleVal = sub ? (sub.title || '') : '';
+            let titleAlignVal = sub ? (sub.titleAlign || 'text-right') : 'text-right';
             let textVal = sub ? (sub.text || '') : '';
             let imgVal = sub ? (sub.img || '') : '';
             let isActive = sub ? (sub.active !== false) : true;
@@ -5030,7 +5159,8 @@ setTimeout(() => {
             tableData.forEach((row, rIdx) => {
                 tableRowsHtml += `<div class="flex gap-2 items-center mb-2 qi-table-row">`;
                 row.forEach((cell, cIdx) => {
-                    tableRowsHtml += `<input type="text" value="${escapeHTML(cell)}" class="w-full p-2.5 rounded-xl border bg-white text-sm font-bold qi-table-cell" placeholder="${rIdx === 0 ? 'عنوان العمود' : 'بيان'}">`;
+                    let placeholderText = (rIdx === 0) ? `عنوان العمود ${cIdx + 1}` : 'بيان';
+                    tableRowsHtml += `<input type="text" value="${escapeHTML(cell)}" class="w-full p-2.5 rounded-xl border bg-white text-sm font-bold qi-table-cell" placeholder="${placeholderText}">`;
                 });
                 tableRowsHtml += `<button type="button" onclick="this.closest('.qi-table-row').remove()" class="bg-rose-100 text-rose-700 px-2.5 py-2 rounded-xl text-xs"><i class="fa-solid fa-trash"></i></button></div>`;
             });
@@ -5046,13 +5176,25 @@ setTimeout(() => {
                         <button type="button" onclick="this.closest('.qi-subitem-block').remove()" class="bg-rose-100 text-rose-600 px-2 py-1 rounded-lg text-xs"><i class="fa-solid fa-trash"></i> حذف الفرع</button>
                     </div>
                 </div>
-                <!-- تم تكبير الخط هنا ليطابق قسم الأسئلة -->
-                <input type="text" class="qi-sub-title w-full p-3 rounded-xl border text-sm font-black bg-slate-50 shadow-xs" placeholder="عنوان فرعي (اختياري)..." value="${escapeHTML(titleVal)}">
                 
+                <!-- شريط الرموز وحقل العنوان الفرعي مع خيار المحاذاة -->
+                <div class="flex flex-col sm:flex-row gap-2 items-center">
+                    <div class="input-with-emoji-wrapper w-full">
+                        <div class="flex flex-col w-full">
+                            ${getEmojiBarHtml()}
+                            <input type="text" class="qi-sub-title w-full p-3 rounded-xl border text-sm font-black bg-slate-50 shadow-xs" placeholder="عنوان فرعي (اختياري)..." value="${escapeHTML(titleVal)}">
+                        </div>
+                    </div>
+                    <select class="qi-sub-align p-3 rounded-xl border text-xs font-bold bg-white text-sky-950 shrink-0 w-full sm:w-auto" title="محاذاة العنوان الفرعي">
+                        <option value="text-right" ${titleAlignVal === 'text-right' ? 'selected' : ''}>بداية</option>
+                        <option value="text-center" ${titleAlignVal === 'text-center' ? 'selected' : ''}>منتصف</option>
+                    </select>
+                </div>
+                
+                <!-- شريط الرموز ونص الشرح التفصيلي -->
                 <div class="input-with-emoji-wrapper">
                     <div class="flex flex-col w-full">
                         ${getEmojiBarHtml()}
-                        <!-- تم تكبير الخط ووضوح التنسيق هنا أيضاً -->
                         <textarea rows="3" class="qi-sub-text w-full p-3.5 rounded-xl border text-sm font-bold leading-relaxed bg-white shadow-xs" placeholder="نص الشرح التفصيلي...">${escapeHTML(textVal)}</textarea>
                     </div>
                 </div>
@@ -5064,8 +5206,8 @@ setTimeout(() => {
                     <div class="flex justify-between items-center">
                         <span class="font-black text-sky-950 text-xs"><i class="fa-solid fa-table ml-1"></i> جدول الشرح (اختياري):</span>
                         <div class="flex gap-1">
-                            <button type="button" onclick="addQiTableRow(this)" class="bg-sky-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-xs"><i class="fa-solid fa-plus ml-1"></i> إضافة صف</button>
-                            <button type="button" onclick="addQiTableCol(this)" class="bg-indigo-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-xs"><i class="fa-solid fa-plus ml-1"></i> إضافة عمود</button>
+                            <button type="button" onclick="addQiTableRow(this)" class="bg-sky-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-xs cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة صف</button>
+                            <button type="button" onclick="addQiTableCol(this)" class="bg-indigo-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-xs cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة عمود</button>
                         </div>
                     </div>
                     <div class="qi-table-builder-container space-y-1 max-h-48 overflow-y-auto p-1 bg-white rounded-lg border">
@@ -5079,7 +5221,8 @@ setTimeout(() => {
         function addQiTableRow(btn) {
             const block = btn.closest('.qi-subitem-block');
             const container = block.querySelector('.qi-table-builder-container');
-            const firstRowCells = container.querySelector('.qi-table-row') ? container.querySelector('.qi-table-row').querySelectorAll('.qi-table-cell').length : 2;
+            const firstRow = container.querySelector('.qi-table-row');
+            const firstRowCells = firstRow ? firstRow.querySelectorAll('.qi-table-cell').length : 2;
             
             let rowHtml = `<div class="flex gap-2 items-center mb-2 qi-table-row">`;
             for (let i = 0; i < (firstRowCells || 2); i++) {
@@ -5089,20 +5232,29 @@ setTimeout(() => {
             container.insertAdjacentHTML('beforeend', rowHtml);
         }
 
-        // دالة إضافة عمود جديد للجدول في لوحة التحكم
+        // دالة إضافة عمود جديد للجدول مع إعادة ترقيم الصف الأول عناوين وما أسفله بيان
         function addQiTableCol(btn) {
             const block = btn.closest('.qi-subitem-block');
             const container = block.querySelector('.qi-table-builder-container');
             const rows = container.querySelectorAll('.qi-table-row');
             if (rows.length === 0) {
-                // إذا لم يكن هناك صفوف، نضيف صفاً افتراضياً بعمودين
                 addQiTableRow(btn);
                 return;
             }
             rows.forEach((row, rIdx) => {
                 const deleteBtn = row.querySelector('button');
-                const newCellHtml = `<input type="text" class="w-full p-2.5 rounded-xl border bg-white text-sm font-bold qi-table-cell" placeholder="${rIdx === 0 ? 'عنوان العمود' : 'بيان'}">`;
+                const placeholderText = (rIdx === 0) ? `عنوان العمود` : 'بيان';
+                const newCellHtml = `<input type="text" class="w-full p-2.5 rounded-xl border bg-white text-sm font-bold qi-table-cell" placeholder="${placeholderText}">`;
+                
                 deleteBtn.insertAdjacentHTML('beforebegin', newCellHtml);
+
+                // إعادة ترقيم الصف الأول بالكامل لضمان دقة وتماثل العناوين من الأول للنهاية
+                if (rIdx === 0) {
+                    const cells = row.querySelectorAll('.qi-table-cell');
+                    cells.forEach((cell, idx) => {
+                        cell.placeholder = `عنوان العمود ${idx + 1}`;
+                    });
+                }
             });
         }        
 
@@ -5151,16 +5303,20 @@ setTimeout(() => {
             let active = document.getElementById('modal-qi-active').checked; 
             let tashkeel = document.getElementById('modal-qi-tashkeel').checked;
             
+            let titleAlign = document.getElementById('modal-qi-title-align') ? document.getElementById('modal-qi-title-align').value : 'text-right'; // محاذاة العنوان الرئيسي للبطاقة
+            
             if (!title || !stage || !grade || !branch || !topic) { alert("أكمل الفلاتر والعنوان."); return; }
             
             let sections = []; 
             document.querySelectorAll('.qi-section-block').forEach(secBlock => { 
                 let mainHeader = secBlock.querySelector('.qi-sec-main-header').value.trim(); 
                 let mainActive = secBlock.querySelector('.qi-sec-active').checked; 
+                let headerAlign = secBlock.querySelector('.qi-sec-align') ? secBlock.querySelector('.qi-sec-align').value : 'text-right'; // التقاط محاذاة العنوان الرئيسي للقسم
                 let subItems = [];
                 
                 secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => { 
                     let subTitle = subBlock.querySelector('.qi-sub-title').value.trim(); 
+                    let subTitleAlign = subBlock.querySelector('.qi-sub-align') ? subBlock.querySelector('.qi-sub-align').value : 'text-right'; // التقاط محاذاة العنوان الفرعي
                     let subText = subBlock.querySelector('.qi-sub-text').value.trim(); 
                     let subImg = subBlock.querySelector('.qi-sub-img').value.trim(); 
                     let subActive = subBlock.querySelector('.qi-sub-active').checked; 
@@ -5176,11 +5332,13 @@ setTimeout(() => {
                     });
 
                     if (subTitle || subText || tableData.length > 0) {
-                        subItems.push({ title: subTitle, text: subText, img: subImg, active: subActive, tableData: tableData });
+                        subItems.push({ title: subTitle, titleAlign: subTitleAlign, text: subText, img: subImg, active: subActive, tableData: tableData });
                     }
                 }); 
                 
-                if (mainHeader || subItems.length > 0) sections.push({ mainHeader, active: mainActive, subItems }); 
+                if (mainHeader || subItems.length > 0) {
+                    sections.push({ mainHeader, headerAlign, active: mainActive, subItems }); 
+                }
             });
             
             let attachments = []; 
@@ -5190,7 +5348,7 @@ setTimeout(() => {
                 if (url) attachments.push({ label: label || "اطّلع على", url }); 
             });
             
-            let qiObj = { title, stage, grade, branch, topic, img, sections, attachments, active, tashkeel };
+            let qiObj = { title, titleAlign, stage, grade, branch, topic, img, sections, attachments, active, tashkeel };
             
             if (idx === -1) quickInfoList.push(qiObj); 
             else quickInfoList[idx] = qiObj;
@@ -5203,46 +5361,61 @@ setTimeout(() => {
         }
 
        // دالة بناء القسم الرئيسي المحدثة لتدعم الجداول والعناوين الفرعية بشكل صحيح
-        function addQuickInfoSectionBlock(mainHeader = "", mainActive = true, subItems = []) {
+        function addQuickInfoSectionBlock(arg1 = null, arg2 = true, arg3 = []) {
             const container = document.getElementById('quickinfo-sections-builder-container'); 
             if (!container) return; 
             
-            // توليد معرف فريد لهذا القسم لربط العناوين الفرعية به بدقة
+            // مرونة تامة لتقبل الكائن الكامل أو المعلمات المفككة القديمة والجديدة
+            let secObj = (typeof arg1 === 'object' && arg1 !== null) ? arg1 : null;
+            let mainHeader = secObj ? (secObj.mainHeader || "") : (typeof arg1 === 'string' ? arg1 : "");
+            let mainActive = secObj ? (secObj.active !== false) : (arg2 !== false);
+            let headerAlignVal = secObj ? (secObj.headerAlign || 'text-right') : 'text-right';
+            let subItems = secObj ? (secObj.subItems || []) : (Array.isArray(arg3) ? arg3 : []);
+
+            // توليد معرف فريد لهذا القسم لربط العناوين الفرعية والجداول به بدقة
             const secId = Math.random().toString(36).substr(2, 9);
             
             const sectionDiv = document.createElement('div'); 
-            sectionDiv.className = "qi-section-block bg-white p-4 rounded-2xl border-2 border-indigo-200 space-y-3 relative shadow-2xs"; 
+            sectionDiv.className = "qi-section-block bg-white p-5 rounded-3xl border-2 border-indigo-200 space-y-4 relative shadow-sm"; 
             
             sectionDiv.innerHTML = `
-                <div class="flex justify-between items-center bg-indigo-50 p-2.5 rounded-xl border gap-2 flex-wrap">
-                    <div class="flex items-start gap-2 flex-grow input-with-emoji-wrapper">
-                        <input type="checkbox" class="qi-sec-active w-5 h-5 text-emerald-600 rounded mt-2.5" ${mainActive !== false ? 'checked' : ''}>
-                        <div class="flex flex-col w-full">
+                <div class="flex justify-between items-center bg-indigo-50/80 p-3 rounded-2xl border border-indigo-200 gap-2 flex-wrap">
+                    <div class="flex items-start gap-2 flex-grow input-with-emoji-wrapper" style="display: flex; align-items: flex-start; gap: 8px; flex-grow: 1;">
+                        <input type="checkbox" class="qi-sec-active w-5 h-5 text-emerald-600 rounded mt-3 cursor-pointer" ${mainActive !== false ? 'checked' : ''}>
+                        <div class="flex flex-col w-full gap-2">
                             ${getEmojiBarHtml()}
-                            <input type="text" class="qi-sec-main-header w-full p-2 rounded-lg border text-xs font-black bg-white" placeholder="العنوان الرئيسي..." value="${escapeHTML(mainHeader)}">
+                            <div class="flex flex-col sm:flex-row gap-2 items-center">
+                                <input type="text" class="qi-sec-main-header w-full p-3 rounded-xl border text-xs font-black bg-white shadow-xs" placeholder="العنوان الرئيسي للقسم..." value="${escapeHTML(mainHeader)}">
+                                <select class="qi-sec-align p-3 rounded-xl border text-xs font-bold bg-white text-sky-950 shrink-0 w-full sm:w-auto" title="محاذاة العنوان الرئيسي">
+                                    <option value="text-right" ${headerAlignVal === 'text-right' ? 'selected' : ''}>بداية</option>
+                                    <option value="text-center" ${headerAlignVal === 'text-center' ? 'selected' : ''}>منتصف</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="flex items-center gap-1 mt-6">
-                        <button type="button" onclick="moveQiSectionBlock(this, -1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs cursor-pointer"><i class="fa-solid fa-arrow-up"></i></button>
-                        <button type="button" onclick="moveQiSectionBlock(this, 1)" class="bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-xs cursor-pointer"><i class="fa-solid fa-arrow-down"></i></button>
-                        <button type="button" onclick="this.closest('.qi-section-block').remove()" class="text-rose-600 text-xs font-bold px-2 cursor-pointer"><i class="fa-solid fa-trash ml-1"></i>حذف</button>
+                        <button type="button" onclick="moveQiSectionBlock(this, -1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1.5 rounded-xl text-xs transition cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button type="button" onclick="moveQiSectionBlock(this, 1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1.5 rounded-xl text-xs transition cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button type="button" onclick="this.closest('.qi-section-block').remove()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer"><i class="fa-solid fa-trash ml-1"></i>حذف القسم</button>
                     </div>
                 </div>
                 
-                <!-- حاوية العناوين الفرعية بمعرف فريد -->
-                <div id="qi-subitems-container-${secId}" class="qi-subitems-container space-y-3 pr-2 border-r-2 border-indigo-200 mr-2"></div>
+                <!-- حاوية العناوين الفرعية بمعرف فريد لربط الجداول بها -->
+                <div id="qi-subitems-container-${secId}" class="qi-subitems-container space-y-4 pr-3 border-r-3 border-indigo-200 mr-2"></div>
                 
-                <div class="pt-1">
-                    <button type="button" onclick="addQiSubItemBlock('${secId}')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold text-[11px] px-3.5 py-2 rounded-xl cursor-pointer shadow-xs transition"><i class="fa-solid fa-plus ml-1"></i> إضافة عنوان فرعي</button>
+                <div class="pt-2">
+                    <button type="button" onclick="addQiSubItemBlock('${secId}')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة عنوان فرعي جديد</button>
                 </div>`;
             
             container.appendChild(sectionDiv);
 
-            // تعبئة العناوين الفرعية (سواء عند التعديل أو عند الإضافة بفرع فارغ)
+            // تعبئة العناوين الفرعية والشروحات والجداول بدقة تامة عند التعديل أو الاستيراد
             if (subItems && Array.isArray(subItems) && subItems.length > 0) {
-                subItems.forEach(sub => addQiSubItemBlock(secId, sub));
-            } else {
-                addQiSubItemBlock(secId, null);
+                subItems.forEach(sub => {
+                    addQiSubItemBlock(secId, sub);
+                });
+            } else { 
+                addQiSubItemBlock(secId, null); 
             }
         }
 
@@ -5279,45 +5452,7 @@ setTimeout(() => {
             </div>`;
         }
 
-        // دالة بناء القسم الرئيسي الصحيحة التي تربط العناوين الفرعية ومنشئ الجداول فوراً
-        function addQuickInfoSectionBlock(mainHeader = "", mainActive = true, subItems = []) {
-            const container = document.getElementById('quickinfo-sections-builder-container'); 
-            if (!container) return; 
-            
-            const secId = Math.random().toString(36).substr(2, 9);
-            const sectionDiv = document.createElement('div'); 
-            sectionDiv.className = "qi-section-block bg-white p-5 rounded-3xl border-2 border-indigo-200 space-y-4 relative shadow-sm"; 
-            
-            sectionDiv.innerHTML = `
-                <div class="flex justify-between items-center bg-indigo-50/80 p-3 rounded-2xl border border-indigo-200 gap-2 flex-wrap">
-                    <div class="flex items-start gap-2 flex-grow input-with-emoji-wrapper">
-                        <input type="checkbox" class="qi-sec-active w-5 h-5 text-emerald-600 rounded mt-3 cursor-pointer" ${mainActive !== false ? 'checked' : ''}>
-                        <div class="flex flex-col w-full">
-                            ${getEmojiBarHtml()}
-                            <input type="text" class="qi-sec-main-header w-full p-3 rounded-xl border text-xs font-black bg-white shadow-xs" placeholder="العنوان الرئيسي للقسم..." value="${escapeHTML(mainHeader)}">
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-1 mt-6">
-                        <button type="button" onclick="moveQiSectionBlock(this, -1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1.5 rounded-xl text-xs transition cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
-                        <button type="button" onclick="moveQiSectionBlock(this, 1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1.5 rounded-xl text-xs transition cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
-                        <button type="button" onclick="this.closest('.qi-section-block').remove()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer"><i class="fa-solid fa-trash ml-1"></i>حذف القسم</button>
-                    </div>
-                </div>
-                <!-- حاوية العناوين الفرعية بمعرف فريد لربط الجداول بها -->
-                <div id="qi-subitems-container-${secId}" class="qi-subitems-container space-y-4 pr-3 border-r-3 border-indigo-200 mr-2"></div>
-                <div class="pt-2">
-                    <button type="button" onclick="addQiSubItemBlock('${secId}')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة عنوان فرعي جديد</button>
-                </div>
-            `;
-            container.appendChild(sectionDiv);
-
-            // تعبئة العناوين الفرعية مع دعم الجداول والتفاصيل بشكل سليم
-            if (subItems && Array.isArray(subItems) && subItems.length > 0) {
-                subItems.forEach(sub => addQiSubItemBlock(secId, sub));
-            } else { 
-                addQiSubItemBlock(secId, null); 
-            }
-        }
+        
         function addSubItemToSection(btnEl) { const subContainer = btnEl.closest('.qi-section-block').querySelector('.qi-subitems-container'); const tempDiv = document.createElement('div'); tempDiv.innerHTML = generateSubItemHtml("", "", "", true); subContainer.appendChild(tempDiv.firstElementChild); }
         function moveQiSectionBlock(btn, direction) { const block = btn.closest('.qi-section-block'); const parent = block.parentNode; if (direction === -1 && block.previousElementSibling) parent.insertBefore(block, block.previousElementSibling); else if (direction === 1 && block.nextElementSibling) parent.insertBefore(block, block.nextElementSibling.nextElementSibling); }
         function moveQiSubItemBlock(btn, direction) { const block = btn.closest('.qi-subitem-block'); const parent = block.parentNode; if (direction === -1 && block.previousElementSibling) parent.insertBefore(block, block.previousElementSibling); else if (direction === 1 && block.nextElementSibling) parent.insertBefore(block, block.nextElementSibling.nextElementSibling); }
