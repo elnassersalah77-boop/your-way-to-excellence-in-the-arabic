@@ -3443,32 +3443,34 @@ async function saveQuestionsState() {
 
 // دالة حفظ سجلات الطلاب في الخلفية بصمت تام بدون أي شاشات تحميل
         async function saveStudentRecordsBackground() {
-            try {
-                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
-                    const db = window.firebaseDb; 
-                    if (!window._cloudCache) window._cloudCache = {};
-                    
-                    let tasks = [];
-                    const addTask = (id, data) => {
-                        const str = JSON.stringify(data);
-                        if (window._cloudCache[id] !== str) tasks.push({ id, data, str });
-                    };
-
-                    const rChunkSize = 300; let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
-                    for (let i = 0; i < rTotalParts; i++) addTask(`records_part_${i}`, { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) });
-                    addTask("records_meta", { totalParts: rTotalParts });
-
-                    if (tasks.length === 0) return; // لا يوجد جديد للرفع
-
-                    for (let task of tasks) {
-                        await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
-                        window._cloudCache[task.id] = task.str; 
-                    }
-                }
-            } catch (e) {
-                console.log("حفظ السجلات خلفياً:", e);
+    try {
+        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+            const db = window.firebaseDb; 
+            if (!window._cloudCache) window._cloudCache = {};
+            
+            const rChunkSize = 300; 
+            let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
+            
+            // رفع أجزاء السجلات مباشرة إلى فايربيز
+            for (let i = 0; i < rTotalParts; i++) {
+                const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
+                await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
             }
+            // رفع الميتا الخاصة بالسجلات
+            await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
+            
+            console.log("✅ تم حفظ سجلات الطلاب سحابياً بنجاح تام!");
+        } else {
+            console.log("⚠️ اتصال فايربيز غير جاهز، تم الحفظ محلياً فقط.");
         }
+    } catch (e) {
+        console.error("❌ خطأ منع حفظ السجلات في فايربيز:", e);
+        // تنبيه مؤقت لمعرفة إذا كانت قواعد الحماية هي السبب
+        if (e.code === 'permission-denied') {
+            alert("تنبيه: قواعد الحماية في Firebase تمنع حفظ النتائج. يرجى ضبط قواعد الـ Firestore السماح بالقراءة والكتابة (allow read, write: if true).");
+        }
+    }
+}
 
         function generateQuickInfoCardHtml(qi) {
             let mainAlign = qi.titleAlign || 'text-right';
