@@ -3451,12 +3451,13 @@ async function saveQuestionsState() {
             const rChunkSize = 300; 
             let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
             
-            // رفع أجزاء السجلات مباشرة إلى فايربيز
+            // 1. رفع كل أجزاء السجلات إلى فايربيز
             for (let i = 0; i < rTotalParts; i++) {
                 const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
             }
-            // رفع الميتا الخاصة بالسجلات
+            
+            // 2. تحديث الميتا لتعريف النظام بعدد الأجزاء بدقة
             await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
             
             console.log("✅ تم حفظ سجلات الطلاب سحابياً بنجاح تام!");
@@ -3464,11 +3465,7 @@ async function saveQuestionsState() {
             console.log("⚠️ اتصال فايربيز غير جاهز، تم الحفظ محلياً فقط.");
         }
     } catch (e) {
-        console.error("❌ خطأ منع حفظ السجلات في فايربيز:", e);
-        // تنبيه مؤقت لمعرفة إذا كانت قواعد الحماية هي السبب
-        if (e.code === 'permission-denied') {
-            alert("تنبيه: قواعد الحماية في Firebase تمنع حفظ النتائج. يرجى ضبط قواعد الـ Firestore السماح بالقراءة والكتابة (allow read, write: if true).");
-        }
+        console.error("❌ خطأ في حفظ السجلات سحابياً:", e);
     }
 }
 
@@ -7692,16 +7689,16 @@ async function clearRecords() {
         // 1. تفريغ المصفوفة محلياً
         studentRecords = [];
         
-        // 2. الحذف الفعلي والتفريغ من الذاكرة المحلية لضمان العمل أوفلاين
+        // 2. الحذف الفعلي والتفريغ من الذاكرة المحلية (LocalStorage) للعمل أوفلاين
         localStorage.removeItem('studentRecords');
         localStorage.setItem('studentRecords', JSON.stringify([]));
         
-        // 3. تحديث جدول الإدارة فوراً ليظهر فارغاً
+        // 3. تحديث الجدول فوراً أمم المعلم
         if (typeof renderAdminRecordsTable === 'function') {
             renderAdminRecordsTable();
         }
         
-        // 4. محاولة تحديث السحابة بصمت إذا كان الإنترنت متصلاً
+        // 4. محاولة تحديث السحابة بصمت
         try {
             if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseSetDoc && window.firebaseDoc) {
                 const db = window.firebaseDb;
@@ -7715,6 +7712,7 @@ async function clearRecords() {
         alert("تم مسح السجل بنجاح!");
     }
 }
+
         function toggleSelectAllRecords(masterCb) {
             document.querySelectorAll('.record-select-checkbox').forEach(cb => cb.checked = masterCb.checked);
         }
