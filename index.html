@@ -5221,7 +5221,7 @@ function showAdminDashboardPage() {
 }
 
 // فتح صفحة قسم معين من لوحة الإدارة
-function openAdminSectionPage(sectionId) {
+async function openAdminSectionPage(sectionId) {
     document.querySelectorAll('.admin-section-view').forEach(el => {
         el.classList.add('hidden');
         el.classList.remove('flex');
@@ -5232,7 +5232,7 @@ function openAdminSectionPage(sectionId) {
         targetSection.classList.remove('hidden');
         targetSection.classList.add('flex');
         
-        // استدعاء دوال التحديث التلقائي الخاصة بكل قسم
+        // استدعاء دوال التحديث التلقائي الخاصة بكل قسم مع الجلب السحابي المباشر للسجلات
         if (sectionId === 'view-admin-settings' && typeof loadAdminSettings === 'function') loadAdminSettings();
         else if (sectionId === 'view-admin-stages' && typeof renderAdminStagesList === 'function') renderAdminStagesList();
         else if (sectionId === 'view-admin-branches' && typeof renderAdminBranchesList === 'function') { if (typeof populateBranchAdminFilters === 'function') populateBranchAdminFilters(); renderAdminBranchesList(); }
@@ -5241,7 +5241,13 @@ function openAdminSectionPage(sectionId) {
         else if (sectionId === 'view-admin-passages' && typeof renderPassagesTable === 'function') { if (typeof populatePassageAdminFilters === 'function') populatePassageAdminFilters(); renderPassagesTable(); }
         else if (sectionId === 'view-admin-quickinfo' && typeof renderAdminQuickInfoList === 'function') { if (typeof populateQiAdminFilters === 'function') populateQiAdminFilters(); renderAdminQuickInfoList(); }
         else if (sectionId === 'view-admin-students' && typeof renderAdminStudentsList === 'function') renderAdminStudentsList();
-        else if (sectionId === 'view-admin-records' && typeof renderAdminRecordsTable === 'function') { if (typeof populateRecAdminFilters === 'function') populateRecAdminFilters(); renderAdminRecordsTable(); }
+        else if (sectionId === 'view-admin-records') {
+            if (typeof loadAdminRecordsFromCloud === 'function') {
+                await loadAdminRecordsFromCloud();
+            }
+            if (typeof populateRecAdminFilters === 'function') populateRecAdminFilters();
+            if (typeof renderAdminRecordsTable === 'function') renderAdminRecordsTable();
+        }
     }
 }
 
