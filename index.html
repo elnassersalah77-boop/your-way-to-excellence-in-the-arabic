@@ -5248,6 +5248,18 @@ async function openAdminSectionPage(sectionId) {
                 await loadAdminRecordsFromCloud();
             }
             if (typeof populateRecAdminFilters === 'function') populateRecAdminFilters();
+            
+            // 💡 إعادة ضبط فلاتر التصفية تلقائياً على "الكل" لضمان ظهور جميع نتائج الطلاب الجدد
+            const stageFilter = document.getElementById('admin-rec-stage-filter');
+            const gradeFilter = document.getElementById('admin-rec-grade-filter');
+            const branchFilter = document.getElementById('admin-rec-branch-filter');
+            const topicFilter = document.getElementById('admin-rec-topic-filter');
+            
+            if (stageFilter) stageFilter.value = "";
+            if (gradeFilter) gradeFilter.value = "";
+            if (branchFilter) branchFilter.value = "";
+            if (topicFilter) topicFilter.value = "";
+
             if (typeof renderAdminRecordsTable === 'function') renderAdminRecordsTable();
         }
     }
@@ -7677,34 +7689,32 @@ function changeRecordsPage(dir) {
 
 async function clearRecords() {
     if (confirm("هل أنت متأكد من مسح جميع سجلات النتائج نهائياً؟")) {
-        // 1. تفريغ مصفوفة السجلات في الذاكرة
+        // 1. تفريغ المصفوفة محلياً
         studentRecords = [];
         
-        // 2. الحذف والتفريغ الفوري من الذاكرة المحلية (LocalStorage) لضمان العمل أوفلاين
+        // 2. الحذف الفعلي والتفريغ من الذاكرة المحلية لضمان العمل أوفلاين
         localStorage.removeItem('studentRecords');
         localStorage.setItem('studentRecords', JSON.stringify([]));
         
-        // 3. تحديث جدول الإدارة فوراً ليظهر فارغاً أمامك
+        // 3. تحديث جدول الإدارة فوراً ليظهر فارغاً
         if (typeof renderAdminRecordsTable === 'function') {
             renderAdminRecordsTable();
         }
         
-        // 4. محاولة تحديث سحابة فايربيز بصمت (إذا كان الإنترنت متصلاً، وإلا فلن يؤثر على العمل أوفلاين)
+        // 4. محاولة تحديث السحابة بصمت إذا كان الإنترنت متصلاً
         try {
             if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseSetDoc && window.firebaseDoc) {
                 const db = window.firebaseDb;
-                // إبلاغ السحابة أن السجلات أصبحت فارغة (جزء واحد فارغ فقط)
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_part_0"), { chunk: [] });
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: 1 });
             }
         } catch (e) {
-            console.log("أنت تعمل أوفلاين: تم الحذف محلياً بنجاح.", e);
+            console.log("العمل أوفلاين: تم الحذف محلياً بنجاح.");
         }
         
         alert("تم مسح السجل بنجاح!");
     }
 }
-
         function toggleSelectAllRecords(masterCb) {
             document.querySelectorAll('.record-select-checkbox').forEach(cb => cb.checked = masterCb.checked);
         }
