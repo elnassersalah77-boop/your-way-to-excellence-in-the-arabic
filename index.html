@@ -2538,7 +2538,7 @@ function escapeHTML(str) {
         let questionBank = [{"stage":"ثانوية","grade":"الصف الثاني الثانوي بكالوريا","branch":"النحو","topic":"الأسماء الخمسة","active":true,"tashkeel":true,"paragraphId":"","q":"قَالَ الشَّاعِرُ الطَّائِيُّ: (وَبِئْرِي ذُو حَفَرْتُ وَذُو طَوَيْتُ). مَا الْحُكْمُ النَّحْوِيُّ لِكَلِمَةِ (ذُو)؟","opts":["تُعْرَبُ إِعْرَابَ الْأَسْمَاءِ الْخَمْسَةِ","تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","تُبْنَى عَلَى السُّكُونِ فِي مَحَلِّ رَفْعٍ","تُعْرَبُ بِحَرَكَاتٍ مُقَدَّرَةٍ"],"ans":"تَلْزَمُ الْوَاوَ رَفْعًا وَنَصْبًا وَجَرًّا","exp":"لُغَةُ طَيِّئٍ تُلْزِمُ كَلِمَةَ (ذُو) الْوَاوَ.","difficulty":"صعب جدا"}];
        let quickInfoList = [{"title": "أنواع الخطاب", "stage":"ثانوية", "grade":"الصف الثاني الثانوي بكالوريا", "branch":"النصوص", "topic": "أنواع الخطاب", "active": true, "tashkeel": true, "sections": [{"mainHeader": "مفهوم الخطاب الإشهاري والتوجيهي", "active": true, "subItems": [{"title": "الخطاب الإشهاري", "active": true, "text": "يسعى إلى التأثير في المتلقي...", "img": ""}]}], "attachments": []}];
 
-        let studentRecords = [];
+        let studentRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
         let quizState = { name: "", stage: "", grade: "", branch: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
 
         // كائن تخزين روابط الصور العامة للمنصة
@@ -7675,12 +7675,34 @@ function changeRecordsPage(dir) {
     renderAdminRecordsTable();  
 }
 
-function clearRecords() {  
-    if (confirm("مسح جميع النتائج؟")) {  
-        studentRecords = [];  
-        saveState();  
-        renderAdminRecordsTable();  
-    }  
+async function clearRecords() {
+    if (confirm("هل أنت متأكد من مسح جميع سجلات النتائج نهائياً؟")) {
+        // 1. تفريغ مصفوفة السجلات في الذاكرة
+        studentRecords = [];
+        
+        // 2. الحذف والتفريغ الفوري من الذاكرة المحلية (LocalStorage) لضمان العمل أوفلاين
+        localStorage.removeItem('studentRecords');
+        localStorage.setItem('studentRecords', JSON.stringify([]));
+        
+        // 3. تحديث جدول الإدارة فوراً ليظهر فارغاً أمامك
+        if (typeof renderAdminRecordsTable === 'function') {
+            renderAdminRecordsTable();
+        }
+        
+        // 4. محاولة تحديث سحابة فايربيز بصمت (إذا كان الإنترنت متصلاً، وإلا فلن يؤثر على العمل أوفلاين)
+        try {
+            if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseSetDoc && window.firebaseDoc) {
+                const db = window.firebaseDb;
+                // إبلاغ السحابة أن السجلات أصبحت فارغة (جزء واحد فارغ فقط)
+                await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_part_0"), { chunk: [] });
+                await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: 1 });
+            }
+        } catch (e) {
+            console.log("أنت تعمل أوفلاين: تم الحذف محلياً بنجاح.", e);
+        }
+        
+        alert("تم مسح السجل بنجاح!");
+    }
 }
 
         function toggleSelectAllRecords(masterCb) {
