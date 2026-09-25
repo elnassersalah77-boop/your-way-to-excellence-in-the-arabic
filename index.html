@@ -2834,49 +2834,49 @@ window.addEventListener('DOMContentLoaded', () => {
             const rMetaSnap = await getDoc(doc(db, "platformData", "records_meta"));
             let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
             
+            let cloudRecords = [];
             if (rTotal > 0) {
                 let chunkPromises = [];
                 for (let i = 0; i < rTotal; i++) {
                     chunkPromises.push(getDoc(doc(db, "platformData", `records_part_${i}`)));
                 }
                 const chunksSnaps = await Promise.all(chunkPromises);
-                let cloudRecords = [];
                 for (let i = 0; i < rTotal; i++) { 
                     let snap = chunksSnaps[i]; 
                     if (snap.exists() && snap.data().chunk) {
                         cloudRecords = cloudRecords.concat(snap.data().chunk);
                     } 
                 }
-                
-                if (cloudRecords.length > 0) {
-                    // دمج السجلات السحابية والمحلية بدون تكرار وبناءً على معرف السجل (id)
-                    let localRecords = [];
-                    try {
-                        localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
-                    } catch(err) {
-                        localRecords = studentRecords || [];
-                    }
-
-                    // خريطة لدمج السجلات وضمان عدم ضياع أي نتيجة جديدة
-                    let map = new Map();
-                    [...localRecords, ...cloudRecords].forEach(r => {
-                        if (r && r.id) map.set(r.id, r);
-                    });
-
-                    studentRecords = Array.from(map.values());
-                    // ترتيب السجلات من الأحدث للأقدم
-                    studentRecords.sort((a, b) => {
-                        let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
-                        let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
-                        return timeB - timeA;
-                    });
-
-                    localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
-                }
             }
+            
+            // جلب السجلات المحلية الحالية
+            let localRecords = [];
+            try {
+                localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+            } catch(err) {
+                localRecords = studentRecords || [];
+            }
+
+            // خريطة لدمج السجلات السحابية والمحلية بدون تكرار وبناءً على معرف السجل (id)
+            let map = new Map();
+            [...localRecords, ...cloudRecords].forEach(r => {
+                if (r && r.id) map.set(r.id, r);
+            });
+
+            studentRecords = Array.from(map.values());
+            
+            // ترتيب السجلات من الأحدث للأقدم
+            studentRecords.sort((a, b) => {
+                let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
+                let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
+                return timeB - timeA;
+            });
+
+            // تحديث التخزين المحلي بالنتيجة النهائية المدمجة
+            localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
         }
     } catch(e) { 
-        console.log("خطأ في جلب السجلات:", e); 
+        console.log("العمل أوفلاين: الاعتماد على السجلات المحلية.", e); 
     }
 }
               
@@ -3444,6 +3444,9 @@ async function saveQuestionsState() {
 // دالة حفظ سجلات الطلاب في الخلفية بصمت تام بدون أي شاشات تحميل
         async function saveStudentRecordsBackground() {
     try {
+        // حفظ نسخة محلية فوراً أولاً لضمان عدم ضياع أي نتيجة
+        localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+
         if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
             const db = window.firebaseDb; 
             if (!window._cloudCache) window._cloudCache = {};
@@ -3451,21 +3454,20 @@ async function saveQuestionsState() {
             const rChunkSize = 300; 
             let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
             
-            // 1. رفع كل أجزاء السجلات إلى فايربيز
+            // رفع أجزاء السجلات مباشرة إلى فايربيز
             for (let i = 0; i < rTotalParts; i++) {
                 const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
             }
-            
-            // 2. تحديث الميتا لتعريف النظام بعدد الأجزاء بدقة
+            // تحديث الميتا الخاصة بالسجلات لكي تراها لوحة التحكم فوراً
             await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
             
-            console.log("✅ تم حفظ سجلات الطلاب سحابياً بنجاح تام!");
+            console.log("✅ تم حفظ سجلات الطلاب سحابياً ومحلياً بنجاح تام!");
         } else {
-            console.log("⚠️ اتصال فايربيز غير جاهز، تم الحفظ محلياً فقط.");
+            console.log("⚠️ اتصال فايربيز غير جاهز، تم الحفظ محلياً بنجاح.");
         }
     } catch (e) {
-        console.error("❌ خطأ في حفظ السجلات سحابياً:", e);
+        console.error("❌ خطأ في حفظ السجلات:", e);
     }
 }
 
@@ -7686,19 +7688,19 @@ function changeRecordsPage(dir) {
 
 async function clearRecords() {
     if (confirm("هل أنت متأكد من مسح جميع سجلات النتائج نهائياً؟")) {
-        // 1. تفريغ المصفوفة محلياً
+        // 1. تفريغ المصفوفة محلياً فوراً
         studentRecords = [];
         
-        // 2. الحذف الفعلي والتفريغ من الذاكرة المحلية (LocalStorage) للعمل أوفلاين
+        // 2. الحذف الفعلي والتفريغ من الذاكرة المحلية لضمان العمل أوفلاين بنجاح
         localStorage.removeItem('studentRecords');
         localStorage.setItem('studentRecords', JSON.stringify([]));
         
-        // 3. تحديث الجدول فوراً أمم المعلم
+        // 3. تحديث الجدول فوراً ليرى المعلم أن السجل أصبح فارغاً
         if (typeof renderAdminRecordsTable === 'function') {
             renderAdminRecordsTable();
         }
         
-        // 4. محاولة تحديث السحابة بصمت
+        // 4. محاولة تحديث السحابة بصمت إذا كان الإنترنت متاحاً
         try {
             if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseSetDoc && window.firebaseDoc) {
                 const db = window.firebaseDb;
