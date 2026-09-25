@@ -2825,21 +2825,60 @@ window.addEventListener('DOMContentLoaded', () => {
         });
 
         async function loadAdminRecordsFromCloud() {
-            try {
-                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
-                    const db = window.firebaseDb; const doc = window.firebaseDoc; const getDoc = window.firebaseGetDoc;
-                    const rMetaSnap = await getDoc(doc(db, "platformData", "records_meta"));
-                    let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
-                    if (rTotal > 0) {
-                        let chunkPromises = [];
-                        for (let i = 0; i < rTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `records_part_${i}`)));
-                        const chunksSnaps = await Promise.all(chunkPromises);
-                        studentRecords = [];
-                        for (let i = 0; i < rTotal; i++) { let snap = chunksSnaps[i]; if (snap.exists() && snap.data().chunk) studentRecords = studentRecords.concat(snap.data().chunk); }
-                    }
+    try {
+        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
+            const db = window.firebaseDb; 
+            const doc = window.firebaseDoc; 
+            const getDoc = window.firebaseGetDoc;
+            
+            const rMetaSnap = await getDoc(doc(db, "platformData", "records_meta"));
+            let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
+            
+            if (rTotal > 0) {
+                let chunkPromises = [];
+                for (let i = 0; i < rTotal; i++) {
+                    chunkPromises.push(getDoc(doc(db, "platformData", `records_part_${i}`)));
                 }
-            } catch(e) { console.log("خطأ في جلب السجلات:", e); }
+                const chunksSnaps = await Promise.all(chunkPromises);
+                let cloudRecords = [];
+                for (let i = 0; i < rTotal; i++) { 
+                    let snap = chunksSnaps[i]; 
+                    if (snap.exists() && snap.data().chunk) {
+                        cloudRecords = cloudRecords.concat(snap.data().chunk);
+                    } 
+                }
+                
+                if (cloudRecords.length > 0) {
+                    // دمج السجلات السحابية والمحلية بدون تكرار وبناءً على معرف السجل (id)
+                    let localRecords = [];
+                    try {
+                        localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+                    } catch(err) {
+                        localRecords = studentRecords || [];
+                    }
+
+                    // خريطة لدمج السجلات وضمان عدم ضياع أي نتيجة جديدة
+                    let map = new Map();
+                    [...localRecords, ...cloudRecords].forEach(r => {
+                        if (r && r.id) map.set(r.id, r);
+                    });
+
+                    studentRecords = Array.from(map.values());
+                    // ترتيب السجلات من الأحدث للأقدم
+                    studentRecords.sort((a, b) => {
+                        let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
+                        let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
+                        return timeB - timeA;
+                    });
+
+                    localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+                }
+            }
         }
+    } catch(e) { 
+        console.log("خطأ في جلب السجلات:", e); 
+    }
+}
               
 
         async function saveState(showLoading = true) {
@@ -4524,8 +4563,8 @@ window.restartHome = function() {
         }
     });
 
-    const total = quizState.questions.length; // الإجمالي الكلي للاختبار (مثلاً 20)
-    const score = objectiveScore; // درجات الأسئلة الموضوعية فقط (مثلاً 10)
+    const total = quizState.questions.length; // الإجمالي الكلي للاختبار
+    const score = objectiveScore; // درجات الأسئلة الموضوعية فقط
     
     // حساب عدد الأسئلة الموضوعية الكلي
     const objectiveTotal = quizState.questions.filter(q => q.type !== 'essay').length;
@@ -4533,7 +4572,7 @@ window.restartHome = function() {
     // النصف الكلي للاختبار
     const halfTotal = total / 2;
 
-    // 💡 المنطق الذكي للحالة: إذا تجاوز نصف الدرجة الكلية بالموضوعي وحده، فهو ناجح يقيناً
+    // 💡 المنطق الذكي للحالة
     let examStatus = "بانتظار التصحيح";
     if (score >= halfTotal) {
         examStatus = "ناجح";
@@ -4554,12 +4593,12 @@ window.restartHome = function() {
         branch: quizState.branch, 
         topic: quizState.topic,
         stageGrade: `${quizState.stage} ➔ ${quizState.grade} ➔ ${quizState.branch} (${quizState.topic})`, 
-        score, // درجات الموضوعي الصحيحة
-        objectiveTotal, // إجمالي الأسئلة الموضوعية
-        total, // الإجمالي الكلي للاختبار
+        score, 
+        objectiveTotal, 
+        total, 
         pct, 
-        status: examStatus, // الحالة الذكية
-        pendingEssayCount, // عدد الأسئلة المقالية المنتظرة
+        status: examStatus, 
+        pendingEssayCount, 
         date: new Date().toLocaleString('ar-EG'), 
         duration: `${Math.floor(durationSecs / 60)}د و ${durationSecs % 60}ث`, 
         answeredCount: `${answeredCount} من ${total}`, 
@@ -4569,8 +4608,12 @@ window.restartHome = function() {
     // إدراج النتيجة الجديدة في مقدمة المصفوفة فوراً
     studentRecords.unshift(newRecord);
     
-    // الحفظ الفوري في الـ LocalStorage
+    // 💡 الحفظ الفوري محلياً وسحابياً عبر Firebase لضمان وصول النتيجة لمعلمك وحفظها للطالب
     localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+    
+    if (typeof saveStudentRecordsBackground === 'function') {
+        await saveStudentRecordsBackground();
+    }
 
     document.getElementById('view-quiz').classList.add('hidden'); 
     const resView = document.getElementById('view-result');
@@ -4623,8 +4666,6 @@ window.restartHome = function() {
             pdfBtn.classList.add('hidden'); pdfBtn.classList.remove('flex'); 
         }
     }
-
-    setTimeout(() => { saveStudentRecordsBackground(); }, 10);
 }
 
     function openCertModal() {
