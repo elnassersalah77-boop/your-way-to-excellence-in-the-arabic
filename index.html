@@ -2849,7 +2849,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            // جلب السجلات المحلية الحالية
             let localRecords = [];
             try {
                 localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
@@ -2857,7 +2856,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 localRecords = studentRecords || [];
             }
 
-            // خريطة لدمج السجلات السحابية والمحلية بدون تكرار وبناءً على معرف السجل (id)
             let map = new Map();
             [...localRecords, ...cloudRecords].forEach(r => {
                 if (r && r.id) map.set(r.id, r);
@@ -2865,14 +2863,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
             studentRecords = Array.from(map.values());
             
-            // ترتيب السجلات من الأحدث للأقدم
             studentRecords.sort((a, b) => {
                 let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
                 let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
                 return timeB - timeA;
             });
 
-            // تحديث التخزين المحلي بالنتيجة النهائية المدمجة
             localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
         }
     } catch(e) { 
@@ -3444,9 +3440,10 @@ async function saveQuestionsState() {
 // دالة حفظ سجلات الطلاب في الخلفية بصمت تام بدون أي شاشات تحميل
         async function saveStudentRecordsBackground() {
     try {
-        // حفظ نسخة محلية فوراً أولاً لضمان عدم ضياع أي نتيجة
+        // 1. الحفظ المحلي الفوري أولاً لضمان عدم ضياع النتيجة أبداً
         localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
+        // 2. الرفع المباشر لسحابة Firebase لتظهر النتيجة في لوحة التحكم فوراً
         if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
             const db = window.firebaseDb; 
             if (!window._cloudCache) window._cloudCache = {};
@@ -3454,20 +3451,18 @@ async function saveQuestionsState() {
             const rChunkSize = 300; 
             let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
             
-            // رفع أجزاء السجلات مباشرة إلى فايربيز
             for (let i = 0; i < rTotalParts; i++) {
                 const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
             }
-            // تحديث الميتا الخاصة بالسجلات لكي تراها لوحة التحكم فوراً
-            await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
             
-            console.log("✅ تم حفظ سجلات الطلاب سحابياً ومحلياً بنجاح تام!");
+            await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
+            console.log("تم مزامنة ورفع النتيجة سحابياً بنجاح لتظهر لدى المعلم!");
         } else {
-            console.log("⚠️ اتصال فايربيز غير جاهز، تم الحفظ محلياً بنجاح.");
+            console.log("العمل أوفلاين: تم الحفظ محلياً بنجاح.");
         }
     } catch (e) {
-        console.error("❌ خطأ في حفظ السجلات:", e);
+        console.error("خطأ في المزامنة السحابية للنتيجة:", e);
     }
 }
 
@@ -5063,38 +5058,7 @@ window.restartHome = function() {
                 }
             }
         }
-
-        // دالة الانتقال المباشر والفوري من الشرح إلى الاختبار
-        function directToQuiz() {
-            const viewQi = document.getElementById('view-quick-info');
-            if (viewQi) {
-                viewQi.classList.add('hidden'); 
-                viewQi.classList.remove('flex');
-            }
-
-            if (typeof quizState !== 'undefined' && quizState && quizState.questions && quizState.questions.length > 0) {
-                const viewQuiz = document.getElementById('view-quiz');
-                if (viewQuiz) {
-                    viewQuiz.classList.remove('hidden');
-                    viewQuiz.classList.add('flex');
-                }
-                if (!quizState.timerInterval) {
-                    startExamTimer();
-                }
-                return;
-            }
-
-            if (typeof currentStudentPortalMode !== 'undefined') {
-                currentStudentPortalMode = 'quiz';
-            }
-
-            if (typeof startQuiz === 'function') {
-                startQuiz();
-            } else {
-                alert("عذراً، حدث خطأ في تشغيل الاختبار.");
-                restartHome();
-            }
-        }
+        
 // ================== ADMIN CORE & TABS ==================
         function handleAdminAccess() {
             document.getElementById('admin-login-pwd-input').value = "";
@@ -7687,31 +7651,31 @@ function changeRecordsPage(dir) {
 }
 
 async function clearRecords() {
-    if (confirm("هل أنت متأكد من مسح جميع سجلات النتائج نهائياً؟")) {
+    if (confirm("هل أنت متأكد من مسح جميع سجلات النتائج نهائياً من المنصة؟")) {
         // 1. تفريغ المصفوفة محلياً فوراً
         studentRecords = [];
         
-        // 2. الحذف الفعلي والتفريغ من الذاكرة المحلية لضمان العمل أوفلاين بنجاح
+        // 2. تصفير الذاكرة المحلية (LocalStorage) بالكامل
         localStorage.removeItem('studentRecords');
         localStorage.setItem('studentRecords', JSON.stringify([]));
         
-        // 3. تحديث الجدول فوراً ليرى المعلم أن السجل أصبح فارغاً
+        // 3. إعادة رسم الجدول أمام المعلم ليظهر فارغاً فوراً
         if (typeof renderAdminRecordsTable === 'function') {
             renderAdminRecordsTable();
         }
         
-        // 4. محاولة تحديث السحابة بصمت إذا كان الإنترنت متاحاً
+        // 4. تصفير السحابة نهائياً لمنع عودة السجلات القديمة
         try {
             if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseSetDoc && window.firebaseDoc) {
                 const db = window.firebaseDb;
+                await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: 0 });
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_part_0"), { chunk: [] });
-                await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: 1 });
             }
         } catch (e) {
             console.log("العمل أوفلاين: تم الحذف محلياً بنجاح.");
         }
         
-        alert("تم مسح السجل بنجاح!");
+        alert("تم مسح السجل بنجاح من المنصة!");
     }
 }
 
