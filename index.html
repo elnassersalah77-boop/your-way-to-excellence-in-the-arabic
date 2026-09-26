@@ -2826,6 +2826,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         async function loadAdminRecordsFromCloud() {
     try {
+        let cloudRecords = [];
         if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
             const db = window.firebaseDb; 
             const doc = window.firebaseDoc; 
@@ -2833,7 +2834,6 @@ window.addEventListener('DOMContentLoaded', () => {
             
             const rMetaSnap = await getDoc(doc(db, "platformData", "records_meta"));
             let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
-            let cloudRecords = [];
             
             if (rTotal > 0) {
                 let chunkPromises = [];
@@ -2848,38 +2848,38 @@ window.addEventListener('DOMContentLoaded', () => {
                     } 
                 }
             }
-
-            // 💡 جلب السجلات المحلية الموجودة على الجهاز لدمجها وعدم فقدان أي نتيجة جديدة للطالب
-            let localRecords = [];
-            try {
-                localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
-            } catch(e) {
-                localRecords = studentRecords || [];
-            }
-
-            // دمج سحابي ومحلي لضمان ظهور كل النتائج فوراً للمعلم
-            let map = new Map();
-            [...cloudRecords, ...localRecords].forEach(r => {
-                if (r && r.id) map.set(r.id, r);
-            });
-
-            studentRecords = Array.from(map.values());
-            
-            // ترتيب السجلات من الأحدث للأقدم
-            studentRecords.sort((a, b) => {
-                let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
-                let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
-                return timeB - timeA;
-            });
-
-            // تحديث المحلي لضمان التطابق التام
-            localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
         }
+
+        // 1. جلب السجلات المحلية المخزنة على الجهاز لمنع مسحها
+        let localRecords = [];
+        try {
+            localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+        } catch(e) {
+            localRecords = studentRecords || [];
+        }
+
+        // 2. دمج السجلات (السحابية + المحلية) لضمان عدم ضياع أي نتيجة جديدة للطالب
+        let map = new Map();
+        [...cloudRecords, ...localRecords].forEach(r => {
+            if (r && r.id) map.set(r.id, r);
+        });
+
+        studentRecords = Array.from(map.values());
+        
+        // 3. ترتيب السجلات من الأحدث للأقدم
+        studentRecords.sort((a, b) => {
+            let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
+            let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
+            return timeB - timeA;
+        });
+
+        // 4. تحديث التخزين المحلي بالسجلات المدمجة
+        localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+
     } catch(e) { 
         console.log("خطأ في جلب السجلات:", e); 
     }
-}
-              
+}            
 
         async function saveState(showLoading = true) {
             try {
