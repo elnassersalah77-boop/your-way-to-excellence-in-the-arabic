@@ -3449,7 +3449,7 @@ async function saveQuestionsState() {
         // السماح بعودة المزامنة برفع القفل
         localStorage.removeItem('blockCloudSync');
 
-        // 1. جلب أحدث السجلات الموجودة في السحابة لدمج نتائج جميع الأجهزة وعدم ضياع أي نتيجة
+        // 1. جلب أحدث السجلات الموجودة في السحابة
         let cloudRecords = [];
         if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
             try {
@@ -3483,9 +3483,9 @@ async function saveQuestionsState() {
             localRecords = studentRecords || [];
         }
 
-        // 3. دمج السجلات (السحابية + المحلية) في خريطة لمنع التكرار وضياع أي نتيجة لأي جهاز
+        // 3. 💡 التعديل الجذري هنا: جعل السجلات المحلية (المُصححة حديثاً من المعلم) تأتي ثانيةً لكي تطغى وتتغلب على السجلات السحابية القديمة
         let map = new Map();
-        [...localRecords, ...cloudRecords].forEach(r => {
+        [...cloudRecords, ...localRecords].forEach(r => {
             if (r && r.id) map.set(r.id, r);
         });
 
@@ -3501,7 +3501,7 @@ async function saveQuestionsState() {
         // 4. الحفظ محلياً
         localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
-        // 5. الرفع المدمج والشامل إلى سحابة Firebase ليراها المعلم مجتمعة في أي وقت ومن أي جهاز
+        // 5. الرفع إلى سحابة Firebase بالتعديلات والمقالي المصحح المعتمد
         if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
             const db = window.firebaseDb; 
             if (!window._cloudCache) window._cloudCache = {};
@@ -3515,7 +3515,7 @@ async function saveQuestionsState() {
             }
             
             await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
-            console.log("تم تحديث ودمج سجلات جميع الأجهزة سحابياً بنجاح تام.");
+            console.log("تم حفظ وتثبيت التصحيح سحابياً ومحلياً بنجاح تام.");
         }
     } catch (e) {
         console.error("خطأ في حفظ السجلات سحابياً:", e);
