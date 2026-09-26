@@ -7156,7 +7156,7 @@ function renderAdminRecordsTable() {
         
         tbody.innerHTML += `<tr class="hover:bg-slate-50 transition border-b text-xs">
             <td class="p-3 font-black text-slate-500 flex items-center gap-2">
-                <input type="checkbox" value="${rec.id}" class="record-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0 cursor-pointer">
+                <input type="checkbox" value="${originalIndex}" class="record-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0 cursor-pointer">
                 ${globalIdx + 1}
             </td>
             <td class="p-3 font-black text-sky-950 text-sm">${escapeHTML(rec.name)}</td>
@@ -7641,25 +7641,35 @@ async function deleteSelectedRecords() {
 
     if (confirm(`هل أنت متأكد من حذف السجلات المحددة (${checkboxes.length} سجل) نهائياً من المنصة والسحابة؟`)) {
         try {
+            // 1. تفعيل قفل المزامنة لمنع استرجاع السجلات المحذوفة
             localStorage.setItem('blockCloudSync', 'true');
-            let idsToDelete = Array.from(checkboxes).map(cb => cb.value);
 
-            studentRecords = studentRecords.filter(r => !idsToDelete.includes(r.id));
+            // 2. جمع الفهارس الأصلية المحددة بدقة
+            let indicesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.value)).filter(idx => !isNaN(idx));
+
+            // 3. حذف السجلات من المصفوفة بناءً على الفهرس الأصلي في studentRecords
+            studentRecords = studentRecords.filter((_, idx) => !indicesToDelete.includes(idx));
+
+            // 4. الحفظ المحلي الفوري
             localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
+            // 5. تحديث الجدول أمامك ليختفي السجل فوراً
             if (typeof renderAdminRecordsTable === 'function') {
                 renderAdminRecordsTable();
             }
 
+            // 6. مزامنة الحذف وتطهير سحابة Firebase في الخلفية
             if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseSetDoc && window.firebaseDoc) {
                 const db = window.firebaseDb;
                 const rChunkSize = 300; 
                 let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
                 
+                // تفريغ الأجزاء القديمة
                 for (let i = 0; i < 10; i++) {
                     await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), { chunk: [] });
                 }
 
+                // رفع الأجزاء المتبقية السليمة
                 for (let i = 0; i < rTotalParts; i++) {
                     const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
                     await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
@@ -7670,7 +7680,7 @@ async function deleteSelectedRecords() {
             alert("تم حذف السجلات المحددة بنجاح تام من المنصة والسحابة!");
 
         } catch (e) {
-            console.error(e);
+            console.error("خطأ أثناء الحذف:", e);
             alert("حدث خطأ أثناء الحذف: " + e.message);
         }
     }
