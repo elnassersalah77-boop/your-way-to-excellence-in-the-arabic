@@ -3403,82 +3403,99 @@ async function saveQuestionsState() {
         }
 
 // دالة حفظ سجلات الطلاب في الخلفية بصمت تام بدون أي شاشات تحميل
-     async function saveStudentRecordsBackground() {
+     async function renderStudentPersonalRecords() {
+    const tbody = document.getElementById('portal-student-records-tbody');
+    if (!tbody) return;
+
+    // 1. تحديث المصفوفة محلياً من الـ localStorage فوراً لضمان سرعة الاستجابة
     try {
-        // السماح بعودة المزامنة برفع القفل
-        localStorage.removeItem('blockCloudSync');
-
-        // 1. جلب السجلات من السحابة
-        let cloudRecords = [];
-        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
-            try {
-                const db = window.firebaseDb; 
-                const rMetaSnap = await window.firebaseGetDoc(window.firebaseDoc(db, "platformData", "records_meta"));
-                let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
-                
-                if (rTotal > 0) {
-                    let chunkPromises = [];
-                    for (let i = 0; i < rTotal; i++) {
-                        chunkPromises.push(window.firebaseGetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`)));
-                    }
-                    const chunksSnaps = await Promise.all(chunkPromises);
-                    for (let i = 0; i < rTotal; i++) { 
-                        let snap = chunksSnaps[i]; 
-                        if (snap.exists() && snap.data().chunk) {
-                            cloudRecords = cloudRecords.concat(snap.data().chunk);
-                        } 
-                    }
-                }
-            } catch(err) {
-                console.log("تعذر جلب السجلات السحابية:", err);
-            }
+        const localData = localStorage.getItem('studentRecords');
+        if (localData) {
+            studentRecords = JSON.parse(localData);
         }
+    } catch(e) {}
 
-        // 2. جلب السجلات المحلية الحالية
-        let localRecords = [];
+    // 2. مزامنة سريعة وصامتة مع السحابة لجلب التصحيح إذا كان الطالب على جهاز آخر
+    if (window.firebaseLoadedSuccessfully && typeof loadAdminRecordsFromCloud === 'function') {
         try {
-            localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
-        } catch(e) {
-            localRecords = studentRecords || [];
+            await loadAdminRecordsFromCloud();
+        } catch(err) {
+            console.log("المزامنة الفورية تعمل محلياً:", err);
         }
-
-        // 3. 💡 الحل الحاسم: جعل السجلات المحلية تأتي أخيراً في الدمج ليكون لها الأولوية المطلقة
-        let map = new Map();
-        [...cloudRecords, ...localRecords].forEach(r => {
-            if (r && r.id) map.set(r.id, r);
-        });
-
-        studentRecords = Array.from(map.values());
-        
-        // ترتيب السجلات من الأحدث للأقدم
-        studentRecords.sort((a, b) => {
-            let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
-            let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
-            return timeB - timeA;
-        });
-
-        // 4. الحفظ محلياً
-        localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
-
-        // 5. الرفع النظيف إلى السحابة لتعتمد التصحيح الجديد نهائياً
-        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
-            const db = window.firebaseDb; 
-            if (!window._cloudCache) window._cloudCache = {};
-            
-            const rChunkSize = 300; 
-            let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
-            
-            for (let i = 0; i < rTotalParts; i++) {
-                const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
-                await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
-            }
-            
-            await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
-            console.log("تم تحديث وحفظ سجلات الطلاب بنجاح تام.");
-        }
-    } catch (e) {
-        console.error("خطأ في حفظ السجلات سحابياً:", e);
     }
+
+    // تصفية السجلات الخاصة بالطالب الحالي فقط
+    const myRecords = studentRecords.filter(r => r.name === currentStudentSession.name);
+
+    if (myRecords.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-500 font-bold">لا توجد اختبارات سابقة مسجلة لك حتى الآن.</td></tr>';
+        return;
+    }
+
+    let topicAttemptCounts = {};
+    let html = '';
+
+    myRecords.forEach((r) => {
+        if (!topicAttemptCounts[r.topic]) {
+            topicAttemptCounts[r.topic] = 0;
+        }
+        topicAttemptCounts[r.topic]++;
+        const attemptNumber = topicAttemptCounts[r.topic];
+
+        let answeredCount = 0;
+        let unansweredCount = 0;
+
+        if (r.breakdown && Array.isArray(r.breakdown)) {
+            r.breakdown.forEach(b => {
+                if (b.userAnswer && b.userAnswer !== "لم يجب" && b.userAnswer !== "لم يُجب" && b.userAnswer !== "") {
+                    answeredCount++;
+                } else {
+                    unansweredCount++;
+                }
+            });
+        } else {
+            answeredCount = r.score || 0;
+            unansweredCount = (r.total || 0) - answeredCount;
+        }
+
+        const pendingCount = r.pendingEssayCount !== undefined ? r.pendingEssayCount : (r.breakdown ? r.breakdown.filter(b => b.type === 'essay' && (b.essayGrade === undefined || b.essayGrade === null)).length : 0);
+        
+        let essayNoticeHtml = pendingCount > 0 
+            ? `<span class="block text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md font-bold mt-1 border border-amber-200">⚠️ بانتظار تصحيح (${pendingCount}) مقالي</span>` 
+            : `<span class="block text-[11px] text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md font-bold mt-1 border border-indigo-100">✨ تم التصحيح</span>`;
+
+        let statusClass = "bg-emerald-100 text-emerald-800";
+        if (r.status === "راسب") statusClass = "bg-rose-100 text-rose-800";
+        if (r.status === "بانتظار التصحيح") statusClass = "bg-amber-100 text-amber-800";
+
+        let hasPendingStudent = pendingCount > 0;
+        let studentDenominator = hasPendingStudent && r.objectiveTotal ? r.objectiveTotal : r.total;
+
+        html += `
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition text-xs sm:text-sm">
+            <td class="p-4 font-black text-slate-600">
+                ${escapeHTML(r.topic)} 
+                <span class="bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full text-[10px] font-bold mr-1">محاولة #${attemptNumber}</span>
+            </td>
+            <td class="p-4 text-slate-500 font-mono">
+                <div>📅 ${escapeHTML(r.date ? r.date.split(',')[0] : '--')}</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">⏱️ المدة: ${escapeHTML(r.duration || '--')}</div>
+            </td>
+            <td class="p-4 font-bold text-slate-700 text-center">
+                <span class="text-emerald-600 font-black">أجاب: ${answeredCount}</span> | 
+                <span class="text-rose-600 font-black">لم يجب: ${unansweredCount}</span>
+            </td>
+            <td class="p-4 text-center">
+                <span class="font-black text-sky-900 text-base">${r.score} / ${studentDenominator} (${r.pct}%)</span>
+                ${essayNoticeHtml}
+            </td>
+            <td class="p-4 text-center">
+                <span class="px-3 py-1 rounded-full text-xs font-black ${statusClass}">${r.status}</span>
+            </td>
+        </tr>`;
+    });
+
+    tbody.innerHTML = html;
 }
 
         function generateQuickInfoCardHtml(qi) {
