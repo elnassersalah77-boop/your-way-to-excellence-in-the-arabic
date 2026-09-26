@@ -7242,7 +7242,7 @@ function renderAdminRecordsTable() {
         
         tbody.innerHTML += `<tr class="hover:bg-slate-50 transition border-b text-xs">
             <td class="p-3 font-black text-slate-500 flex items-center gap-2">
-                <input type="checkbox" value="${originalIndex}" class="record-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0 cursor-pointer">
+                <input type="checkbox" value="${rec.id}" class="record-select-checkbox w-4 h-4 text-sky-600 rounded shrink-0 cursor-pointer">
                 ${globalIdx + 1}
             </td>
             <td class="p-3 font-black text-sky-950 text-sm">${escapeHTML(rec.name)}</td>
@@ -7264,14 +7264,14 @@ function renderAdminRecordsTable() {
     if(document.getElementById('prev-page-btn')) document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1; 
     if(document.getElementById('next-page-btn')) document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
 }
+
 // ==========================================
-// دوال قسم التصحيح السريع للمقالي (النسخة النهائية النظيفة)
+// دوال قسم التصحيح السريع للمقالي (النسخة النهائية النظيفة والمصححة)
 // ==========================================
 
 let currentQueueIndex = 0;
 let pendingRecordsQueue = [];
 
-// 1. ضع الدالة الجديدة هنا بشكل مستقل في النطاق العام
 function updateQuickGradingBadge() {
     try {
         const localRecs = localStorage.getItem('studentRecords');
@@ -7306,9 +7306,7 @@ function updateQuickGradingBadge() {
     }
 }
 
-// 2. وهنا تكون دالة openQuickGradingQueue التي قمنا بتحديثها مسبقاً
 async function openQuickGradingQueue() {
-    // 1. محاولة جلب السجلات من الذاكرة المحلية أولاً لضمان السرعة
     try {
         const localRecs = localStorage.getItem('studentRecords');
         if (localRecs) {
@@ -7316,7 +7314,6 @@ async function openQuickGradingQueue() {
         }
     } catch(e) {}
 
-    // 2. إذا كانت فارغة، نقوم بجلبها من السحابة إن وجدت لضمان عدم حدوث أي نقص
     if ((!studentRecords || studentRecords.length === 0) && typeof loadAdminRecordsFromCloud === 'function') {
         await loadAdminRecordsFromCloud();
     }
@@ -7427,17 +7424,15 @@ function renderCurrentQuickGradingItem() {
     `;
 }
 
-function submitQuickGrade(recordIndex, breakdownIndex, gradeValue) {
+async function submitQuickGrade(recordIndex, breakdownIndex, gradeValue) {
     if (studentRecords[recordIndex] && studentRecords[recordIndex].breakdown[breakdownIndex]) {
         let rec = studentRecords[recordIndex];
         let item = rec.breakdown[breakdownIndex];
         
-        // تعيين الدرجة الجديدة بدقة
         const numericGrade = parseFloat(gradeValue) || 0;
         item.essayGrade = numericGrade;
         item.isCorrect = numericGrade > 0;
         
-        // 💡 الحل الجذري: حساب المجموع الكلي من جديد بشكل دقيق وصافي
         let totalObjectiveScore = 0;
         let totalEssayScore = 0;
         let pendingCount = 0;
@@ -7455,14 +7450,12 @@ function submitQuickGrade(recordIndex, breakdownIndex, gradeValue) {
                     pendingCount++;
                 }
             } else {
-                // الأسئلة الموضوعية العادية
                 if (b.isCorrect) {
                     totalObjectiveScore += (b.grade !== undefined && b.grade !== null) ? parseFloat(b.grade) : 1;
                 }
             }
         });
 
-        // اعتماد المجموع الصافي بدقة متناهية ومنزلة عشرية واحدة
         rec.score = Number((totalObjectiveScore + totalEssayScore).toFixed(1));
         let totalQ = rec.total || rec.breakdown.length;
         if (rec.score > totalQ) rec.score = totalQ;
@@ -7487,9 +7480,10 @@ function submitQuickGrade(recordIndex, breakdownIndex, gradeValue) {
             if (rec[key] === undefined) rec[key] = null;
         });
 
+        // الحفظ المحلي والتزامن السحابي مع الانتظار (await) لضمان ثبات التصحيح نهائياً
         localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
         if (typeof saveStudentRecordsBackground === 'function') {
-            saveStudentRecordsBackground();
+            await saveStudentRecordsBackground();
         }
     }
 
@@ -7509,16 +7503,14 @@ function skipQuickGradeItem() {
     renderCurrentQuickGradingItem();
 }
 
-// متغير لحفظ رقم الطالب الذي يتم عرض تفاصيله حالياً للطباعة إن لزم الأمر
 let currentAdminPrintIndex = -1;
 
-        // دالة عرض تفاصيل إجابة الطالب للمعلم (محدثة لدعم تصحيح المقالي وتحديث الدرجة الكلية)
 function openRecordDetailsModal(originalIndex) {
     currentAdminPrintIndex = originalIndex;
     
     const rec = studentRecords[originalIndex];
     if (!rec || !rec.breakdown) {
-        alert("عذراً، لا توجد تفاصيل مفصلة مسجلة لهذا السجل (قد يكون مسجلاً بنسخة قديمة).");
+        alert("عذراً، لا توجد تفاصيل مفصلة مسجلة لهذا السجل.");
         return;
     }
 
@@ -7528,11 +7520,9 @@ function openRecordDetailsModal(originalIndex) {
     });
     let finalAnsweredCount = rec.answeredCount || `${actualAnswered} من ${rec.total}`;
 
-    // تحديد المقام الديناميكي: يعرض إجمالي الموضوعي طالما يوجد معلق، ويتحول لإجمالي الاختبار الكامل بعد اكتمال التصحيح
     let hasPending = rec.pendingEssayCount > 0;
     let scoreDenominator = hasPending && rec.objectiveTotal ? rec.objectiveTotal : rec.total;
 
-    // تنسيق رأس التقرير الحي (يتحدث عند تعديل الدرجة)
     let html = `<div class="bg-sky-50 p-6 rounded-3xl border-2 border-sky-200 text-sky-950 font-bold mb-6 space-y-2 text-lg sm:text-xl shadow-sm">
         <div><strong>الطالب:</strong> <span class="text-sky-900">${escapeHTML(rec.name)}</span></div>
         <div><strong>المسار:</strong> ${escapeHTML(rec.stageGrade || rec.topic)}</div>
@@ -7545,10 +7535,8 @@ function openRecordDetailsModal(originalIndex) {
         <div><strong>تاريخ الاختبار:</strong> ${rec.date} (المدة: ${rec.duration})</div>
     </div>`;
 
-    // تنسيق الأسئلة (مقالي واختياري)
     rec.breakdown.forEach((item, bIdx) => {
         if (item.type === 'essay') {
-            // 💡 تصميم خاص بالسؤال المقالي مع أزرار التقييم للمعلم وحالة الانتظار الصحيحة
             let isAnswered = item.userAnswer !== "لم يجب" && item.userAnswer !== "لم يُجب" && item.userAnswer !== "";
             
             let essayStatusBadge = "";
@@ -7568,15 +7556,12 @@ function openRecordDetailsModal(originalIndex) {
             <button type="button" onclick="gradeEssayQuestion(${originalIndex}, ${bIdx}, 0.5)" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm ${item.essayGrade === 0.5 ? 'ring-4 ring-amber-300 scale-105' : 'opacity-80'}"><i class="fa-solid fa-star-half-stroke ml-1"></i> نصف درجة (0.5)</button>
             <button type="button" onclick="gradeEssayQuestion(${originalIndex}, ${bIdx}, 0)" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm ${item.essayGrade === 0 ? 'ring-4 ring-rose-300 scale-105' : 'opacity-80'}"><i class="fa-solid fa-xmark ml-1"></i> صفر (0)</button>
         </div>
-    </div>
-`;
+    </div>`;
 
             html += `<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-amber-300 shadow-sm space-y-4 mb-6 transition">
                 <div class="flex justify-between items-start border-b border-amber-100 pb-4 gap-4">
                     <h4 class="font-black text-xl sm:text-2xl text-amber-950 leading-relaxed"><i class="fa-solid fa-pen-nib text-amber-500 ml-2"></i>س${item.qIndex}: ${escapeHTML(item.qText)}</h4>
-                    <div class="shrink-0 mt-1">
-                        ${essayStatusBadge}
-                    </div>
+                    <div class="shrink-0 mt-1">${essayStatusBadge}</div>
                 </div>
                 <div class="text-lg text-slate-800 font-bold bg-amber-50 p-4 rounded-xl border-2 border-amber-100 whitespace-pre-line leading-loose">
                     <strong class="text-amber-700 block mb-2 text-sm"><i class="fa-solid fa-user-pen ml-1"></i> ما كتبه الطالب:</strong>
@@ -7585,9 +7570,7 @@ function openRecordDetailsModal(originalIndex) {
                 ${item.correctAnswer && item.correctAnswer !== "إجابة مقالية (بانتظار تقييم المعلم)" ? `<div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-base font-bold text-emerald-900 mt-2"><strong>مفتاح الإجابة النموذجية:</strong> ${escapeHTML(item.correctAnswer)}</div>` : ''}
                 ${teacherGradingHtml}
             </div>`;
-
         } else {
-            // تصميم سؤال الاختيار من متعدد الاعتيادي
             let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-5">';
             if(item.options) {
                 item.options.forEach(opt => {
@@ -7630,18 +7613,15 @@ function openRecordDetailsModal(originalIndex) {
     openAdminSectionPage('view-admin-record-details');
 }
 
-// 💡 الدالة الشاملة لتعديل الدرجات من سجل النتائج أو أي مكان في المنصة
-function gradeEssayQuestion(recordIndex, breakdownIndex, gradeValue) {
+async function gradeEssayQuestion(recordIndex, breakdownIndex, gradeValue) {
     if (studentRecords[recordIndex] && studentRecords[recordIndex].breakdown[breakdownIndex]) {
         let rec = studentRecords[recordIndex];
         let item = rec.breakdown[breakdownIndex];
         
-        // تنظيف وحفظ الدرجة الجديدة بدقة
         const numericGrade = parseFloat(gradeValue) || 0;
         item.essayGrade = numericGrade;
         item.isCorrect = numericGrade > 0;
 
-        // إعادة حساب المجموع الكلي للطالب من جديد بشكل دقيق وصافي
         let totalObjectiveScore = 0;
         let totalEssayScore = 0;
         let pendingCount = 0;
@@ -7689,23 +7669,21 @@ function gradeEssayQuestion(recordIndex, breakdownIndex, gradeValue) {
             if (rec[key] === undefined) rec[key] = null;
         });
 
-        // الحفظ الفوري في الذاكرة
+        // الحفظ والانتظار (await) لضمان التثبيت السحابي والمحلي
         localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+        if (typeof saveStudentRecordsBackground === 'function') {
+            await saveStudentRecordsBackground();
+        }
 
-        // تحديث جدول السجلات ونافذة التفاصيل فوراً لتظهر التعديلات أمامك
         if (typeof renderAdminRecordsTable === 'function') {
             renderAdminRecordsTable();
         }
         if (typeof openRecordDetailsModal === 'function') {
             openRecordDetailsModal(recordIndex);
         }
-        if (typeof saveStudentRecordsBackground === 'function') {
-            saveStudentRecordsBackground();
-        }
     }
 }
 
-// إبقاء دوال الصفحات والمسح كما هي دون تغيير
 function changeRecordsPage(dir) {  
     currentRecordsPage += dir;  
     renderAdminRecordsTable();  
@@ -7714,15 +7692,11 @@ function changeRecordsPage(dir) {
 async function clearRecords() {
     if (confirm("هل أنت متأكد من مسح جميع سجلات النتائج نهائياً من المنصة والسحابة؟")) {
         try {
-            // 1. تفعيل قفل منع الجلب السحابي لمنع عودة النتائج نهائياً
             localStorage.setItem('blockCloudSync', 'true');
-            
-            // 2. تفريغ المصفوفة والذاكرة المحلية تماماً
             studentRecords = [];
             localStorage.removeItem('studentRecords');
             localStorage.setItem('studentRecords', JSON.stringify([]));
             
-            // 3. تفريغ جدول الإدارة في الشاشة (DOM) مباشرة لكي تختفي النتائج فوراً
             if (typeof renderAdminRecordsTable === 'function') {
                 renderAdminRecordsTable();
             }
@@ -7731,27 +7705,21 @@ async function clearRecords() {
                 tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">لا توجد سجلات.</td></tr>';
             }
             
-            // 4. تطهير وتصفير سحابة Firebase بالكامل لكي لا يتبقى أي أثر للنتائج القديمة
             if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseSetDoc && window.firebaseDoc) {
                 const db = window.firebaseDb;
-                // تصفير العداد إلى صفر لتتوقف أي دالة عن جلب الأجزاء القديمة
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: 0 });
-                // تصفير أول 10 أجزاء سحابية
                 for (let i = 0; i < 10; i++) {
                     await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), { chunk: [] });
                 }
-                console.log("تم تطهير سحابة Firebase بنجاح تام.");
             }
-            
             alert("تم مسح السجلات نهائياً من المنصة والسحابة ولن تعود أبداً!");
-            
         } catch (e) {
-            console.error("خطأ أثناء مسح السجلات:", e);
+            console.error(e);
             alert("تم مسح السجلات محلياً بنجاح.");
         }
     }
 }
-// دالة حذف السجلات المحددة عبر مربعات الاختيار
+
 async function deleteSelectedRecords() {
     const checkboxes = document.querySelectorAll('.record-select-checkbox:checked');
     if (checkboxes.length === 0) {
@@ -7761,70 +7729,25 @@ async function deleteSelectedRecords() {
 
     if (confirm(`هل أنت متأكد من حذف السجلات المحددة (${checkboxes.length} سجل) نهائياً من المنصة والسحابة؟`)) {
         try {
-            // 1. تفعيل قفل المزامنة لمنع استرجاع السجلات المحذوفة للتو
             localStorage.setItem('blockCloudSync', 'true');
+            let idsToDelete = Array.from(checkboxes).map(cb => cb.value);
 
-            // 2. جلب أحدث السجلات السحابية أولاً لضمان مزامنة كاملة قبل الحذف
-            if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
-                try {
-                    const db = window.firebaseDb;
-                    const rMetaSnap = await window.firebaseGetDoc(window.firebaseDoc(db, "platformData", "records_meta"));
-                    let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
-                    if (rTotal > 0) {
-                        let chunkPromises = [];
-                        for (let i = 0; i < rTotal; i++) {
-                            chunkPromises.push(window.firebaseGetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`)));
-                        }
-                        const chunksSnaps = await Promise.all(chunkPromises);
-                        let cloudRecords = [];
-                        for (let i = 0; i < rTotal; i++) {
-                            let snap = chunksSnaps[i];
-                            if (snap.exists() && snap.data().chunk) {
-                                cloudRecords = cloudRecords.concat(snap.data().chunk);
-                            }
-                        }
-                        let localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
-                        let map = new Map();
-                        [...localRecords, ...cloudRecords].forEach(r => { if (r && r.id) map.set(r.id, r); });
-                        studentRecords = Array.from(map.values());
-                    }
-                } catch(err) {
-                    console.log("استخدام السجلات المحلية أثناء الحذف:", err);
-                }
-            }
-
-            // 3. تحديد معرفات السجلات (IDs) المراد حذفها لتفادي أخطاء الفهارس
-            let idsToDelete = [];
-            checkboxes.forEach(cb => {
-                let idx = parseInt(cb.value);
-                if (studentRecords[idx] && studentRecords[idx].id) {
-                    idsToDelete.push(studentRecords[idx].id);
-                }
-            });
-
-            // 4. تصفية المصفوفة وحذف السجلات المحددة
             studentRecords = studentRecords.filter(r => !idsToDelete.includes(r.id));
-
-            // 5. التحديث المحلي
             localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
-            // 6. تحديث الجدول فوراً ليختفي السجل
             if (typeof renderAdminRecordsTable === 'function') {
                 renderAdminRecordsTable();
             }
 
-            // 7. رفع السجلات المتبقية إلى السحابة نظيفة بدون السجلات المحذوفة
             if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseSetDoc && window.firebaseDoc) {
                 const db = window.firebaseDb;
                 const rChunkSize = 300; 
                 let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
                 
-                // تفريغ الأجزاء السحابية القديمة لضمان عدم بقاء أي أثر قبل رفع الجديد
                 for (let i = 0; i < 10; i++) {
                     await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), { chunk: [] });
                 }
 
-                // رفع الأجزاء السليمة الجديدة
                 for (let i = 0; i < rTotalParts; i++) {
                     const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
                     await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
@@ -7833,32 +7756,16 @@ async function deleteSelectedRecords() {
             }
 
             alert("تم حذف السجلات المحددة بنجاح تام من المنصة والسحابة!");
-
         } catch (e) {
-            console.error("خطأ أثناء حذف السجلات المحددة:", e);
+            console.error(e);
             alert("حدث خطأ أثناء الحذف: " + e.message);
         }
     }
 }
 
-        function toggleSelectAllRecords(masterCb) {
-            document.querySelectorAll('.record-select-checkbox').forEach(cb => cb.checked = masterCb.checked);
-        }
-
-        function deleteSelectedRecords() {
-            let selected = document.querySelectorAll('.record-select-checkbox:checked');
-            if (selected.length === 0) {
-                alert("يرجى تحديد سجل واحد على الأقل للحذف.");
-                return;
-            }
-            if (confirm(`هل أنت متأكد من حذف ${selected.length} سجل محدد؟`)) {
-                let indicesToDel = Array.from(selected).map(cb => parseInt(cb.value));
-                studentRecords = studentRecords.filter((_, idx) => !indicesToDel.includes(idx));
-                saveState();
-                renderAdminRecordsTable();
-                alert("تم حذف السجلات المحددة بنجاح!");
-            }
-        }
+function toggleSelectAllRecords(masterCb) {
+    document.querySelectorAll('.record-select-checkbox').forEach(cb => cb.checked = masterCb.checked);
+}
 
         // --- BACKUP & OFFLINE EXPORT ---
         function exportFullSystemJson() {
