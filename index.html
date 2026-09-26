@@ -3404,32 +3404,82 @@ async function saveQuestionsState() {
 
 // دالة حفظ سجلات الطلاب في الخلفية بصمت تام بدون أي شاشات تحميل
         async function saveStudentRecordsBackground() {
+    try {
+        // السماح بعودة المزامنة برفع القفل
+        localStorage.removeItem('blockCloudSync');
+
+        // 1. جلب أحدث السجلات الموجودة في السحابة لدمج نتائج جميع الأجهزة وعدم ضياع أي نتيجة
+        let cloudRecords = [];
+        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
             try {
-                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
-                    const db = window.firebaseDb; 
-                    if (!window._cloudCache) window._cloudCache = {};
-                    
-                    let tasks = [];
-                    const addTask = (id, data) => {
-                        const str = JSON.stringify(data);
-                        if (window._cloudCache[id] !== str) tasks.push({ id, data, str });
-                    };
-
-                    const rChunkSize = 300; let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
-                    for (let i = 0; i < rTotalParts; i++) addTask(`records_part_${i}`, { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) });
-                    addTask("records_meta", { totalParts: rTotalParts });
-
-                    if (tasks.length === 0) return; // لا يوجد جديد للرفع
-
-                    for (let task of tasks) {
-                        await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
-                        window._cloudCache[task.id] = task.str; 
+                const db = window.firebaseDb; 
+                const rMetaSnap = await window.firebaseGetDoc(window.firebaseDoc(db, "platformData", "records_meta"));
+                let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
+                
+                if (rTotal > 0) {
+                    let chunkPromises = [];
+                    for (let i = 0; i < rTotal; i++) {
+                        chunkPromises.push(window.firebaseGetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`)));
+                    }
+                    const chunksSnaps = await Promise.all(chunkPromises);
+                    for (let i = 0; i < rTotal; i++) { 
+                        let snap = chunksSnaps[i]; 
+                        if (snap.exists() && snap.data().chunk) {
+                            cloudRecords = cloudRecords.concat(snap.data().chunk);
+                        } 
                     }
                 }
-            } catch (e) {
-                console.log("حفظ السجلات خلفياً:", e);
+            } catch(err) {
+                console.log("تعذر جلب السجلات السحابية أثناء الحفظ الخلفي:", err);
             }
         }
+
+        // 2. جلب السجلات المحلية الموجودة على الجهاز الحالي
+        let localRecords = [];
+        try {
+            localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+        } catch(e) {
+            localRecords = studentRecords || [];
+        }
+
+        // 3. دمج السجلات (السحابية + المحلية) في خريطة لمنع التكرار وضياع أي نتيجة لأي جهاز
+        let map = new Map();
+        [...localRecords, ...cloudRecords].forEach(r => {
+            if (r && r.id) map.set(r.id, r);
+        });
+
+        studentRecords = Array.from(map.values());
+        
+        // ترتيب السجلات من الأحدث للأقدم
+        studentRecords.sort((a, b) => {
+            let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
+            let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
+            return timeB - timeA;
+        });
+
+        // 4. الحفظ محلياً
+        localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+
+        // 5. الرفع المدمج والشامل إلى سحابة Firebase ليراها المعلم مجتمعة في أي وقت ومن أي جهاز
+        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+            const db = window.firebaseDb; 
+            if (!window._cloudCache) window._cloudCache = {};
+            
+            const rChunkSize = 300; 
+            let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
+            
+            for (let i = 0; i < rTotalParts; i++) {
+                const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
+                await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
+            }
+            
+            await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
+            console.log("تم تحديث ودمج سجلات جميع الأجهزة سحابياً بنجاح تام.");
+        }
+    } catch (e) {
+        console.error("خطأ في حفظ السجلات سحابياً:", e);
+    }
+}
 
         function generateQuickInfoCardHtml(qi) {
             let mainAlign = qi.titleAlign || 'text-right';
