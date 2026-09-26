@@ -7691,19 +7691,26 @@ async function deleteSelectedRecords() {
 
     if (confirm(`هل أنت متأكد من حذف السجلات المحددة (${checkboxes.length} سجل) نهائياً من المنصة والسحابة؟`)) {
         try {
-            // 1. تفعيل قفل المزامنة لمنع استرجاع السجلات المحذوفة
+            // 1. تفعيل قفل المزامنة المؤقت لمنع استرجاع السجلات المحذوفة
             localStorage.setItem('blockCloudSync', 'true');
 
-            // 2. جمع الفهارس الأصلية المحددة بدقة
-            let indicesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.value)).filter(idx => !isNaN(idx));
+            // 2. جمع القيم المحددة في مربعات الاختيار (IDs أو فهارس)
+            let selectedValues = Array.from(checkboxes).map(cb => cb.value);
 
-            // 3. حذف السجلات من المصفوفة بناءً على الفهرس الأصلي في studentRecords
-            studentRecords = studentRecords.filter((_, idx) => !indicesToDelete.includes(idx));
+            // 3. تصفية المصفوفة بدقة تتوافق مع السجلات الجديدة والقديمة معاً
+            studentRecords = studentRecords.filter((rec, idx) => {
+                let recId = rec.id ? String(rec.id) : null;
+                let matchById = recId && selectedValues.includes(recId);
+                let matchByIndex = selectedValues.includes(String(idx));
+                
+                // إذا كان مطابقاً للـ ID أو الفهرس، يتم استبعاده (حذفه)
+                return !(matchById || matchByIndex);
+            });
 
-            // 4. الحفظ المحلي الفوري
+            // 4. الحفظ والتحديث المحلي الفوري
             localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
-            // 5. تحديث الجدول أمامك ليختفي السجل فوراً
+            // 5. تحديث الجدول أمامك فوراً ليختفي السجل
             if (typeof renderAdminRecordsTable === 'function') {
                 renderAdminRecordsTable();
             }
@@ -7714,12 +7721,10 @@ async function deleteSelectedRecords() {
                 const rChunkSize = 300; 
                 let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
                 
-                // تفريغ الأجزاء القديمة
                 for (let i = 0; i < 10; i++) {
                     await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), { chunk: [] });
                 }
 
-                // رفع الأجزاء المتبقية السليمة
                 for (let i = 0; i < rTotalParts; i++) {
                     const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
                     await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
@@ -7730,7 +7735,7 @@ async function deleteSelectedRecords() {
             alert("تم حذف السجلات المحددة بنجاح تام من المنصة والسحابة!");
 
         } catch (e) {
-            console.error("خطأ أثناء الحذف:", e);
+            console.error("خطأ أثناء حذف السجلات المحددة:", e);
             alert("حدث خطأ أثناء الحذف: " + e.message);
         }
     }
@@ -7747,22 +7752,7 @@ function clearRecords() {
         function toggleSelectAllRecords(masterCb) {
             document.querySelectorAll('.record-select-checkbox').forEach(cb => cb.checked = masterCb.checked);
         }
-
-        function deleteSelectedRecords() {
-            let selected = document.querySelectorAll('.record-select-checkbox:checked');
-            if (selected.length === 0) {
-                alert("يرجى تحديد سجل واحد على الأقل للحذف.");
-                return;
-            }
-            if (confirm(`هل أنت متأكد من حذف ${selected.length} سجل محدد؟`)) {
-                let indicesToDel = Array.from(selected).map(cb => parseInt(cb.value));
-                studentRecords = studentRecords.filter((_, idx) => !indicesToDel.includes(idx));
-                saveState();
-                renderAdminRecordsTable();
-                alert("تم حذف السجلات المحددة بنجاح!");
-            }
-        }
-
+      
         // --- BACKUP & OFFLINE EXPORT ---
         function exportFullSystemJson() {
             let systemData = { stagesData, gradeStatus, branchesData, topicsData, studentsAccounts, appSettings, questionBank, paragraphs, qiList: quickInfoList, studentRecords };
