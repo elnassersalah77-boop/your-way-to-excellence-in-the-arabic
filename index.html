@@ -2827,7 +2827,7 @@ window.addEventListener('DOMContentLoaded', () => {
         async function loadAdminRecordsFromCloud() {
     // 💡 إذا كان المعلم قد مسح السجلات، نمنع جلبها من السحابة قطعياً
     if (localStorage.getItem('blockCloudSync') === 'true') {
-        console.log("تم إيقاف الجلب السحابي لأن السجلات محذوفة محلياً.");
+        console.log("المزامنة السحابية مغلقة مؤقتاً بسبب مسح السجلات.");
         return;
     }
 
@@ -3444,13 +3444,64 @@ async function saveQuestionsState() {
         }
 
 // دالة حفظ سجلات الطلاب في الخلفية بصمت تام بدون أي شاشات تحميل
-        async function saveStudentRecordsBackground() {
+       async function saveStudentRecordsBackground() {
     try {
-        // إذا قام طالب جديد بحل الاختبار، نسمح بعودة المزامنة برفع القفل
+        // السماح بعودة المزامنة برفع القفل
         localStorage.removeItem('blockCloudSync');
 
+        // 1. جلب أحدث السجلات الموجودة في السحابة لدمج نتائج جميع الأجهزة وعدم ضياع أي نتيجة
+        let cloudRecords = [];
+        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
+            try {
+                const db = window.firebaseDb; 
+                const rMetaSnap = await window.firebaseGetDoc(window.firebaseDoc(db, "platformData", "records_meta"));
+                let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
+                
+                if (rTotal > 0) {
+                    let chunkPromises = [];
+                    for (let i = 0; i < rTotal; i++) {
+                        chunkPromises.push(window.firebaseGetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`)));
+                    }
+                    const chunksSnaps = await Promise.all(chunkPromises);
+                    for (let i = 0; i < rTotal; i++) { 
+                        let snap = chunksSnaps[i]; 
+                        if (snap.exists() && snap.data().chunk) {
+                            cloudRecords = cloudRecords.concat(snap.data().chunk);
+                        } 
+                    }
+                }
+            } catch(err) {
+                console.log("تعذر جلب السجلات السحابية أثناء الحفظ الخلفي:", err);
+            }
+        }
+
+        // 2. جلب السجلات المحلية الموجودة على الجهاز الحالي
+        let localRecords = [];
+        try {
+            localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+        } catch(e) {
+            localRecords = studentRecords || [];
+        }
+
+        // 3. دمج السجلات (السحابية + المحلية) في خريطة لمنع التكرار وضياع أي نتيجة لأي جهاز
+        let map = new Map();
+        [...localRecords, ...cloudRecords].forEach(r => {
+            if (r && r.id) map.set(r.id, r);
+        });
+
+        studentRecords = Array.from(map.values());
+        
+        // ترتيب السجلات من الأحدث للأقدم
+        studentRecords.sort((a, b) => {
+            let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
+            let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
+            return timeB - timeA;
+        });
+
+        // 4. الحفظ محلياً
         localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
+        // 5. الرفع المدمج والشامل إلى سحابة Firebase ليراها المعلم مجتمعة في أي وقت ومن أي جهاز
         if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
             const db = window.firebaseDb; 
             if (!window._cloudCache) window._cloudCache = {};
@@ -3464,6 +3515,7 @@ async function saveQuestionsState() {
             }
             
             await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
+            console.log("تم تحديث ودمج سجلات جميع الأجهزة سحابياً بنجاح تام.");
         }
     } catch (e) {
         console.error("خطأ في حفظ السجلات سحابياً:", e);
@@ -7094,9 +7146,18 @@ async function openAdminSectionPage(sectionId) {
         
 function renderAdminRecordsTable() {
     try {
-        const localRecs = localStorage.getItem('studentRecords');
-        if (localRecs) studentRecords = JSON.parse(localRecs);
-    } catch(e) {}
+        // 💡 التحقق من قفل الحذف: إذا كان المعلم قد مسح السجلات، نفرغ المصفوفة فوراً ونمنع أي استرجاع
+        if (localStorage.getItem('blockCloudSync') === 'true') {
+            studentRecords = [];
+        } else {
+            const localRecs = localStorage.getItem('studentRecords');
+            if (localRecs) {
+                studentRecords = JSON.parse(localRecs);
+            }
+        }
+    } catch(e) {
+        studentRecords = [];
+    }
 
     const tbody = document.getElementById('admin-tbody'); 
     if (!tbody) return;
@@ -7160,7 +7221,6 @@ function renderAdminRecordsTable() {
         }
         const finalAnswered = rec.answeredCount || `${actualAnswered} من ${rec.total}`;
         
-        // 💡 فحص وجود أسئلة مقالية وتمييزها بلون مختلف في السجل
         let hasEssay = rec.breakdown && rec.breakdown.some(b => b.type === 'essay');
         let essayBadge = "";
         let pendingEssayCount = rec.pendingEssayCount !== undefined ? rec.pendingEssayCount : (rec.breakdown ? rec.breakdown.filter(b => b.type === 'essay' && (b.essayGrade === undefined || b.essayGrade === null)).length : 0);
@@ -7173,11 +7233,9 @@ function renderAdminRecordsTable() {
             }
         }
 
-        // 💡 المقام الديناميكي لجدول المعلم: يعرض إجمالي الموضوعي أثناء الانتظار، ويتحول لإجمالي الاختبار الكامل بعد التصحيح
         let hasPendingAdmin = pendingEssayCount > 0;
         let adminDenominator = hasPendingAdmin && rec.objectiveTotal ? rec.objectiveTotal : rec.total;
         
-        // تحديث لون شارة الحالة
         let statusBadgeClass = 'bg-emerald-100 text-emerald-800';
         if (rec.status === 'راسب') statusBadgeClass = 'bg-rose-100 text-rose-800';
         if (rec.status === 'بانتظار التصحيح') statusBadgeClass = 'bg-amber-100 text-amber-800';
@@ -7206,7 +7264,6 @@ function renderAdminRecordsTable() {
     if(document.getElementById('prev-page-btn')) document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1; 
     if(document.getElementById('next-page-btn')) document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
 }
-
 // ==========================================
 // دوال قسم التصحيح السريع للمقالي (النسخة النهائية النظيفة)
 // ==========================================
@@ -7655,9 +7712,9 @@ function changeRecordsPage(dir) {
 }
 
 async function clearRecords() {
-    if (confirm("هل أنت متأكد من مسح جميع سجلات النتائج نهائياً؟")) {
+    if (confirm("هل أنت متأكد من مسح جميع سجلات النتائج نهائياً من المنصة والسحابة؟")) {
         try {
-            // 1. تفعيل قفل منع الجلب السحابي فوراً لكي لا تعود النتائج أبداً
+            // 1. تفعيل قفل منع الجلب السحابي لمنع عودة النتائج نهائياً
             localStorage.setItem('blockCloudSync', 'true');
             
             // 2. تفريغ المصفوفة والذاكرة المحلية تماماً
@@ -7665,7 +7722,7 @@ async function clearRecords() {
             localStorage.removeItem('studentRecords');
             localStorage.setItem('studentRecords', JSON.stringify([]));
             
-            // 3. تفريغ الجدول أمام المعلم في الحال
+            // 3. تفريغ جدول الإدارة في الشاشة (DOM) مباشرة لكي تختفي النتائج فوراً
             if (typeof renderAdminRecordsTable === 'function') {
                 renderAdminRecordsTable();
             }
@@ -7674,19 +7731,112 @@ async function clearRecords() {
                 tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">لا توجد سجلات.</td></tr>';
             }
             
-            // 4. محاولة تصفير سحابة Firebase في الخلفية
+            // 4. تطهير وتصفير سحابة Firebase بالكامل لكي لا يتبقى أي أثر للنتائج القديمة
             if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseSetDoc && window.firebaseDoc) {
                 const db = window.firebaseDb;
+                // تصفير العداد إلى صفر لتتوقف أي دالة عن جلب الأجزاء القديمة
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: 0 });
-                for (let i = 0; i < 5; i++) {
+                // تصفير أول 10 أجزاء سحابية
+                for (let i = 0; i < 10; i++) {
                     await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), { chunk: [] });
                 }
+                console.log("تم تطهير سحابة Firebase بنجاح تام.");
             }
             
-            alert("تم مسح السجلات نهائياً ولن تعود أبداً!");
+            alert("تم مسح السجلات نهائياً من المنصة والسحابة ولن تعود أبداً!");
+            
         } catch (e) {
             console.error("خطأ أثناء مسح السجلات:", e);
-            alert("تم الحذف محلياً بنجاح.");
+            alert("تم مسح السجلات محلياً بنجاح.");
+        }
+    }
+}
+// دالة حذف السجلات المحددة عبر مربعات الاختيار
+async function deleteSelectedRecords() {
+    const checkboxes = document.querySelectorAll('.record-select-checkbox:checked');
+    if (checkboxes.length === 0) {
+        alert("يرجى تحديد سجل واحد على الأقل من الجدول للحذف.");
+        return;
+    }
+
+    if (confirm(`هل أنت متأكد من حذف السجلات المحددة (${checkboxes.length} سجل) نهائياً من المنصة والسحابة؟`)) {
+        try {
+            // 1. تفعيل قفل المزامنة لمنع استرجاع السجلات المحذوفة للتو
+            localStorage.setItem('blockCloudSync', 'true');
+
+            // 2. جلب أحدث السجلات السحابية أولاً لضمان مزامنة كاملة قبل الحذف
+            if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
+                try {
+                    const db = window.firebaseDb;
+                    const rMetaSnap = await window.firebaseGetDoc(window.firebaseDoc(db, "platformData", "records_meta"));
+                    let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
+                    if (rTotal > 0) {
+                        let chunkPromises = [];
+                        for (let i = 0; i < rTotal; i++) {
+                            chunkPromises.push(window.firebaseGetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`)));
+                        }
+                        const chunksSnaps = await Promise.all(chunkPromises);
+                        let cloudRecords = [];
+                        for (let i = 0; i < rTotal; i++) {
+                            let snap = chunksSnaps[i];
+                            if (snap.exists() && snap.data().chunk) {
+                                cloudRecords = cloudRecords.concat(snap.data().chunk);
+                            }
+                        }
+                        let localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+                        let map = new Map();
+                        [...localRecords, ...cloudRecords].forEach(r => { if (r && r.id) map.set(r.id, r); });
+                        studentRecords = Array.from(map.values());
+                    }
+                } catch(err) {
+                    console.log("استخدام السجلات المحلية أثناء الحذف:", err);
+                }
+            }
+
+            // 3. تحديد معرفات السجلات (IDs) المراد حذفها لتفادي أخطاء الفهارس
+            let idsToDelete = [];
+            checkboxes.forEach(cb => {
+                let idx = parseInt(cb.value);
+                if (studentRecords[idx] && studentRecords[idx].id) {
+                    idsToDelete.push(studentRecords[idx].id);
+                }
+            });
+
+            // 4. تصفية المصفوفة وحذف السجلات المحددة
+            studentRecords = studentRecords.filter(r => !idsToDelete.includes(r.id));
+
+            // 5. التحديث المحلي
+            localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+
+            // 6. تحديث الجدول فوراً ليختفي السجل
+            if (typeof renderAdminRecordsTable === 'function') {
+                renderAdminRecordsTable();
+            }
+
+            // 7. رفع السجلات المتبقية إلى السحابة نظيفة بدون السجلات المحذوفة
+            if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseSetDoc && window.firebaseDoc) {
+                const db = window.firebaseDb;
+                const rChunkSize = 300; 
+                let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
+                
+                // تفريغ الأجزاء السحابية القديمة لضمان عدم بقاء أي أثر قبل رفع الجديد
+                for (let i = 0; i < 10; i++) {
+                    await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), { chunk: [] });
+                }
+
+                // رفع الأجزاء السليمة الجديدة
+                for (let i = 0; i < rTotalParts; i++) {
+                    const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
+                    await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
+                }
+                await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
+            }
+
+            alert("تم حذف السجلات المحددة بنجاح تام من المنصة والسحابة!");
+
+        } catch (e) {
+            console.error("خطأ أثناء حذف السجلات المحددة:", e);
+            alert("حدث خطأ أثناء الحذف: " + e.message);
         }
     }
 }
