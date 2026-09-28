@@ -3405,10 +3405,17 @@ async function saveQuestionsState() {
 // دالة حفظ سجلات الطلاب في الخلفية بصمت تام بدون أي شاشات تحميل
      async function saveStudentRecordsBackground() {
     try {
-        // السماح بعودة المزامنة برفع القفل
         localStorage.removeItem('blockCloudSync');
 
-        // 1. جلب السجلات من السحابة
+        // 1. جلب السجلات الحالية من الـ LocalStorage أولاً لضمان سرعة العرض الفوري
+        let localRecords = [];
+        try {
+            localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+        } catch(e) {
+            localRecords = studentRecords || [];
+        }
+
+        // 2. جلب السجلات من السحابة لدمجها
         let cloudRecords = [];
         if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
             try {
@@ -3434,15 +3441,7 @@ async function saveQuestionsState() {
             }
         }
 
-        // 2. جلب السجلات المحلية الحالية
-        let localRecords = [];
-        try {
-            localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
-        } catch(e) {
-            localRecords = studentRecords || [];
-        }
-
-        // 3. 💡 الحل الحاسم: جعل السجلات المحلية تأتي أخيراً في الدمج ليكون لها الأولوية المطلقة
+        // 3. الدمج الذكي مع إعطاء الأولوية للسجلات المحلية الأحدث
         let map = new Map();
         [...cloudRecords, ...localRecords].forEach(r => {
             if (r && r.id) map.set(r.id, r);
@@ -3450,17 +3449,17 @@ async function saveQuestionsState() {
 
         studentRecords = Array.from(map.values());
         
-        // ترتيب السجلات من الأحدث للأقدم
+        // ترتيب من الأحدث للأقدم
         studentRecords.sort((a, b) => {
             let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
             let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
             return timeB - timeA;
         });
 
-        // 4. الحفظ محلياً
+        // حفظ محلي محدث
         localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
-        // 5. الرفع النظيف إلى السحابة لتعتمد التصحيح الجديد نهائياً
+        // 4. رفع السجلات المحدثة للسحابة
         if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
             const db = window.firebaseDb; 
             if (!window._cloudCache) window._cloudCache = {};
@@ -3474,7 +3473,6 @@ async function saveQuestionsState() {
             }
             
             await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
-            console.log("تم تحديث وحفظ سجلات الطلاب بنجاح تام.");
         }
     } catch (e) {
         console.error("خطأ في حفظ السجلات سحابياً:", e);
@@ -4532,9 +4530,9 @@ window.restartHome = function() {
 
     if (quizState.timerInterval) clearInterval(quizState.timerInterval);
     
-    let objectiveScore = 0; // درجات الأسئلة الموضوعية فقط
+    let objectiveScore = 0; 
     let answeredCount = 0; 
-    let pendingEssayCount = 0; // عدد الأسئلة المقالية التي تنتظر التصحيح
+    let pendingEssayCount = 0; 
     let breakdownDetails = [];
     
     quizState.questions.forEach((q, idx) => { 
@@ -4546,10 +4544,9 @@ window.restartHome = function() {
         let correctAnswerText = q.ans;
         let essayGrade = undefined;
 
-        // 💡 التعامل الذكي: المقالي لا يُحسب صحيحاً تلقائياً بل يُترك بانتظار تصحيح المعلم
         if (q.type === 'essay') {
             isCorrect = false; 
-            essayGrade = undefined; // لم يُصحح بعد
+            essayGrade = undefined; 
             pendingEssayCount++;
             correctAnswerText = q.ans || "إجابة مقالية (بانتظار تقييم المعلم)";
         } else {
@@ -4564,7 +4561,7 @@ window.restartHome = function() {
             correctAnswer: formatText(correctAnswerText, q.tashkeel), 
             isCorrect,
             type: q.type || 'mcq',
-            essayGrade, // حفظ حالة التقييم المقالي
+            essayGrade, 
             explanation: formatText(q.exp || "", q.tashkeel) 
         });
         
@@ -4574,16 +4571,11 @@ window.restartHome = function() {
         }
     });
 
-    const total = quizState.questions.length; // الإجمالي الكلي للاختبار (مثلاً 20)
-    const score = objectiveScore; // درجات الأسئلة الموضوعية فقط (مثلاً 10)
-    
-    // حساب عدد الأسئلة الموضوعية الكلي
+    const total = quizState.questions.length; 
+    const score = objectiveScore; 
     const objectiveTotal = quizState.questions.filter(q => q.type !== 'essay').length;
-    
-    // النصف الكلي للاختبار
     const halfTotal = total / 2;
 
-    // 💡 المنطق الذكي للحالة: إذا تجاوز نصف الدرجة الكلية بالموضوعي وحده، فهو ناجح يقيناً
     let examStatus = "بانتظار التصحيح";
     if (score >= halfTotal) {
         examStatus = "ناجح";
@@ -4604,24 +4596,33 @@ window.restartHome = function() {
         branch: quizState.branch, 
         topic: quizState.topic,
         stageGrade: `${quizState.stage} ➔ ${quizState.grade} ➔ ${quizState.branch} (${quizState.topic})`, 
-        score, // درجات الموضوعي الصحيحة
-        objectiveTotal, // إجمالي الأسئلة الموضوعية
-        total, // الإجمالي الكلي للاختبار
+        score, 
+        objectiveTotal, 
+        total, 
         pct, 
-        status: examStatus, // الحالة الذكية
-        pendingEssayCount, // عدد الأسئلة المقالية المنتظرة
+        status: examStatus, 
+        pendingEssayCount, 
         date: new Date().toLocaleString('ar-EG'), 
         duration: `${Math.floor(durationSecs / 60)}د و ${durationSecs % 60}ث`, 
         answeredCount: `${answeredCount} من ${total}`, 
         breakdown: breakdownDetails 
     };
 
-    // إدراج النتيجة الجديدة في مقدمة المصفوفة فوراً
-    studentRecords.unshift(newRecord);
+    // 💡 التحديث الفوري لمصفوفة السجلات المحلية والذاكرة لترو في الحال
+    let existingRecords = [];
+    try {
+        existingRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+    } catch(e) {
+        existingRecords = studentRecords || [];
+    }
+    
+    existingRecords.unshift(newRecord);
+    studentRecords = existingRecords;
     
     // الحفظ الفوري في الـ LocalStorage
     localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
+    // واجهة النتيجة
     document.getElementById('view-quiz').classList.add('hidden'); 
     const resView = document.getElementById('view-result');
     document.getElementById('quick-info-top-btn').classList.add('hidden');
@@ -4636,7 +4637,6 @@ window.restartHome = function() {
     passFailEl.textContent = examStatus; 
     passFailEl.className = `text-lg font-black ${examStatus === 'ناجح' ? 'text-emerald-600' : examStatus === 'راسب' ? 'text-rose-600' : 'text-amber-600'}`;
 
-    // 💡 رسالة واضحة للطالب في صفحة النتيجة بخصوص الأسئلة المقالية
     const resMsg = document.getElementById('res-msg');
     const iconContainer = document.getElementById('res-icon-container');
     const iconEl = document.getElementById('res-icon-i');
@@ -4674,6 +4674,7 @@ window.restartHome = function() {
         }
     }
 
+    // مزامنة فورية في الخلفية لترى النتيجة في لوحة التحكم مباشرة
     setTimeout(() => { saveStudentRecordsBackground(); }, 10);
 }
 
