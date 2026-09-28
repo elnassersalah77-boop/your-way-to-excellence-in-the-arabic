@@ -2825,21 +2825,64 @@ window.addEventListener('DOMContentLoaded', () => {
         });
 
         async function loadAdminRecordsFromCloud() {
-            try {
-                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
-                    const db = window.firebaseDb; const doc = window.firebaseDoc; const getDoc = window.firebaseGetDoc;
-                    const rMetaSnap = await getDoc(doc(db, "platformData", "records_meta"));
-                    let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
-                    if (rTotal > 0) {
-                        let chunkPromises = [];
-                        for (let i = 0; i < rTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `records_part_${i}`)));
-                        const chunksSnaps = await Promise.all(chunkPromises);
-                        studentRecords = [];
-                        for (let i = 0; i < rTotal; i++) { let snap = chunksSnaps[i]; if (snap.exists() && snap.data().chunk) studentRecords = studentRecords.concat(snap.data().chunk); }
-                    }
+    try {
+        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
+            const db = window.firebaseDb; 
+            const doc = window.firebaseDoc; 
+            const getDoc = window.firebaseGetDoc;
+            
+            let cloudRecords = [];
+            const rMetaSnap = await getDoc(doc(db, "platformData", "records_meta"));
+            let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
+            
+            if (rTotal > 0) {
+                let chunkPromises = [];
+                for (let i = 0; i < rTotal; i++) {
+                    chunkPromises.push(getDoc(doc(db, "platformData", `records_part_${i}`)));
                 }
-            } catch(e) { console.log("خطأ في جلب السجلات:", e); }
+                const chunksSnaps = await Promise.all(chunkPromises);
+                for (let i = 0; i < rTotal; i++) { 
+                    let snap = chunksSnaps[i]; 
+                    if (snap && snap.exists() && snap.data().chunk) {
+                        cloudRecords = cloudRecords.concat(snap.data().chunk);
+                    } 
+                }
+            }
+
+            // جلب السجلات المحلية الموجودة على جهاز المتصفح الحالي
+            let localRecords = [];
+            try {
+                localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+            } catch(e) {
+                localRecords = studentRecords || [];
+            }
+
+            // 💡 الدمج الذكي الشامل مع إعطاء الأولوية المطلقة للسجلات الأحدث (لتظهر نتائج الامتحان حالا)
+            let map = new Map();
+            [...cloudRecords, ...localRecords].forEach(r => {
+                if (r && r.id) map.set(r.id, r);
+            });
+
+            studentRecords = Array.from(map.values());
+            
+            // إعادة الترتيب من الأحدث للأقدم لضمان تصدر النتائج الجديدة قمة الجدول
+            studentRecords.sort((a, b) => {
+                let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
+                let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
+                return timeB - timeA;
+            });
+
+            // تحديث التخزين المحلي ليتزامن تماماً
+            localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
         }
+    } catch(e) { 
+        console.log("خطأ في جلب السجلات للإدارة:", e);
+        // في حال حدوث أي خطأ سحابي، نعتمد على السجلات المحلية لضمان عدم توقف المنصة
+        try {
+            studentRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+        } catch(err) {}
+    }
+}
               
 
         async function saveState(showLoading = true) {
@@ -5257,8 +5300,8 @@ async function openAdminSectionPage(sectionId) {
         targetSection.classList.remove('hidden');
         targetSection.classList.add('flex');
         
-        // 💡 إجبار المعلم على تحميل وتحديث السجلات من السحابة بالكامل مع ظهور المؤشر المرئي
-        if (sectionId === 'view-admin-records') {
+        // 💡 إجبار المعلم على تحميل وتحديث السجلات من السحابة والذاكرة بالكامل عند فتح السجلات أو لوحة التحكم
+        if (sectionId === 'view-admin-records' || sectionId === 'view-admin-dashboard') {
             if (typeof toggleCloudLoading === 'function') {
                 toggleCloudLoading(true, "جَارِي سَحْبِ وَتَحْمِيلِ جَمِيعِ نَتَائِجِ الطُّلَّابِ...");
             }
@@ -5273,10 +5316,14 @@ async function openAdminSectionPage(sectionId) {
                     toggleCloudLoading(false);
                 }
             }
-            if (typeof populateRecAdminFilters === 'function') populateRecAdminFilters();
-            if (typeof renderAdminRecordsTable === 'function') renderAdminRecordsTable();
+            if (sectionId === 'view-admin-records') {
+                if (typeof populateRecAdminFilters === 'function') populateRecAdminFilters();
+                if (typeof renderAdminRecordsTable === 'function') renderAdminRecordsTable();
+            }
         }
-        else if (sectionId === 'view-admin-settings' && typeof loadAdminSettings === 'function') loadAdminSettings();
+
+        // باقي الشروط للأقسام الأخرى
+        if (sectionId === 'view-admin-settings' && typeof loadAdminSettings === 'function') loadAdminSettings();
         else if (sectionId === 'view-admin-stages' && typeof renderAdminStagesList === 'function') renderAdminStagesList();
         else if (sectionId === 'view-admin-branches' && typeof renderAdminBranchesList === 'function') { if (typeof populateBranchAdminFilters === 'function') populateBranchAdminFilters(); renderAdminBranchesList(); }
         else if (sectionId === 'view-admin-topics' && typeof renderAdminTopicsList === 'function') { if (typeof populateTopicAdminFilters === 'function') populateTopicAdminFilters(); renderAdminTopicsList(); }
@@ -5284,6 +5331,11 @@ async function openAdminSectionPage(sectionId) {
         else if (sectionId === 'view-admin-passages' && typeof renderPassagesTable === 'function') { if (typeof populatePassageAdminFilters === 'function') populatePassageAdminFilters(); renderPassagesTable(); }
         else if (sectionId === 'view-admin-quickinfo' && typeof renderAdminQuickInfoList === 'function') { if (typeof populateQiAdminFilters === 'function') populateQiAdminFilters(); renderAdminQuickInfoList(); }
         else if (sectionId === 'view-admin-students' && typeof renderAdminStudentsList === 'function') renderAdminStudentsList();
+        
+        // تحديث عداد التصحيح السريع في لوحة التحكم الرئيسية تلقائياً
+        if (typeof updateQuickGradingBadge === 'function') {
+            updateQuickGradingBadge();
+        }
     }
 }
 
