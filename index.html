@@ -3723,18 +3723,17 @@ function studentLogin() {
 }
 
 // 3. دالة التنقل بين التبويبات المحدثة للألوان الجديدة والحركة
-function showPortalTab(tabName) {
+// استبدل أو أضف هذه الدالة المسؤولة عن تبويب السجل في بوابة الطالب
+async function showPortalTab(tabName) {
     const wrapper = document.getElementById('portal-body-wrapper');
     const contentArea = document.getElementById('portal-content-area');
     
-    // تغيير التمركز للأعلى بانسيابية
     wrapper.classList.remove('justify-center');
     wrapper.classList.add('justify-start');
     contentArea.classList.remove('hidden');
 
     document.querySelectorAll('.portal-tab-content').forEach(el => el.classList.add('hidden'));
     
-    // إعادة التنسيق الافتراضي للأزرار (إزالة التأثير البارز)
     document.querySelectorAll('.portal-tab-btn').forEach(el => {
         el.classList.remove('ring-4', 'ring-offset-2', 'scale-105', 'shadow-xl');
     });
@@ -3742,7 +3741,6 @@ function showPortalTab(tabName) {
     document.getElementById(`portal-tab-${tabName}`).classList.remove('hidden');
     const btn = document.getElementById(`tab-btn-${tabName}`);
     
-    // تمييز الزر النشط بوضوح وتأثير بارز
     if (btn) {
         btn.classList.add('ring-4', 'ring-offset-2', 'scale-105', 'shadow-xl');
     }
@@ -3752,6 +3750,23 @@ function showPortalTab(tabName) {
     } else if (tabName === 'exam') {
         populatePortalBranches('exam');
     } else if (tabName === 'records') {
+        // 💡 إجبار الطالب على تحميل أحدث نتائجه من السحابة مع مؤشر تحميل مرئي
+        if (typeof toggleCloudLoading === 'function') {
+            toggleCloudLoading(true, "جَارِي تَحْمِيلِ سِجِلِّكَ الدِّرَاسِيِّ...");
+        }
+        
+        try {
+            if (typeof loadAdminRecordsFromCloud === 'function') {
+                await loadAdminRecordsFromCloud(); // سحب أحدث السجلات من السحابة
+            }
+        } catch(e) {
+            console.log("خطأ في تحديث سجل الطالب:", e);
+        } finally {
+            if (typeof toggleCloudLoading === 'function') {
+                toggleCloudLoading(false);
+            }
+        }
+        
         renderStudentPersonalRecords();
     }
 }
@@ -5231,7 +5246,7 @@ function showAdminDashboardPage() {
 }
 
 // فتح صفحة قسم معين من لوحة الإدارة
-function openAdminSectionPage(sectionId) {
+async function openAdminSectionPage(sectionId) {
     document.querySelectorAll('.admin-section-view').forEach(el => {
         el.classList.add('hidden');
         el.classList.remove('flex');
@@ -5242,8 +5257,26 @@ function openAdminSectionPage(sectionId) {
         targetSection.classList.remove('hidden');
         targetSection.classList.add('flex');
         
-        // استدعاء دوال التحديث التلقائي الخاصة بكل قسم
-        if (sectionId === 'view-admin-settings' && typeof loadAdminSettings === 'function') loadAdminSettings();
+        // 💡 إجبار المعلم على تحميل وتحديث السجلات من السحابة بالكامل مع ظهور المؤشر المرئي
+        if (sectionId === 'view-admin-records') {
+            if (typeof toggleCloudLoading === 'function') {
+                toggleCloudLoading(true, "جَارِي سَحْبِ وَتَحْمِيلِ جَمِيعِ نَتَائِجِ الطُّلَّابِ...");
+            }
+            try {
+                if (typeof loadAdminRecordsFromCloud === 'function') {
+                    await loadAdminRecordsFromCloud();
+                }
+            } catch(e) {
+                console.log("خطأ في جلب السجلات للإدارة:", e);
+            } finally {
+                if (typeof toggleCloudLoading === 'function') {
+                    toggleCloudLoading(false);
+                }
+            }
+            if (typeof populateRecAdminFilters === 'function') populateRecAdminFilters();
+            if (typeof renderAdminRecordsTable === 'function') renderAdminRecordsTable();
+        }
+        else if (sectionId === 'view-admin-settings' && typeof loadAdminSettings === 'function') loadAdminSettings();
         else if (sectionId === 'view-admin-stages' && typeof renderAdminStagesList === 'function') renderAdminStagesList();
         else if (sectionId === 'view-admin-branches' && typeof renderAdminBranchesList === 'function') { if (typeof populateBranchAdminFilters === 'function') populateBranchAdminFilters(); renderAdminBranchesList(); }
         else if (sectionId === 'view-admin-topics' && typeof renderAdminTopicsList === 'function') { if (typeof populateTopicAdminFilters === 'function') populateTopicAdminFilters(); renderAdminTopicsList(); }
@@ -5251,7 +5284,6 @@ function openAdminSectionPage(sectionId) {
         else if (sectionId === 'view-admin-passages' && typeof renderPassagesTable === 'function') { if (typeof populatePassageAdminFilters === 'function') populatePassageAdminFilters(); renderPassagesTable(); }
         else if (sectionId === 'view-admin-quickinfo' && typeof renderAdminQuickInfoList === 'function') { if (typeof populateQiAdminFilters === 'function') populateQiAdminFilters(); renderAdminQuickInfoList(); }
         else if (sectionId === 'view-admin-students' && typeof renderAdminStudentsList === 'function') renderAdminStudentsList();
-        else if (sectionId === 'view-admin-records' && typeof renderAdminRecordsTable === 'function') { if (typeof populateRecAdminFilters === 'function') populateRecAdminFilters(); renderAdminRecordsTable(); }
     }
 }
 
