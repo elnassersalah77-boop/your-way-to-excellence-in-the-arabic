@@ -4162,6 +4162,8 @@ function renderStudentPersonalRecords() {
             </td>
             <td class="p-4 text-center">
                 <span class="px-3 py-1 rounded-full text-xs font-black ${statusClass}">${r.status}</span>
+                <!-- 💡 إدراج زر عرض التفاصيل هنا لكي يظهر للطالب -->
+                ${detailsBtnHtml}
             </td>
         </tr>`;
     });
@@ -7537,11 +7539,12 @@ async function submitEssayGrade(recordIndex, breakdownIndex, isCorrect) {
     }
 }
 
-// دالة الاعتماد النهائي المحدثة بالكامل
+// دالة الاعتماد النهائي الشاملة والمضمونة لحفظ كافة الأسئلة المصححة سحابياً دون أي ضياع
 async function finalizeRecordGrading(recordIndex) {
     if (!studentRecords || !studentRecords[recordIndex]) return;
     let record = studentRecords[recordIndex];
 
+    // التأكد من عدم وجود أسئلة مقالية غير مُقيّمة
     let unrated = record.breakdown.filter(item => {
         const hasNoOpts = (!item.opts || item.opts.length === 0) && (!item.options || item.options.length === 0);
         const isMarkedPending = item.correctAnswer && String(item.correctAnswer).includes('بانتظار');
@@ -7556,26 +7559,47 @@ async function finalizeRecordGrading(recordIndex) {
         return;
     }
 
+    // تحديث حالة السجل بالكامل وإزالة الصفوف المعلقة
     record.pendingEssayCount = 0;
-    let halfTotal = (record.total || record.breakdown.length) / 2;
+    let totalQ = record.total || record.breakdown.length;
+    let halfTotal = totalQ / 2;
     record.status = record.score >= halfTotal ? "ناجح" : "راسب";
 
+    // 1. الحفظ الفوري في التخزين المحلي للمتصفح
+    localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+
+    // إظهار مؤشر التحميل الإجباري أثناء الرفع السحابي الثقيل
     if (typeof toggleCloudLoading === 'function') {
-        toggleCloudLoading(true, "جَارِي حِفْظِ وَاعْتِمَادِ النَّتِيجَةِ نِهَائِيّاً...");
+        toggleCloudLoading(true, "جَارِي حِفْظِ وَاعْتِمَادِ النَّتِيجَةِ سَحَابِيّاً بَالكامل...");
     }
 
-    // 💡 الحفظ والمزامنة النهائية محلياً وسحابياً
-    if (typeof saveAndSyncRecordsToCloud === 'function') {
-        await saveAndSyncRecordsToCloud(studentRecords);
-    } else {
-        localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+    // 2. الرفع السحابي الشامل والمضمون (تحديث كافة الـ Chunks المرتبطة)
+    try {
+        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+            const db = window.firebaseDb; 
+            const rChunkSize = 300; 
+            let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
+            
+            // رفع كل الأجزاء لضمان عدم ضياع أي تعديل
+            for (let i = 0; i < rTotalParts; i++) {
+                const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
+                await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
+            }
+            
+            // تحديث الميتا داتا للإشارة إلى إجمالي الأجزاء المحدثة
+            await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
+        }
+    } catch (e) {
+        console.error("خطأ أثناء الاعتماد النهائي والسحابي:", e);
+        alert("حدث خطأ أثناء الاتصال بالسحابة، يرجى المحاولة مرة أخرى.");
+    } finally {
+        if (typeof toggleCloudLoading === 'function') {
+            toggleCloudLoading(false);
+        }
     }
 
-    if (typeof toggleCloudLoading === 'function') {
-        toggleCloudLoading(false);
-    }
-
-    alert("تم اعتماد وتصحيح ورقة الطالب بالكامل بنجاح!");
+    alert("تم اعتماد وتصحيح ورقة الطالب بالكامل وحفظها سحابياً بنجاح!");
+    
     if (typeof updateQuickGradingBadge === 'function') {
         updateQuickGradingBadge();
     }
@@ -7973,33 +7997,49 @@ function changeRecordsPage(dir) {
     renderAdminRecordsTable();  
 }
 
-function clearRecords() {  
-    if (confirm("مسح جميع النتائج؟")) {  
-        studentRecords = [];  
-        saveState();  
-        renderAdminRecordsTable();  
-    }  
+async function clearRecords() {
+    if (!confirm("هل أنت متأكد تماماً من مسح كافة سجلات النتائج نهائياً من المنصة والسحابة؟ لا يمكن التراجع عن هذا الإجراء.")) {
+        return;
+    }
+
+    // 1. تفريغ المصفوفة المحلية والذاكرة
+    studentRecords = [];
+    localStorage.removeItem('studentRecords');
+
+    // 2. إظهار مؤشر التحميل أثناء الحذف السحابي
+    if (typeof toggleCloudLoading === 'function') {
+        toggleCloudLoading(true, "جَارِي مَسْحِ وَحَذْفِ كَافَّةِ السِّجِلَّاتِ مَنِ السَّحَابَةِ...");
+    }
+
+    // 3. الحذف والتنظيف الفعلي من سحابة فايربيز (إلغاء الميتا والأجزاء)
+    try {
+        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+            const db = window.firebaseDb;
+            // تصفير الميتا داتا للإشارة إلى عدم وجود أي أجزاء
+            await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: 0 });
+            
+            // رفع جزء فارغ لتطهير القطعة الأولى
+            await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_part_0"), { chunk: [] });
+        }
+    } catch (e) {
+        console.error("خطأ أثناء مسح السجلات من السحابة:", e);
+    } finally {
+        if (typeof toggleCloudLoading === 'function') {
+            toggleCloudLoading(false);
+        }
+    }
+
+    alert("تم مسح كافة سجلات النتائج بنجاح تام!");
+    
+    // تحديث الجدول ليرى المعلم النظافة الفورية
+    if (typeof renderAdminRecordsTable === 'function') {
+        renderAdminRecordsTable();
+    }
+    if (typeof updateQuickGradingBadge === 'function') {
+        updateQuickGradingBadge();
+    }
 }
-
-        function toggleSelectAllRecords(masterCb) {
-            document.querySelectorAll('.record-select-checkbox').forEach(cb => cb.checked = masterCb.checked);
-        }
-
-        function deleteSelectedRecords() {
-            let selected = document.querySelectorAll('.record-select-checkbox:checked');
-            if (selected.length === 0) {
-                alert("يرجى تحديد سجل واحد على الأقل للحذف.");
-                return;
-            }
-            if (confirm(`هل أنت متأكد من حذف ${selected.length} سجل محدد؟`)) {
-                let indicesToDel = Array.from(selected).map(cb => parseInt(cb.value));
-                studentRecords = studentRecords.filter((_, idx) => !indicesToDel.includes(idx));
-                saveState();
-                renderAdminRecordsTable();
-                alert("تم حذف السجلات المحددة بنجاح!");
-            }
-        }
-// دالة حذف السجلات المحددة عبر مربعات الاختيار
+// دالة حذف السجلات المحددة عبر مربعات الاختيار (المحدثة والنهائية)
 async function deleteSelectedRecords() {
     const checkboxes = document.querySelectorAll('.record-select-checkbox:checked');
     if (checkboxes.length === 0) {
@@ -8008,40 +8048,13 @@ async function deleteSelectedRecords() {
     }
 
     if (confirm(`هل أنت متأكد من حذف السجلات المحددة (${checkboxes.length} سجل) نهائياً من المنصة والسحابة؟`)) {
+        // إظهار مؤشر التحميل لجعل العملية سلسة وواضحة
+        if (typeof toggleCloudLoading === 'function') {
+            toggleCloudLoading(true, "جَارِي حَذْفِ السِّجِلَّاتِ الْمُحَدَّدَةِ...");
+        }
+
         try {
-            // 1. تفعيل قفل المزامنة لمنع استرجاع السجلات المحذوفة للتو
-            localStorage.setItem('blockCloudSync', 'true');
-
-            // 2. جلب أحدث السجلات السحابية أولاً لضمان مزامنة كاملة قبل الحذف
-            if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
-                try {
-                    const db = window.firebaseDb;
-                    const rMetaSnap = await window.firebaseGetDoc(window.firebaseDoc(db, "platformData", "records_meta"));
-                    let rTotal = rMetaSnap.exists() ? (rMetaSnap.data().totalParts || 0) : 0;
-                    if (rTotal > 0) {
-                        let chunkPromises = [];
-                        for (let i = 0; i < rTotal; i++) {
-                            chunkPromises.push(window.firebaseGetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`)));
-                        }
-                        const chunksSnaps = await Promise.all(chunkPromises);
-                        let cloudRecords = [];
-                        for (let i = 0; i < rTotal; i++) {
-                            let snap = chunksSnaps[i];
-                            if (snap.exists() && snap.data().chunk) {
-                                cloudRecords = cloudRecords.concat(snap.data().chunk);
-                            }
-                        }
-                        let localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
-                        let map = new Map();
-                        [...localRecords, ...cloudRecords].forEach(r => { if (r && r.id) map.set(r.id, r); });
-                        studentRecords = Array.from(map.values());
-                    }
-                } catch(err) {
-                    console.log("استخدام السجلات المحلية أثناء الحذف:", err);
-                }
-            }
-
-            // 3. تحديد معرفات السجلات (IDs) المراد حذفها لتفادي أخطاء الفهارس
+            // 1. تحديد معرفات السجلات (IDs) المراد حذفها بدقة من المصفوفة المحلية
             let idsToDelete = [];
             checkboxes.forEach(cb => {
                 let idx = parseInt(cb.value);
@@ -8050,45 +8063,53 @@ async function deleteSelectedRecords() {
                 }
             });
 
-            // 4. تصفية المصفوفة وحذف السجلات المحددة
+            // 2. تصفية المصفوفة المحلية وحذف السجلات المحددة منها فوراً
             studentRecords = studentRecords.filter(r => !idsToDelete.includes(r.id));
 
-            // 5. التحديث المحلي
+            // 3. التحديث الفوري في التخزين المحلي للمتصفح
             localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
-            // 6. تحديث الجدول فوراً ليختفي السجل
+            // 4. تحديث الجدول فوراً ليختفي السجل من أمامك
             if (typeof renderAdminRecordsTable === 'function') {
                 renderAdminRecordsTable();
             }
+            if (typeof updateQuickGradingBadge === 'function') {
+                updateQuickGradingBadge();
+            }
 
-            // 7. رفع السجلات المتبقية إلى السحابة نظيفة بدون السجلات المحذوفة
+            // 5. المزامنة السحابية الفورية وتنظيف الأجزاء الزائدة في فايربيز
             if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseSetDoc && window.firebaseDoc) {
                 const db = window.firebaseDb;
                 const rChunkSize = 300; 
                 let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
                 
-                // تفريغ الأجزاء السحابية القديمة لضمان عدم بقاء أي أثر قبل رفع الجديد
+                // تنظيف أول 10 أجزاء سحابية لضمان عدم بقاء أي بقايا سابقة
                 for (let i = 0; i < 10; i++) {
                     await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), { chunk: [] });
                 }
 
-                // رفع الأجزاء السليمة الجديدة
+                // رفع الأجزاء السليمة الجديدة المتبقية فقط
                 for (let i = 0; i < rTotalParts; i++) {
                     const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
                     await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
                 }
+                
+                // تحديث الميتا داتا بعدد الأجزاء الجديد الحقيقي
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
             }
 
-            alert("تم حذف السجلات المحددة بنجاح تام من المنصة والسحابة!");
+            alert("تم حذف السجلات المحددة بنجاح تام من المنصة والسحابة ولن تعود بعد الآن!");
 
         } catch (e) {
             console.error("خطأ أثناء حذف السجلات المحددة:", e);
             alert("حدث خطأ أثناء الحذف: " + e.message);
+        } finally {
+            if (typeof toggleCloudLoading === 'function') {
+                toggleCloudLoading(false);
+            }
         }
     }
 }
-
         // --- BACKUP & OFFLINE EXPORT ---
         function exportFullSystemJson() {
             let systemData = { stagesData, gradeStatus, branchesData, topicsData, studentsAccounts, appSettings, questionBank, paragraphs, qiList: quickInfoList, studentRecords };
@@ -8564,37 +8585,13 @@ function exportStudentReviewPDF() {
             }
         });
 // دالة عرض وتحديث سجل الطالب الدراسي (سجلي الدراسي) لضمان ظهور التعديلات والحالة الجديدة فوراً
-// استبدل دالة عرض السجل للطالب بهذا الإصدار الشامل
-async function renderStudentPersonalRecords() {
+// 8. عرض سجل الطالب الشخصي في التبويب الثالث (محدث مع زر التفاصيل)
+function renderStudentPersonalRecords() {
     const tbody = document.getElementById('portal-student-records-tbody');
     if (!tbody) return;
 
-    // إظهار مؤشر التحميل للطالب أثناء السحب
-    if (typeof toggleCloudLoading === 'function') {
-        toggleCloudLoading(true, "جَارِي تَحْدِيثِ سِجِلِّكَ الدِّرَاسِيِّ...");
-    }
-
-    try {
-        // سحب أحدث السجلات من السحابة إن توفرت
-        if (typeof loadAdminRecordsFromCloud === 'function') {
-            await loadAdminRecordsFromCloud();
-        }
-        
-        // جلبها من التخزين المحلي كخيار مضمون وطارئ
-        const localRecs = localStorage.getItem('studentRecords');
-        if (localRecs) {
-            studentRecords = JSON.parse(localRecs);
-        }
-    } catch(e) {
-        console.log("خطأ في تحديث سجل الطالب:", e);
-    } finally {
-        if (typeof toggleCloudLoading === 'function') {
-            toggleCloudLoading(false);
-        }
-    }
-
-    // تصفية السجلات الخاصة بالطالب الحالي المسجل في الجلسة فقط
-    const myRecords = (studentRecords || []).filter(r => r.name === currentStudentSession.name);
+    // تصفية السجلات الخاصة بالطالب الحالي فقط
+    const myRecords = studentRecords.filter(r => r.name === currentStudentSession.name);
 
     if (myRecords.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-500 font-bold">لا توجد اختبارات سابقة مسجلة لك حتى الآن.</td></tr>';
@@ -8628,26 +8625,24 @@ async function renderStudentPersonalRecords() {
         }
 
         const pendingCount = r.pendingEssayCount !== undefined ? r.pendingEssayCount : (r.breakdown ? r.breakdown.filter(b => b.type === 'essay' && (b.essayGrade === undefined || b.essayGrade === null)).length : 0);
-        // استخدام معرف السجل (id) أو تخزين مؤقت آمن لتفادي كسر الـ HTML
-let detailsBtnHtml = `
-    <button onclick='openStudentRecordDetailsById("${r.id}")' class="mt-2 px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 mx-auto border border-sky-200 cursor-pointer">
-        <i class="fa-solid fa-eye"></i> عرض تفاصيل الورقة
-    </button>
-`;
-        // رسالة الحالة بناءً على تصحيح المعلم النهائي
+        
         let essayNoticeHtml = pendingCount > 0 
             ? `<span class="block text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md font-bold mt-1 border border-amber-200">⚠️ بانتظار تصحيح (${pendingCount}) مقالي</span>` 
-            : `<span class="block text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md font-bold mt-1 border border-emerald-100">✨ تم اعتماد التصحيح النهائي</span>`;
+            : `<span class="block text-[11px] text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md font-bold mt-1 border border-indigo-100">✨ تم التصحيح</span>`;
 
-        // تلوين الحالة (ناجح / راسب / قيد الانتظار)
         let statusClass = "bg-emerald-100 text-emerald-800";
         if (r.status === "راسب") statusClass = "bg-rose-100 text-rose-800";
         if (r.status === "بانتظار التصحيح") statusClass = "bg-amber-100 text-amber-800";
 
-        let displayTotal = r.objectiveTotal !== undefined ? r.objectiveTotal : (r.total || 20);
-        if (pendingCount === 0 && r.total) {
-            displayTotal = r.total;
-        }
+        let hasPendingStudent = pendingCount > 0;
+        let studentDenominator = hasPendingStudent && r.objectiveTotal ? r.objectiveTotal : r.total;
+
+        // 💡 تعريف زر عرض التفاصيل بطريقة آمنة باستخدام الـ ID
+        let detailsBtnHtml = `
+            <button onclick='openStudentRecordDetailsById("${r.id}")' class="mt-2 px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 mx-auto border border-sky-200 cursor-pointer shadow-xs">
+                <i class="fa-solid fa-eye"></i> عرض تفاصيل الورقة
+            </button>
+        `;
 
         html += `
         <tr class="border-b border-slate-100 hover:bg-slate-50 transition text-xs sm:text-sm">
@@ -8664,23 +8659,23 @@ let detailsBtnHtml = `
                 <span class="text-rose-600 font-black">لم يجب: ${unansweredCount}</span>
             </td>
             <td class="p-4 text-center">
-                <span class="font-black text-sky-900 text-base">${r.score} / ${displayTotal} (${r.pct}%)</span>
+                <span class="font-black text-sky-900 text-base">${r.score} / ${studentDenominator} (${r.pct}%)</span>
                 ${essayNoticeHtml}
             </td>
             <td class="p-4 text-center">
                 <span class="px-3 py-1 rounded-full text-xs font-black ${statusClass}">${r.status}</span>
+                <!-- 💡 تضمين زر عرض التفاصيل ليظهر للطالب بوضوح -->
+                ${detailsBtnHtml}
             </td>
         </tr>`;
     });
 
     tbody.innerHTML = html;
 }
-// دالة عرض تفاصيل ورقة اختبار الطالب (نفس واجهة المعلم بدون أزرار التصحيح)
+// دالة عرض تفاصيل ورقة اختبار الطالب (محدثة لتعكس التصحيح الفوري لحالة السؤال المقالي)
 function openStudentRecordDetails(record) {
-    // يمكنك إنشاء عنصر Modal في الـ HTML أو عرضها في منطقة مخصصة
     let modalContainer = document.getElementById('student-details-modal');
     if (!modalContainer) {
-        // إنشاء المودال برمجياً إذا لم يكن موجوداً
         modalContainer = document.createElement('div');
         modalContainer.id = 'student-details-modal';
         modalContainer.className = 'fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto';
@@ -8694,9 +8689,14 @@ function openStudentRecordDetails(record) {
             let isEssay = item.type === 'essay' || item.type === 'passage_standalone' || item.type === 'passage_sub' || (!item.opts && !item.options);
 
             if (isEssay) {
-                if (item.essayGrade === true) {
+                // 💡 فحص دقيق وشامل لكافة حالات التخزين (boolean أو string أو رقم)
+                const gradeVal = item.essayGrade;
+                const isTrue = gradeVal === true || gradeVal === "true" || gradeVal === 1 || gradeVal === "1";
+                const isFalse = gradeVal === false || gradeVal === "false" || gradeVal === 0 || gradeVal === "0";
+
+                if (isTrue) {
                     statusBadge = '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-xs font-black">✨ إجابة مقالية صحيحة (تم التصحيح)</span>';
-                } else if (item.essayGrade === false) {
+                } else if (isFalse) {
                     statusBadge = '<span class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-md text-xs font-black">❌ إجابة مقالية خاطئة (تم التصحيح)</span>';
                 } else {
                     statusBadge = '<span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-md text-xs font-black">⏳ قيد انتظار تصحيح المعلم</span>';
@@ -8709,13 +8709,15 @@ function openStudentRecordDetails(record) {
                 }
             }
 
+            let questionText = item.qText || item.question || item.text || 'سؤال';
+
             breakdownHtml += `
-                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 mb-3">
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 mb-3 text-right">
                     <div class="flex justify-between items-center">
                         <span class="text-xs font-bold text-slate-400">السؤال رقم (${index + 1})</span>
                         ${statusBadge}
                     </div>
-                    <div class="font-bold text-slate-800 text-sm">❓ ${escapeHTML(item.question || item.text || 'سؤال')}</div>
+                    <div class="font-bold text-slate-800 text-sm">❓ ${escapeHTML(questionText)}</div>
                     <div class="text-xs text-slate-600 bg-white p-2.5 rounded-xl border border-slate-100">
                         <span class="font-bold text-sky-700">إجابتك:</span> ${escapeHTML(item.userAnswer || 'لم يجب')}
                     </div>
@@ -8726,30 +8728,27 @@ function openStudentRecordDetails(record) {
             `;
         });
     } else {
-        breakdownHtml = '<p class="text-center text-slate-500 p-4">لا توجد تفاصيل تفصيلية مسجلة لهذا الاختبار.</p>';
+        breakdownHtml = '<p class="text-center text-slate-500 p-4">لا توجد تفاصيل مسجلة لهذا الاختبار.</p>';
     }
 
     modalContainer.innerHTML = `
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
-            <!-- ترويسة المودال -->
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 text-right">
             <div class="p-5 bg-sky-900 text-white flex justify-between items-center">
                 <h3 class="font-black text-lg">📄 تفاصيل ورقة اختبار: ${escapeHTML(record.topic)}</h3>
                 <button onclick="document.getElementById('student-details-modal').remove()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <!-- محتوى التفاصيل -->
             <div class="p-6 overflow-y-auto space-y-4 flex-1">
                 <div class="flex justify-between items-center bg-slate-100 p-4 rounded-2xl font-bold text-sm text-slate-700">
                     <div>الدرجة النهائية: <span class="text-sky-700 text-base">${record.score} / ${record.total || record.breakdown.length}</span></div>
                     <div>الحالة: <span class="px-3 py-1 rounded-full text-xs font-black ${record.status === 'ناجح' ? 'bg-emerald-100 text-emerald-800' : (record.status === 'راسب' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800')}">${record.status}</span></div>
                 </div>
                 <div class="space-y-2">
-                    <h4 class="font-bold text-slate-700 text-sm mb-2">تحليل الإجابات:</h4>
+                    <h4 class="font-black text-slate-700 text-sm mb-2">تحليل الإجابات:</h4>
                     ${breakdownHtml}
                 </div>
             </div>
-            <!-- ذيل المودال -->
             <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
                 <button onclick="document.getElementById('student-details-modal').remove()" class="px-5 py-2 bg-slate-800 text-white rounded-xl font-bold text-sm hover:bg-slate-900 transition cursor-pointer">
                     إغلاق
@@ -8759,10 +8758,23 @@ function openStudentRecordDetails(record) {
     `;
     modalContainer.classList.remove('hidden');
 }
-// دالة وسيطة آمنة تماماً لفتح تفاصيل الورقة بناءً على معرف السجل
-function openStudentRecordDetailsById(recordId) {
+// دالة وسيطة آمنة تحدث البيانات محلياً ثم تفتح تفاصيل الورقة بدقة متناهية
+async function openStudentRecordDetailsById(recordId) {
+    // 💡 تحديث مصفوفة السجلات من الذاكرة المحلية (localStorage) فوراً لجلب أحدث تصحيحات المعلم
+    try {
+        const localRecs = localStorage.getItem('studentRecords');
+        if (localRecs) {
+            studentRecords = JSON.parse(localRecs);
+        }
+    } catch(e) {
+        console.log("خطأ في تحديث السجلات المحلية:", e);
+    }
+
     if (!studentRecords || !Array.isArray(studentRecords)) return;
+    
+    // البحث عن السجل باستخدام المعرف الفرعي (ID)
     const targetRecord = studentRecords.find(item => item.id === recordId);
+    
     if (targetRecord && typeof openStudentRecordDetails === 'function') {
         openStudentRecordDetails(targetRecord);
     } else {
