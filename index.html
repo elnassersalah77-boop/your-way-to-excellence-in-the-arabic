@@ -8672,7 +8672,7 @@ function renderStudentPersonalRecords() {
 
     tbody.innerHTML = html;
 }
-// دالة عرض تفاصيل ورقة اختبار الطالب (محدثة لتعكس التصحيح الفوري لحالة السؤال المقالي)
+// دالة عرض تفاصيل ورقة اختبار الطالب (تعرض الدرجة الفعلية بدلاً من قيد الانتظار)
 function openStudentRecordDetails(record) {
     let modalContainer = document.getElementById('student-details-modal');
     if (!modalContainer) {
@@ -8689,23 +8689,36 @@ function openStudentRecordDetails(record) {
             let isEssay = item.type === 'essay' || item.type === 'passage_standalone' || item.type === 'passage_sub' || (!item.opts && !item.options);
 
             if (isEssay) {
-                // 💡 فحص دقيق وشامل لكافة حالات التخزين (boolean أو string أو رقم)
+                // فحص قيمة تقييم المعلم (سواء كانت true/false أو رقمية مثل 1, 0.5, 0)
                 const gradeVal = item.essayGrade;
-                const isTrue = gradeVal === true || gradeVal === "true" || gradeVal === 1 || gradeVal === "1";
-                const isFalse = gradeVal === false || gradeVal === "false" || gradeVal === 0 || gradeVal === "0";
+                const isGraded = gradeVal !== undefined && gradeVal !== null && gradeVal !== '';
 
-                if (isTrue) {
-                    statusBadge = '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-xs font-black">✨ إجابة مقالية صحيحة (تم التصحيح)</span>';
-                } else if (isFalse) {
-                    statusBadge = '<span class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-md text-xs font-black">❌ إجابة مقالية خاطئة (تم التصحيح)</span>';
+                if (isGraded) {
+                    // تحديد العبارة أو الدرجة بناءً على تقييم المعلم
+                    let gradeText = "";
+                    let badgeColor = "bg-emerald-100 text-emerald-800";
+
+                    if (gradeVal === true || gradeVal === "true" || gradeVal === 1 || gradeVal === "1") {
+                        gradeText = "الدرجة: 1 (صحيح)";
+                    } else if (gradeVal === 0.5 || gradeVal === "0.5") {
+                        gradeText = "الدرجة: 0.5 (نصف)";
+                        badgeColor = "bg-amber-100 text-amber-800";
+                    } else if (gradeVal === false || gradeVal === "false" || gradeVal === 0 || gradeVal === "0") {
+                        gradeText = "الدرجة: 0 (صفر)";
+                        badgeColor = "bg-rose-100 text-rose-800";
+                    } else {
+                        gradeText = `التقدير: ${gradeVal}`;
+                    }
+
+                    statusBadge = `<span class="px-2.5 py-1 ${badgeColor} rounded-md text-xs font-black">✨ ${gradeText}</span>`;
                 } else {
                     statusBadge = '<span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-md text-xs font-black">⏳ قيد انتظار تصحيح المعلم</span>';
                 }
             } else {
                 if (item.isCorrect) {
-                    statusBadge = '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-xs font-black">✓ إجابة موضوعية صحيحة</span>';
+                    statusBadge = '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-xs font-black">✓ إجابة موضوعية صحيحة (1)</span>';
                 } else {
-                    statusBadge = '<span class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-md text-xs font-black">✕ إجابة موضوعية خاطئة</span>';
+                    statusBadge = '<span class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-md text-xs font-black">✕ إجابة موضوعية خاطئة (0)</span>';
                 }
             }
 
@@ -8758,6 +8771,7 @@ function openStudentRecordDetails(record) {
     `;
     modalContainer.classList.remove('hidden');
 }
+
 // دالة وسيطة آمنة تحدث البيانات محلياً ثم تفتح تفاصيل الورقة بدقة متناهية
 async function openStudentRecordDetailsById(recordId) {
     // 💡 تحديث مصفوفة السجلات من الذاكرة المحلية (localStorage) فوراً لجلب أحدث تصحيحات المعلم
