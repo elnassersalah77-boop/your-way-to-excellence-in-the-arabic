@@ -2824,7 +2824,7 @@ window.addEventListener('DOMContentLoaded', () => {
             loadDataFromCloud();
         });
 
-        async function loadAdminRecordsFromCloud() {
+       async function loadAdminRecordsFromCloud() {
     try {
         if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseGetDoc && window.firebaseDoc) {
             const db = window.firebaseDb; 
@@ -2840,6 +2840,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 for (let i = 0; i < rTotal; i++) {
                     chunkPromises.push(getDoc(doc(db, "platformData", `records_part_${i}`)));
                 }
+                // الانتظار الإلزامي حتى يتم تحميل كافة أجزاء السجلات من السحابة دون استثناء
                 const chunksSnaps = await Promise.all(chunkPromises);
                 for (let i = 0; i < rTotal; i++) { 
                     let snap = chunksSnaps[i]; 
@@ -2849,7 +2850,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // جلب السجلات المحلية الموجودة على جهاز المتصفح الحالي
+            // جلب السجلات المحلية لضمان عدم ضياع أي نتيجة حديثة أُجريت للتو
             let localRecords = [];
             try {
                 localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
@@ -2857,7 +2858,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 localRecords = studentRecords || [];
             }
 
-            // 💡 الدمج الذكي الشامل مع إعطاء الأولوية المطلقة للسجلات الأحدث (لتظهر نتائج الامتحان حالا)
+            // الدمج الذكي الشامل مع إعطاء الأولوية المطلقة للأحدث
             let map = new Map();
             [...cloudRecords, ...localRecords].forEach(r => {
                 if (r && r.id) map.set(r.id, r);
@@ -2865,7 +2866,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
             studentRecords = Array.from(map.values());
             
-            // إعادة الترتيب من الأحدث للأقدم لضمان تصدر النتائج الجديدة قمة الجدول
+            // الترتيب الزمني من الأحدث للأقدم لتتصدر نتائج الطلاب الجدد القمة فوراً
             studentRecords.sort((a, b) => {
                 let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
                 let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
@@ -2877,7 +2878,6 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     } catch(e) { 
         console.log("خطأ في جلب السجلات للإدارة:", e);
-        // في حال حدوث أي خطأ سحابي، نعتمد على السجلات المحلية لضمان عدم توقف المنصة
         try {
             studentRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
         } catch(err) {}
@@ -3793,24 +3793,28 @@ async function showPortalTab(tabName) {
     } else if (tabName === 'exam') {
         populatePortalBranches('exam');
     } else if (tabName === 'records') {
-        // 💡 إجبار الطالب على تحميل أحدث نتائجه من السحابة مع مؤشر تحميل مرئي
+        // 💡 إظهار مؤشر التحميل الإجباري للطالب وسحب أحدث التصحيحات من السحابة
         if (typeof toggleCloudLoading === 'function') {
-            toggleCloudLoading(true, "جَارِي تَحْمِيلِ سِجِلِّكَ الدِّرَاسِيِّ...");
+            toggleCloudLoading(true, "جَارِي تَحْدِيثِ وَجْلِبِ أَحْدثِ تَقْيِيمَاتِ وَتَصْحِيحَاتِ الْمُعَلِّمِ...");
         }
         
         try {
+            // سحب أحدث السجلات والمقاليّات المصححة من السحابة إجبارياً
             if (typeof loadAdminRecordsFromCloud === 'function') {
-                await loadAdminRecordsFromCloud(); // سحب أحدث السجلات من السحابة
+                await loadAdminRecordsFromCloud();
             }
         } catch(e) {
-            console.log("خطأ في تحديث سجل الطالب:", e);
+            console.log("خطأ في تحديث سجل الطالب السحابي:", e);
         } finally {
             if (typeof toggleCloudLoading === 'function') {
                 toggleCloudLoading(false);
             }
         }
         
-        renderStudentPersonalRecords();
+        // استدعاء دالة عرض السجل بعد ضمان تحديثه بالكامل لترو الحالة والدرجة الجديدة
+        if (typeof renderStudentPersonalRecords === 'function') {
+            renderStudentPersonalRecords();
+        }
     }
 }
 
@@ -5290,6 +5294,26 @@ function showAdminDashboardPage() {
 
 // فتح صفحة قسم معين من لوحة الإدارة
 async function openAdminSectionPage(sectionId) {
+    // 💡 إظهار مؤشر التحميل فوراً وبشكل إجباري عند الضغط على قسم سجلات النتائج في لوحة المعلم
+    if (sectionId === 'view-admin-records') {
+        if (typeof toggleCloudLoading === 'function') {
+            toggleCloudLoading(true, "جَارِي سَحْبِ وَتَحْمِيلِ كَافَّةِ سِجِلَّاتِ النَّتَائِجِ مِنْ السَّحَابَةِ...");
+        }
+        
+        try {
+            if (typeof loadAdminRecordsFromCloud === 'function') {
+                await loadAdminRecordsFromCloud();
+            }
+        } catch (err) {
+            console.error("فشل التحميل الإجباري للسجلات:", err);
+        } finally {
+            if (typeof toggleCloudLoading === 'function') {
+                toggleCloudLoading(false);
+            }
+        }
+    }
+
+    // إخفاء كافة الأقسام الأخرى وإظهار القسم المطلوب
     document.querySelectorAll('.admin-section-view').forEach(el => {
         el.classList.add('hidden');
         el.classList.remove('flex');
@@ -5300,30 +5324,12 @@ async function openAdminSectionPage(sectionId) {
         targetSection.classList.remove('hidden');
         targetSection.classList.add('flex');
         
-        // 💡 إجبار المعلم على تحميل وتحديث السجلات من السحابة والذاكرة بالكامل عند فتح السجلات أو لوحة التحكم
-        if (sectionId === 'view-admin-records' || sectionId === 'view-admin-dashboard') {
-            if (typeof toggleCloudLoading === 'function') {
-                toggleCloudLoading(true, "جَارِي سَحْبِ وَتَحْمِيلِ جَمِيعِ نَتَائِجِ الطُّلَّابِ...");
-            }
-            try {
-                if (typeof loadAdminRecordsFromCloud === 'function') {
-                    await loadAdminRecordsFromCloud();
-                }
-            } catch(e) {
-                console.log("خطأ في جلب السجلات للإدارة:", e);
-            } finally {
-                if (typeof toggleCloudLoading === 'function') {
-                    toggleCloudLoading(false);
-                }
-            }
-            if (sectionId === 'view-admin-records') {
-                if (typeof populateRecAdminFilters === 'function') populateRecAdminFilters();
-                if (typeof renderAdminRecordsTable === 'function') renderAdminRecordsTable();
-            }
+        if (sectionId === 'view-admin-records') {
+            if (typeof populateRecAdminFilters === 'function') populateRecAdminFilters();
+            if (typeof renderAdminRecordsTable === 'function') renderAdminRecordsTable();
         }
-
-        // باقي الشروط للأقسام الأخرى
-        if (sectionId === 'view-admin-settings' && typeof loadAdminSettings === 'function') loadAdminSettings();
+        
+        else if (sectionId === 'view-admin-settings' && typeof loadAdminSettings === 'function') loadAdminSettings();
         else if (sectionId === 'view-admin-stages' && typeof renderAdminStagesList === 'function') renderAdminStagesList();
         else if (sectionId === 'view-admin-branches' && typeof renderAdminBranchesList === 'function') { if (typeof populateBranchAdminFilters === 'function') populateBranchAdminFilters(); renderAdminBranchesList(); }
         else if (sectionId === 'view-admin-topics' && typeof renderAdminTopicsList === 'function') { if (typeof populateTopicAdminFilters === 'function') populateTopicAdminFilters(); renderAdminTopicsList(); }
@@ -5332,7 +5338,6 @@ async function openAdminSectionPage(sectionId) {
         else if (sectionId === 'view-admin-quickinfo' && typeof renderAdminQuickInfoList === 'function') { if (typeof populateQiAdminFilters === 'function') populateQiAdminFilters(); renderAdminQuickInfoList(); }
         else if (sectionId === 'view-admin-students' && typeof renderAdminStudentsList === 'function') renderAdminStudentsList();
         
-        // تحديث عداد التصحيح السريع في لوحة التحكم الرئيسية تلقائياً
         if (typeof updateQuickGradingBadge === 'function') {
             updateQuickGradingBadge();
         }
@@ -7407,6 +7412,130 @@ async function openQuickGradingQueue() {
     openAdminSectionPage('view-quick-grading');
     renderCurrentQuickGradingItem();
 }
+// 3. دالة التصحيح الجزئي المتوافقة مع نظام الطابور لديك
+async function submitEssayGrade(recordIndex, breakdownIndex, isCorrect) {
+    if (!studentRecords || !studentRecords[recordIndex]) return;
+    let record = studentRecords[recordIndex];
+    if (!record.breakdown || !record.breakdown[breakdownIndex]) return;
+
+    // 1. تسجيل التقييم بدقة في العنصر الحالي
+    record.breakdown[breakdownIndex].essayGrade = isCorrect;
+
+    // 2. إعادة حساب الدرجة الموضوعية + المقالية المصححة حتى الآن
+    let objectiveScore = 0;
+    if (record.breakdown) {
+        record.breakdown.forEach(item => {
+            const hasNoOpts = (!item.opts || item.opts.length === 0) && (!item.options || item.options.length === 0);
+            const isMarkedPending = item.correctAnswer && String(item.correctAnswer).includes('بانتظار');
+            const isExplicitEssay = item.type === 'essay' || item.type === 'passage_standalone' || item.type === 'passage_sub';
+            const isEssay = hasNoOpts || isMarkedPending || isExplicitEssay;
+
+            if (!isEssay && item.isCorrect) {
+                objectiveScore++;
+            }
+        });
+    }
+
+    let essayBonusScore = record.breakdown.filter(b => b.essayGrade === true).length;
+    
+    // حساب عدد المقاليات المتبقية التي لم تُصحح بعد
+    let pendingCount = 0;
+    record.breakdown.forEach(item => {
+        const hasNoOpts = (!item.opts || item.opts.length === 0) && (!item.options || item.options.length === 0);
+        const isMarkedPending = item.correctAnswer && String(item.correctAnswer).includes('بانتظار');
+        const isExplicitEssay = item.type === 'essay' || item.type === 'passage_standalone' || item.type === 'passage_sub';
+        const isEssay = hasNoOpts || isMarkedPending || isExplicitEssay;
+        const isUngraded = item.essayGrade === undefined || item.essayGrade === null || item.essayGrade === '';
+
+        if (isEssay && isUngraded) {
+            pendingCount++;
+        }
+    });
+
+    let currentScore = objectiveScore + essayBonusScore;
+    let totalQuestions = record.total || record.breakdown.length;
+    let currentPct = totalQuestions > 0 ? Math.round((currentScore / totalQuestions) * 100) : 0;
+    let halfTotal = totalQuestions / 2;
+    
+    // 💡 تحديث الحالة فوراً (إذا انتهت كل الأسئلة المعلقة، تتغير الحالة من "قيد الانتظار" إلى "ناجح" أو "راسب")
+    let currentStatus = pendingCount === 0 ? (currentScore >= halfTotal ? "ناجح" : "راسب") : "بانتظار التصحيح";
+
+    record.score = currentScore;
+    record.pct = currentPct;
+    record.status = currentStatus;
+    record.pendingEssayCount = pendingCount;
+
+    // 3. حفظ التحديثات في الـ LocalStorage فوراً
+    localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+
+    // 4. رفع التحديثات إلى السحابة فوراً لتنعكس لدى الطالب في سجله الدراسي
+    try {
+        if (typeof saveStudentRecordsBackground === 'function') {
+            await saveStudentRecordsBackground();
+        }
+    } catch (e) {
+        console.log("خطأ في مزامنة التصحيح الجزئي السحابي:", e);
+    }
+
+    // 5. تحديث العدادات وإعادة رسم عنصر الطابور الحالي
+    if (typeof updateQuickGradingBadge === 'function') {
+        updateQuickGradingBadge();
+    }
+    
+    if (typeof openQuickGradingQueue === 'function') {
+        await openQuickGradingQueue();
+    }
+}
+
+// 4. الاعتماد النهائي والتأكيد على المزامنة
+async function finalizeRecordGrading(recordIndex) {
+    if (!studentRecords || !studentRecords[recordIndex]) return;
+    let record = studentRecords[recordIndex];
+
+    let unrated = record.breakdown.filter(item => {
+        const hasNoOpts = (!item.opts || item.opts.length === 0) && (!item.options || item.options.length === 0);
+        const isMarkedPending = item.correctAnswer && String(item.correctAnswer).includes('بانتظار');
+        const isExplicitEssay = item.type === 'essay' || item.type === 'passage_standalone' || item.type === 'passage_sub';
+        const isEssay = hasNoOpts || isMarkedPending || isExplicitEssay;
+        const isUngraded = item.essayGrade === undefined || item.essayGrade === null || item.essayGrade === '';
+        return isEssay && isUngraded;
+    });
+
+    if (unrated.length > 0) {
+        alert("يرجى تقييم جميع الأسئلة المقالية المتبقية لهذا الطالب قبل الاعتماد النهائي.");
+        return;
+    }
+
+    record.pendingEssayCount = 0;
+    let halfTotal = (record.total || record.breakdown.length) / 2;
+    record.status = record.score >= halfTotal ? "ناجح" : "راسب";
+
+    localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+
+    if (typeof toggleCloudLoading === 'function') {
+        toggleCloudLoading(true, "جَارِي حِفْظِ وَاعْتِمَادِ النَّتِيجَةِ نِهَائِيّاً...");
+    }
+
+    try {
+        if (typeof saveStudentRecordsBackground === 'function') {
+            await saveStudentRecordsBackground();
+        }
+    } catch (e) {
+        console.error("خطأ أثناء الاعتماد النهائي:", e);
+    } finally {
+        if (typeof toggleCloudLoading === 'function') {
+            toggleCloudLoading(false);
+        }
+    }
+
+    alert("تم اعتماد وتصحيح ورقة الطالب بالكامل بنجاح!");
+    if (typeof updateQuickGradingBadge === 'function') {
+        updateQuickGradingBadge();
+    }
+    if (typeof openQuickGradingQueue === 'function') {
+        openQuickGradingQueue();
+    }
+}
 
 function renderCurrentQuickGradingItem() {
     const container = document.getElementById('quick-grading-card-container');
@@ -8387,6 +8516,97 @@ function exportStudentReviewPDF() {
                 }
             }
         });
+// دالة عرض وتحديث سجل الطالب الدراسي (سجلي الدراسي) لضمان ظهور التعديلات والحالة الجديدة فوراً
+async function renderStudentPersonalRecords() {
+    const tbody = document.getElementById('portal-student-records-tbody');
+    if (!tbody) return;
+
+    // 1. تحديث البيانات من السحابة أو الذاكرة المحلية أولاً لجلب تصحيحات المعلم الأخيرة
+    try {
+        const localRecs = localStorage.getItem('studentRecords');
+        if (localRecs) {
+            studentRecords = JSON.parse(localRecs);
+        }
+        if (typeof loadAdminRecordsFromCloud === 'function') {
+            await loadAdminRecordsFromCloud();
+        }
+    } catch(e) {}
+
+    // 2. تصفية السجلات الخاصة بالطالب الحالي المسجل في الجلسة فقط
+    const myRecords = (studentRecords || []).filter(r => r.name === currentStudentSession.name);
+
+    if (myRecords.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-500 font-bold">لا توجد اختبارات سابقة مسجلة لك حتى الآن.</td></tr>';
+        return;
+    }
+
+    let topicAttemptCounts = {};
+    let html = '';
+
+    myRecords.forEach((r) => {
+        if (!topicAttemptCounts[r.topic]) {
+            topicAttemptCounts[r.topic] = 0;
+        }
+        topicAttemptCounts[r.topic]++;
+        const attemptNumber = topicAttemptCounts[r.topic];
+
+        let answeredCount = 0;
+        let unansweredCount = 0;
+
+        if (r.breakdown && Array.isArray(r.breakdown)) {
+            r.breakdown.forEach(b => {
+                if (b.userAnswer && b.userAnswer !== "لم يجب" && b.userAnswer !== "لم يُجب" && b.userAnswer !== "") {
+                    answeredCount++;
+                } else {
+                    unansweredCount++;
+                }
+            });
+        } else {
+            answeredCount = r.score || 0;
+            unansweredCount = (r.total || 0) - answeredCount;
+        }
+
+        const pendingCount = r.pendingEssayCount !== undefined ? r.pendingEssayCount : (r.breakdown ? r.breakdown.filter(b => b.type === 'essay' && (b.essayGrade === undefined || b.essayGrade === null)).length : 0);
+        
+        let essayNoticeHtml = pendingCount > 0 
+            ? `<span class="block text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md font-bold mt-1 border border-amber-200">⚠️ بانتظار تصحيح (${pendingCount}) مقالي</span>` 
+            : `<span class="block text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md font-bold mt-1 border border-emerald-100">✨ تم اعتماد التصحيح النهائي</span>`;
+
+        let statusClass = "bg-emerald-100 text-emerald-800";
+        if (r.status === "راسب") statusClass = "bg-rose-100 text-rose-800";
+        if (r.status === "بانتظار التصحيح") statusClass = "bg-amber-100 text-amber-800";
+
+        let displayTotal = r.objectiveTotal !== undefined ? r.objectiveTotal : (r.total || 20);
+        if (pendingCount === 0 && r.total) {
+            displayTotal = r.total;
+        }
+
+        html += `
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition text-xs sm:text-sm">
+            <td class="p-4 font-black text-slate-600">
+                ${escapeHTML(r.topic)} 
+                <span class="bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full text-[10px] font-bold mr-1">محاولة #${attemptNumber}</span>
+            </td>
+            <td class="p-4 text-slate-500 font-mono">
+                <div>📅 ${escapeHTML(r.date ? r.date.split(',')[0] : '--')}</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">⏱️ المدة: ${escapeHTML(r.duration || '--')}</div>
+            </td>
+            <td class="p-4 font-bold text-slate-700 text-center">
+                <span class="text-emerald-600 font-black">أجاب: ${answeredCount}</span> | 
+                <span class="text-rose-600 font-black">لم يجب: ${unansweredCount}</span>
+            </td>
+            <td class="p-4 text-center">
+                <span class="font-black text-sky-900 text-base">${r.score} / ${displayTotal} (${r.pct}%)</span>
+                ${essayNoticeHtml}
+            </td>
+            <td class="p-4 text-center">
+                <span class="px-3 py-1 rounded-full text-xs font-black ${statusClass}">${r.status}</span>
+            </td>
+        </tr>`;
+    });
+
+    tbody.innerHTML = html;
+}
     </script>
 <!-- صفحة مراجعة إجابات الطالب المستقلة بملء الشاشة -->
     <div id="view-quiz-review" class="hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto text-right">
