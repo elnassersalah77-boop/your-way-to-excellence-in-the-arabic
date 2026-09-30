@@ -2840,7 +2840,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 for (let i = 0; i < rTotal; i++) {
                     chunkPromises.push(getDoc(doc(db, "platformData", `records_part_${i}`)));
                 }
-                // الانتظار الإلزامي حتى يتم تحميل كافة أجزاء السجلات من السحابة دون استثناء
                 const chunksSnaps = await Promise.all(chunkPromises);
                 for (let i = 0; i < rTotal; i++) { 
                     let snap = chunksSnaps[i]; 
@@ -2850,7 +2849,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // جلب السجلات المحلية لضمان عدم ضياع أي نتيجة حديثة أُجريت للتو
             let localRecords = [];
             try {
                 localRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
@@ -2858,29 +2856,36 @@ window.addEventListener('DOMContentLoaded', () => {
                 localRecords = studentRecords || [];
             }
 
-            // الدمج الذكي الشامل مع إعطاء الأولوية المطلقة للأحدث
+            // 💡 الدمج الذكي مع إعطاء الأولوية للنسخة الأحدث (التي تحمل التصحيح الجديد)
             let map = new Map();
+            // نضيف السجلات السحابية أولاً، ثم ندمج المحلية فوقها لضمان بقاء التعديلات اليدوية الأخيرة
             [...cloudRecords, ...localRecords].forEach(r => {
-                if (r && r.id) map.set(r.id, r);
+                if (r && r.id) {
+                    // إذا كان السجل موجوداً، نأخذ النسخة التي تحمل تفاصيل تصحيح أحدث أو score أعلى
+                    if (map.has(r.id)) {
+                        let existing = map.get(r.id);
+                        if ((r.pendingEssayCount || 0) <= (existing.pendingEssayCount || 0)) {
+                            map.set(r.id, r); // تفضيل السجل الذي تمت معالجة مقالياته
+                        }
+                    } else {
+                        map.set(r.id, r);
+                    }
+                }
             });
 
             studentRecords = Array.from(map.values());
             
-            // الترتيب الزمني من الأحدث للأقدم لتتصدر نتائج الطلاب الجدد القمة فوراً
             studentRecords.sort((a, b) => {
                 let timeA = a.id ? parseInt(a.id.replace('rec_', '')) || 0 : 0;
                 let timeB = b.id ? parseInt(b.id.replace('rec_', '')) || 0 : 0;
                 return timeB - timeA;
             });
 
-            // تحديث التخزين المحلي ليتزامن تماماً
+            // تحديث الذاكرة المحلية إجبارياً لكي يراها الطالب في سجله الدراسي
             localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
         }
     } catch(e) { 
-        console.log("خطأ في جلب السجلات للإدارة:", e);
-        try {
-            studentRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
-        } catch(err) {}
+        console.log("خطأ في جلب السجلات:", e);
     }
 }
               
@@ -3519,6 +3524,38 @@ async function saveQuestionsState() {
         }
     } catch (e) {
         console.error("خطأ في حفظ السجلات سحابياً:", e);
+    }
+}
+
+// دالة مركزية موحدة لحفظ ومزامنة سجلات الطلاب في كل المنصة (طالب ومعلم)
+async function saveAndSyncRecordsToCloud(updatedRecords) {
+    if (updatedRecords && Array.isArray(updatedRecords)) {
+        studentRecords = updatedRecords;
+    }
+    
+    // 1. الحفظ الإلزامي في التخزين المحلي للمتصفح أولاً لضمان الظهور الفوري
+    try {
+        localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+    } catch(e) {
+        console.error("خطأ في التخزين المحلي:", e);
+    }
+
+    // 2. الحفظ السحابي الإلزامي عبر نظام الأجزاء (Chunks) لتحديث السحابة
+    try {
+        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+            const db = window.firebaseDb; 
+            const rChunkSize = 300; 
+            let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
+            
+            for (let i = 0; i < rTotalParts; i++) {
+                const chunkData = { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) };
+                await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", `records_part_${i}`), chunkData);
+            }
+            
+            await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", "records_meta"), { totalParts: rTotalParts });
+        }
+    } catch (e) {
+        console.error("خطأ في الرفع السحابي للسجلات:", e);
     }
 }
 
@@ -5294,12 +5331,15 @@ function showAdminDashboardPage() {
 
 // فتح صفحة قسم معين من لوحة الإدارة
 async function openAdminSectionPage(sectionId) {
-    // 💡 إظهار مؤشر التحميل فوراً وبشكل إجباري عند الضغط على قسم سجلات النتائج في لوحة المعلم
+    // 💡 إذا كان القسم هو سجلات النتائج، نقوم بإظهار المؤشر ومنح المتصفح مهلة رسم بصرية فورية
     if (sectionId === 'view-admin-records') {
         if (typeof toggleCloudLoading === 'function') {
             toggleCloudLoading(true, "جَارِي سَحْبِ وَتَحْمِيلِ كَافَّةِ سِجِلَّاتِ النَّتَائِجِ مِنْ السَّحَابَةِ...");
         }
         
+        // إعطاء المتصفح مهلة قصيرة جداً (50 ميلي ثانية) لضمان ظهور واجهة التحميل على الشاشة للمستخدم
+        await new Promise(resolve => setTimeout(resolve, 50));
+
         try {
             if (typeof loadAdminRecordsFromCloud === 'function') {
                 await loadAdminRecordsFromCloud();
@@ -5313,7 +5353,7 @@ async function openAdminSectionPage(sectionId) {
         }
     }
 
-    // إخفاء كافة الأقسام الأخرى وإظهار القسم المطلوب
+    // إخفاء كافة الأقسام الإدارية وإظهار القسم المطلوب
     document.querySelectorAll('.admin-section-view').forEach(el => {
         el.classList.add('hidden');
         el.classList.remove('flex');
@@ -5328,7 +5368,6 @@ async function openAdminSectionPage(sectionId) {
             if (typeof populateRecAdminFilters === 'function') populateRecAdminFilters();
             if (typeof renderAdminRecordsTable === 'function') renderAdminRecordsTable();
         }
-        
         else if (sectionId === 'view-admin-settings' && typeof loadAdminSettings === 'function') loadAdminSettings();
         else if (sectionId === 'view-admin-stages' && typeof renderAdminStagesList === 'function') renderAdminStagesList();
         else if (sectionId === 'view-admin-branches' && typeof renderAdminBranchesList === 'function') { if (typeof populateBranchAdminFilters === 'function') populateBranchAdminFilters(); renderAdminBranchesList(); }
@@ -5342,6 +5381,26 @@ async function openAdminSectionPage(sectionId) {
             updateQuickGradingBadge();
         }
     }
+}
+// دالة تشغيل مؤشر التحميل الإجباري عند النقر على زر سجلات النتائج في لوحة التحكم
+async function openAdminRecordsWithLoader() {
+    if (typeof toggleCloudLoading === 'function') {
+        toggleCloudLoading(true, "جَارِي سَحْبِ وَتَحْمِيلِ كَافَّةِ سِجِلَّاتِ النَّتَائِجِ مِنْ السَّحَابَةِ...");
+    }
+
+    try {
+        if (typeof loadAdminRecordsFromCloud === 'function') {
+            await loadAdminRecordsFromCloud();
+        }
+    } catch (e) {
+        console.log("خطأ في جلب السجلات:", e);
+    } finally {
+        if (typeof toggleCloudLoading === 'function') {
+            toggleCloudLoading(false);
+        }
+    }
+
+    openAdminSectionPage('view-admin-records');
 }
 
         // زر الخروج النهائي والعودة للرئيسية
@@ -7413,15 +7472,16 @@ async function openQuickGradingQueue() {
     renderCurrentQuickGradingItem();
 }
 // 3. دالة التصحيح الجزئي المتوافقة مع نظام الطابور لديك
+// دالة التصحيح الجزئي المحدثة بالكامل
 async function submitEssayGrade(recordIndex, breakdownIndex, isCorrect) {
     if (!studentRecords || !studentRecords[recordIndex]) return;
     let record = studentRecords[recordIndex];
     if (!record.breakdown || !record.breakdown[breakdownIndex]) return;
 
-    // 1. تسجيل التقييم بدقة في العنصر الحالي
+    // تسجيل التصحيح
     record.breakdown[breakdownIndex].essayGrade = isCorrect;
 
-    // 2. إعادة حساب الدرجة الموضوعية + المقالية المصححة حتى الآن
+    // إعادة حساب الدرجات والأسئلة المعلقة والحالة
     let objectiveScore = 0;
     if (record.breakdown) {
         record.breakdown.forEach(item => {
@@ -7437,8 +7497,6 @@ async function submitEssayGrade(recordIndex, breakdownIndex, isCorrect) {
     }
 
     let essayBonusScore = record.breakdown.filter(b => b.essayGrade === true).length;
-    
-    // حساب عدد المقاليات المتبقية التي لم تُصحح بعد
     let pendingCount = 0;
     record.breakdown.forEach(item => {
         const hasNoOpts = (!item.opts || item.opts.length === 0) && (!item.options || item.options.length === 0);
@@ -7456,8 +7514,6 @@ async function submitEssayGrade(recordIndex, breakdownIndex, isCorrect) {
     let totalQuestions = record.total || record.breakdown.length;
     let currentPct = totalQuestions > 0 ? Math.round((currentScore / totalQuestions) * 100) : 0;
     let halfTotal = totalQuestions / 2;
-    
-    // 💡 تحديث الحالة فوراً (إذا انتهت كل الأسئلة المعلقة، تتغير الحالة من "قيد الانتظار" إلى "ناجح" أو "راسب")
     let currentStatus = pendingCount === 0 ? (currentScore >= halfTotal ? "ناجح" : "راسب") : "بانتظار التصحيح";
 
     record.score = currentScore;
@@ -7465,29 +7521,23 @@ async function submitEssayGrade(recordIndex, breakdownIndex, isCorrect) {
     record.status = currentStatus;
     record.pendingEssayCount = pendingCount;
 
-    // 3. حفظ التحديثات في الـ LocalStorage فوراً
-    localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
-
-    // 4. رفع التحديثات إلى السحابة فوراً لتنعكس لدى الطالب في سجله الدراسي
-    try {
-        if (typeof saveStudentRecordsBackground === 'function') {
-            await saveStudentRecordsBackground();
-        }
-    } catch (e) {
-        console.log("خطأ في مزامنة التصحيح الجزئي السحابي:", e);
+    // 💡 الحفظ والمزامنة الفورية محلياً وسحابياً
+    if (typeof saveAndSyncRecordsToCloud === 'function') {
+        await saveAndSyncRecordsToCloud(studentRecords);
+    } else {
+        localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
     }
 
-    // 5. تحديث العدادات وإعادة رسم عنصر الطابور الحالي
     if (typeof updateQuickGradingBadge === 'function') {
         updateQuickGradingBadge();
     }
     
-    if (typeof openQuickGradingQueue === 'function') {
-        await openQuickGradingQueue();
+    if (typeof renderCurrentQuickGradingItem === 'function') {
+        renderCurrentQuickGradingItem();
     }
 }
 
-// 4. الاعتماد النهائي والتأكيد على المزامنة
+// دالة الاعتماد النهائي المحدثة بالكامل
 async function finalizeRecordGrading(recordIndex) {
     if (!studentRecords || !studentRecords[recordIndex]) return;
     let record = studentRecords[recordIndex];
@@ -7510,22 +7560,19 @@ async function finalizeRecordGrading(recordIndex) {
     let halfTotal = (record.total || record.breakdown.length) / 2;
     record.status = record.score >= halfTotal ? "ناجح" : "راسب";
 
-    localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
-
     if (typeof toggleCloudLoading === 'function') {
         toggleCloudLoading(true, "جَارِي حِفْظِ وَاعْتِمَادِ النَّتِيجَةِ نِهَائِيّاً...");
     }
 
-    try {
-        if (typeof saveStudentRecordsBackground === 'function') {
-            await saveStudentRecordsBackground();
-        }
-    } catch (e) {
-        console.error("خطأ أثناء الاعتماد النهائي:", e);
-    } finally {
-        if (typeof toggleCloudLoading === 'function') {
-            toggleCloudLoading(false);
-        }
+    // 💡 الحفظ والمزامنة النهائية محلياً وسحابياً
+    if (typeof saveAndSyncRecordsToCloud === 'function') {
+        await saveAndSyncRecordsToCloud(studentRecords);
+    } else {
+        localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+    }
+
+    if (typeof toggleCloudLoading === 'function') {
+        toggleCloudLoading(false);
     }
 
     alert("تم اعتماد وتصحيح ورقة الطالب بالكامل بنجاح!");
@@ -8517,22 +8564,36 @@ function exportStudentReviewPDF() {
             }
         });
 // دالة عرض وتحديث سجل الطالب الدراسي (سجلي الدراسي) لضمان ظهور التعديلات والحالة الجديدة فوراً
+// استبدل دالة عرض السجل للطالب بهذا الإصدار الشامل
 async function renderStudentPersonalRecords() {
     const tbody = document.getElementById('portal-student-records-tbody');
     if (!tbody) return;
 
-    // 1. تحديث البيانات من السحابة أو الذاكرة المحلية أولاً لجلب تصحيحات المعلم الأخيرة
+    // إظهار مؤشر التحميل للطالب أثناء السحب
+    if (typeof toggleCloudLoading === 'function') {
+        toggleCloudLoading(true, "جَارِي تَحْدِيثِ سِجِلِّكَ الدِّرَاسِيِّ...");
+    }
+
     try {
+        // سحب أحدث السجلات من السحابة إن توفرت
+        if (typeof loadAdminRecordsFromCloud === 'function') {
+            await loadAdminRecordsFromCloud();
+        }
+        
+        // جلبها من التخزين المحلي كخيار مضمون وطارئ
         const localRecs = localStorage.getItem('studentRecords');
         if (localRecs) {
             studentRecords = JSON.parse(localRecs);
         }
-        if (typeof loadAdminRecordsFromCloud === 'function') {
-            await loadAdminRecordsFromCloud();
+    } catch(e) {
+        console.log("خطأ في تحديث سجل الطالب:", e);
+    } finally {
+        if (typeof toggleCloudLoading === 'function') {
+            toggleCloudLoading(false);
         }
-    } catch(e) {}
+    }
 
-    // 2. تصفية السجلات الخاصة بالطالب الحالي المسجل في الجلسة فقط
+    // تصفية السجلات الخاصة بالطالب الحالي المسجل في الجلسة فقط
     const myRecords = (studentRecords || []).filter(r => r.name === currentStudentSession.name);
 
     if (myRecords.length === 0) {
@@ -8567,11 +8628,18 @@ async function renderStudentPersonalRecords() {
         }
 
         const pendingCount = r.pendingEssayCount !== undefined ? r.pendingEssayCount : (r.breakdown ? r.breakdown.filter(b => b.type === 'essay' && (b.essayGrade === undefined || b.essayGrade === null)).length : 0);
-        
+        // استخدام معرف السجل (id) أو تخزين مؤقت آمن لتفادي كسر الـ HTML
+let detailsBtnHtml = `
+    <button onclick='openStudentRecordDetailsById("${r.id}")' class="mt-2 px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 mx-auto border border-sky-200 cursor-pointer">
+        <i class="fa-solid fa-eye"></i> عرض تفاصيل الورقة
+    </button>
+`;
+        // رسالة الحالة بناءً على تصحيح المعلم النهائي
         let essayNoticeHtml = pendingCount > 0 
             ? `<span class="block text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md font-bold mt-1 border border-amber-200">⚠️ بانتظار تصحيح (${pendingCount}) مقالي</span>` 
             : `<span class="block text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md font-bold mt-1 border border-emerald-100">✨ تم اعتماد التصحيح النهائي</span>`;
 
+        // تلوين الحالة (ناجح / راسب / قيد الانتظار)
         let statusClass = "bg-emerald-100 text-emerald-800";
         if (r.status === "راسب") statusClass = "bg-rose-100 text-rose-800";
         if (r.status === "بانتظار التصحيح") statusClass = "bg-amber-100 text-amber-800";
@@ -8606,6 +8674,100 @@ async function renderStudentPersonalRecords() {
     });
 
     tbody.innerHTML = html;
+}
+// دالة عرض تفاصيل ورقة اختبار الطالب (نفس واجهة المعلم بدون أزرار التصحيح)
+function openStudentRecordDetails(record) {
+    // يمكنك إنشاء عنصر Modal في الـ HTML أو عرضها في منطقة مخصصة
+    let modalContainer = document.getElementById('student-details-modal');
+    if (!modalContainer) {
+        // إنشاء المودال برمجياً إذا لم يكن موجوداً
+        modalContainer = document.createElement('div');
+        modalContainer.id = 'student-details-modal';
+        modalContainer.className = 'fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto';
+        document.body.appendChild(modalContainer);
+    }
+
+    let breakdownHtml = '';
+    if (record.breakdown && Array.isArray(record.breakdown)) {
+        record.breakdown.forEach((item, index) => {
+            let statusBadge = '';
+            let isEssay = item.type === 'essay' || item.type === 'passage_standalone' || item.type === 'passage_sub' || (!item.opts && !item.options);
+
+            if (isEssay) {
+                if (item.essayGrade === true) {
+                    statusBadge = '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-xs font-black">✨ إجابة مقالية صحيحة (تم التصحيح)</span>';
+                } else if (item.essayGrade === false) {
+                    statusBadge = '<span class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-md text-xs font-black">❌ إجابة مقالية خاطئة (تم التصحيح)</span>';
+                } else {
+                    statusBadge = '<span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-md text-xs font-black">⏳ قيد انتظار تصحيح المعلم</span>';
+                }
+            } else {
+                if (item.isCorrect) {
+                    statusBadge = '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-xs font-black">✓ إجابة موضوعية صحيحة</span>';
+                } else {
+                    statusBadge = '<span class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-md text-xs font-black">✕ إجابة موضوعية خاطئة</span>';
+                }
+            }
+
+            breakdownHtml += `
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 mb-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-400">السؤال رقم (${index + 1})</span>
+                        ${statusBadge}
+                    </div>
+                    <div class="font-bold text-slate-800 text-sm">❓ ${escapeHTML(item.question || item.text || 'سؤال')}</div>
+                    <div class="text-xs text-slate-600 bg-white p-2.5 rounded-xl border border-slate-100">
+                        <span class="font-bold text-sky-700">إجابتك:</span> ${escapeHTML(item.userAnswer || 'لم يجب')}
+                    </div>
+                    <div class="text-xs text-slate-600 bg-white p-2.5 rounded-xl border border-slate-100">
+                        <span class="font-bold text-emerald-700">الإجابة النموذجية:</span> ${escapeHTML(item.correctAnswer || '--')}
+                    </div>
+                </div>
+            `;
+        });
+    } else {
+        breakdownHtml = '<p class="text-center text-slate-500 p-4">لا توجد تفاصيل تفصيلية مسجلة لهذا الاختبار.</p>';
+    }
+
+    modalContainer.innerHTML = `
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
+            <!-- ترويسة المودال -->
+            <div class="p-5 bg-sky-900 text-white flex justify-between items-center">
+                <h3 class="font-black text-lg">📄 تفاصيل ورقة اختبار: ${escapeHTML(record.topic)}</h3>
+                <button onclick="document.getElementById('student-details-modal').remove()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <!-- محتوى التفاصيل -->
+            <div class="p-6 overflow-y-auto space-y-4 flex-1">
+                <div class="flex justify-between items-center bg-slate-100 p-4 rounded-2xl font-bold text-sm text-slate-700">
+                    <div>الدرجة النهائية: <span class="text-sky-700 text-base">${record.score} / ${record.total || record.breakdown.length}</span></div>
+                    <div>الحالة: <span class="px-3 py-1 rounded-full text-xs font-black ${record.status === 'ناجح' ? 'bg-emerald-100 text-emerald-800' : (record.status === 'راسب' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800')}">${record.status}</span></div>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-bold text-slate-700 text-sm mb-2">تحليل الإجابات:</h4>
+                    ${breakdownHtml}
+                </div>
+            </div>
+            <!-- ذيل المودال -->
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+                <button onclick="document.getElementById('student-details-modal').remove()" class="px-5 py-2 bg-slate-800 text-white rounded-xl font-bold text-sm hover:bg-slate-900 transition cursor-pointer">
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    `;
+    modalContainer.classList.remove('hidden');
+}
+// دالة وسيطة آمنة تماماً لفتح تفاصيل الورقة بناءً على معرف السجل
+function openStudentRecordDetailsById(recordId) {
+    if (!studentRecords || !Array.isArray(studentRecords)) return;
+    const targetRecord = studentRecords.find(item => item.id === recordId);
+    if (targetRecord && typeof openStudentRecordDetails === 'function') {
+        openStudentRecordDetails(targetRecord);
+    } else {
+        alert("عذراً، تعذر العثور على تفاصيل هذا السجل.");
+    }
 }
     </script>
 <!-- صفحة مراجعة إجابات الطالب المستقلة بملء الشاشة -->
