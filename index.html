@@ -1125,9 +1125,31 @@ select, select option {
             </div>
 
             <!-- حقل نص السؤال المقالي المنفرد -->
-            <div id="standalone-essay-container" class="space-y-2 hidden">
-                <label class="block mb-2 font-black text-slate-700">نَصُّ السُّؤَالِ الْمَقَالِيِّ الْمُنْفَرِدِ:</label>
-                <textarea id="standalone-essay-prompt" rows="3" placeholder="اكتب السؤال المقالي الذي سيجيب عنه الطالب..." class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-800 focus:outline-none focus:border-indigo-600"></textarea>
+            <!-- حقل نص السؤال المقالي المنفرد، الإجابات المتعددة، والتعليل -->
+            <div id="standalone-essay-container" class="space-y-4 hidden">
+                <div>
+                    <label class="block mb-2 font-black text-slate-700">نَصُّ السُّؤَالِ الْمَقَالِيِّ الْمُنْفَرِدِ:</label>
+                    <textarea id="standalone-essay-prompt" rows="3" placeholder="اكتب السؤال المقالي الذي سيجيب عنه الطالب..." class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-800 focus:outline-none focus:border-indigo-600"></textarea>
+                </div>
+
+                <div class="bg-emerald-50/70 p-5 rounded-2xl border-2 border-emerald-200 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <label class="block font-black text-emerald-950 text-sm"><i class="fa-solid fa-check-double ml-1"></i> الإجابات النموذجية الصحيحة (يمكنك إضافة أكثر من إجابة مقبولة):</label>
+                        <button type="button" onclick="addModelAnswerInput('standalone-model-ans-container')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer transition shadow-sm">
+                            <i class="fa-solid fa-plus ml-1"></i> إضافة إجابة أخرى
+                        </button>
+                    </div>
+                    <div id="standalone-model-ans-container" class="space-y-2">
+                        <div class="flex items-center gap-2 model-ans-row" id="default_standalone_ans">
+                            <input type="text" placeholder="اكتب إجابة نموذجية صحيحة..." class="model-ans-input w-full p-3 rounded-xl border-2 border-emerald-300 bg-white font-bold text-emerald-950 focus:outline-none focus:border-emerald-500 text-sm" value="">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">التعليل أو الشرح (يظهر للطالب بعد الإجابة):</label>
+                    <textarea id="standalone-essay-exp" placeholder="اكتب سبب صحة الإجابة أو الشرح التفصيلي..." class="w-full p-3 rounded-xl border-2 border-slate-300 bg-white font-bold text-slate-800 focus:outline-none focus:border-sky-500 text-sm" rows="2"></textarea>
+                </div>
             </div>
 
             <!-- قسم الأسئلة التابعة للقطعة -->
@@ -2013,6 +2035,22 @@ function openPassageForm(editId = null) {
             
             if (item.type === 'essay_standalone') {
                 document.getElementById('standalone-essay-prompt').value = item.prompt || '';
+                
+                // 💡 تعبئة خانات الإجابات النموذجية المتعددة عند التعديل
+                let modelAnswersList = item.modelAnswers || (item.questions && item.questions[0] && item.questions[0].modelAnswers ? item.questions[0].modelAnswers : null) || (item.questions && item.questions[0] && item.questions[0].ans ? [item.questions[0].ans] : (item.ans ? [item.ans] : [""]));
+                const container = document.getElementById('standalone-model-ans-container');
+                if (container) {
+                    container.innerHTML = '';
+                    modelAnswersList.forEach((ansVal) => {
+                        addModelAnswerInput('standalone-model-ans-container', ansVal);
+                    });
+                }
+
+                // 💡 تعبئة حقل التعليل أو الشرح عند التعديل
+                const expVal = (item.questions && item.questions[0] ? item.questions[0].exp : '') || item.exp || '';
+                const expInput = document.getElementById('standalone-essay-exp');
+                if (expInput) expInput.value = expVal;
+
             } else {
                 document.getElementById('passage-content-input').value = item.content || '';
                 renderPassageSubQuestions(item.questions || []);
@@ -2034,11 +2072,24 @@ function openPassageForm(editId = null) {
 
         document.getElementById('passage-content-input').value = '';
         document.getElementById('standalone-essay-prompt').value = '';
+        
+        // تفريغ خانات الإجابات النموذجية المتعددة وترك خانة فارغة واحدة للإضافة الجديدة
+        const container = document.getElementById('standalone-model-ans-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="flex items-center gap-2 model-ans-row" id="default_standalone_ans">
+                    <input type="text" placeholder="اكتب إجابة نموذجية صحيحة..." class="model-ans-input w-full p-3 rounded-xl border-2 border-emerald-300 bg-white font-bold text-emerald-950 focus:outline-none focus:border-emerald-500 text-sm" value="">
+                </div>
+            `;
+        }
+
+        const expInput = document.getElementById('standalone-essay-exp');
+        if (expInput) expInput.value = '';
+
         document.getElementById('passage-subquestions-list').innerHTML = '';
         addPassageSubQuestion('mcq'); 
     }
 }
-
 function closePassageForm() {
     const mainSection = document.getElementById('view-admin-passages');
     const formView = document.getElementById('admin-passage-form-view');
@@ -2084,15 +2135,41 @@ function addPassageSubQuestion(qType = 'mcq', qData = null) {
     `;
 
     if (qType === 'essay') {
+        let initialAnswers = [];
+        if (qData) {
+            if (Array.isArray(qData.modelAnswers)) initialAnswers = qData.modelAnswers;
+            else if (qData.ans) initialAnswers = [qData.ans];
+        }
+        if (initialAnswers.length === 0) initialAnswers = [""];
+
+        let ansInputsHtml = '';
+        const containerId = 'passage_sub_ans_' + index + '_' + Math.random().toString(36).substring(2);
+
+        initialAnswers.forEach((ansVal, aIdx) => {
+            let rowId = containerId + '_' + aIdx;
+            ansInputsHtml += `
+                <div class="flex items-center gap-2 model-ans-row mt-2" id="${rowId}">
+                    <input type="text" placeholder="اكتب إجابة نموذجية صحيحة..." class="sub-q-model-ans-input w-full p-3 rounded-xl border-2 border-emerald-300 bg-emerald-50/50 font-bold text-emerald-950 focus:outline-none focus:border-emerald-500 text-sm" value="${escapeHTML(ansVal)}">
+                    <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-500 hover:text-rose-700 p-2.5 cursor-pointer bg-slate-100 rounded-xl transition" title="حذف الخانة"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            `;
+        });
+
         div.innerHTML = `
             <div class="flex justify-between items-center border-b border-slate-200 pb-2">
                 <span class="font-black text-amber-900 text-sm"><i class="fa-solid fa-pen-nib ml-1"></i> سؤال مقالي تابع للقطعة #${index + 1}</span>
                 <button type="button" onclick="this.closest('.passage-sub-q-item').remove()" class="text-rose-600 hover:text-rose-800 font-bold text-sm cursor-pointer"><i class="fa-solid fa-trash ml-1"></i> حذف السؤال</button>
             </div>
-            <textarea placeholder="اكتب نص السؤال المقالي التابع للقطعة هنا..." class="sub-q-text w-full p-3.5 rounded-xl border-2 border-slate-300 bg-white font-bold text-slate-800 focus:outline-none focus:border-amber-500">${qData ? escapeHTML(qData.text) : ''}</textarea>
-            <div>
-                <label class="block text-xs font-black text-slate-600 mb-1">الإجابة النموذجية أو المفتاح:</label>
-                <input type="text" placeholder="مفاتيح الإجابة النموذجية..." class="sub-q-essay-ans w-full p-3 rounded-xl border-2 border-slate-300 bg-white font-bold focus:outline-none focus:border-amber-500" value="${qData ? escapeHTML(qData.ans || '') : ''}">
+            <textarea placeholder="اكتب نص السؤال المقالي التابع للقطعة هنا..." class="sub-q-text w-full p-3.5 rounded-xl border-2 border-slate-300 bg-white font-bold text-slate-800 focus:outline-none focus:border-amber-500" rows="2">${qData ? escapeHTML(qData.text) : ''}</textarea>
+            
+            <div class="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200 space-y-2">
+                <div class="flex justify-between items-center">
+                    <label class="text-xs font-black text-emerald-900"><i class="fa-solid fa-check-double ml-1"></i> الإجابات النموذجية المقبولة (يمكنك إضافة أكثر من إجابة):</label>
+                    <button type="button" onclick="addModelAnswerInput('${containerId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1.5 rounded-xl cursor-pointer transition shadow-sm"><i class="fa-solid fa-plus ml-1"></i> إضافة إجابة أخرى</button>
+                </div>
+                <div id="${containerId}" class="space-y-2">
+                    ${ansInputsHtml}
+                </div>
             </div>
             ${commonFields}
         `;
@@ -2172,7 +2249,7 @@ function savePassageData() {
     const branch = document.getElementById('passage-branch-input').value.trim();
     const topic = document.getElementById('passage-topic-input').value.trim();
     const type = document.getElementById('passage-type-input').value;
-    const imgUrl = document.getElementById('passage-img-input') ? document.getElementById('passage-img-input').value.trim() : ""; // قراءة رابط الصورة
+    const imgUrl = document.getElementById('passage-img-input') ? document.getElementById('passage-img-input').value.trim() : "";
 
     if (!stage || !grade || !branch || !topic) {
         alert("يرجى اختيار المرحلة والصف والفرع والموضوع بدقة.");
@@ -2186,6 +2263,26 @@ function savePassageData() {
     if (type === 'essay_standalone') {
         prompt = document.getElementById('standalone-essay-prompt').value.trim();
         if (!prompt) { alert("يرجى كتابة نص السؤال المقالي."); return; }
+
+        // 💡 جمع الإجابات النموذجية المتعددة للسؤال المقالي المنفرد
+        const modelAnsInputs = document.querySelectorAll('#standalone-model-ans-container .model-ans-input');
+        let modelAnswersArr = [];
+        modelAnsInputs.forEach(inp => {
+            let val = inp.value.trim();
+            if (val) modelAnswersArr.push(val);
+        });
+
+        if (modelAnswersArr.length === 0) {
+            alert("يرجى إدخال إجابة نموذجية واحدة صحيحة على الأقل.");
+            return;
+        }
+
+        subQuestions = [{ 
+            type: 'essay', 
+            text: prompt, 
+            ans: modelAnswersArr[0], 
+            modelAnswers: modelAnswersArr 
+        }];
     } else {
         content = document.getElementById('passage-content-input').value.trim();
         if (!content) { alert("يرجى كتابة نص القطعة."); return; }
@@ -2204,10 +2301,25 @@ function savePassageData() {
                 alert("يرجى كتابة نص جميع الأسئلة الفرعية.");
                 return;
             }
+if (qType === 'essay') {
+                const ansInputs = item.querySelectorAll('.sub-q-model-ans-input');
+                let modelAnswersArr = [];
+                ansInputs.forEach(inp => {
+                    let val = inp.value.trim();
+                    if (val) modelAnswersArr.push(val);
+                });
 
-            if (qType === 'essay') {
-                const ans = item.querySelector('.sub-q-essay-ans').value.trim();
-                subQuestions.push({ type: 'essay', text, ans });
+                if (modelAnswersArr.length === 0) {
+                    alert("يرجى إدخال إجابة نموذجية واحدة صحيحة على الأقل للسؤال المقالي التابع للقطعة.");
+                    return;
+                }
+
+                subQuestions.push({ 
+                    type: 'essay', 
+                    text, 
+                    ans: modelAnswersArr[0], 
+                    modelAnswers: modelAnswersArr 
+                });
             } else {
                 const optInputs = item.querySelectorAll('.sub-q-opt-input');
                 let optionsArr = [];
@@ -2239,7 +2351,7 @@ function savePassageData() {
         branch,
         topic,
         type,
-        img: imgUrl, // <-- حفظ رابط الصورة هنا
+        img: imgUrl,
         content,
         prompt,
         active: true,
@@ -2261,6 +2373,21 @@ function savePassageData() {
     localStorage.setItem('passagesBank', JSON.stringify(passagesBank));
     alert("تم الحفظ بنجاح!");
     closePassageForm();
+}
+// دالة إضافة خانة إجابة نموذجية جديدة ديناميكياً
+function addModelAnswerInput(containerId, value = "") {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const rowId = 'ans_' + Date.now() + Math.random().toString(36).substring(2);
+    
+    const div = document.createElement('div');
+    div.className = 'flex items-center gap-2 model-ans-row mt-2';
+    div.id = rowId;
+    div.innerHTML = `
+        <input type="text" placeholder="اكتب إجابة نموذجية صحيحة..." class="model-ans-input w-full p-3 rounded-xl border-2 border-emerald-300 bg-emerald-50/50 font-bold text-emerald-950 focus:outline-none focus:border-emerald-500 text-sm" value="${escapeHTML(value)}">
+        <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-500 hover:text-rose-700 p-2.5 cursor-pointer bg-slate-100 rounded-xl transition" title="حذف الخانة"><i class="fa-solid fa-xmark"></i></button>
+    `;
+    container.appendChild(div);
 }
 
 // عرض جدول إدارة الفقرات والمقالي الشامل (النسخة المنظمة والمحدثة لمنع التزاحم)
@@ -4646,10 +4773,37 @@ window.restartHome = function() {
         let essayGrade = undefined;
 
         if (q.type === 'essay') {
-            isCorrect = false; 
-            essayGrade = undefined; 
-            pendingEssayCount++;
-            correctAnswerText = q.ans || "إجابة مقالية (بانتظار تقييم المعلم)";
+            let cleanUserAns = isAnswered ? String(userAns).trim().replace(/\s+/g, ' ') : "";
+            
+            // استخراج قائمة الإجابات النموذجية المتعددة (سواء كـ مصفوفة أو نص مفصول)
+            let validAnswers = [];
+            if (Array.isArray(q.modelAnswers)) {
+                validAnswers = q.modelAnswers.map(a => String(a).trim().replace(/\s+/g, ' '));
+            } else if (q.ans) {
+                validAnswers = String(q.ans).split(/[\u060C,;|/]| أو /).map(a => a.trim().replace(/\s+/g, ' ')).filter(Boolean);
+            }
+
+            // فحص هل إجابة الطالب تطابق أياً من الإجابات النموذجية المعتمدة
+            let matchedModel = validAnswers.length > 0 && validAnswers.some(ansOpt => ansOpt === cleanUserAns);
+
+            if (matchedModel) {
+                // تطابقت الإجابة! احتساب الدرجة الكاملة تلقائياً فوراً
+                isCorrect = true;
+                essayGrade = true; 
+                objectiveScore++; 
+                markQuestionAsAnswered(quizState.topic, q.q);
+                correctAnswerText = validAnswers.join(' أو ');
+            } else if (!isAnswered) {
+                isCorrect = false;
+                essayGrade = false;
+                correctAnswerText = validAnswers.join(' أو ') || q.ans || "إجابة مقالية";
+            } else {
+                // لم تتطابق، تحول لطابور تصحيح المعلم كالمعتاد
+                isCorrect = false;
+                essayGrade = undefined; 
+                pendingEssayCount++;
+                correctAnswerText = validAnswers.join(' أو ') || q.ans || "إجابة مقالية (بانتظار تقييم المعلم)";
+            }
         } else {
             isCorrect = userAns === q.ans;
         }
@@ -4674,19 +4828,18 @@ window.restartHome = function() {
 
     const total = quizState.questions.length; 
     const score = objectiveScore; 
-    const objectiveTotal = quizState.questions.filter(q => q.type !== 'essay').length;
+    // احتساب إجمالي الأسئلة (الموضوعية + المقالية المصححة تلقائياً)
+    const objectiveTotal = quizState.questions.filter(q => q.type !== 'essay' || (q.type === 'essay' && q.essayGrade === true)).length;
     const halfTotal = total / 2;
 
     let examStatus = "بانتظار التصحيح";
-    if (score >= halfTotal) {
-        examStatus = "ناجح";
-    } else if (pendingEssayCount === 0) {
+    if (pendingEssayCount === 0) {
         examStatus = score >= halfTotal ? "ناجح" : "راسب";
     } else {
-        examStatus = "بانتظار التصحيح";
+        examStatus = score >= halfTotal ? "ناجح" : "بانتظار التصحيح";
     }
 
-    const pct = objectiveTotal > 0 ? Math.round((score / objectiveTotal) * 100) : 0; 
+    const pct = total > 0 ? Math.round((score / total) * 100) : 0; 
     const durationSecs = Math.floor((Date.now() - quizState.startTime) / 1000);
 
     const newRecord = { 
@@ -4698,7 +4851,7 @@ window.restartHome = function() {
         topic: quizState.topic,
         stageGrade: `${quizState.stage} ➔ ${quizState.grade} ➔ ${quizState.branch} (${quizState.topic})`, 
         score, 
-        objectiveTotal, 
+        objectiveTotal: total, 
         total, 
         pct, 
         status: examStatus, 
@@ -4709,7 +4862,7 @@ window.restartHome = function() {
         breakdown: breakdownDetails 
     };
 
-    // 💡 التحديث الفوري لمصفوفة السجلات المحلية والذاكرة لترو في الحال
+    // التحديث الفوري لمصفوفة السجلات المحلية والذاكرة
     let existingRecords = [];
     try {
         existingRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
@@ -4728,7 +4881,7 @@ window.restartHome = function() {
     const resView = document.getElementById('view-result');
     document.getElementById('quick-info-top-btn').classList.add('hidden');
     
-    document.getElementById('res-score').textContent = `${score} / ${objectiveTotal}`; 
+    document.getElementById('res-score').textContent = `${score} / ${total}`; 
     document.getElementById('res-pct').textContent = `${pct}٪`;
     
     const answeredEl = document.getElementById('display-answered-count');
@@ -4743,7 +4896,7 @@ window.restartHome = function() {
     const iconEl = document.getElementById('res-icon-i');
 
     if (pendingEssayCount > 0) {
-        resMsg.innerHTML = `أتممت الاختبار بنجاح!<br><span class="text-amber-700 font-black text-sm sm:text-base bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 inline-block mt-2">⚠️ تم تصحيح الأسئلة الموضوعية (${score} من ${objectiveTotal})، ويوجد (${pendingEssayCount}) أسئلة مقالية في انتظار تقييم ومراجعة المعلم.</span>`;
+        resMsg.innerHTML = `أتممت الاختبار بنجاح!<br><span class="text-amber-700 font-black text-sm sm:text-base bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 inline-block mt-2">⚠️ تم تصحيح الأسئلة المطابقة، ويوجد (${pendingEssayCount}) أسئلة مقالية في انتظار مراجعة المعلم.</span>`;
     } else {
         resMsg.textContent = appSettings.successMessage || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز.";
     }
@@ -4775,7 +4928,7 @@ window.restartHome = function() {
         }
     }
 
-    // مزامنة فورية في الخلفية لترى النتيجة في لوحة التحكم مباشرة
+    // مزامنة فورية في الخلفية لتحديث لوحة التحكم
     setTimeout(() => { saveStudentRecordsBackground(); }, 10);
 }
 
