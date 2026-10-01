@@ -899,24 +899,24 @@ select, select option {
     </div>
 <!-- 6. صفحة بنك الأسئلة المستقلة -->
     <div id="view-admin-questions" class="admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto">
-        <div class="max-w-6xl mx-auto w-full space-y-6">
-            <!-- شريط الأزرار الثابت العلوي للقسم -->
-            <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-200 flex flex-wrap justify-between items-center gap-4">
-                <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
-                    <i class="fa-solid fa-clipboard-question text-sky-600"></i> إِدَارَةُ بَنْكِ الْأَسْئِلَةِ
-                </h2>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" onclick="confirmAndSaveAdminSection('questions')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
-                        <i class="fa-solid fa-floppy-disk"></i> حِفْظُ التَّغْيِيرَاتِ
-                    </button>
-                    <button type="button" onclick="showAdminDashboardPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
-                        <i class="fa-solid fa-gauge"></i> لَوْحَةُ الْإِدَارَةِ
-                    </button>
-                    <button type="button" onclick="restartHome()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
-                        <i class="fa-solid fa-house"></i> الرَّئِيسِيَّةُ
-                    </button>
-                </div>
+    <div class="max-w-6xl mx-auto w-full space-y-6">
+        <!-- شريط الأزرار الثابت العلوي للقسم -->
+        <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-200 flex flex-wrap justify-between items-center gap-4">
+            <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
+                <i class="fa-solid fa-clipboard-question text-sky-600"></i> إِدَارَةُ بَنْكِ الْأَسْئِلَةِ
+            </h2>
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="confirmAndSaveAdminSection('questions')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+                    <i class="fa-solid fa-floppy-disk"></i> حِفْظُ التَّغْيِيرَاتِ
+                </button>
+                <button type="button" onclick="showAdminDashboardPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+                    <i class="fa-solid fa-gauge"></i> لَوْحَةُ الْإِدَارَةِ
+                </button>
+                <button type="button" onclick="restartHome()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+                    <i class="fa-solid fa-house"></i> الرَّئِيسِيَّةُ
+                </button>
             </div>
+        </div>
             
             <!-- محتوى بنك الأسئلة الأصلي كاملاً كما أرسلته تماماً -->
             <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border-2 border-slate-200 space-y-5">
@@ -947,9 +947,12 @@ select, select option {
                             <option value="صعب جدا">صعب جداً</option>
                         </select>
                     </div>
-                    <textarea id="direct-batch-input" rows="3" placeholder='{q: "...", opts: ["...", "..."], ans: "...", exp: "..."}' class="w-full p-3 font-mono text-xs rounded-xl border border-indigo-300 bg-white dir-ltr text-left focus:outline-none"></textarea>
-                    <div class="flex justify-end"><button type="button" onclick="saveDirectBatchQuestions()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs transition cursor-pointer shadow"><i class="fa-solid fa-circle-plus ml-1"></i> إضافة الدفعة</button></div>
-                </div>
+                    <textarea id="direct-batch-input" rows="5" placeholder='[
+  { "q": "سؤال اختيار من متعدد؟", "opts": ["خيار أ", "خيار ب"], "ans": "خيار أ", "exp": "شرح الاختيار" },
+  { "q": "سؤال مقالي؟", "type": "essay", "modelAnswers": ["الإجابة الأولى", "إجابة ثانية مقبولة"], "exp": "التعليل أو الشرح" }
+]' class="w-full p-3 font-mono text-xs rounded-xl border border-indigo-300 bg-white dir-ltr text-left focus:outline-none"></textarea>
+<div class="flex justify-end"><button type="button" onclick="saveDirectBatchQuestions()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2 rounded-xl text-xs transition cursor-pointer shadow"><i class="fa-solid fa-circle-plus ml-1"></i> إضافة الدفعة</button></div>
+</div>
 
                 <div class="flex flex-wrap justify-between items-center pt-2 border-t border-slate-200 gap-2">
                     <div class="flex items-center gap-2">
@@ -1061,7 +1064,7 @@ select, select option {
     <div class="max-w-4xl mx-auto w-full space-y-6">
         <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-200 flex justify-between items-center flex-wrap gap-3">
             <h3 id="passage-form-title" class="text-2xl font-black text-indigo-950 flex items-center gap-3">
-                <i class="fa-solid fa-file-pen text-indigo-600"></i> إِضَافَةُ فَقْرَةٍ جَدِيدَةٍ أَوْ سُؤَالٍ مَقَالِيٍّ
+                <i class="fa-solid fa-book-open text-indigo-600"></i> إِضَافَةُ فَقْرَةٍ قِرَائِيَّةٍ جَدِيدَةٍ
             </h3>
             <div class="flex flex-wrap items-center gap-2">
                 <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد فقرة<input type="file" accept=".json" onchange="importSingleParagraphJson(event)" class="hidden"></label>
@@ -1074,7 +1077,6 @@ select, select option {
 
         <div class="bg-white p-8 rounded-3xl shadow-xl border-2 border-indigo-200 space-y-6">
             <input type="hidden" id="edit-passage-id" value="">
-
             <!-- القوائم المنسدلة الذكية المترابطة -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
@@ -1104,14 +1106,14 @@ select, select option {
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="sm:col-span-2 lg:col-span-1">
-                    <label class="block mb-2 font-black text-slate-700">نوع العنصر العام:</label>
-                    <select id="passage-type-input" onchange="togglePassageTypeFields()" class="w-full p-3.5 rounded-2xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-800 focus:outline-none focus:border-indigo-600">
-                        <option value="passage">قطعة نصية (تدعم إضافة أسئلة مقالية واختيارية معاً)</option>
-                        <option value="essay_standalone">سؤال مقالي منفرد (بدون قطعة نصية)</option>
-                    </select>
-                </div>
-            </div>
+    <div class="sm:col-span-2 lg:col-span-1">
+        <label class="block mb-2 font-black text-slate-700">نوع العنصر العام:</label>
+        <select id="passage-type-input" class="w-full p-3.5 rounded-2xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-800 focus:outline-none focus:border-indigo-600">
+            <option value="passage">قطعة نصية (تدعم إضافة أسئلة مقالية واختيارية معاً)</option>
+        </select>
+    </div>
+</div>
+
 <!-- حقل رابط صورة القطعة (أعلى الفقرة) -->
             <div class="space-y-2">
                 <label class="block mb-2 font-black text-slate-700">رابط صورة توضيحية للفقرة (اختياري - أعلى القطعة):</label>
@@ -1124,34 +1126,7 @@ select, select option {
                 <textarea id="passage-content-input" rows="5" placeholder="اكتب أو الصق نص القطعة هنا..." class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-800 focus:outline-none focus:border-indigo-600 leading-relaxed"></textarea>
             </div>
 
-            <!-- حقل نص السؤال المقالي المنفرد -->
-            <!-- حقل نص السؤال المقالي المنفرد، الإجابات المتعددة، والتعليل -->
-            <div id="standalone-essay-container" class="space-y-4 hidden">
-                <div>
-                    <label class="block mb-2 font-black text-slate-700">نَصُّ السُّؤَالِ الْمَقَالِيِّ الْمُنْفَرِدِ:</label>
-                    <textarea id="standalone-essay-prompt" rows="3" placeholder="اكتب السؤال المقالي الذي سيجيب عنه الطالب..." class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-800 focus:outline-none focus:border-indigo-600"></textarea>
-                </div>
-
-                <div class="bg-emerald-50/70 p-5 rounded-2xl border-2 border-emerald-200 space-y-3">
-                    <div class="flex justify-between items-center">
-                        <label class="block font-black text-emerald-950 text-sm"><i class="fa-solid fa-check-double ml-1"></i> الإجابات النموذجية الصحيحة (يمكنك إضافة أكثر من إجابة مقبولة):</label>
-                        <button type="button" onclick="addModelAnswerInput('standalone-model-ans-container')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer transition shadow-sm">
-                            <i class="fa-solid fa-plus ml-1"></i> إضافة إجابة أخرى
-                        </button>
-                    </div>
-                    <div id="standalone-model-ans-container" class="space-y-2">
-                        <div class="flex items-center gap-2 model-ans-row" id="default_standalone_ans">
-                            <input type="text" placeholder="اكتب إجابة نموذجية صحيحة..." class="model-ans-input w-full p-3 rounded-xl border-2 border-emerald-300 bg-white font-bold text-emerald-950 focus:outline-none focus:border-emerald-500 text-sm" value="">
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">التعليل أو الشرح (يظهر للطالب بعد الإجابة):</label>
-                    <textarea id="standalone-essay-exp" placeholder="اكتب سبب صحة الإجابة أو الشرح التفصيلي..." class="w-full p-3 rounded-xl border-2 border-slate-300 bg-white font-bold text-slate-800 focus:outline-none focus:border-sky-500 text-sm" rows="2"></textarea>
-                </div>
-            </div>
-
+           
             <!-- قسم الأسئلة التابعة للقطعة -->
             <div id="passage-questions-wrapper" class="space-y-4 pt-4 border-t-2 border-slate-100">
                 <div class="flex justify-between items-center flex-wrap gap-3">
@@ -1706,6 +1681,8 @@ select, select option {
                     <i class="fa-solid fa-circle-question text-sky-600"></i> إِضَافَةُ / تَعْدِيلُ سُؤَالٍ
                 </h2>
                 <div class="flex gap-2 items-center flex-wrap">
+                    <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد<input type="file" accept=".json" onchange="importSingleQuestionJson(event)" class="hidden"></label>
+                    <button type="button" onclick="exportSingleQuestionJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-download ml-1"></i> تصدير</button>
                     <button type="button" onclick="saveQuestionFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حِفْظُ السُّؤَالِ</button>
                     <button type="button" onclick="openAdminSectionPage('view-admin-questions')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-arrow-right"></i> إِلْغَاءٌ وَعَوْدَةٌ</button>
                     <button type="button" onclick="showAdminDashboardPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-gauge"></i> الْإِدَارَةُ</button>
@@ -1725,40 +1702,52 @@ select, select option {
                     <div><label class="block mb-1 text-sky-950">الموضوع:</label><select id="modal-q-topic" onchange="populateModalParagraphs()" class="w-full p-2.5 rounded-xl border bg-white text-sky-900 font-black"><option value="">اختر</option></select></div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200">
-                        <label class="block mb-1 text-indigo-900 font-black"><i class="fa-solid fa-link text-indigo-600"></i> ربط بفقرة قرائية (اختياري):</label>
-                        <select id="modal-q-paragraph" class="w-full p-2.5 rounded-xl border bg-white"><option value="">بدون فقرة</option></select>
-                    </div>
-                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
-                        <label class="block mb-1 text-amber-900 font-black"><i class="fa-solid fa-gauge-high text-amber-600"></i> مستوى الصعوبة:</label>
-                        <select id="modal-q-difficulty" class="w-full p-2.5 rounded-xl border bg-white font-bold">
-                            <option value="" selected>بدون تصنيف</option>
-                            <option value="سهل">سهل</option>
-                            <option value="متوسط">متوسط</option>
-                            <option value="صعب">صعب</option>
-                            <option value="صعب جدا">صعب جداً</option>
+                <!-- 1. نوع السؤال -->
+                <div class="space-y-3 bg-indigo-50/70 p-4 rounded-2xl border-2 border-indigo-200">
+                    <div>
+                        <label class="block mb-1 text-indigo-950 font-black"><i class="fa-solid fa-shapes text-indigo-600 ml-1"></i> نوع السؤال:</label>
+                        <select id="modal-q-type-select" onchange="toggleQuestionTypeModalFields(this.value)" class="w-full p-3 rounded-xl border-2 border-indigo-300 bg-white font-bold text-indigo-950 focus:outline-none focus:border-indigo-500">
+                            <option value="mcq">اختيار من متعدد</option>
+                            <option value="essay">سؤال مقالي (يتطلب إجابة كتابية وتصحيحاً ذكياً)</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-4 pt-1">
-                    <div class="flex items-center gap-2 bg-sky-50 p-3 rounded-xl border border-sky-200 flex-grow">
-                        <input type="checkbox" id="modal-q-active" class="w-5 h-5 text-sky-600 rounded cursor-pointer" checked>
-                        <label for="modal-q-active" class="cursor-pointer text-sky-950 text-sm">تفعيل هذا السؤال</label>
-                    </div>
-                    <div class="flex items-center gap-2 bg-emerald-50 p-3 rounded-xl border border-emerald-200 flex-grow">
-                        <input type="checkbox" id="modal-q-tashkeel" class="w-5 h-5 text-emerald-600 rounded cursor-pointer" checked>
-                        <label for="modal-q-tashkeel" class="cursor-pointer text-emerald-950 text-sm">تفعيل التشكيل للنصوص</label>
-                    </div>
-                </div>
-
+                <!-- 2. نص السؤال -->
                 <div>
                     <label class="block mb-1 text-slate-800 text-sm font-black">نص السؤال:</label>
                     <textarea id="modal-q-text" rows="3" class="w-full p-4 rounded-xl border-2 border-slate-300 bg-white font-black text-lg leading-relaxed focus:border-sky-500 focus:outline-none transition" placeholder="اكتب نص السؤال هنا..."></textarea>
                 </div>
 
-                <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border-2 border-slate-200">
+                <!-- 3. مستوى الصعوبة -->
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                    <label class="block mb-1 text-amber-900 font-black"><i class="fa-solid fa-gauge-high text-amber-600"></i> مستوى الصعوبة:</label>
+                    <select id="modal-q-difficulty" class="w-full p-2.5 rounded-xl border bg-white font-bold">
+                        <option value="" selected>بدون تصنيف</option>
+                        <option value="سهل">سهل</option>
+                        <option value="متوسط">متوسط</option>
+                        <option value="صعب">صعب</option>
+                        <option value="صعب جدا">صعب جداً</option>
+                    </select>
+                </div>
+
+                <!-- 4. حاوية الإجابات النموذجية المتعددة للسؤال المقالي (تظهر عند المقالي وتختفي في المتعدد) -->
+                <div id="bank-essay-model-container" class="bg-emerald-50/70 p-4 rounded-2xl border-2 border-emerald-200 space-y-3 hidden">
+                    <div class="flex justify-between items-center">
+                        <label class="block font-black text-emerald-950 text-sm"><i class="fa-solid fa-check-double ml-1"></i> الإجابات النموذجية الصحيحة (يمكنك إضافة أكثر من إجابة مقبولة):</label>
+                        <button type="button" onclick="addModelAnswerInput('bank-model-ans-container')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer transition shadow-sm">
+                            <i class="fa-solid fa-plus ml-1"></i> إضافة إجابة أخرى
+                        </button>
+                    </div>
+                    <div id="bank-model-ans-container" class="space-y-2">
+                        <div class="flex items-center gap-2 model-ans-row" id="default_bank_ans">
+                            <input type="text" placeholder="اكتب إجابة نموذجية صحيحة..." class="model-ans-input w-full p-3 rounded-xl border-2 border-emerald-300 bg-white font-bold text-emerald-950 focus:outline-none focus:border-emerald-500 text-sm" value="">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. خيارات الاختيار من متعدد (تظهر في المتعدد وتختفي عند المقالي) -->
+                <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border-2 border-slate-200" id="mcq-options-wrapper">
                     <div class="flex justify-between items-center border-b border-slate-200 pb-3">
                         <label class="block text-slate-800 text-sm font-black"><i class="fa-solid fa-list-check text-sky-600 ml-1"></i> خيارات الإجابة (يمكنك زيادتها):</label>
                         <button type="button" onclick="addOptionInput()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm"><i class="fa-solid fa-plus ml-1"></i> إضافة خيار</button>
@@ -1768,17 +1757,30 @@ select, select option {
                     </div>
                 </div>
 
-                <div class="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200">
+                <!-- 6. الإجابة الصحيحة للاختيار من متعدد -->
+                <div class="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200" id="mcq-answer-wrapper">
                     <label class="block mb-2 text-emerald-900 text-sm font-black"><i class="fa-solid fa-check text-emerald-600 ml-1"></i> الإجابة الصحيحة:</label>
                     <input type="text" id="modal-q-ans" class="w-full p-4 rounded-xl border-2 border-emerald-300 bg-white font-black text-emerald-800 text-lg focus:border-emerald-500 focus:outline-none transition shadow-sm" placeholder="يجب أن تطابق نص أحد الخيارات تماماً">
                 </div>
 
+                <!-- 7. التعليل أو الشرح -->
                 <div class="bg-amber-50 p-5 rounded-2xl border-2 border-amber-200">
                     <label class="block mb-2 text-amber-900 text-sm font-black"><i class="fa-solid fa-circle-info text-amber-600 ml-1"></i> التعليل أو الشرح (للإجابة الصحيحة):</label>
                     <textarea id="modal-q-exp" rows="3" class="w-full p-4 rounded-xl border-2 border-amber-300 bg-white text-base font-bold focus:border-amber-500 focus:outline-none transition shadow-sm leading-relaxed" placeholder="اكتب سبب صحة الإجابة أو القاعدة هنا..."></textarea>
                 </div>
                 
-                <div class="flex flex-wrap justify-end gap-3 pt-4 border-t border-slate-200">
+                <!-- 8. أزرار التحكم السفلية -->
+                <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-200">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <div class="flex items-center gap-2 bg-sky-50 p-3 rounded-xl border border-sky-200">
+                            <input type="checkbox" id="modal-q-active" class="w-5 h-5 text-sky-600 rounded cursor-pointer" checked>
+                            <label for="modal-q-active" class="cursor-pointer text-sky-950 text-sm font-bold">تفعيل هذا السؤال</label>
+                        </div>
+                        <div class="flex items-center gap-2 bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+                            <input type="checkbox" id="modal-q-tashkeel" class="w-5 h-5 text-emerald-600 rounded cursor-pointer" checked>
+                            <label for="modal-q-tashkeel" class="cursor-pointer text-emerald-950 text-sm font-bold">تفعيل التشكيل للنصوص</label>
+                        </div>
+                    </div>
                     <button type="button" onclick="saveQuestionFromModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3.5 rounded-xl transition shadow cursor-pointer text-base">حِفْظُ السُّؤَالِ <i class="fa-solid fa-floppy-disk mr-1"></i></button>
                 </div>
             </div>
@@ -2100,20 +2102,12 @@ function closePassageForm() {
 }
 
 function togglePassageTypeFields() {
-    const type = document.getElementById('passage-type-input').value;
+    // قسم الفقرات القرائية مخصص بالكامل للنصوص والأسئلة التابعة لها فقط
     const textContainer = document.getElementById('passage-text-container');
-    const essayContainer = document.getElementById('standalone-essay-container');
     const questionsWrapper = document.getElementById('passage-questions-wrapper');
 
-    if (type === 'essay_standalone') {
-        if (textContainer) textContainer.classList.add('hidden');
-        if (essayContainer) essayContainer.classList.remove('hidden');
-        if (questionsWrapper) questionsWrapper.classList.add('hidden');
-    } else {
-        if (textContainer) textContainer.classList.remove('hidden');
-        if (essayContainer) essayContainer.classList.add('hidden');
-        if (questionsWrapper) questionsWrapper.classList.remove('hidden');
-    }
+    if (textContainer) textContainer.classList.remove('hidden');
+    if (questionsWrapper) questionsWrapper.classList.remove('hidden');
 }
 
 function addPassageSubQuestion(qType = 'mcq', qData = null) {
@@ -2248,7 +2242,6 @@ function savePassageData() {
     const grade = document.getElementById('passage-grade-input').value;
     const branch = document.getElementById('passage-branch-input').value.trim();
     const topic = document.getElementById('passage-topic-input').value.trim();
-    const type = document.getElementById('passage-type-input').value;
     const imgUrl = document.getElementById('passage-img-input') ? document.getElementById('passage-img-input').value.trim() : "";
 
     if (!stage || !grade || !branch || !topic) {
@@ -2256,91 +2249,67 @@ function savePassageData() {
         return;
     }
 
+    let content = document.getElementById('passage-content-input').value.trim();
+    if (!content) { 
+        alert("يرجى كتابة نص القطعة."); 
+        return; 
+    }
+    
+    const items = document.querySelectorAll('.passage-sub-q-item');
+    if (items.length === 0) {
+        alert("يرجى إضافة سؤال فرعي واحد على الأقل للقطعة.");
+        return;
+    }
+
     let subQuestions = [];
-    let content = "";
-    let prompt = "";
-
-    if (type === 'essay_standalone') {
-        prompt = document.getElementById('standalone-essay-prompt').value.trim();
-        if (!prompt) { alert("يرجى كتابة نص السؤال المقالي."); return; }
-
-        // 💡 جمع الإجابات النموذجية المتعددة للسؤال المقالي المنفرد
-        const modelAnsInputs = document.querySelectorAll('#standalone-model-ans-container .model-ans-input');
-        let modelAnswersArr = [];
-        modelAnsInputs.forEach(inp => {
-            let val = inp.value.trim();
-            if (val) modelAnswersArr.push(val);
-        });
-
-        if (modelAnswersArr.length === 0) {
-            alert("يرجى إدخال إجابة نموذجية واحدة صحيحة على الأقل.");
-            return;
-        }
-
-        subQuestions = [{ 
-            type: 'essay', 
-            text: prompt, 
-            ans: modelAnswersArr[0], 
-            modelAnswers: modelAnswersArr 
-        }];
-    } else {
-        content = document.getElementById('passage-content-input').value.trim();
-        if (!content) { alert("يرجى كتابة نص القطعة."); return; }
+    for (let item of items) {
+        const qType = item.dataset.qtype || 'mcq';
+        const text = item.querySelector('.sub-q-text').value.trim();
         
-        const items = document.querySelectorAll('.passage-sub-q-item');
-        if (items.length === 0) {
-            alert("يرجى إضافة سؤال فرعي واحد على الأقل للقطعة.");
+        if (!text) {
+            alert("يرجى كتابة نص جميع الأسئلة الفرعية.");
             return;
         }
 
-        for (let item of items) {
-            const qType = item.dataset.qtype || 'mcq';
-            const text = item.querySelector('.sub-q-text').value.trim();
-            
-            if (!text) {
-                alert("يرجى كتابة نص جميع الأسئلة الفرعية.");
+        if (qType === 'essay') {
+            const ansInputs = item.querySelectorAll('.sub-q-model-ans-input');
+            let modelAnswersArr = [];
+            ansInputs.forEach(inp => {
+                let val = inp.value.trim();
+                if (val) modelAnswersArr.push(val);
+            });
+
+            if (modelAnswersArr.length === 0) {
+                alert("يرجى إدخال إجابة نموذجية واحدة صحيحة على الأقل للسؤال المقالي التابع للقطعة.");
                 return;
             }
-if (qType === 'essay') {
-                const ansInputs = item.querySelectorAll('.sub-q-model-ans-input');
-                let modelAnswersArr = [];
-                ansInputs.forEach(inp => {
-                    let val = inp.value.trim();
-                    if (val) modelAnswersArr.push(val);
-                });
 
-                if (modelAnswersArr.length === 0) {
-                    alert("يرجى إدخال إجابة نموذجية واحدة صحيحة على الأقل للسؤال المقالي التابع للقطعة.");
-                    return;
-                }
+            subQuestions.push({ 
+                type: 'essay', 
+                text, 
+                ans: modelAnswersArr[0], 
+                modelAnswers: modelAnswersArr 
+            });
+        } else {
+            const optInputs = item.querySelectorAll('.sub-q-opt-input');
+            let optionsArr = [];
+            optInputs.forEach(inp => {
+                let val = inp.value.trim();
+                if (val) optionsArr.push(val);
+            });
 
-                subQuestions.push({ 
-                    type: 'essay', 
-                    text, 
-                    ans: modelAnswersArr[0], 
-                    modelAnswers: modelAnswersArr 
-                });
-            } else {
-                const optInputs = item.querySelectorAll('.sub-q-opt-input');
-                let optionsArr = [];
-                optInputs.forEach(inp => {
-                    let val = inp.value.trim();
-                    if (val) optionsArr.push(val);
-                });
-
-                if (optionsArr.length < 2) {
-                    alert("يجب أن يحتوي كل سؤال اختيار من متعدد على خيارين صحيحين على الأقل.");
-                    return;
-                }
-
-                const correctAns = item.querySelector('.sub-q-correct-ans').value.trim();
-                if (!optionsArr.includes(correctAns)) {
-                    alert("الإجابة الصحيحة يجب أن تطابق أحد الخيارات المكتوبة تماماً.");
-                    return;
-                }
-
-                subQuestions.push({ type: 'mcq', text, options: optionsArr, ans: correctAns });
+            if (optionsArr.length < 2) {
+                alert("يجب أن يحتوي كل سؤال اختيار من متعدد على خيارين صحيحين على الأقل.");
+                return;
             }
+
+            const correctAns = item.querySelector('.sub-q-correct-ans').value.trim();
+            if (!optionsArr.includes(correctAns)) {
+                alert("الإجابة الصحيحة يجب أن تطابق أحد الخيارات المكتوبة تماماً.");
+                return;
+            }
+
+            subQuestions.push({ type: 'mcq', text, options: optionsArr, ans: correctAns });
         }
     }
 
@@ -2350,10 +2319,10 @@ if (qType === 'essay') {
         grade,
         branch,
         topic,
-        type,
+        type: 'passage',
         img: imgUrl,
         content,
-        prompt,
+        prompt: "",
         active: true,
         tashkeel: true,
         questions: subQuestions
@@ -2371,7 +2340,7 @@ if (qType === 'essay') {
     }
 
     localStorage.setItem('passagesBank', JSON.stringify(passagesBank));
-    alert("تم الحفظ بنجاح!");
+    alert("تم حفظ القطعة بنجاح!");
     closePassageForm();
 }
 // دالة إضافة خانة إجابة نموذجية جديدة ديناميكياً
@@ -4370,6 +4339,7 @@ function startQuiz() {
                 q: subQ.text,
                 opts: subQ.options || [],
                 ans: subQ.ans || '',
+                modelAnswers: subQ.modelAnswers || (subQ.ans ? [subQ.ans] : []),
                 type: subQ.type || (subQ.options && subQ.options.length > 0 ? 'mcq' : 'essay'),
                 source: 'passage_sub',
                 passageContent: p.content,
@@ -4385,47 +4355,38 @@ function startQuiz() {
             }
         });
 
-        // خلط داخلي لأسئلة الفقرة الواحدة إن أردت
         if (appSettings.shuffleQuestions !== false) {
             passageMcq.sort(() => 0.5 - Math.random());
             passageEssay.sort(() => 0.5 - Math.random());
         }
 
-        // أخذ بحد أقصى 3 موضوعي ثم بحد أقصى 3 مقالي لهذه الفقرة
         let selectedMcq = passageMcq.slice(0, 3);
         let selectedEssay = passageEssay.slice(0, 3);
 
-        // إضافتهم بالترتيب الهيكلي الصارم: موضوعي أولاً ثم مقالي
         structuredPassageQs.push(...selectedMcq, ...selectedEssay);
     });
 
-    // 2. جلب الأسئلة المستقلة المنفردة (الموضوعية والمقالية المنفردة من بنك الأسئلة والمقالي)
-    let normalMcq = questionBank.filter(q => q.stage === stage && q.grade === grade && (!branch || q.branch === branch) && q.topic === topic && q.active !== false).map(q => ({...q, source: 'bank'}));
-    let normalEssay = [];
+    // 2. جلب الأسئلة العادية والمقالية المنفردة من بنك الأسئلة الموحد
+    let normalPool = questionBank.filter(q => q.stage === stage && q.grade === grade && (!branch || q.branch === branch) && q.topic === topic && q.active !== false).map(q => ({
+        q: q.q,
+        opts: q.opts || [],
+        ans: q.ans || '',
+        modelAnswers: q.modelAnswers || (q.ans ? [q.ans] : []),
+        type: q.type || 'mcq',
+        exp: q.exp || '',
+        source: 'bank',
+        tashkeel: q.tashkeel !== false
+    }));
 
-    let pPool = passagesBank.filter(p => p.stage === stage && p.grade === grade && (!branch || p.branch === branch) && p.topic === topic);
-    pPool.forEach(p => {
-        if (p.type === 'essay_standalone') {
-            normalEssay.push({
-                q: p.prompt,
-                type: 'essay',
-                source: 'passage_standalone',
-                ans: (p.questions && p.questions[0]) ? p.questions[0].ans : '',
-                tashkeel: p.tashkeel !== false
-            });
-        }
-    });
-
-    // خلط الأسئلة المستقلة المنفردة مع بعضها عشوائياً
-    let independentPool = [...normalMcq, ...normalEssay];
+    // خلط الأسئلة المستقلة من البنك عشوائياً
     if (appSettings.shuffleQuestions !== false) {
-        independentPool.sort(() => 0.5 - Math.random());
+        normalPool.sort(() => 0.5 - Math.random());
     }
 
-    // 3. الدمج النهائي المحافظ على الهيكلية: أسئلة الفقرات بالترتيب (موضوعي ثم مقالي) أولاً، تليها الأسئلة المنفردة المخلوطة
-    let pool = [...structuredPassageQs, ...independentPool];
+    // 3. الدمج النهائي: أسئلة الفقرات أولاً، تليها الأسئلة المستقلة من البنك
+    let pool = [...structuredPassageQs, ...normalPool];
 
-    // إذا لم يكتمل العدد المطلوب (مثل 20) وكانت هناك فقرة ثالثة متاحة، نضيفها بنفس الشرط تكملة
+    // إذا لم يكتمل العدد المطلوب وكانت هناك فقرة ثالثة متاحة
     if (pool.length < targetCount && validPassages.length > 2) {
         let thirdPassage = validPassages[2];
         let tMcq = [];
@@ -4435,6 +4396,7 @@ function startQuiz() {
                 q: subQ.text,
                 opts: subQ.options || [],
                 ans: subQ.ans || '',
+                modelAnswers: subQ.modelAnswers || (subQ.ans ? [subQ.ans] : []),
                 type: subQ.type || (subQ.options && subQ.options.length > 0 ? 'mcq' : 'essay'),
                 source: 'passage_sub',
                 passageContent: thirdPassage.content,
@@ -4448,28 +4410,24 @@ function startQuiz() {
                 tEssay.push(formattedSub);
             }
         });
-        // إدخال الفقرة الثالثة قبل الأسئلة المنفردة أو تكملة في مكانها المناسب
         pool.splice(structuredPassageQs.length, 0, ...tMcq.slice(0, 3), ...tEssay.slice(0, 3));
     }
 
-    if (pool.length === 0) { alert("عذراً، لا توجد أسئلة مفعلة أو مقالي متاحة لهذا الموضوع حالياً."); return; }
+    if (pool.length === 0) { alert("عذراً، لا توجد أسئلة مفعلة متاحة لهذا الموضوع حالياً."); return; }
 
-    // 4. تحديد العدد النهائي للاستمارة (مثلاً 20 سؤالاً) دون الإخلال بترتيب البداية للفقرات
-    // لكي لا يتم قص أسئلة الفقرات، سنضمن أن الـ sessionQuestions تبدأ دائماً بـ structuredPassageQs وما تبقى يكمله independentPool
     let sessionQuestions = [];
     if (pool.length <= targetCount) {
         sessionQuestions = [...pool];
     } else {
-        // نأخذ كل أسئلة الفقرات المرتبطة أولاً، ثم نأخذ ما يكفيها من الأسئلة المستقلة ليصل المجموع إلى targetCount
         let neededFromIndependent = targetCount - structuredPassageQs.length;
         if (neededFromIndependent > 0) {
-            sessionQuestions = [...structuredPassageQs, ...independentPool.slice(0, neededFromIndependent)];
+            sessionQuestions = [...structuredPassageQs, ...normalPool.slice(0, neededFromIndependent)];
         } else {
             sessionQuestions = structuredPassageQs.slice(0, targetCount);
         }
     }
 
-    // 5. الخلط الذكي للخيارات (لأسئلة الاختيار من متعدد)
+    // 4. الخلط الذكي للخيارات لأسئلة الاختيار من متعدد
     if (appSettings.shuffleOptions !== false) {
         sessionQuestions = sessionQuestions.map(q => {
             if (q.type === 'essay' || !q.opts || q.opts.length === 0) return q; 
@@ -4501,7 +4459,6 @@ function startQuiz() {
     renderPalette(); 
     startExamTimer();
 }
-
 // 11. عرض المعلومة السريعة
 function openQuickInfo() {
     const branchSel = document.getElementById('portal-expl-branch');
@@ -5400,10 +5357,15 @@ window.restartHome = function() {
         }
 
         function exitAdmin() {
-            document.getElementById('view-admin').classList.add('hidden');
-            document.getElementById('view-admin').classList.remove('flex');
-            initApp();
-        }
+    // إخفاء جميع الأقسام الإدارية المفتوحة
+    document.querySelectorAll('.admin-section-view').forEach(el => {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+    });
+    
+    // تفعيل وتجهيز الشاشة الرئيسية للمنصة
+    initApp();
+}
 
         function loadAdminData() {
             document.getElementById('admin-teacher-input').value = appSettings.teacherName || "";
@@ -5968,6 +5930,121 @@ async function openAdminRecordsWithLoader() {
         function populateModalBranches() { const st = document.getElementById('modal-q-stage').value; const gr = document.getElementById('modal-q-grade').value; const sel = document.getElementById('modal-q-branch'); sel.innerHTML = '<option value="">اختر</option>'; if (st && gr) branchesData.filter(b => b.active !== false && b.targetGrades && b.targetGrades.some(tg => tg.stage===st && tg.grade===gr)).forEach(b => sel.innerHTML += `<option value="${b.branch}">${b.branch}</option>`); }
         function populateModalTopics() { const st = document.getElementById('modal-q-stage').value; const gr = document.getElementById('modal-q-grade').value; const br = document.getElementById('modal-q-branch').value; const sel = document.getElementById('modal-q-topic'); sel.innerHTML = '<option value="">اختر</option>'; if (st && gr && br) topicsData.filter(t => t.active !== false && t.targetBranches && t.targetBranches.some(tb => tb.stage===st && tb.grade===gr && tb.branch===br)).forEach(t => sel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`); populateModalParagraphs(); }
         function populateModalParagraphs() { const sel = document.getElementById('modal-q-paragraph'); if(!sel) return; sel.innerHTML = '<option value="">بدون فقرة</option>'; paragraphs.forEach(p => { if (p.active !== false) sel.innerHTML += `<option value="${p.id}">${p.name || p.title}</option>`; }); }
+function populateModalParagraphs() { const sel = document.getElementById('modal-q-paragraph'); if(!sel) return; sel.innerHTML = '<option value="">بدون فقرة</option>'; paragraphs.forEach(p => { if (p.active !== false) sel.innerHTML += `<option value="${p.id}">${p.name || p.title}</option>`; }); }
+
+        // دالة تصدير السؤال الحالي المفتوح في النموذج كملف JSON
+        function exportSingleQuestionJson() {
+            const editIndex = parseInt(document.getElementById('edit-q-index').value);
+            let qData = null;
+
+            if (editIndex >= 0 && questionBank[editIndex]) {
+                qData = questionBank[editIndex];
+            } else {
+                const stage = document.getElementById('modal-q-stage')?.value || "";
+                const grade = document.getElementById('modal-q-grade')?.value || "";
+                const branch = document.getElementById('modal-q-branch')?.value || "";
+                const topic = document.getElementById('modal-q-topic')?.value || "";
+                const type = document.getElementById('modal-q-type-select')?.value || "mcq";
+                const qText = document.getElementById('modal-q-text')?.value.trim() || "";
+                const diff = document.getElementById('modal-q-difficulty')?.value || "";
+                const exp = document.getElementById('modal-q-exp')?.value.trim() || "";
+
+                if (!qText) {
+                    alert("يرجى كتابة نص السؤال أولاً لتصديره.");
+                    return;
+                }
+
+                qData = { stage, grade, branch, topic, type, q: qText, difficulty: diff, exp, active: true, tashkeel: true };
+
+                if (type === 'essay') {
+                    const modelInputs = document.querySelectorAll('#bank-model-ans-container .model-ans-input');
+                    let modelArr = [];
+                    modelInputs.forEach(inp => { if(inp.value.trim()) modelArr.push(inp.value.trim()); });
+                    qData.ans = modelArr[0] || "";
+                    qData.modelAnswers = modelArr;
+                    qData.opts = [];
+                } else {
+                    const optInputs = document.querySelectorAll('.dynamic-opt-input');
+                    let optsArr = [];
+                    optInputs.forEach(inp => { if(inp.value.trim()) optsArr.push(inp.value.trim()); });
+                    qData.opts = optsArr;
+                    qData.ans = document.getElementById('modal-q-ans')?.value.trim() || "";
+                    qData.modelAnswers = [qData.ans];
+                }
+            }
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(qData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `question_${Date.now()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // دالة استيراد سؤال فردي من ملف JSON ووضعه مباشرة في الحقول
+        function importSingleQuestionJson(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const q = JSON.parse(e.target.result);
+                    if (!q.q) {
+                        alert("ملف الـ JSON غير صالح (لا يوجد نص للسؤال).");
+                        return;
+                    }
+
+                    if(q.stage) document.getElementById('modal-q-stage').value = q.stage;
+                    if(typeof populateModalGrades === 'function') populateModalGrades();
+                    if(q.grade) document.getElementById('modal-q-grade').value = q.grade;
+                    if(typeof populateModalBranches === 'function') populateModalBranches();
+                    if(q.branch) document.getElementById('modal-q-branch').value = q.branch;
+                    if(typeof populateModalTopics === 'function') populateModalTopics();
+                    if(q.topic) document.getElementById('modal-q-topic').value = q.topic;
+
+                    const typeSelect = document.getElementById('modal-q-type-select');
+                    let qType = q.type || (q.opts && q.opts.length > 0 ? 'mcq' : 'essay');
+                    if(typeSelect) {
+                        typeSelect.value = qType;
+                        if(typeof toggleQuestionTypeModalFields === 'function') toggleQuestionTypeModalFields(qType);
+                    }
+
+                    document.getElementById('modal-q-text').value = q.q || "";
+                    document.getElementById('modal-q-difficulty').value = q.difficulty || "";
+                    document.getElementById('modal-q-exp').value = q.exp || "";
+
+                    if (qType === 'essay') {
+                        let modelAnsList = q.modelAnswers || (q.ans ? [q.ans] : [""]);
+                        const container = document.getElementById('bank-model-ans-container');
+                        if (container) {
+                            container.innerHTML = '';
+                            modelAnsList.forEach(ansVal => {
+                                addModelAnswerInput('bank-model-ans-container', ansVal);
+                            });
+                        }
+                    } else {
+                        const container = document.getElementById('dynamic-options-container');
+                        if (container && q.opts) {
+                            container.innerHTML = '';
+                            q.opts.forEach(optVal => {
+                                if(typeof addOptionInput === 'function') {
+                                    addOptionInput(optVal);
+                                }
+                            });
+                        }
+                        document.getElementById('modal-q-ans').value = q.ans || "";
+                    }
+
+                    alert("تم استيراد بيانات السؤال إلى الحقول بنجاح! يمكنك مراجعتها ثم الضغط على حفظ السؤال.");
+                } catch (err) {
+                    alert("حدث خطأ أثناء قراءة ملف الـ JSON.");
+                }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
         // دوال بناء خانات الخيارات ديناميكياً
         function renderOptionsEditUI(opts) {
             const container = document.getElementById('dynamic-options-container');
@@ -6009,80 +6086,143 @@ async function openAdminRecordsWithLoader() {
             // فتح الصفحة الجديدة المستقلة للسؤال
             openAdminSectionPage('view-admin-question-edit'); 
         }
+function toggleQuestionTypeModalFields(type) {
+    const mcqOpts = document.getElementById('mcq-options-wrapper');
+    const mcqAns = document.getElementById('mcq-answer-wrapper');
+    const essayModelContainer = document.getElementById('bank-essay-model-container');
 
-        function openEditQuestionModal(idx) { 
-            const q = questionBank[idx]; 
-            document.getElementById('edit-q-index').value = idx; 
-            populateModalStages(); 
-            document.getElementById('modal-q-stage').value = q.stage; 
-            populateModalGrades(); 
-            document.getElementById('modal-q-grade').value = q.grade; 
-            populateModalBranches(); 
-            document.getElementById('modal-q-branch').value = q.branch; 
-            populateModalTopics(); 
-            document.getElementById('modal-q-topic').value = q.topic; 
-            populateModalParagraphs(); 
-            document.getElementById('modal-q-paragraph').value = q.paragraphId || ""; 
-            document.getElementById('modal-q-difficulty').value = q.difficulty || ""; 
-            document.getElementById('modal-q-active').checked = q.active !== false; 
-            document.getElementById('modal-q-tashkeel').checked = q.tashkeel !== false; 
-            
-            document.getElementById('modal-q-text').value = q.q; 
-            renderOptionsEditUI(q.opts); 
-            
-            document.getElementById('modal-q-ans').value = q.ans; 
-            document.getElementById('modal-q-exp').value = q.exp || ""; 
-            
-            // فتح الصفحة الجديدة المستقلة للسؤال
-            openAdminSectionPage('view-admin-question-edit'); 
-        }
+    if (type === 'essay') {
+        if (mcqOpts) mcqOpts.classList.add('hidden');
+        if (mcqAns) mcqAns.classList.add('hidden');
+        if (essayModelContainer) essayModelContainer.classList.remove('hidden');
+    } else {
+        if (mcqOpts) mcqOpts.classList.remove('hidden');
+        if (mcqAns) mcqAns.classList.remove('hidden');
+        if (essayModelContainer) essayModelContainer.classList.add('hidden');
+    }
+}
 
-        function saveQuestionFromModal() { 
-            const idx = parseInt(document.getElementById('edit-q-index').value); 
-            const stage = document.getElementById('modal-q-stage').value; 
-            const grade = document.getElementById('modal-q-grade').value; 
-            const branch = document.getElementById('modal-q-branch').value; 
-            const topic = document.getElementById('modal-q-topic').value; 
-            const qText = document.getElementById('modal-q-text').value.trim(); 
-            const ans = document.getElementById('modal-q-ans').value.trim(); 
-            const exp = document.getElementById('modal-q-exp').value.trim(); 
-            const paragraphId = document.getElementById('modal-q-paragraph').value; 
-            const difficulty = document.getElementById('modal-q-difficulty').value; 
-            const active = document.getElementById('modal-q-active').checked; 
-            const tashkeel = document.getElementById('modal-q-tashkeel').checked; 
-            
-            // قراءة الخيارات الديناميكية من جميع الخانات المتاحة واستبعاد الخانات الفارغة
-            const optInputs = document.querySelectorAll('.q-dynamic-opt');
-            let opts = [];
-            optInputs.forEach(input => {
-                let val = input.value.trim();
-                if (val !== "") opts.push(val);
+        function openEditQuestionModal(idx) {  
+    const q = questionBank[idx];  
+    document.getElementById('edit-q-index').value = idx;  
+    populateModalStages();  
+    document.getElementById('modal-q-stage').value = q.stage;  
+    populateModalGrades();  
+    document.getElementById('modal-q-grade').value = q.grade;  
+    populateModalBranches();  
+    document.getElementById('modal-q-branch').value = q.branch;  
+    populateModalTopics();  
+    document.getElementById('modal-q-topic').value = q.topic;  
+    populateModalParagraphs();  
+    
+    // ضبط نوع السؤال (اختيار من متعدد أو مقالي) وإجاباته
+    const typeSelect = document.getElementById('modal-q-type-select');
+    if (typeSelect) {
+        typeSelect.value = q.type || 'mcq';
+        toggleQuestionTypeModalFields(q.type || 'mcq');
+    }
+
+    if (q.type === 'essay') {
+        let modelAnswersList = q.modelAnswers || (q.ans ? [q.ans] : [""]);
+        const container = document.getElementById('bank-model-ans-container');
+        if (container) {
+            container.innerHTML = '';
+            modelAnswersList.forEach(ansVal => {
+                addModelAnswerInput('bank-model-ans-container', ansVal);
             });
-
-            // التحقق من صحة البيانات
-            if (!stage || !grade || !branch || !topic || !qText || opts.length < 2 || !ans) { 
-                alert("يرجى إكمال البيانات (نص السؤال، إجابة صحيحة، وخيارين على الأقل لتكوين السؤال)."); 
-                return; 
-            } 
-            
-            // التأكد من أن الإجابة الصحيحة موجودة ضمن الخيارات
-            if (!opts.includes(ans)) {
-                alert("تنبيه: الإجابة الصحيحة المكتوبة غير مطابقة لأي من الخيارات التي أدخلتها. يرجى التأكد من تطابق النص تماماً.");
-                return;
-            }
-
-            const obj = { stage, grade, branch, topic, q: qText, opts, ans, exp, paragraphId, difficulty, active, tashkeel }; 
-            
-            if (idx === -1) questionBank.push(obj); 
-            else questionBank[idx] = obj; 
-            
-            saveState(); 
-            renderAdminQuestionsList(); 
-            
-            // العودة لقائمة الأسئلة فور الحفظ
-            openAdminSectionPage('view-admin-questions'); 
-            alert("تم الحفظ بنجاح!"); 
         }
+    } else {
+        renderOptionsEditUI(q.opts);  
+        document.getElementById('modal-q-ans').value = q.ans;  
+    }
+
+    document.getElementById('modal-q-difficulty').value = q.difficulty || "";  
+    document.getElementById('modal-q-active').checked = q.active !== false;  
+    document.getElementById('modal-q-tashkeel').checked = q.tashkeel !== false;  
+      
+    document.getElementById('modal-q-text').value = q.q;  
+    document.getElementById('modal-q-exp').value = q.exp || "";  
+      
+    // فتح الصفحة الجديدة المستقلة للسؤال  
+    openAdminSectionPage('view-admin-question-edit');  
+}
+
+        function saveQuestionFromModal() {    
+    const idx = parseInt(document.getElementById('edit-q-index').value);    
+    const stage = document.getElementById('modal-q-stage').value;    
+    const grade = document.getElementById('modal-q-grade').value;    
+    const branch = document.getElementById('modal-q-branch').value;    
+    const topic = document.getElementById('modal-q-topic').value;    
+    const qText = document.getElementById('modal-q-text').value.trim();    
+    const exp = document.getElementById('modal-q-exp').value.trim();    
+    const difficulty = document.getElementById('modal-q-difficulty').value;    
+    const active = document.getElementById('modal-q-active').checked;    
+    const tashkeel = document.getElementById('modal-q-tashkeel').checked;    
+    const qType = document.getElementById('modal-q-type-select') ? document.getElementById('modal-q-type-select').value : 'mcq';
+
+    let opts = [];
+    let ans = "";
+    let modelAnswersArr = [];
+
+    if (qType === 'essay') {
+        // جمع الإجابات النموذجية المتعددة للسؤال المقالي
+        const modelAnsInputs = document.querySelectorAll('#bank-model-ans-container .model-ans-input');
+        modelAnsInputs.forEach(input => {
+            let val = input.value.trim();
+            if (val !== "") modelAnswersArr.push(val);
+        });
+
+        if (!stage || !grade || !branch || !topic || !qText || modelAnswersArr.length === 0) {    
+            alert("يرجى إكمال البيانات الأساسية وإدخال إجابة نموذجية واحدة صحيحة على الأقل للسؤال المقالي.");    
+            return;    
+        }
+        ans = modelAnswersArr[0];
+    } else {
+        // أسئلة الاختيار من متعدد التقليدية
+        const optInputs = document.querySelectorAll('.q-dynamic-opt');
+        optInputs.forEach(input => {
+            let val = input.value.trim();
+            if (val !== "") opts.push(val);
+        });
+
+        ans = document.getElementById('modal-q-ans').value.trim();
+
+        if (!stage || !grade || !branch || !topic || !qText || opts.length < 2 || !ans) {    
+            alert("يرجى إكمال البيانات (نص السؤال، إجابة صحيحة، وخيارين على الأقل لتكوين السؤال).");    
+            return;    
+        }    
+        
+        if (!opts.includes(ans)) {
+            alert("تنبيه: الإجابة الصحيحة المكتوبة غير مطابقة لأي من الخيارات التي أدخلتها. يرجى التأكد من تطابق النص تماماً.");
+            return;
+        }
+    }
+
+    const obj = { 
+        stage, 
+        grade, 
+        branch, 
+        topic, 
+        q: qText, 
+        type: qType,
+        opts: qType === 'essay' ? [] : opts, 
+        ans, 
+        modelAnswers: qType === 'essay' ? modelAnswersArr : [ans],
+        exp, 
+        difficulty, 
+        active, 
+        tashkeel 
+    };    
+    
+    if (idx === -1) questionBank.push(obj);    
+    else questionBank[idx] = obj;    
+    
+    saveState();    
+    renderAdminQuestionsList();    
+    
+    openAdminSectionPage('view-admin-questions');    
+    alert("تم الحفظ بنجاح!");    
+}
 
         // دالة المعاينة المستقلة المحدثة
         function previewSingleQuestion(idx) { 
@@ -6107,9 +6247,135 @@ async function openAdminRecordsWithLoader() {
             openAdminSectionPage('view-admin-preview-single-q'); 
         }
 
-        function saveDirectBatchQuestions() { const rawTxt = document.getElementById('direct-batch-input').value.trim(); const fStage = document.getElementById('filter-q-stage').value; const fGrade = document.getElementById('filter-q-grade').value; const fBranch = document.getElementById('filter-q-branch').value; const fTopic = document.getElementById('filter-q-topic').value; const defDiff = document.getElementById('batch-default-difficulty').value; if (!fStage || !fGrade || !fBranch || !fTopic) { alert("حدد الفلاتر الأربعة أولاً"); return; } if (!rawTxt) return; try { let fixedTxt = rawTxt.replace(/[“”„‘’]/g, '"').replace(/,\s*([\]}])/g, '$1').trim(); if (!fixedTxt.startsWith('[') && !fixedTxt.startsWith('{')) fixedTxt = '[' + fixedTxt + ']'; else if (fixedTxt.startsWith('{') && !fixedTxt.endsWith(']')) fixedTxt = '[' + fixedTxt + ']'; fixedTxt = fixedTxt.replace(/}\s*{/g, "},{"); let parsed = eval("(" + fixedTxt + ")"); if (!Array.isArray(parsed)) parsed = [parsed]; let count = 0; parsed.forEach(item => { if (item.q && item.opts && item.ans) { questionBank.push({ stage: fStage, grade: fGrade, branch: fBranch, topic: fTopic, active: true, tashkeel: true, paragraphId: item.paragraphId || "", q: item.q, opts: item.opts, ans: item.ans, exp: item.exp || "", difficulty: item.difficulty || defDiff || "" }); count++; } }); if (count > 0) { saveState(); renderAdminQuestionsList(); document.getElementById('direct-batch-input').value = ''; alert(`تمت إضافة ${count} سؤال`); } } catch(e) { alert("خطأ في تنسيق الكود: " + e.message); } }
-        function exportTopicQuestionsJson() { const fTopic = document.getElementById('filter-q-topic').value; if (!fTopic) return; let tq = questionBank.filter(q => q.topic === fTopic); let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tq, null, 2)); let a = document.createElement('a'); a.href = dataStr; a.download = `${fTopic}_questions.json`; a.click(); }
-        function importQuestionsJsonFile(event) { let file = event.target.files[0]; if (!file) return; let reader = new FileReader(); reader.onload = function(e) { try { let imp = JSON.parse(e.target.result); if (Array.isArray(imp)) { const fStage = document.getElementById('filter-q-stage').value; const fGrade = document.getElementById('filter-q-grade').value; const fBranch = document.getElementById('filter-q-branch').value; const fTopic = document.getElementById('filter-q-topic').value; imp.forEach(q => { if (fStage) q.stage = fStage; if (fGrade) q.grade = fGrade; if (fBranch) q.branch = fBranch; if (fTopic) q.topic = fTopic; q.active = true; q.tashkeel = q.tashkeel !== false; questionBank.push(q); }); saveState(); renderAdminQuestionsList(); alert("تم الاستيراد بنجاح"); } } catch(err) { alert("خطأ"); } event.target.value = ''; }; reader.readAsText(file); }
+        function saveDirectBatchQuestions() {
+    const rawTxt = document.getElementById('direct-batch-input').value.trim();
+    const fStage = document.getElementById('filter-q-stage').value;
+    const fGrade = document.getElementById('filter-q-grade').value;
+    const fBranch = document.getElementById('filter-q-branch').value;
+    const fTopic = document.getElementById('filter-q-topic').value;
+    const defDiff = document.getElementById('batch-default-difficulty').value;
+
+    if (!fStage || !fGrade || !fBranch || !fTopic) {
+        alert("يرجى اختيار الفلاتر الأربعة (المرحلة، الصف، الفرع، الموضوع) في أعلى بنك الأسئلة أولاً.");
+        return;
+    }
+    if (!rawTxt) return;
+
+    try {
+        let fixedTxt = rawTxt.replace(/[“”„‘’]/g, '"').replace(/,\s*([\]}])/g, '$1').trim();
+        if (!fixedTxt.startsWith('[') && !fixedTxt.startsWith('{')) fixedTxt = '[' + fixedTxt + ']';
+        else if (fixedTxt.startsWith('{') && !fixedTxt.endsWith(']')) fixedTxt = '[' + fixedTxt + ']';
+        fixedTxt = fixedTxt.replace(/}\s*{/g, "},{");
+        
+        let parsed = eval("(" + fixedTxt + ")");
+        if (!Array.isArray(parsed)) parsed = [parsed];
+        
+        let count = 0;
+        parsed.forEach(item => {
+            if (!item.q) return;
+
+            let qType = item.type || (item.opts && item.opts.length > 0 ? 'mcq' : 'essay');
+            let qObject = {
+                stage: fStage,
+                grade: fGrade,
+                branch: fBranch,
+                topic: fTopic,
+                active: true,
+                tashkeel: true,
+                paragraphId: item.paragraphId || "",
+                q: item.q.trim(),
+                difficulty: item.difficulty || defDiff || "",
+                exp: item.exp ? item.exp.trim() : ""
+            };
+
+            if (qType === 'essay') {
+                let modelAnswers = [];
+                if (Array.isArray(item.modelAnswers)) {
+                    modelAnswers = item.modelAnswers.map(a => String(a).trim()).filter(Boolean);
+                } else if (item.ans) {
+                    modelAnswers = String(item.ans).split(/[\u060C,;|/]| أو /).map(a => a.trim()).filter(Boolean);
+                }
+                if (modelAnswers.length === 0) modelAnswers = ["إجابة نموذجية"];
+
+                qObject.type = 'essay';
+                qObject.opts = [];
+                qObject.ans = modelAnswers[0];
+                qObject.modelAnswers = modelAnswers;
+                count++;
+            } else {
+                let opts = Array.isArray(item.opts) ? item.opts.map(o => String(o).trim()).filter(Boolean) : [];
+                let ans = item.ans ? String(item.ans).trim() : "";
+
+                if (opts.length >= 2 && ans) {
+                    qObject.type = 'mcq';
+                    qObject.opts = opts;
+                    qObject.ans = ans;
+                    qObject.modelAnswers = [ans];
+                    count++;
+                } else {
+                    return;
+                }
+            }
+
+            questionBank.push(qObject);
+        });
+
+        if (count > 0) {
+            saveState();
+            renderAdminQuestionsList();
+            document.getElementById('direct-batch-input').value = '';
+            alert(`تمت إضافة ${count} سؤالاً بنجاح إلى بنك الأسئلة!`);
+        } else {
+            alert("لم يتم إضافة أي سؤال، تأكد من صحة الصياغة والخصائص المدخلة.");
+        }
+    } catch(e) {
+        alert("خطأ في تنسيق الكود: " + e.message);
+    }
+}
+
+function exportTopicQuestionsJson() { 
+    const fTopic = document.getElementById('filter-q-topic').value; 
+    if (!fTopic) return; 
+    let tq = questionBank.filter(q => q.topic === fTopic); 
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tq, null, 2)); 
+    let a = document.createElement('a'); 
+    a.href = dataStr; 
+    a.download = `${fTopic}_questions.json`; 
+    a.click(); 
+}
+
+function importQuestionsJsonFile(event) { 
+    let file = event.target.files[0]; 
+    if (!file) return; 
+    let reader = new FileReader(); 
+    reader.onload = function(e) { 
+        try { 
+            let imp = JSON.parse(e.target.result); 
+            if (Array.isArray(imp)) { 
+                const fStage = document.getElementById('filter-q-stage').value; 
+                const fGrade = document.getElementById('filter-q-grade').value; 
+                const fBranch = document.getElementById('filter-q-branch').value; 
+                const fTopic = document.getElementById('filter-q-topic').value; 
+                imp.forEach(q => { 
+                    if (fStage) q.stage = fStage; 
+                    if (fGrade) q.grade = fGrade; 
+                    if (fBranch) q.branch = fBranch; 
+                    if (fTopic) q.topic = fTopic; 
+                    q.active = true; 
+                    q.tashkeel = q.tashkeel !== false; 
+                    questionBank.push(q); 
+                }); 
+                saveState(); 
+                renderAdminQuestionsList(); 
+                alert("تم الاستيراد بنجاح"); 
+            } 
+        } catch(err) { 
+            alert("خطأ"); 
+        } 
+        event.target.value = ''; 
+    }; 
+    reader.readAsText(file); 
+}
 
         // --- PARAGRAPHS (WITH MOVE/ORDER BUTTONS) ---
         function populateParaAdminFilters() {
