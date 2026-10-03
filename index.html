@@ -3241,7 +3241,7 @@ window.addEventListener('DOMContentLoaded', () => {
               
 async function saveState(showLoading = true) {
     try {
-        // حفظ محلي فوري لمنع أي ضياع للبيانات في المتصفح (LocalStorage)
+        // حفظ محلي فوري لمنع أي ضياع للبيانات في المتصفح
         if (typeof monthlyExamsBank !== 'undefined') {
             localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
         }
@@ -3280,9 +3280,11 @@ async function saveState(showLoading = true) {
             for (let i = 0; i < passTotalParts; i++) addTask(`passages_part_${i}`, { chunk: (passagesBank || []).slice(i * passChunkSize, (i + 1) * passChunkSize) });
             addTask("passages_meta", { totalParts: passTotalParts });
 
-            // إضافة مهام حفظ الامتحانات الشهرية للسحابة بدقة تامة
+            // 💡 التعديل الجذري: تجزئة وحفظ الامتحانات الشهرية والشاملة سحابياً وتحديث الميتاداتا الخاصة بها
             const currentMonthlyExams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : JSON.parse(localStorage.getItem('monthlyExamsBank'))) || [];
-            const mexamChunkSize = 300; let mexamTotalParts = Math.ceil(currentMonthlyExams.length / mexamChunkSize) || 1;
+            const mexamChunkSize = 300; 
+            let mexamTotalParts = Math.ceil(currentMonthlyExams.length / mexamChunkSize) || 1;
+            
             for (let i = 0; i < mexamTotalParts; i++) {
                 addTask(`monthlyExams_part_${i}`, { chunk: currentMonthlyExams.slice(i * mexamChunkSize, (i + 1) * mexamChunkSize) });
             }
@@ -3307,7 +3309,7 @@ async function saveState(showLoading = true) {
             let totalTasks = tasks.length;
             
             if (showLoading) {
-                toggleCloudLoading(true, `جَارِي فَحْصِ وَرَفْع التَّعْدِيلَات... (${totalTasks} ملفاً)`);
+                toggleCloudLoading(true, `جَارِي فَحْصِ وَرَفْعِ التَّعْدِيلَات... (${totalTasks} ملفاً)`);
             }
 
             let completedTasks = 0;
@@ -3318,7 +3320,7 @@ async function saveState(showLoading = true) {
                 completedTasks++;
                 let pct = Math.round((completedTasks / totalTasks) * 100);
                 if (showLoading && textEl) {
-                    textEl.textContent = `جَارِي رَفْع المُتَغَيِّرَات... ${pct}% (${completedTasks}/${totalTasks})`;
+                    textEl.textContent = `جَارِي رَفْعِ المُتَغَيِّرَات... ${pct}% (${completedTasks}/${totalTasks})`;
                 }
             }
             
@@ -3336,7 +3338,7 @@ async function saveState(showLoading = true) {
             toggleCloudLoading(false);
         }
     }
-}        
+}       
 // ================== GENERAL, INIT & SETTINGS ==================
         function validateArabicName(inputEl) {
             let val = inputEl.value;
