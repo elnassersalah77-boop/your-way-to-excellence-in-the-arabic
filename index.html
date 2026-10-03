@@ -10884,14 +10884,21 @@ function renderStudentMonthlyExams() {
     // جلب الامتحانات من المصفوفة أو التخزين المحلي
     const allExams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : JSON.parse(localStorage.getItem('monthlyExamsBank'))) || [];
 
-    // تصفية الامتحانات المطابقة لصف ومرحلة الطالب الحالية
-    const availableExams = allExams.filter(e => e.active !== false && e.stage === stage && e.grade === grade);
+    console.log("=== تشخيص الامتحانات الشهرية ===");
+    console.log("بيانات الطالب الحالي:", { stage, grade });
+    console.log("جميع الامتحانات المسجلة في النظام:", allExams);
+
+    // تصفية الامتحانات مع تجاهل مؤقت لشرط الصف للمعاينة أو فحصه بدقة
+    const availableExams = allExams.filter(e => {
+        console.log(`فحص امتحان [${e.title}] -> مرحلة: ${e.stage} (مطابق: ${e.stage === stage}), صف: ${e.grade} (مطابق: ${e.grade === grade}), مفعل: ${e.active}`);
+        return e.active !== false && e.stage === stage && e.grade === grade;
+    });
 
     if (availableExams.length === 0) {
         container.innerHTML = `
-            <div class="p-8 text-center bg-white rounded-3xl border-3 border-purple-300 text-slate-500 font-bold space-y-2 shadow-sm">
-                <p class="text-lg text-purple-950 font-black">لا توجد امتحانات شهرية أو شاملة متاحة لصفك (${grade}) حالياً.</p>
-                <p class="text-xs text-slate-400">ستظهر الامتحانات فور إضافتها وتفعيلها من لوحة الإدارة.</p>
+            <div class="p-8 text-center bg-white rounded-3xl border-2 border-purple-200 text-slate-500 font-bold space-y-2">
+                <p>لا توجد امتحانات شهرية أو شاملة متاحة لصفك (${grade}) حالياً.</p>
+                <p class="text-xs text-slate-400">تأكد من مطابقة المرحلة والصف وتفعيل الامتحان من لوحة الإدارة.</p>
             </div>`;
         return;
     }
@@ -10910,18 +10917,13 @@ function renderStudentMonthlyExams() {
         }
 
         html += `
-            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 sm:p-8 rounded-3xl border-3 border-purple-400 shadow-lg flex flex-col sm:flex-row justify-between items-center gap-4 transition-transform hover:scale-[1.01]">
-                <div class="space-y-2 text-right w-full">
-                    <span class="bg-purple-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">امتحان معتمد</span>
-                    <h4 class="font-black text-purple-950 text-2xl">${escapeHTML(exam.title)}</h4>
-                    <p class="text-slate-700 text-xs sm:text-sm font-bold flex items-center gap-3 flex-wrap">
-                        <span>⏱️ الزمن: <strong class="text-purple-900">${exam.duration || 45} دقيقة</strong></span>
-                        <span>📝 الأسئلة: <strong class="text-purple-900">${qCount} سؤال</strong></span>
-                        <span>🏆 المجموع: <strong class="text-purple-900">${totalMarks} درجة</strong></span>
-                    </p>
+            <div class="bg-white p-6 rounded-3xl border-2 border-purple-200 shadow-md flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="space-y-1 text-right">
+                    <h4 class="font-black text-purple-950 text-xl">${escapeHTML(exam.title)}</h4>
+                    <p class="text-slate-500 text-xs font-bold">⏱️ الزمن المخصص: ${exam.duration || 45} دقيقة | 📝 عدد الأسئلة: ${qCount} | 🏆 المجموع الكلي: ${totalMarks} درجة</p>
                 </div>
-                <button type="button" onclick="startStudentMonthlyExam('${exam.id}')" class="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-black px-8 py-4 rounded-2xl shadow-xl transition cursor-pointer shrink-0 text-base flex items-center justify-center gap-2">
-                    <span>ابْدَأِ الِامْتِحَانَ الآن</span> <i class="fa-solid fa-play"></i>
+                <button type="button" onclick="startStudentMonthlyExam('${exam.id}')" class="bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-black px-6 py-3.5 rounded-2xl shadow-lg transition cursor-pointer shrink-0">
+                    ابْدَأِ الِامْتِحَانَ الآن <i class="fa-solid fa-play mr-2"></i>
                 </button>
             </div>
         `;
