@@ -778,34 +778,42 @@ select, select option {
                         </select>
                     </div>
 
-                    <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-4 gap-3 bg-sky-50 p-4 rounded-2xl border border-sky-200">
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="admin-shuffle-questions" class="w-5 h-5 text-sky-600 rounded cursor-pointer">
-                            <label for="admin-shuffle-questions" class="cursor-pointer font-bold text-sky-950 text-xs">خلط الأسئلة</label>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="admin-shuffle-options" class="w-5 h-5 text-sky-600 rounded cursor-pointer" checked>
-                            <label for="admin-shuffle-options" class="cursor-pointer font-bold text-sky-950 text-xs">خلط الاختيارات</label>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="admin-enable-tashkeel" class="w-5 h-5 text-sky-600 rounded cursor-pointer" checked>
-                            <label for="admin-enable-tashkeel" class="cursor-pointer font-bold text-sky-950 text-xs">تفعيل التشكيل</label>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="admin-require-password" class="w-5 h-5 text-rose-600 rounded cursor-pointer">
-                            <label for="admin-require-password" class="cursor-pointer font-black text-rose-950 text-xs">حماية بكلمة مرور للطلاب</label>
-                        </div>
-                        <div class="flex items-center gap-2 mt-2 sm:mt-0">
-                            <input type="checkbox" id="admin-enable-student-pdf" class="w-5 h-5 text-rose-600 rounded cursor-pointer" checked>
-                            <label for="admin-enable-student-pdf" class="cursor-pointer font-black text-rose-950 text-xs">تفعيل زر تحميل PDF للطلاب</label>
-                        </div>
-                    </div>
+                    <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-sky-50 p-4 rounded-2xl border border-sky-200">
+    <div class="flex items-center gap-2">
+        <input type="checkbox" id="admin-shuffle-questions" class="w-5 h-5 text-sky-600 rounded cursor-pointer">
+        <label for="admin-shuffle-questions" class="cursor-pointer font-bold text-sky-950 text-xs">خلط الأسئلة</label>
+    </div>
+    <div class="flex items-center gap-2">
+        <input type="checkbox" id="admin-shuffle-options" class="w-5 h-5 text-sky-600 rounded cursor-pointer" checked>
+        <label for="admin-shuffle-options" class="cursor-pointer font-bold text-sky-950 text-xs">خلط الاختيارات</label>
+    </div>
+    <div class="flex items-center gap-2">
+        <input type="checkbox" id="admin-enable-tashkeel" class="w-5 h-5 text-sky-600 rounded cursor-pointer" checked>
+        <label for="admin-enable-tashkeel" class="cursor-pointer font-bold text-sky-950 text-xs">تفعيل التشكيل</label>
+    </div>
+    <div class="flex items-center gap-2">
+        <input type="checkbox" id="admin-require-password" class="w-5 h-5 text-rose-600 rounded cursor-pointer">
+        <label for="admin-require-password" class="cursor-pointer font-black text-rose-950 text-xs">حماية بكلمة مرور للطلاب</label>
+    </div>
+    <div class="flex items-center gap-2">
+        <input type="checkbox" id="admin-enable-student-pdf" class="w-5 h-5 text-rose-600 rounded cursor-pointer" checked>
+        <label for="admin-enable-student-pdf" class="cursor-pointer font-black text-rose-950 text-xs">تفعيل زر تحميل PDF للطلاب</label>
+    </div>
+    <div class="flex items-center gap-2">
+        <input type="checkbox" id="admin-enable-essay-correction" class="w-5 h-5 text-indigo-600 rounded cursor-pointer" checked>
+        <label for="admin-enable-essay-correction" class="cursor-pointer font-black text-indigo-950 text-xs">التصحيح اللغوي الذكي للأسئلة المقالية</label>
+    </div>
+    <div class="flex items-center gap-2 sm:col-span-2">
+        <input type="checkbox" id="admin-enable-monthly-correction" class="w-5 h-5 text-purple-600 rounded cursor-pointer" checked>
+        <label for="admin-enable-monthly-correction" class="cursor-pointer font-black text-purple-950 text-xs">التصحيح اللغوي الذكي للامتحانات الشهرية والشاملة</label>
+    </div>
+</div>
 
-                    <div class="sm:col-span-2 flex flex-wrap gap-3 pt-2 border-t border-slate-200">
-                        <button type="button" onclick="exportFullSystemJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-download ml-1"></i> تصدير (JSON)</button>
-                        <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد (JSON)<input type="file" id="import-full-system-json-file" accept=".json" onchange="importFullSystemJsonFile(event)" class="hidden"></label>
-                        <button type="button" onclick="exportOfflineHtmlFile()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-file-code"></i> تصدير كملف أوفلاين</button>
-                    </div>
+<div class="sm:col-span-2 flex flex-wrap gap-3 pt-2 border-t border-slate-200">
+    <button type="button" onclick="exportFullSystemJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer shadow"><i class="fa-solid fa-download ml-1"></i> تصدير (JSON)</button>
+    <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد (JSON)<input type="file" id="import-full-system-json-file" accept=".json" onchange="importFullSystemJsonFile(event)" class="hidden"></label>
+    <button type="button" onclick="exportOfflineHtmlFile()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-file-code"></i> تصدير كملف أوفلاين</button>
+</div>
 
                     <!-- إعادة حقول الصور الستة والشعار العلوي -->
                     <div class="sm:col-span-2 bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 space-y-4 mt-2">
@@ -1908,19 +1916,27 @@ select, select option {
                 </div>
 
                 <!-- 4. حاوية الإجابات النموذجية المتعددة للسؤال المقالي (تظهر عند المقالي وتختفي في المتعدد) -->
-                <div id="bank-essay-model-container" class="bg-emerald-50/70 p-4 rounded-2xl border-2 border-emerald-200 space-y-3 hidden">
-                    <div class="flex justify-between items-center">
-                        <label class="block font-black text-emerald-950 text-sm"><i class="fa-solid fa-check-double ml-1"></i> الإجابات النموذجية الصحيحة (يمكنك إضافة أكثر من إجابة مقبولة):</label>
-                        <button type="button" onclick="addModelAnswerInput('bank-model-ans-container')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer transition shadow-sm">
-                            <i class="fa-solid fa-plus ml-1"></i> إضافة إجابة أخرى
-                        </button>
-                    </div>
-                    <div id="bank-model-ans-container" class="space-y-2">
-                        <div class="flex items-center gap-2 model-ans-row" id="default_bank_ans">
-                            <input type="text" placeholder="اكتب إجابة نموذجية صحيحة..." class="model-ans-input w-full p-3 rounded-xl border-2 border-emerald-300 bg-white font-bold text-emerald-950 focus:outline-none focus:border-emerald-500 text-sm" value="">
-                        </div>
-                    </div>
-                </div>
+    <div id="bank-essay-model-container" class="bg-emerald-50/70 p-4 rounded-2xl border-2 border-emerald-200 space-y-3 hidden">
+        <div class="flex justify-between items-center">
+            <label class="block font-black text-emerald-950 text-sm"><i class="fa-solid fa-check-double ml-1"></i> الإجابات النموذجية الصحيحة (يمكنك إضافة أكثر من إجابة مقبولة):</label>
+            <button type="button" onclick="addModelAnswerInput('bank-model-ans-container')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer transition shadow-sm">
+                <i class="fa-solid fa-plus ml-1"></i> إضافة إجابة أخرى
+            </button>
+        </div>
+        <div id="bank-model-ans-container" class="space-y-2">
+            <div class="flex items-center gap-2 model-ans-row" id="default_bank_ans">
+                <input type="text" placeholder="اكتب إجابة نموذجية صحيحة..." class="model-ans-input w-full p-3 rounded-xl border-2 border-emerald-300 bg-white font-bold text-emerald-950 focus:outline-none focus:border-emerald-500 text-sm" value="">
+            </div>
+        </div>
+
+        <!-- 💡 زر تفعيل أو تعطيل معالجة الأخطاء الإملائية والتشكيلية الذكية لهذا السؤال -->
+        <div class="flex items-center gap-2 mt-3 bg-amber-50 p-3.5 rounded-2xl border border-amber-200 shadow-xs">
+            <input type="checkbox" id="modal-q-correction" class="w-5 h-5 text-amber-600 rounded cursor-pointer" checked>
+            <label for="modal-q-correction" class="text-xs sm:text-sm font-black text-amber-950 cursor-pointer">
+                تفعيل معالجة الأخطاء الإملائية والتشكيلية الذكية لهذه الإجابة (إلغاؤها يعتمد مطابقة حرفية تامة)
+            </label>
+        </div>
+    </div>
 
                 <!-- 5. خيارات الاختيار من متعدد (تظهر في المتعدد وتختفي عند المقالي) -->
                 <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border-2 border-slate-200" id="mcq-options-wrapper">
@@ -2314,8 +2330,12 @@ function addPassageSubQuestion(qType = 'mcq', qData = null) {
         }
         if (initialAnswers.length === 0) initialAnswers = [""];
 
+        // قراءة حالة تفعيل المعالجة الذكية للسؤال الفرعي
+        let isSubQCorrectionActive = qData ? qData.disableCorrection !== true : true;
+
         let ansInputsHtml = '';
         const containerId = 'passage_sub_ans_' + index + '_' + Math.random().toString(36).substring(2);
+        const checkboxId = 'passage_sub_corr_' + index + '_' + Math.random().toString(36).substring(2);
 
         initialAnswers.forEach((ansVal, aIdx) => {
             let rowId = containerId + '_' + aIdx;
@@ -2343,6 +2363,15 @@ function addPassageSubQuestion(qType = 'mcq', qData = null) {
                     ${ansInputsHtml}
                 </div>
             </div>
+
+            <!-- زر تفعيل أو تعطيل المعالجة الذكية لهذا السؤال الفرعي المقالي -->
+            <div class="flex items-center gap-2 mt-3 bg-amber-50 p-3.5 rounded-2xl border border-amber-200 shadow-xs">
+                <input type="checkbox" id="${checkboxId}" class="sub-q-correction-cb w-5 h-5 text-amber-600 rounded cursor-pointer" ${isSubQCorrectionActive ? 'checked' : ''}>
+                <label for="${checkboxId}" class="text-xs sm:text-sm font-black text-amber-950 cursor-pointer">
+                    تفعيل معالجة الأخطاء الإملائية والتشكيلية الذكية لهذه الإجابة (إلغاؤها يعتمد مطابقة حرفية تامة)
+                </label>
+            </div>
+
             ${commonFields}
         `;
     } else {
@@ -2462,11 +2491,16 @@ function savePassageData() {
                 return;
             }
 
+            // التقاط حالة زر معالجة الأخطاء الذكية للسؤال الفرعي المقالي
+            const corrCb = item.querySelector('.sub-q-correction-cb');
+            const disableCorrection = corrCb ? !corrCb.checked : false;
+
             subQuestions.push({ 
                 type: 'essay', 
                 text, 
                 ans: modelAnswersArr[0], 
-                modelAnswers: modelAnswersArr 
+                modelAnswers: modelAnswersArr,
+                disableCorrection // حفظ حالة المعالجة لهذا السؤال الفرعي
             });
         } else {
             const optInputs = item.querySelectorAll('.sub-q-opt-input');
@@ -2580,6 +2614,8 @@ function renderPassagesTable() {
         const absoluteNum = startIndex + loopIdx + 1;
         const isActive = item.active !== false;
         const isTashkeel = item.tashkeel !== false;
+        // التحقق من حالة معالجة الأخطاء الذكية (تكون مفعلة افتراضياً ما لم تكن معطلة)
+        const isCorrectionActive = item.disableCorrection !== true;
 
         htmlString += `
             <tr class="hover:bg-slate-50 transition border-b border-slate-100 text-xs">
@@ -2591,8 +2627,12 @@ function renderPassagesTable() {
                 <td class="p-3 text-center font-black">${item.type === 'essay_standalone' ? '-' : (item.questions ? item.questions.length : 0)}</td>
                 <td class="p-3 text-center">
                     <div class="flex items-center justify-center gap-1 flex-wrap">
-                        <button type="button" onclick="togglePassageActivation(${globalIdx})" class="px-2 py-1 rounded-lg font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'} cursor-pointer">${isActive ? 'مفعل' : 'مخفي'}</button>
-                        <button type="button" onclick="togglePassageTashkeel(${globalIdx})" class="px-2 py-1 rounded-lg font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'} cursor-pointer">${isTashkeel ? 'تشكيل' : 'بدون'}</button>
+                        <button type="button" onclick="togglePassageActivation(${globalIdx})" class="px-2 py-1 rounded-lg font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'} cursor-pointer" title="تفعيل أو إخفاء العنصر">${isActive ? 'مفعل' : 'مخفي'}</button>
+                        <button type="button" onclick="togglePassageTashkeel(${globalIdx})" class="px-2 py-1 rounded-lg font-extrabold ${isTashkeel ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-600'} cursor-pointer" title="التشكيل">${isTashkeel ? 'تشكيل' : 'بدون'}</button>
+                        
+                        <!-- 💡 زر التحكم السريع في معالجة الأخطاء الذكية للفقرة -->
+                        <button type="button" onclick="togglePassageCorrection(${globalIdx})" class="px-2 py-1 rounded-lg font-extrabold ${isCorrectionActive ? 'bg-indigo-100 text-indigo-900' : 'bg-rose-50 text-rose-700 border border-rose-200'} cursor-pointer" title="تبديل وضع معالجة الأخطاء الذكية">${isCorrectionActive ? 'معالجة ذكية' : 'مطابقة حرفية'}</button>
+
                         <button type="button" onclick="movePassageFiltered(${loopIdx}, -1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
                         <button type="button" onclick="movePassageFiltered(${loopIdx}, 1, '${fStage}', '${fGrade}', '${fBranch}', '${fTopic}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-xs cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
                         <button type="button" onclick="previewPassageItem(${globalIdx})" class="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded font-bold cursor-pointer" title="معاينة"><i class="fa-solid fa-eye"></i></button>
@@ -2610,7 +2650,11 @@ function renderPassagesTable() {
         paginationContainer.innerHTML = renderPaginationHtml(filtered.length, adminPassagesItemsPerPage, currentAdminPassagesPage, 'changePassagesPage');
     }
 }
-
+function togglePassageCorrection(idx) {
+    passagesBank[idx].disableCorrection = passagesBank[idx].disableCorrection === true ? false : true;
+    localStorage.setItem('passagesBank', JSON.stringify(passagesBank));
+    renderPassagesTable();
+}
 function togglePassageActivation(idx) {
     passagesBank[idx].active = passagesBank[idx].active === false ? true : false;
     localStorage.setItem('passagesBank', JSON.stringify(passagesBank));
@@ -2798,7 +2842,9 @@ function escapeHTML(str) {
             "startBtnText": "ابْدَأِ الِاخْتِبَارِ الْآنَ", "branch": "طَرِيقُ التَّفَوُّقِ فِي اللُّغَةِ العَرَبِيَّةِ", "pageTitle": "لَمَحَاتٌ وَقُطُوفٌ لُغَوِيَّةٌ",
             "examCount": 20, "examDuration": 20, "footerYear": "2026", "platformTheme": "default", "platformFont": "IBM Plex Sans Arabic",
             "quickInfoLabel": "مَعْلُومَةٌ سَرِيعَةٌ لِلدَّرْسِ", "showBankCard": "true", "bankCardStyle": "detailed",
-            "headerAdvice": "لُغَتُكَ هُوِيَّتُكَ، فَاحْرِصْ عَلَى تَعَلُّمِهَا...", // <-- أضف هذا السطر هنا
+            "headerAdvice": "لُغَتُكَ هُوِيَّتُكَ، فَاحْرِصْ عَلَى تَعَلُّمِهَا...",
+            "enableEssayLinguisticCorrection": true,
+            "enableMonthlyLinguisticCorrection": true,
             "adminPass": "12300123", "shuffleQuestions": true, "shuffleOptions": true, "enableTashkeel": true, "requireStudentPassword": false,
             "stTitleSize": "text-3xl sm:text-5xl", "stTitleWeight": "font-black", "useDifficultyFilter": false, "diffSelectionMode": "balanced",
             "diffEasyCount": 5, "diffMediumCount": 10, "diffHardCount": 3, "diffVeryHardCount": 2,
@@ -2814,6 +2860,10 @@ function escapeHTML(str) {
 
         let studentRecords = [];
         let quizState = { name: "", stage: "", grade: "", branch: "", topic: "", questions: [], answers: [], currentIndex: 0, startTime: null, timerInterval: null };
+
+let currentQiPageIndex = 0;
+let activeQiDataObject = null;
+let currentAdminQiSectionIndex = 0;
 
         // كائن تخزين روابط الصور العامة للمنصة
         let siteImages = {
@@ -3417,10 +3467,9 @@ async function saveState(showLoading = true) {
                 
                 // --- إضافة حفظ البوابة الثنائية ---
                 if(document.getElementById('admin-toggle-dual-portal')) appSettings.dualPortalActive = document.getElementById('admin-toggle-dual-portal').checked;
-                // -----------------------------------
-
+                
                 appSettings.footerYear = document.getElementById('admin-footer-year-input').value.trim() || "2026";
-                            if(document.getElementById('admin-portal-welcome-input')) appSettings.portalWelcomeMsg = document.getElementById('admin-portal-welcome-input').value.trim() || "أَهْلاً بِكَ يَا بَطَل!";
+                if(document.getElementById('admin-portal-welcome-input')) appSettings.portalWelcomeMsg = document.getElementById('admin-portal-welcome-input').value.trim() || "أَهْلاً بِكَ يَا بَطَل!";
                 if(document.getElementById('admin-show-bank-card')) appSettings.showBankCard = document.getElementById('admin-show-bank-card').value === "true";
                 if(document.getElementById('admin-bank-card-style')) appSettings.bankCardStyle = document.getElementById('admin-bank-card-style').value;
                 if(document.getElementById('admin-use-difficulty-filter')) appSettings.useDifficultyFilter = document.getElementById('admin-use-difficulty-filter').checked;
@@ -3439,6 +3488,10 @@ async function saveState(showLoading = true) {
                 if(document.getElementById('admin-require-password')) appSettings.requireStudentPassword = document.getElementById('admin-require-password').checked;
                 
                 if(document.getElementById('admin-enable-student-pdf')) appSettings.enableStudentPDF = document.getElementById('admin-enable-student-pdf').checked; 
+                
+                // 💡 أسطر حفظ خيارات التصحيح اللغوي الذكي الجديدة
+                if(document.getElementById('admin-enable-essay-correction')) appSettings.enableEssayLinguisticCorrection = document.getElementById('admin-enable-essay-correction').checked;
+                if(document.getElementById('admin-enable-monthly-correction')) appSettings.enableMonthlyLinguisticCorrection = document.getElementById('admin-enable-monthly-correction').checked;
                 
                 if(document.getElementById('admin-logo-header-input')) appSettings.logoHeader = document.getElementById('admin-logo-header-input').value.trim();
                 if(document.getElementById('admin-logo-right-input')) appSettings.logoRight = document.getElementById('admin-logo-right-input').value.trim();
@@ -3461,6 +3514,7 @@ async function saveState(showLoading = true) {
                 });
             }, 150);
         }
+
 async function saveQuestionsState() {
             try {
                 if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
@@ -3861,71 +3915,139 @@ async function saveAndSyncRecordsToCloud(updatedRecords) {
     }
 }
 
-        function generateQuickInfoCardHtml(qi) {
-            let mainAlign = qi.titleAlign || 'text-right';
-            let mainImgHtml = qi.img ? `<div class="my-5 text-center"><img src="${qi.img}" class="max-h-80 rounded-2xl mx-auto object-contain border-2 shadow-md"></div>` : '';
-            let attachmentsHtml = '';
+function generateQuickInfoCardHtml(qi, pageIndex = 0) {
+    activeQiDataObject = qi;
+    currentQiPageIndex = pageIndex;
+
+    let sections = qi.sections ? qi.sections.filter(sec => sec.active !== false) : [];
+    if (sections.length === 0) {
+        return `<div class="bg-white p-8 rounded-3xl text-center text-slate-500 font-bold">لا توجد محتويات مضافة لهذه البطاقة.</div>`;
+    }
+
+    if (currentQiPageIndex < 0) currentQiPageIndex = 0;
+    if (currentQiPageIndex >= sections.length) currentQiPageIndex = sections.length - 1;
+
+    let currentSec = sections[currentQiPageIndex];
+    let mainAlign = qi.titleAlign || 'text-right';
+    
+    let attachmentsHtml = '';
+    if (currentQiPageIndex === 0 && qi.attachments && qi.attachments.length > 0) {
+        let btns = qi.attachments.map(att => `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-5 py-3 rounded-xl shadow transition flex items-center gap-2 text-sm sm:text-base"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${formatText(att.label || 'اطّلع على الملف', qi.tashkeel)}</a>`).join('');
+        attachmentsHtml = `<div class="flex flex-wrap gap-3 pt-2 pb-3">${btns}</div>`;
+    }
+
+    let mainImgHtml = (currentQiPageIndex === 0 && qi.img) ? `<div class="my-5 text-center"><img src="${qi.img}" class="max-h-80 rounded-2xl mx-auto object-contain border-2 shadow-md"></div>` : '';
+
+    let secAlign = currentSec.headerAlign || 'text-right';
+    let subItemsHtml = '';
+    
+    if (currentSec.subItems) {
+        currentSec.subItems.forEach(sub => {
+            if (sub.active === false) return;
+            let subAlign = sub.titleAlign || 'text-right';
+            let subImgHtml = sub.img ? `<div class="my-4 text-center"><img src="${sub.img}" class="max-h-60 rounded-2xl mx-auto object-contain border-2"></div>` : '';
             
-            if (qi.attachments && qi.attachments.length > 0) {
-                let btns = qi.attachments.map(att => `<a href="${att.url}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-sky-950 font-black px-5 py-3 rounded-xl shadow transition flex items-center gap-2 text-sm sm:text-base"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${formatText(att.label || 'اطّلع على', qi.tashkeel)}</a>`).join('');
-                attachmentsHtml = `<div class="flex flex-wrap gap-3 pt-2 pb-3">${btns}</div>`;
-            }
-
-            let sectionsHtml = '';
-            if (qi.sections) {
-                qi.sections.forEach(sec => {
-                    if (sec.active === false) return;
-                    let secAlign = sec.headerAlign || 'text-right';
-                    let subItemsHtml = '';
-                    
-                    if (sec.subItems) {
-                        sec.subItems.forEach(sub => {
-                            if (sub.active === false) return;
-                            let subAlign = sub.titleAlign || 'text-right';
-                            let subImgHtml = sub.img ? `<div class="my-4 text-center"><img src="${sub.img}" class="max-h-60 rounded-2xl mx-auto object-contain border-2"></div>` : '';
-                            
-                            let tableHtml = '';
-                            if (sub.tableData && Array.isArray(sub.tableData) && sub.tableData.length > 0) {
-                                tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-slate-200 shadow-sm"><table class="w-full text-right border-collapse bg-white">`;
-                                sub.tableData.forEach((row, rIdx) => {
-                                    tableHtml += `<tr class="${rIdx === 0 ? 'bg-sky-900 text-white font-black' : 'border-b border-slate-100 hover:bg-slate-50 font-bold text-slate-800'}">`;
-                                    row.forEach(cell => {
-                                        if (rIdx === 0) {
-                                            tableHtml += `<th class="p-3 text-sm sm:text-base border-l border-sky-800 last:border-l-0">${formatText(cell, qi.tashkeel)}</th>`;
-                                        } else {
-                                            tableHtml += `<td class="p-3 text-sm sm:text-base border-l border-slate-100 last:border-l-0">${formatText(cell, qi.tashkeel)}</td>`;
-                                        }
-                                    });
-                                    tableHtml += `</tr>`;
-                                });
-                                tableHtml += `</table></div>`;
-                            }
-
-                            subItemsHtml += `<div class="bg-white p-6 rounded-2xl border-2 space-y-4 mt-4 shadow-sm">
-                                ${sub.title ? `<h5 class="font-black text-sky-950 text-xl sm:text-2xl ${subAlign}">${formatText(sub.title, qi.tashkeel)}</h5>` : ''}
-                                ${subImgHtml}
-                                <p class="text-slate-900 text-lg sm:text-xl leading-relaxed whitespace-pre-line font-bold">${formatText(sub.text || '', qi.tashkeel)}</p>
-                                ${tableHtml}
-                            </div>`;
-                        });
-                    }
-
-                    if (subItemsHtml || sec.mainHeader) {
-                        sectionsHtml += `<div class="bg-amber-50/70 p-6 rounded-3xl border-3 border-amber-300 space-y-5 shadow-sm">
-                            ${sec.mainHeader ? `<h4 class="font-black text-amber-950 text-2xl sm:text-3xl border-b-2 border-amber-300 pb-3 ${secAlign}"><i class="fa-solid fa-bookmark text-amber-600 ml-2"></i>${formatText(sec.mainHeader, qi.tashkeel)}</h4>` : ''}
-                            <div class="space-y-5">${subItemsHtml}</div>
-                        </div>`;
-                    }
+            let tableHtml = '';
+            if (sub.tableData && Array.isArray(sub.tableData) && sub.tableData.length > 0) {
+                tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-slate-200 shadow-sm"><table class="w-full text-right border-collapse bg-white">`;
+                sub.tableData.forEach((row, rIdx) => {
+                    tableHtml += `<tr class="${rIdx === 0 ? 'bg-sky-900 text-white font-black' : 'border-b border-slate-100 hover:bg-slate-50 font-bold text-slate-800'}">`;
+                    row.forEach(cell => {
+                        if (rIdx === 0) {
+                            tableHtml += `<th class="p-3 text-sm sm:text-base border-l border-sky-800 last:border-l-0">${formatText(cell, qi.tashkeel)}</th>`;
+                        } else {
+                            tableHtml += `<td class="p-3 text-sm sm:text-base border-l border-slate-100 last:border-l-0">${formatText(cell, qi.tashkeel)}</td>`;
+                        }
+                    });
+                    tableHtml += `</tr>`;
                 });
+                tableHtml += `</table></div>`;
             }
 
-            return `<div class="bg-white p-8 rounded-3xl border-3 border-sky-200 space-y-6 shadow-lg">
-                <h3 class="font-black text-sky-950 text-2xl sm:text-3xl border-b-4 border-amber-500 pb-4 ${mainAlign}">${formatText(qi.title, qi.tashkeel)}</h3>
-                ${attachmentsHtml}
-                ${mainImgHtml}
-                <div class="space-y-6">${sectionsHtml}</div>
+            subItemsHtml += `<div class="bg-white p-6 rounded-2xl border-2 space-y-4 mt-4 shadow-sm">
+                ${sub.title ? `<h5 class="font-black text-sky-950 text-xl sm:text-2xl ${subAlign}">${formatText(sub.title, qi.tashkeel)}</h5>` : ''}
+                ${subImgHtml}
+                <p class="text-slate-900 text-lg sm:text-xl leading-relaxed whitespace-pre-line font-bold">${formatText(sub.text || '', qi.tashkeel)}</p>
+                ${tableHtml}
             </div>`;
-        }
+        });
+    }
+
+    let sectionContentHtml = `<div class="bg-amber-50/70 p-6 sm:p-8 rounded-3xl border-3 border-amber-300 space-y-5 shadow-sm">
+        ${currentSec.mainHeader ? `<h4 class="font-black text-amber-950 text-2xl sm:text-3xl border-b-2 border-amber-300 pb-3 ${secAlign}"><i class="fa-solid fa-bookmark text-amber-600 ml-2"></i>${formatText(currentSec.mainHeader, qi.tashkeel)}</h4>` : ''}
+        <div class="space-y-5">${subItemsHtml}</div>
+    </div>`;
+
+    // توليد أزرار أرقام الصفحات تفاعلياً لكي تنتقل مباشرة عند الضغط على أي رقم
+    let pageNumbersHtml = '';
+    sections.forEach((_, idx) => {
+        let isCurrentPage = idx === currentQiPageIndex;
+        pageNumbersHtml += `
+            <button type="button" onclick="goToQiPage(${idx})" class="w-10 h-10 rounded-xl font-black text-sm flex items-center justify-center transition cursor-pointer shadow-sm ${isCurrentPage ? 'bg-sky-600 text-white ring-3 ring-sky-300 scale-105' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300'}">
+                ${idx + 1}
+            </button>
+        `;
+    });
+
+    let prevPageIndex = currentQiPageIndex - 1;
+    let nextPageIndex = currentQiPageIndex + 1;
+
+    let paginationButtonsHtml = `
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t-2 border-slate-200 mt-6">
+            <button type="button" onclick="goToQiPage(${prevPageIndex})" class="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold px-6 py-3 rounded-xl transition cursor-pointer ${currentQiPageIndex === 0 ? 'opacity-40 pointer-events-none' : ''}">
+                <i class="fa-solid fa-arrow-right ml-1"></i> القسم السابق
+            </button>
+            
+            <!-- أزرار أرقام الصفحات -->
+            <div class="flex flex-wrap gap-2 justify-center items-center">
+                ${pageNumbersHtml}
+            </div>
+
+            <button type="button" onclick="goToQiPage(${nextPageIndex})" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-6 py-3 rounded-xl transition cursor-pointer ${currentQiPageIndex === sections.length - 1 ? 'opacity-40 pointer-events-none' : ''}">
+                القسم التالي <i class="fa-solid fa-arrow-left mr-1"></i>
+            </button>
+        </div>
+    `;
+
+    return `<div class="bg-white p-8 rounded-3xl border-3 border-sky-200 space-y-6 shadow-lg">
+        <h3 class="font-black text-sky-950 text-2xl sm:text-3xl border-b-4 border-amber-500 pb-4 ${mainAlign}">${formatText(qi.title, qi.tashkeel)}</h3>
+        ${attachmentsHtml}
+        ${mainImgHtml}
+        <div class="space-y-6">${sectionContentHtml}</div>
+        ${sections.length > 1 ? paginationButtonsHtml : ''}
+    </div>`;
+}        
+
+// 💡  دالة التنقل بين الصفحات هنا مباشرة:
+function changeQiPage(direction) {
+    if (!activeQiDataObject) return;
+    
+    let sections = activeQiDataObject.sections ? activeQiDataObject.sections.filter(sec => sec.active !== false) : [];
+    if (sections.length === 0) return;
+
+    let newIndex = currentQiPageIndex + direction;
+    
+    if (newIndex < 0) newIndex = 0;
+    if (newIndex >= sections.length) newIndex = sections.length - 1;
+
+    currentQiPageIndex = newIndex;
+    
+    const container = document.getElementById('quick-info-content-container');
+    if (container) {
+        container.innerHTML = generateQuickInfoCardHtml(activeQiDataObject, currentQiPageIndex);
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function goToQiPage(pageIndex) {
+    if (!activeQiDataObject) return;
+    currentQiPageIndex = pageIndex;
+    const container = document.getElementById('quick-info-content-container');
+    if (container) {
+        container.innerHTML = generateQuickInfoCardHtml(activeQiDataObject, currentQiPageIndex);
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
 
         // ================== CASCADING DROPDOWNS & SMART SKIP ==================
         function getSelectedBranch() {
@@ -4395,87 +4517,6 @@ function updatePortalTopicBankCard() {
     card.classList.remove('hidden');
 }
 
-// 8. عرض سجل الطالب الشخصي في التبويب الثالث
-function renderStudentPersonalRecords() {
-    const tbody = document.getElementById('portal-student-records-tbody');
-    if (!tbody) return;
-
-    // تصفية السجلات الخاصة بالطالب الحالي فقط
-    const myRecords = studentRecords.filter(r => r.name === currentStudentSession.name);
-
-    if (myRecords.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-500 font-bold">لا توجد اختبارات سابقة مسجلة لك حتى الآن.</td></tr>';
-        return;
-    }
-
-    let topicAttemptCounts = {};
-    let html = '';
-
-    myRecords.forEach((r) => {
-        if (!topicAttemptCounts[r.topic]) {
-            topicAttemptCounts[r.topic] = 0;
-        }
-        topicAttemptCounts[r.topic]++;
-        const attemptNumber = topicAttemptCounts[r.topic];
-
-        let answeredCount = 0;
-        let unansweredCount = 0;
-
-        if (r.breakdown && Array.isArray(r.breakdown)) {
-            r.breakdown.forEach(b => {
-                if (b.userAnswer && b.userAnswer !== "لم يجب" && b.userAnswer !== "لم يُجب" && b.userAnswer !== "") {
-                    answeredCount++;
-                } else {
-                    unansweredCount++;
-                }
-            });
-        } else {
-            answeredCount = r.score || 0;
-            unansweredCount = (r.total || 0) - answeredCount;
-        }
-
-        const pendingCount = r.pendingEssayCount !== undefined ? r.pendingEssayCount : (r.breakdown ? r.breakdown.filter(b => b.type === 'essay' && (b.essayGrade === undefined || b.essayGrade === null)).length : 0);
-        
-        let essayNoticeHtml = pendingCount > 0 
-            ? `<span class="block text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md font-bold mt-1 border border-amber-200">⚠️ بانتظار تصحيح (${pendingCount}) مقالي</span>` 
-            : `<span class="block text-[11px] text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md font-bold mt-1 border border-indigo-100">✨ تم التصحيح</span>`;
-
-        let statusClass = "bg-emerald-100 text-emerald-800";
-        if (r.status === "راسب") statusClass = "bg-rose-100 text-rose-800";
-        if (r.status === "بانتظار التصحيح") statusClass = "bg-amber-100 text-amber-800";
-
-        // 💡 التعديل الديناميكي للمقام: يعرض إجمالي الموضوعي طالما هناك معلق، ويتحول لإجمالي الاختبار الكامل بعد التصحيح
-        let hasPendingStudent = pendingCount > 0;
-        let studentDenominator = hasPendingStudent && r.objectiveTotal ? r.objectiveTotal : r.total;
-
-        html += `
-        <tr class="border-b border-slate-100 hover:bg-slate-50 transition text-xs sm:text-sm">
-            <td class="p-4 font-black text-slate-600">
-                ${escapeHTML(r.topic)} 
-                <span class="bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full text-[10px] font-bold mr-1">محاولة #${attemptNumber}</span>
-            </td>
-            <td class="p-4 text-slate-500 font-mono">
-                <div>📅 ${escapeHTML(r.date ? r.date.split(',')[0] : '--')}</div>
-                <div class="text-[11px] text-slate-400 mt-0.5">⏱️ المدة: ${escapeHTML(r.duration || '--')}</div>
-            </td>
-            <td class="p-4 font-bold text-slate-700 text-center">
-                <span class="text-emerald-600 font-black">أجاب: ${answeredCount}</span> | 
-                <span class="text-rose-600 font-black">لم يجب: ${unansweredCount}</span>
-            </td>
-            <td class="p-4 text-center">
-                <span class="font-black text-sky-900 text-base">${r.score} / ${studentDenominator} (${r.pct}%)</span>
-                ${essayNoticeHtml}
-            </td>
-            <td class="p-4 text-center">
-                <span class="px-3 py-1 rounded-full text-xs font-black ${statusClass}">${r.status}</span>
-                <!-- 💡 إدراج زر عرض التفاصيل هنا لكي يظهر للطالب -->
-                ${detailsBtnHtml}
-            </td>
-        </tr>`;
-    });
-
-    tbody.innerHTML = html;
-}
 // 9. العودة للبوابة من الشرح
 function backToPortal() {
     document.getElementById('view-quick-info').classList.add('hidden');
@@ -4940,16 +4981,7 @@ window.restartHome = function() {
         let essayGrade = undefined;
 
         if (q.type === 'essay') {
-            let cleanUserAns = isAnswered ? String(userAns).trim().replace(/\s+/g, ' ') : "";
-            
-            // استخراج قائمة الإجابات النموذجية المتعددة (سواء كـ مصفوفة أو نص مفصول)
-            let validAnswers = [];
-            if (Array.isArray(q.modelAnswers)) {
-                validAnswers = q.modelAnswers.map(a => String(a).trim().replace(/\s+/g, ' '));
-            } else if (q.ans) {
-                validAnswers = String(q.ans).split(/[\u060C,;|/]| أو /).map(a => a.trim().replace(/\s+/g, ' ')).filter(Boolean);
-            }
-
+           
             // فحص هل إجابة الطالب تطابق أياً من الإجابات النموذجية المعتمدة
             let matchedModel = validAnswers.length > 0 && validAnswers.some(ansOpt => ansOpt === cleanUserAns);
 
@@ -5118,101 +5150,6 @@ window.restartHome = function() {
         document.getElementById('modal-cert').classList.add('flex');
     }
 
-    function showQuizReview() {
-    if (!quizState || !quizState.questions || quizState.questions.length === 0) {
-        alert("لا توجد بيانات اختبار للمراجعة حالياً.");
-        return;
-    }
-    
-    let html = '<div class="space-y-6">';
-    quizState.questions.forEach((q, idx) => {
-        let userAns = quizState.answers[idx]; 
-        let isAnswered = userAns !== null && userAns !== undefined && String(userAns).trim() !== "";
-        
-        let optsHtml = '';
-        let statusBadge = '';
-
-        // 💡 تصميم ذكي ومحسن لصفحة المراجعة لتمييز المقالي الصحيح والمطابق تماماً
-        if (q.type === 'essay') {
-            let isEssayCorrect = q.isCorrect === true || q.essayGrade === true;
-            
-            if (isEssayCorrect) {
-                statusBadge = '<span class="text-emerald-600 font-black text-base">إجابة صحيحة ومطابقة ✓</span>';
-            } else {
-                statusBadge = isAnswered ? '<span class="text-amber-600 font-black text-base">بانتظار تصحيح المعلم ⏳</span>' : '<span class="text-rose-600 font-black text-base">تُرك فارغاً ✗</span>';
-            }
-
-            let boxStyle = isEssayCorrect ? "bg-emerald-50/50 border-emerald-300 text-emerald-950" : "bg-amber-50/50 border-amber-200 text-slate-800";
-
-            optsHtml = `
-                <div class="p-6 rounded-2xl border-2 ${boxStyle} text-base sm:text-lg font-bold whitespace-pre-line shadow-sm">
-                    <strong class="block mb-2"><i class="fa-solid fa-pen-nib ml-1"></i> إجابتك المقالية:</strong>
-                    ${isAnswered ? escapeHTML(userAns) : '<span class="text-rose-500">لا توجد إجابة</span>'}
-                </div>
-                ${q.ans ? `<div class="p-6 mt-4 rounded-2xl border-2 bg-emerald-50 border-emerald-200 text-base sm:text-lg font-bold text-emerald-900 whitespace-pre-line shadow-sm"><strong class="block mb-2"><i class="fa-solid fa-check ml-1"></i> مفتاح الإجابة النموذجية:</strong><br>${escapeHTML(q.ans)}</div>` : ''}
-            `;
-        } else {
-            let isCorrect = isAnswered && userAns === q.ans;
-            statusBadge = isAnswered ? (isCorrect ? '<span class="text-emerald-600 font-black text-base">صحيحة ✓</span>' : '<span class="text-rose-600 font-black text-base">خاطئة ✗</span>') : '<span class="text-amber-600 font-black text-base">لم يجب عليها</span>';
-            
-            optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4">';
-            if (q.opts) {
-                q.opts.forEach(opt => {
-                    let isThisCorrect = opt === q.ans; 
-                    let isThisUser = opt === userAns; 
-                    let optStyle = "bg-white border-slate-200 text-slate-700"; 
-                    let optBadge = "";
-                    
-                    if (isThisCorrect) { 
-                        optStyle = "bg-emerald-100 border-emerald-400 text-emerald-950 font-black"; 
-                        optBadge = '<span class="text-emerald-800 text-sm mt-2 block font-extrabold">✓ الإجابة الصحيحة</span>'; 
-                    } else if (isThisUser && !isCorrect) { 
-                        optStyle = "bg-rose-100 border-rose-400 text-rose-950 font-black"; 
-                        optBadge = '<span class="text-rose-800 text-sm mt-2 block font-extrabold">✗ إجابتك الخاطئة</span>'; 
-                    }
-                    optsHtml += `<div class="p-5 rounded-2xl border-2 ${optStyle} text-base sm:text-lg font-bold">• ${formatText(opt, q.tashkeel)}${optBadge}</div>`;
-                });
-            }
-            optsHtml += '</div>';
-        }
-
-        html += `<div class="bg-white p-8 rounded-3xl border-3 border-slate-200 shadow-lg space-y-4">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h4 class="font-black text-xl sm:text-2xl text-sky-950">س${idx+1}: ${formatText(q.q, q.tashkeel)}</h4>
-                <span>${statusBadge}</span>
-            </div>
-            ${optsHtml}
-            ${q.exp && q.type !== 'essay' ? `<div class="p-5 bg-sky-50 rounded-2xl border-2 border-sky-200 text-base sm:text-lg text-sky-950 font-bold leading-relaxed"><strong>التعليل والشرح:</strong> ${formatText(q.exp, q.tashkeel)}</div>` : ''}
-        </div>`;
-    });
-    html += '</div>';
-
-    const reviewBody = document.getElementById('student-review-body');
-    if (reviewBody) reviewBody.innerHTML = html; 
-
-    const reviewPdfBtn = document.getElementById('review-screen-pdf-btn');
-    if (reviewPdfBtn) {
-        if (typeof appSettings !== 'undefined' && appSettings.enableStudentPDF !== false) {
-            reviewPdfBtn.classList.remove('hidden');
-            reviewPdfBtn.classList.add('flex');
-        } else {
-            reviewPdfBtn.classList.add('hidden');
-            reviewPdfBtn.classList.remove('flex');
-        }
-    }
-
-    ['view-start', 'view-quiz', 'view-result'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
-    });
-
-    const reviewView = document.getElementById('modal-student-review');
-    if (reviewView) {
-        reviewView.classList.remove('hidden');
-        reviewView.classList.add('flex');
-    }
-}
-
     function exportStudentReviewPDF() {
         const pdfBtn = document.getElementById('student-pdf-btn') || document.getElementById('review-screen-pdf-btn');
         const originalBtnHtml = '<i class="fa-solid fa-file-pdf"></i> تحميل كـ PDF';
@@ -5331,6 +5268,106 @@ window.restartHome = function() {
         }
     }
 
+function openStudentQuizReview() {
+    let details = [];
+    
+    // 1. محاولة جلب تفاصيل أحدث سجل محفوظ للطالب
+    let existingRecords = [];
+    try {
+        existingRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+    } catch(e) {
+        existingRecords = [];
+    }
+
+    // إذا كانت السجلات موجودة، نأخذ السجل الأول (أو الأحدث)
+    if (existingRecords.length > 0 && existingRecords[0].breakdown && existingRecords[0].breakdown.length > 0) {
+        details = existingRecords[0].breakdown;
+    } 
+    // 2. محاولة احتياطية من quizState للاختبارات العادية
+    else if (typeof quizState !== 'undefined' && quizState.questions && quizState.questions.length > 0) {
+        details = quizState.questions.map((q, idx) => {
+            const userAns = quizState.answers[idx];
+            const isAnswered = userAns !== null && userAns !== undefined && String(userAns).trim() !== "";
+            let correctAnswerText = q.ans;
+            if (Array.isArray(q.modelAnswers)) correctAnswerText = q.modelAnswers.join(' أو ');
+            
+            return {
+                qIndex: idx + 1,
+                qText: formatText(q.q, q.tashkeel),
+                options: q.opts ? q.opts.map(opt => formatText(opt, q.tashkeel)) : [],
+                userAnswer: isAnswered ? formatText(userAns, q.tashkeel) : "لم يُجب",
+                correctAnswer: formatText(correctAnswerText, q.tashkeel),
+                isCorrect: userAns === q.ans,
+                type: q.type || 'mcq',
+                explanation: formatText(q.exp || "", q.tashkeel)
+            };
+        });
+    }
+
+    let reviewHtml = "";
+    if (details.length === 0) {
+        reviewHtml = `<div class="bg-white p-8 rounded-3xl text-center text-slate-500 font-bold text-lg">لا توجد تفاصيل مراجعة متاحة حالياً.</div>`;
+    } else {
+        let currentSection = "";
+        details.forEach(item => {
+            // دعم عرض عنوان القسم في الامتحانات الشهرية والشاملة
+            if (item.sectionTitle && item.sectionTitle !== currentSection) {
+                currentSection = item.sectionTitle;
+                reviewHtml += `<div class="bg-sky-100/90 border-2 border-sky-300 text-sky-950 font-black text-xl p-4 rounded-2xl my-6 flex items-center gap-2"><i class="fa-solid fa-folder-open text-sky-600"></i> ${escapeHTML(currentSection)}</div>`;
+            }
+
+            if (item.type === 'essay') {
+                let isEssayCorrect = item.isCorrect === true || item.essayGrade === true;
+                let essayStatusText = isEssayCorrect ? '<span class="text-emerald-600 font-black text-base">إجابة صحيحة ومطابقة ✓</span>' : (item.essayGrade === 0 ? '<span class="text-rose-600 font-black text-base">خطأ / صفر ✗</span>' : '<span class="text-amber-600 font-black text-base">بانتظار تصحيح المعلم ⏳</span>');
+
+                reviewHtml += `<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-amber-300 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <h4 class="font-black text-xl text-amber-950">س${item.qIndex}: ${escapeHTML(item.qText)}</h4>
+                        <span>${essayStatusText}</span>
+                    </div>
+                    <div class="text-lg text-slate-800 font-bold bg-amber-50 p-4 rounded-xl border border-amber-200">
+                        <strong class="text-amber-700 block mb-1">إجابتك:</strong> ${escapeHTML(item.userAnswer)}
+                    </div>
+                    ${item.correctAnswer && item.correctAnswer !== "إجابة مقالية (بانتظار تقييم المعلم)" ? `<div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-base font-bold text-emerald-900"><strong>الإجابة النموذجية:</strong> ${escapeHTML(item.correctAnswer)}</div>` : ''}
+                </div>`;
+            } else {
+                let statusBadge = item.userAnswer !== "لم يُجب" && item.userAnswer !== "لم يجب" ? 
+                    (item.isCorrect ? '<span class="text-emerald-600 font-black text-base">صحيحة ✓</span>' : '<span class="text-rose-600 font-black text-base">خاطئة ✗</span>') : 
+                    '<span class="text-amber-600 font-black text-base">لم يجب عليها</span>';
+
+                let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">';
+                if (item.options) {
+                    item.options.forEach(opt => {
+                        let optStyle = "bg-white border-slate-200 text-slate-800";
+                        if (opt === item.correctAnswer) optStyle = "bg-emerald-50 border-emerald-400 text-emerald-950 font-black";
+                        else if (opt === item.userAnswer && !item.isCorrect) optStyle = "bg-rose-50 border-rose-400 text-rose-950 font-black";
+                        optsHtml += `<div class="p-4 rounded-2xl border-2 ${optStyle} text-base font-bold">• ${escapeHTML(opt)}</div>`;
+                    });
+                }
+                optsHtml += '</div>';
+
+                reviewHtml += `<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <h4 class="font-black text-xl text-sky-950">س${item.qIndex}: ${escapeHTML(item.qText)}</h4>
+                        <span>${statusBadge}</span>
+                    </div>
+                    <div class="text-base text-slate-700 font-bold bg-slate-50 p-3 rounded-xl">إجابتك: <strong class="text-sky-900">${escapeHTML(item.userAnswer)}</strong></div>
+                    ${optsHtml}
+                    ${item.explanation ? `<div class="p-4 bg-sky-50/70 rounded-2xl border border-sky-200 text-base text-sky-950 font-bold"><i class="fa-solid fa-circle-info text-amber-500 ml-1"></i> <strong>التعليل والشرح:</strong> <p class="mt-1">${escapeHTML(item.explanation)}</p></div>` : ''}
+                </div>`;
+            }
+        });
+    }
+
+    const container = document.getElementById('quiz-review-body');
+    if (container) container.innerHTML = reviewHtml;
+
+    const reviewView = document.getElementById('view-quiz-review');
+    if (reviewView) {
+        reviewView.classList.remove('hidden');
+        reviewView.classList.add('flex');
+    }
+}
     function closeQuizReview() {
         const reviewView = document.getElementById('view-quiz-review') || document.getElementById('modal-student-review');
         if (reviewView) {
@@ -5735,7 +5772,11 @@ async function openAdminSectionPage(sectionId) {
             if (typeof populateRecAdminFilters === 'function') populateRecAdminFilters();
             if (typeof renderAdminRecordsTable === 'function') renderAdminRecordsTable();
         }
-        else if (sectionId === 'view-admin-settings' && typeof loadAdminSettings === 'function') loadAdminSettings();
+        else if (sectionId === 'view-admin-settings') {
+            if (typeof loadAdminSettings === 'function') loadAdminSettings();
+            if (document.getElementById('admin-enable-essay-correction')) document.getElementById('admin-enable-essay-correction').checked = appSettings.enableEssayLinguisticCorrection !== false;
+            if (document.getElementById('admin-enable-monthly-correction')) document.getElementById('admin-enable-monthly-correction').checked = appSettings.enableMonthlyLinguisticCorrection !== false;
+        }
         else if (sectionId === 'view-admin-stages' && typeof renderAdminStagesList === 'function') renderAdminStagesList();
         else if (sectionId === 'view-admin-branches' && typeof renderAdminBranchesList === 'function') { if (typeof populateBranchAdminFilters === 'function') populateBranchAdminFilters(); renderAdminBranchesList(); }
         else if (sectionId === 'view-admin-topics' && typeof renderAdminTopicsList === 'function') { if (typeof populateTopicAdminFilters === 'function') populateTopicAdminFilters(); renderAdminTopicsList(); }
@@ -5753,6 +5794,7 @@ async function openAdminSectionPage(sectionId) {
         }
     }
 }
+
 // دالة تشغيل مؤشر التحميل الإجباري عند النقر على زر سجلات النتائج في لوحة التحكم
 async function openAdminRecordsWithLoader() {
     if (typeof toggleCloudLoading === 'function') {
@@ -5788,20 +5830,42 @@ async function openAdminRecordsWithLoader() {
         }
 
         // دالة الحفظ الموحدة مع رسالة التأكيد الإجبارية
-        function confirmAndSaveAdminSection(sectionType) {
-            if (confirm("هل أنت متأكد من حفظ التغييرات لهذه الصفحة؟")) {
-                if (sectionType === 'settings' && typeof saveAdminSettings === 'function') saveAdminSettings();
-                else if (sectionType === 'stages' && typeof saveStagesState === 'function') saveStagesState();
-                else if (sectionType === 'branches' && typeof saveBranchesState === 'function') saveBranchesState();
-                else if (sectionType === 'topics' && typeof saveTopicsState === 'function') saveTopicsState();
-                else if (sectionType === 'questions' && typeof saveQuestionsState === 'function') saveQuestionsState();
-                else if (sectionType === 'paragraphs' && typeof saveParagraphsState === 'function') saveParagraphsState();
-                else if (sectionType === 'quickinfo' && typeof saveQuickInfoState === 'function') saveQuickInfoState();
-                else if (sectionType === 'students' && typeof saveStudentsState === 'function') saveStudentsState();
-                
-                alert("تم حفظ التغييرات بنجاح!");
+function confirmAndSaveAdminSection(sectionType) {
+    if (confirm("هل أنت متأكد من حفظ التغييرات لهذه الصفحة؟")) {
+        if (sectionType === 'settings' && typeof saveAdminSettings === 'function') saveAdminSettings();
+        else if (sectionType === 'stages' && typeof saveStagesState === 'function') saveStagesState();
+        else if (sectionType === 'branches' && typeof saveBranchesState === 'function') saveBranchesState();
+        else if (sectionType === 'topics' && typeof saveTopicsState === 'function') saveTopicsState();
+        else if (sectionType === 'questions' && typeof saveQuestionsState === 'function') saveQuestionsState();
+        else if (sectionType === 'paragraphs' && typeof saveParagraphsState === 'function') saveParagraphsState();
+        else if (sectionType === 'quickinfo' && typeof saveQuickInfoState === 'function') saveQuickInfoState();
+        else if (sectionType === 'students' && typeof saveStudentsState === 'function') saveStudentsState();
+        else if (sectionType === 'monthlyExams') {
+            // 💡 تفعيل مؤشر التحميل المرئي والنسبة المئوية عند الضغط على حفظ القسم ككل
+            allowCloudLoadingOverlay = true;
+            const textEl = document.getElementById('cloud-loading-text');
+            const overlay = document.getElementById('cloud-loading-overlay');
+            if (textEl) textEl.textContent = "جَارِي فَحْصِ وَرَفْعِ الْامْتِحَانَاتِ الشَّهْرِيَّةِ...";
+            if (overlay) overlay.style.display = 'flex';
+
+            localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+            if (typeof saveState === 'function') {
+                saveState(true).then(() => {
+                    allowCloudLoadingOverlay = false;
+                    if (overlay) overlay.style.display = 'none';
+                    alert("تم حفظ الامتحانات الشهرية بنجاح!");
+                }).catch(e => {
+                    allowCloudLoadingOverlay = false;
+                    if (overlay) overlay.style.display = 'none';
+                    alert("حدث خطأ أثناء الحفظ: " + e.message);
+                });
+                return; // الخروج لتجنب تكرار التنبيه العام
             }
         }
+        
+        alert("تم حفظ التغييرات بنجاح!");
+    }
+}
            
         // --- STAGES, GRADES & ACTIVATION ---
         function renderAdminStagesList() {
@@ -6414,6 +6478,10 @@ function toggleQuestionTypeModalFields(type) {
     const tashkeel = document.getElementById('modal-q-tashkeel').checked;    
     const qType = document.getElementById('modal-q-type-select') ? document.getElementById('modal-q-type-select').value : 'mcq';
 
+    // 💡 التقاط حالة زر تعطيل المعالجة الذكية من الواجهة (إذا لم يكن محدداً فستكون القناة مفعلة أو العكس)
+    const correctionCb = document.getElementById('modal-q-correction');
+    const disableCorrection = correctionCb ? !correctionCb.checked : false;
+
     let opts = [];
     let ans = "";
     let modelAnswersArr = [];
@@ -6465,7 +6533,8 @@ function toggleQuestionTypeModalFields(type) {
         exp, 
         difficulty, 
         active, 
-        tashkeel 
+        tashkeel,
+        disableCorrection // 💡 حفظ حالة معالجة الأخطاء الذكية للسؤال
     };    
     
     if (idx === -1) questionBank.push(obj);    
@@ -7398,38 +7467,203 @@ function importQuestionsJsonFile(event) {
         }        
 
         function openEditQuickInfoModal(idx) {
-            populateQiModalStages(); 
-            let qi = quickInfoList[idx]; 
-            document.getElementById('edit-quickinfo-id').value = idx; 
-            document.getElementById('modal-qi-title').value = qi.title || ""; 
-            document.getElementById('modal-qi-img').value = qi.img || ""; 
-            document.getElementById('modal-qi-active').checked = qi.active !== false; 
-            document.getElementById('modal-qi-tashkeel').checked = qi.tashkeel !== false;
-            document.getElementById('modal-qi-stage').value = qi.stage || ""; 
-            populateQiModalGrades(); 
-            document.getElementById('modal-qi-grade').value = qi.grade || ""; 
-            populateQiModalBranches(); 
-            document.getElementById('modal-qi-branch').value = qi.branch || ""; 
-            populateQiModalTopics(); 
-            document.getElementById('modal-qi-topic-select').value = qi.topic || "";
+    populateQiModalStages(); 
+    let qi = quickInfoList[idx]; 
+    document.getElementById('edit-quickinfo-id').value = idx; 
+    document.getElementById('modal-qi-title').value = qi.title || ""; 
+    document.getElementById('modal-qi-img').value = qi.img || ""; 
+    document.getElementById('modal-qi-active').checked = qi.active !== false; 
+    document.getElementById('modal-qi-tashkeel').checked = qi.tashkeel !== false;
+    document.getElementById('modal-qi-stage').value = qi.stage || ""; 
+    populateQiModalGrades(); 
+    document.getElementById('modal-qi-grade').value = qi.grade || ""; 
+    populateQiModalBranches(); 
+    document.getElementById('modal-qi-branch').value = qi.branch || ""; 
+    populateQiModalTopics(); 
+    document.getElementById('modal-qi-topic-select').value = qi.topic || "";
+    
+    // 💡 تجهيز أقسام البطاقة الحالية بنظام الصفحات المؤقت
+    window.currentEditingQiSections = (qi.sections && Array.isArray(qi.sections)) ? JSON.parse(JSON.stringify(qi.sections)) : [];
+    if (window.currentEditingQiSections.length === 0) {
+        window.currentEditingQiSections.push({
+            mainHeader: "",
+            headerAlign: "text-right",
+            active: true,
+            subItems: []
+        });
+    }
+    currentAdminQiSectionIndex = 0;
+    renderAdminQiSectionsPage();
+    
+    const attContainer = document.getElementById('quickinfo-attachments-builder-container'); 
+    attContainer.innerHTML = ""; 
+    if (qi.attachments && Array.isArray(qi.attachments)) { 
+        qi.attachments.forEach(att => addQiAttachmentBlock(att.label || "", att.url || "")); 
+    }
+    
+    // فتح الصفحة المستقلة التابعة للتحكم
+    openAdminSectionPage('view-admin-quickinfo-edit');
+}
+
+function renderAdminQiSectionsPage() {
+    const container = document.getElementById('quickinfo-sections-builder-container');
+    if (!container) return;
+    
+    if (!window.currentEditingQiSections) window.currentEditingQiSections = [];
+    let sections = window.currentEditingQiSections;
+
+    if (sections.length === 0) {
+        container.innerHTML = `<div class="p-12 text-center text-slate-500 font-bold bg-white rounded-3xl border-2">لا توجد أقسام رئيسية مضافة. اضغط على زر (إضافة قسم جديد) بالأعلى لبدء إضافة محتوى البطاقة.</div>`;
+        return;
+    }
+
+    if (currentAdminQiSectionIndex < 0) currentAdminQiSectionIndex = 0;
+    if (currentAdminQiSectionIndex >= sections.length) currentAdminQiSectionIndex = sections.length - 1;
+
+    let sec = sections[currentAdminQiSectionIndex];
+
+    // توليد حقول الفروع التابعة (subItems) بمساحات طولية مكبرة وواسعة
+    let subItemsHtml = '';
+    if (sec.subItems) {
+        sec.subItems.forEach((sub, subIdx) => {
+            if (sub.active === false) return;
             
-            const container = document.getElementById('quickinfo-sections-builder-container'); 
-            container.innerHTML = ""; 
-            if (qi.sections && Array.isArray(qi.sections)) { 
-                qi.sections.forEach(sec => addQuickInfoSectionBlock(sec.mainHeader || "", sec.active !== false, sec.subItems || [])); 
-            } else { 
-                addQuickInfoSectionBlock("", true, []); 
+            let tableRowsHtml = '';
+            if (sub.tableData && Array.isArray(sub.tableData)) {
+                sub.tableData.forEach((row, rIdx) => {
+                    tableRowsHtml += `<div class="flex gap-2 items-center mb-2 qi-table-row">`;
+                    row.forEach((cell, cIdx) => {
+                        let placeholderText = (rIdx === 0) ? `عنوان العمود ${cIdx + 1}` : 'بيان';
+                        tableRowsHtml += `<input type="text" value="${escapeHTML(cell)}" oninput="window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].tableData[${rIdx}][${cIdx}] = this.value" class="w-full p-3 rounded-xl border bg-white text-sm font-bold qi-table-cell" placeholder="${placeholderText}">`;
+                    });
+                    tableRowsHtml += `<button type="button" onclick="window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].tableData.splice(${rIdx}, 1); renderAdminQiSectionsPage();" class="bg-rose-100 text-rose-700 px-3 py-2 rounded-xl text-xs cursor-pointer"><i class="fa-solid fa-trash"></i></button></div>`;
+                });
             }
+
+            subItemsHtml += `
+                <div class="bg-white p-6 sm:p-10 rounded-3xl border-2 border-indigo-100 space-y-6 relative shadow-md mt-6 w-full">
+                    <div class="flex justify-between items-center border-b pb-4">
+                        <span class="font-black text-xs sm:text-sm text-indigo-950"><i class="fa-solid fa-pen-nib ml-1"></i> عنوان فرعي / فقرة شرح #${subIdx + 1}</span>
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer"><input type="checkbox" class="w-4 h-4 text-emerald-600 rounded" ${sub.active !== false ? 'checked' : ''} onchange="window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].active = this.checked"> تفعيل</label>
+                            <button type="button" onclick="window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems.splice(${subIdx}, 1); renderAdminQiSectionsPage();" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer transition"><i class="fa-solid fa-trash ml-1"></i> حذف الفرع</button>
+                        </div>
+                    </div>
+                    
+                    <!-- شريط الرموز وحقل العنوان الفرعي -->
+                    <div class="flex flex-col gap-2">
+                        <div class="flex flex-col w-full gap-2">
+                            ${getEmojiBarHtml()}
+                            <div class="flex flex-col sm:flex-row gap-3 items-center">
+                                <input type="text" value="${escapeHTML(sub.title || '')}" oninput="window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].title = this.value" class="w-full p-4 rounded-2xl border text-sm sm:text-base font-black bg-slate-50 shadow-xs" placeholder="عنوان فرعي (اختياري)...">
+                                <select onchange="window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].titleAlign = this.value" class="p-4 rounded-2xl border text-xs font-bold bg-white text-sky-950 shrink-0 w-full sm:w-auto">
+                                    <option value="text-right" ${sub.titleAlign === 'text-right' ? 'selected' : ''}>بداية</option>
+                                    <option value="text-center" ${sub.titleAlign === 'text-center' ? 'selected' : ''}>منتصف</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- شريط الرموز ونص الشرح (تم تكبير المساحة طولياً بـ 8 أسطر لراحة الكتابة) -->
+                    <div class="flex flex-col gap-2">
+                        <div class="flex flex-col w-full gap-2">
+                            ${getEmojiBarHtml()}
+                            <textarea rows="8" oninput="window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].text = this.value" class="w-full p-5 rounded-2xl border text-sm sm:text-base font-bold leading-relaxed bg-white shadow-xs" placeholder="نص الشرح التفصيلي... (مساحة واسعة ومريحة للكتابة الطولية)">${escapeHTML(sub.text || '')}</textarea>
+                        </div>
+                    </div>
+
+                    <input type="text" value="${escapeHTML(sub.img || '')}" oninput="window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].img = this.value" class="w-full p-3.5 rounded-xl border dir-ltr text-left text-xs bg-slate-50" placeholder="رابط صورة توضيحية للفرع (اختياري)...">
+
+                    <!-- جدول الشرح التفاعلي -->
+                    <div class="bg-sky-50/70 p-5 rounded-2xl border border-sky-200 space-y-3">
+                        <div class="flex justify-between items-center flex-wrap gap-2">
+                            <span class="font-black text-sky-950 text-xs sm:text-sm"><i class="fa-solid fa-table ml-1"></i> جدول الشرح (اختياري):</span>
+                            <div class="flex gap-2">
+                                <button type="button" onclick="if(!window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].tableData) window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].tableData = [['عنوان العمود 1', 'عنوان العمود 2']]; window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].tableData.push(['بيان 1', 'بيان 2']); renderAdminQiSectionsPage();" class="bg-sky-600 hover:bg-sky-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-xs cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة صف</button>
+                                <button type="button" onclick="if(!window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].tableData) window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].tableData = [['عنوان العمود 1']]; window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems[${subIdx}].tableData.forEach(r => r.push('بيان')); renderAdminQiSectionsPage();" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-xs cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة عمود</button>
+                            </div>
+                        </div>
+                        <div class="space-y-2 max-h-72 overflow-y-auto p-2 bg-white rounded-xl border">${tableRowsHtml}</div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // عرض القسم الرئيسي بمساحة واسعة وطولية تملأ الشاشة
+    let currentSectionHtml = `
+        <div class="bg-amber-50/70 p-6 sm:p-10 rounded-3xl border-3 border-amber-300 space-y-6 shadow-md w-full">
+            <div class="flex justify-between items-center border-b-2 border-amber-300 pb-5 flex-wrap gap-3">
+                <div class="flex items-start gap-3 flex-grow input-with-emoji-wrapper">
+                    <span class="font-black text-amber-900 text-sm sm:text-base whitespace-nowrap pt-3">القسم الرئيسي (${currentAdminQiSectionIndex + 1}):</span>
+                    <div class="flex flex-col w-full gap-2">
+                        ${getEmojiBarHtml()}
+                        <div class="flex flex-col sm:flex-row gap-3 items-center">
+                            <input type="text" value="${escapeHTML(sec.mainHeader || '')}" oninput="window.currentEditingQiSections[${currentAdminQiSectionIndex}].mainHeader = this.value" class="w-full p-4 rounded-2xl border-2 border-amber-300 bg-white font-black text-sm sm:text-base text-amber-950 shadow-xs" placeholder="العنوان الرئيسي للقسم...">
+                            <select onchange="window.currentEditingQiSections[${currentAdminQiSectionIndex}].headerAlign = this.value" class="p-4 rounded-2xl border-2 border-amber-300 text-xs font-bold bg-white text-sky-950 shrink-0 w-full sm:w-auto">
+                                <option value="text-right" ${sec.headerAlign === 'text-right' ? 'selected' : ''}>بداية</option>
+                                <option value="text-center" ${sec.headerAlign === 'text-center' ? 'selected' : ''}>منتصف</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" onclick="window.currentEditingQiSections.splice(${currentAdminQiSectionIndex}, 1); if(currentAdminQiSectionIndex >= window.currentEditingQiSections.length) currentAdminQiSectionIndex = Math.max(0, window.currentEditingQiSections.length - 1); renderAdminQiSectionsPage();" class="text-rose-600 hover:text-rose-800 font-bold text-xs px-4 py-3 bg-white rounded-2xl shadow-xs shrink-0 cursor-pointer transition"><i class="fa-solid fa-trash ml-1"></i> حذف القسم</button>
+            </div>
             
-            const attContainer = document.getElementById('quickinfo-attachments-builder-container'); 
-            attContainer.innerHTML = ""; 
-            if (qi.attachments && Array.isArray(qi.attachments)) { 
-                qi.attachments.forEach(att => addQiAttachmentBlock(att.label || "", att.url || "")); 
-            }
+            <div class="space-y-4">
+                <div class="flex justify-between items-center pt-2">
+                    <span class="text-xs sm:text-sm font-black text-amber-950">الفروع والفقرات التابعة لهذا القسم:</span>
+                    <button type="button" onclick="if(!window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems) window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems = []; window.currentEditingQiSections[${currentAdminQiSectionIndex}].subItems.push({title:'', titleAlign:'text-right', text:'', img:'', active:true, tableData:[['عنوان العمود 1', 'عنوان العمود 2'], ['بيان 1', 'بيان 2']]}); renderAdminQiSectionsPage();" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-xs cursor-pointer transition"><i class="fa-solid fa-plus ml-1"></i> إضافة عنوان فرعي جديد</button>
+                </div>
+                <div class="space-y-4">${subItemsHtml}</div>
+            </div>
+        </div>
+    `;
+
+    // أزرار أرقام الصفحات والتنقل
+    let pageNumbersHtml = '';
+    sections.forEach((_, idx) => {
+        let isCurrent = idx === currentAdminQiSectionIndex;
+        pageNumbersHtml += `
+            <button type="button" onclick="changeAdminQiSectionPage(${idx})" class="w-11 h-11 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center transition cursor-pointer shadow-xs ${isCurrent ? 'bg-indigo-600 text-white ring-4 ring-indigo-200 scale-105' : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300'}">
+                ${idx + 1}
+            </button>
+        `;
+    });
+
+    let prevIdx = currentAdminQiSectionIndex - 1;
+    let nextIdx = currentAdminQiSectionIndex + 1;
+
+    let paginationHtml = `
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t-2 border-slate-200 mt-6 bg-white p-5 rounded-3xl shadow-sm">
+            <button type="button" onclick="changeAdminQiSectionPage(${prevIdx})" class="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-7 py-3.5 rounded-2xl text-xs sm:text-sm transition cursor-pointer ${currentAdminQiSectionIndex === 0 ? 'opacity-40 pointer-events-none' : ''}">
+                <i class="fa-solid fa-arrow-right ml-1"></i> القسم السابق
+            </button>
             
-            // فتح الصفحة الجديدة المستقلة
-            openAdminSectionPage('view-admin-quickinfo-edit');
-        }
+            <div class="flex flex-wrap gap-2 justify-center items-center">
+                ${pageNumbersHtml}
+            </div>
+
+            <button type="button" onclick="changeAdminQiSectionPage(${nextIdx})" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-7 py-3.5 rounded-2xl text-xs sm:text-sm transition cursor-pointer ${currentAdminQiSectionIndex === sections.length - 1 ? 'opacity-40 pointer-events-none' : ''}">
+                القسم التالي <i class="fa-solid fa-arrow-left mr-1"></i>
+            </button>
+        </div>
+    `;
+
+    container.innerHTML = currentSectionHtml + paginationHtml;
+}
+
+function changeAdminQiSectionPage(newIndex) {
+    if (!window.currentEditingQiSections) return;
+    if (newIndex < 0) newIndex = 0;
+    if (newIndex >= window.currentEditingQiSections.length) newIndex = window.currentEditingQiSections.length - 1;
+    
+    currentAdminQiSectionIndex = newIndex;
+    renderAdminQiSectionsPage();
+    
+    const container = document.getElementById('quickinfo-sections-builder-container');
+    if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
         function saveQuickInfoFromModal() {
             let idx = parseInt(document.getElementById('edit-quickinfo-id').value); 
@@ -7499,64 +7733,22 @@ function importQuestionsJsonFile(event) {
             alert("تم الحفظ بنجاح!");
         }
 
-       // دالة بناء القسم الرئيسي المحدثة لتدعم الجداول والعناوين الفرعية بشكل صحيح
-        function addQuickInfoSectionBlock(arg1 = null, arg2 = true, arg3 = []) {
-            const container = document.getElementById('quickinfo-sections-builder-container'); 
-            if (!container) return; 
-            
-            // مرونة تامة لتقبل الكائن الكامل أو المعلمات المفككة القديمة والجديدة
-            let secObj = (typeof arg1 === 'object' && arg1 !== null) ? arg1 : null;
-            let mainHeader = secObj ? (secObj.mainHeader || "") : (typeof arg1 === 'string' ? arg1 : "");
-            let mainActive = secObj ? (secObj.active !== false) : (arg2 !== false);
-            let headerAlignVal = secObj ? (secObj.headerAlign || 'text-right') : 'text-right';
-            let subItems = secObj ? (secObj.subItems || []) : (Array.isArray(arg3) ? arg3 : []);
+      function addQuickInfoSectionBlock() {
+    if (!window.currentEditingQiSections) window.currentEditingQiSections = [];
+    
+    // إضافة قسم رئيسي جديد فارغ وجاهز للتعبئة
+    window.currentEditingQiSections.push({
+        mainHeader: "",
+        headerAlign: "text-right",
+        active: true,
+        subItems: [{ title: "", titleAlign: "text-right", text: "", img: "", active: true }]
+    });
+    
+    // الانتقال فوراً إلى صفحة القسم الجديد المضاف لتسهيل الكتابة
+    currentAdminQiSectionIndex = window.currentEditingQiSections.length - 1;
+    renderAdminQiSectionsPage();
+}
 
-            // توليد معرف فريد لهذا القسم لربط العناوين الفرعية والجداول به بدقة
-            const secId = Math.random().toString(36).substr(2, 9);
-            
-            const sectionDiv = document.createElement('div'); 
-            sectionDiv.className = "qi-section-block bg-white p-5 rounded-3xl border-2 border-indigo-200 space-y-4 relative shadow-sm"; 
-            
-            sectionDiv.innerHTML = `
-                <div class="flex justify-between items-center bg-indigo-50/80 p-3 rounded-2xl border border-indigo-200 gap-2 flex-wrap">
-                    <div class="flex items-start gap-2 flex-grow input-with-emoji-wrapper" style="display: flex; align-items: flex-start; gap: 8px; flex-grow: 1;">
-                        <input type="checkbox" class="qi-sec-active w-5 h-5 text-emerald-600 rounded mt-3 cursor-pointer" ${mainActive !== false ? 'checked' : ''}>
-                        <div class="flex flex-col w-full gap-2">
-                            ${getEmojiBarHtml()}
-                            <div class="flex flex-col sm:flex-row gap-2 items-center">
-                                <input type="text" class="qi-sec-main-header w-full p-3 rounded-xl border text-xs font-black bg-white shadow-xs" placeholder="العنوان الرئيسي للقسم..." value="${escapeHTML(mainHeader)}">
-                                <select class="qi-sec-align p-3 rounded-xl border text-xs font-bold bg-white text-sky-950 shrink-0 w-full sm:w-auto" title="محاذاة العنوان الرئيسي">
-                                    <option value="text-right" ${headerAlignVal === 'text-right' ? 'selected' : ''}>بداية</option>
-                                    <option value="text-center" ${headerAlignVal === 'text-center' ? 'selected' : ''}>منتصف</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-1 mt-6">
-                        <button type="button" onclick="moveQiSectionBlock(this, -1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1.5 rounded-xl text-xs transition cursor-pointer" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
-                        <button type="button" onclick="moveQiSectionBlock(this, 1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1.5 rounded-xl text-xs transition cursor-pointer" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
-                        <button type="button" onclick="this.closest('.qi-section-block').remove()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer"><i class="fa-solid fa-trash ml-1"></i>حذف القسم</button>
-                    </div>
-                </div>
-                
-                <!-- حاوية العناوين الفرعية بمعرف فريد لربط الجداول بها -->
-                <div id="qi-subitems-container-${secId}" class="qi-subitems-container space-y-4 pr-3 border-r-3 border-indigo-200 mr-2"></div>
-                
-                <div class="pt-2">
-                    <button type="button" onclick="addQiSubItemBlock('${secId}')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition cursor-pointer"><i class="fa-solid fa-plus ml-1"></i> إضافة عنوان فرعي جديد</button>
-                </div>`;
-            
-            container.appendChild(sectionDiv);
-
-            // تعبئة العناوين الفرعية والشروحات والجداول بدقة تامة عند التعديل أو الاستيراد
-            if (subItems && Array.isArray(subItems) && subItems.length > 0) {
-                subItems.forEach(sub => {
-                    addQiSubItemBlock(secId, sub);
-                });
-            } else { 
-                addQiSubItemBlock(secId, null); 
-            }
-        }
 
         // الدالة المحدثة لتوليد العنوان الفرعي ونصوص الشرح بشكل واسع وممتد مع شريط الرموز
         function generateSubItemHtml(title = "", text = "", img = "", active = true) {
@@ -8976,87 +9168,127 @@ async function deleteSelectedRecords() {
 }
 // دالة عرض مراجعة الإجابات للطالب (محدثة لدعم الأسئلة المقالية والموضوعية بدقة)
 function showQuizReview() {
-    if (!quizState || !quizState.questions) return;
+    let details = [];
     
-    let html = '';
-    quizState.questions.forEach((q, idx) => {
-        let userAns = quizState.answers[idx];
-        if (userAns === null || userAns === undefined || String(userAns).trim() === "") userAns = "لم يجب";
-        
-        let isEssay = q.type === 'essay';
+    // 1. محاولة جلب تفاصيل أآخر سجل محفوظ (وهو الأضمن للامتحانات الشهرية والاختبارات)
+    let existingRecords = [];
+    try {
+        existingRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+    } catch(e) {
+        existingRecords = [];
+    }
 
-        if (isEssay) {
-            // 💡 تصميم خاص بعرض السؤال المقالي في صفحة مراجعة الطالب
-            let statusBadge = '<span class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl font-black text-sm border border-amber-300">⚠️ في انتظار تصحيح المعلم</span>';
+    if (existingRecords.length > 0 && existingRecords[0].breakdown && existingRecords[0].breakdown.length > 0) {
+        details = existingRecords[0].breakdown;
+    } 
+    // 2. محاولة الاعتماد على quizState مباشرة إذا كان الاختبار عادياً حالياً
+    else if (typeof quizState !== 'undefined' && quizState.questions && quizState.questions.length > 0) {
+        details = quizState.questions.map((q, idx) => {
+            const userAns = quizState.answers[idx];
+            const isAnswered = userAns !== null && userAns !== undefined && String(userAns).trim() !== "";
+            let correctAnswerText = q.ans;
+            if (Array.isArray(q.modelAnswers)) correctAnswerText = q.modelAnswers.join(' أو ');
             
-            if (q.essayGrade !== undefined && q.essayGrade !== null) {
-                if (q.essayGrade > 0) {
-                    statusBadge = `<span class="bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl font-black text-sm border border-emerald-300">✓ تم التصحيح (الدرجة: ${q.essayGrade})</span>`;
-                } else {
-                    statusBadge = '<span class="bg-rose-100 text-rose-800 px-3 py-1.5 rounded-xl font-black text-sm border border-rose-300">✗ تم التصحيح (صفر)</span>';
-                }
+            return {
+                qIndex: idx + 1,
+                qText: formatText(q.q, q.tashkeel),
+                options: q.opts ? q.opts.map(opt => formatText(opt, q.tashkeel)) : [],
+                userAnswer: isAnswered ? formatText(userAns, q.tashkeel) : "لم يُجب",
+                correctAnswer: formatText(correctAnswerText, q.tashkeel),
+                isCorrect: userAns === q.ans,
+                type: q.type || 'mcq',
+                explanation: formatText(q.exp || "", q.tashkeel)
+            };
+        });
+    }
+
+    let html = '';
+    if (details.length === 0) {
+        html = `<div class="bg-white p-8 rounded-3xl text-center text-slate-500 font-bold text-lg">لا توجد تفاصيل مراجعة متاحة حالياً.</div>`;
+    } else {
+        let currentSection = "";
+        details.forEach((item, idx) => {
+            // دعم عرض عنوان القسم في الامتحانات الشهرية والشاملة
+            if (item.sectionTitle && item.sectionTitle !== currentSection) {
+                currentSection = item.sectionTitle;
+                html += `<div class="bg-sky-100/90 border-2 border-sky-300 text-sky-950 font-black text-xl p-4 rounded-2xl my-6 flex items-center gap-2"><i class="fa-solid fa-folder-open text-sky-600"></i> ${escapeHTML(currentSection)}</div>`;
             }
 
-            html += `<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-amber-300 mb-6 shadow-sm transition">
-                <div class="flex justify-between items-start border-b border-amber-100 pb-4 mb-4 gap-4">
-                    <h5 class="font-black text-amber-950 text-xl leading-relaxed"><i class="fa-solid fa-pen-nib text-amber-500 ml-2"></i>س${idx + 1}: ${typeof formatText === 'function' ? formatText(q.q, q.tashkeel) : q.q}</h5>
-                    <div class="shrink-0 mt-1">${statusBadge}</div>
-                </div>
-                <div class="text-lg text-slate-800 font-bold bg-amber-50 p-4 rounded-xl border-2 border-amber-100 whitespace-pre-line leading-loose mb-4">
-                    <strong class="text-amber-700 block mb-2 text-sm"><i class="fa-solid fa-user-pen ml-1"></i> إجابتك:</strong>
-                    ${userAns !== "لم يجب" ? (typeof formatText === 'function' ? formatText(userAns, q.tashkeel) : userAns) : '<span class="text-rose-500">لم تجب على هذا السؤال</span>'}
-                </div>
-                ${q.ans ? `<div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-base font-bold text-emerald-900"><strong>الإجابة النموذجية:</strong> ${typeof formatText === 'function' ? formatText(q.ans, q.tashkeel) : q.ans}</div>` : ''}
-                ${q.exp ? `<div class="mt-4 p-5 bg-sky-50/70 rounded-2xl border-2 border-sky-200 text-base text-sky-950 font-bold"><i class="fa-solid fa-circle-info text-amber-500 ml-1"></i> <strong>التعليل:</strong> <p class="mt-2">${typeof formatText === 'function' ? formatText(q.exp, q.tashkeel) : q.exp}</p></div>` : ''}
-            </div>`;
+            let isEssay = item.type === 'essay';
+            let userAns = item.userAnswer !== null && item.userAnswer !== undefined && String(item.userAnswer).trim() !== "" ? item.userAnswer : "لم يجب";
 
-        } else {
-            // تصميم أسئلة الاختيار من متعدد الاعتيادية
-            let isCorrect = userAns === q.ans;
-            let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4">';
-            if (q.opts && Array.isArray(q.opts)) {
-                q.opts.forEach(opt => {
-                    let isThisCorrect = opt === q.ans;
-                    let isThisUser = opt === userAns;
-                    
-                    let optStyle = "bg-white border-slate-200 text-slate-700";
-                    let optBadge = "";
-                    
-                    if (isThisCorrect) {
-                        optStyle = "bg-emerald-50 border-emerald-400 text-emerald-950 font-black shadow-sm";
-                        optBadge = '<span class="text-emerald-700 text-sm mt-1 block font-extrabold">✓ الإجابة الصحيحة</span>';
-                    } else if (isThisUser && !isCorrect) {
-                        optStyle = "bg-rose-50 border-rose-400 text-rose-950 font-black shadow-sm";
-                        optBadge = '<span class="text-rose-700 text-sm mt-1 block font-extrabold">✗ إجابتك (خاطئة)</span>';
-                    } else if (isThisUser && isCorrect) {
-                        optBadge = '<span class="text-emerald-700 text-sm mt-1 block font-extrabold">✓ إجابتك (صحيحة)</span>';
+            if (isEssay) {
+                let statusBadge = '<span class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl font-black text-sm border border-amber-300">⚠️ في انتظار تصحيح المعلم</span>';
+                
+                if (item.essayGrade !== undefined && item.essayGrade !== null) {
+                    if (item.essayGrade > 0) {
+                        statusBadge = `<span class="bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl font-black text-sm border border-emerald-300">✓ تم التصحيح (الدرجة: ${item.essayGrade})</span>`;
+                    } else {
+                        statusBadge = '<span class="bg-rose-100 text-rose-800 px-3 py-1.5 rounded-xl font-black text-sm border border-rose-300">✗ تم التصحيح (صفر)</span>';
                     }
-                    
-                    optsHtml += `<div class="p-5 rounded-2xl border-2 ${optStyle} font-bold text-base leading-relaxed">• ${typeof formatText === 'function' ? formatText(opt, q.tashkeel) : opt}${optBadge}</div>`;
-                });
-            }
-            optsHtml += '</div>';
+                } else if (item.isCorrect === true) {
+                    statusBadge = '<span class="bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl font-black text-sm border border-emerald-300">✓ مطابقة ومصححة ذكياً</span>';
+                }
 
-            let statusBadge = isCorrect ? '<span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-xl font-black text-sm">صحيحة ✓</span>' : '<span class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl font-black text-sm">خاطئة ✗</span>';
-            if (userAns === "لم يجب") {
-                statusBadge = '<span class="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-xl font-black text-sm">لم تجب</span>';
-            }
+                html += `<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-amber-300 mb-6 shadow-sm transition">
+                    <div class="flex justify-between items-start border-b border-amber-100 pb-4 mb-4 gap-4">
+                        <h5 class="font-black text-amber-950 text-xl leading-relaxed"><i class="fa-solid fa-pen-nib text-amber-500 ml-2"></i>س${item.qIndex || (idx + 1)}: ${escapeHTML(item.qText)}</h5>
+                        <div class="shrink-0 mt-1">${statusBadge}</div>
+                    </div>
+                    <div class="text-lg text-slate-800 font-bold bg-amber-50 p-4 rounded-xl border-2 border-amber-100 whitespace-pre-line leading-loose mb-4">
+                        <strong class="text-amber-700 block mb-2 text-sm"><i class="fa-solid fa-user-pen ml-1"></i> إجابتك:</strong>
+                        ${userAns !== "لم يجب" && userAns !== "لم يُجب" ? escapeHTML(userAns) : '<span class="text-rose-500">لم تجب على هذا السؤال</span>'}
+                    </div>
+                    ${item.correctAnswer && item.correctAnswer !== "إجابة مقالية (بانتظار تقييم المعلم)" ? `<div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-base font-bold text-emerald-900"><strong>الإجابة النموذجية:</strong> ${escapeHTML(item.correctAnswer)}</div>` : ''}
+                    ${item.explanation ? `<div class="mt-4 p-5 bg-sky-50/70 rounded-2xl border-2 border-sky-200 text-base text-sky-950 font-bold"><i class="fa-solid fa-circle-info text-amber-500 ml-1"></i> <strong>التعليل:</strong> <p class="mt-2">${escapeHTML(item.explanation)}</p></div>` : ''}
+                </div>`;
+            } else {
+                let isCorrect = item.isCorrect;
+                let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4">';
+                if (item.options && Array.isArray(item.options)) {
+                    item.options.forEach(opt => {
+                        let isThisCorrect = opt === item.correctAnswer;
+                        let isThisUser = opt === userAns;
+                        
+                        let optStyle = "bg-white border-slate-200 text-slate-700";
+                        let optBadge = "";
+                        
+                        if (isThisCorrect) {
+                            optStyle = "bg-emerald-50 border-emerald-400 text-emerald-950 font-black shadow-sm";
+                            optBadge = '<span class="text-emerald-700 text-sm mt-1 block font-extrabold">✓ الإجابة الصحيحة</span>';
+                        } else if (isThisUser && !isCorrect) {
+                            optStyle = "bg-rose-50 border-rose-400 text-rose-950 font-black shadow-sm";
+                            optBadge = '<span class="text-rose-700 text-sm mt-1 block font-extrabold">✗ إجابتك (خاطئة)</span>';
+                        } else if (isThisUser && isCorrect) {
+                            optBadge = '<span class="text-emerald-700 text-sm mt-1 block font-extrabold">✓ إجابتك (صحيحة)</span>';
+                        }
+                        
+                        optsHtml += `<div class="p-5 rounded-2xl border-2 ${optStyle} font-bold text-base leading-relaxed">• ${escapeHTML(opt)}${optBadge}</div>`;
+                    });
+                }
+                optsHtml += '</div>';
 
-            html += `<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 mb-6 shadow-sm transition hover:border-sky-300">
-                <div class="flex justify-between items-start border-b border-slate-100 pb-4 mb-4 gap-4">
-                    <h5 class="font-black text-sky-950 text-xl leading-relaxed">س${idx + 1}: ${typeof formatText === 'function' ? formatText(q.q, q.tashkeel) : q.q}</h5>
-                    <div class="shrink-0 mt-1">${statusBadge}</div>
-                </div>
-                ${optsHtml}
-                ${q.exp ? `<div class="mt-6 p-5 bg-sky-50/70 rounded-2xl border-2 border-sky-200 text-base sm:text-lg text-sky-950 font-bold leading-relaxed"><i class="fa-solid fa-circle-info text-amber-500 ml-1"></i> <strong>التعليل:</strong> <p class="mt-2">${typeof formatText === 'function' ? formatText(q.exp, q.tashkeel) : q.exp}</p></div>` : ''}
-            </div>`;
-        }
-    });
+                let statusBadge = isCorrect ? '<span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-xl font-black text-sm">صحيحة ✓</span>' : '<span class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl font-black text-sm">خاطئة ✗</span>';
+                if (userAns === "لم يجب" || userAns === "لم يُجب") {
+                    statusBadge = '<span class="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-xl font-black text-sm">لم تجب</span>';
+                }
+
+                html += `<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 mb-6 shadow-sm transition hover:border-sky-300">
+                    <div class="flex justify-between items-start border-b border-slate-100 pb-4 mb-4 gap-4">
+                        <h5 class="font-black text-sky-950 text-xl leading-relaxed">س${item.qIndex || (idx + 1)}: ${escapeHTML(item.qText)}</h5>
+                        <div class="shrink-0 mt-1">${statusBadge}</div>
+                    </div>
+                    ${optsHtml}
+                    ${item.explanation ? `<div class="mt-6 p-5 bg-sky-50/70 rounded-2xl border-2 border-sky-200 text-base sm:text-lg text-sky-950 font-bold leading-relaxed"><i class="fa-solid fa-circle-info text-amber-500 ml-1"></i> <strong>التعليل:</strong> <p class="mt-2">${escapeHTML(item.explanation)}</p></div>` : ''}
+                </div>`;
+            }
+        });
+    }
 
     const reviewBody = document.getElementById('quiz-review-body');
     if (reviewBody) reviewBody.innerHTML = html;
     
-    // إخفاء جميع واجهات الطالب السابقة بالكامل
+    // إخفاء واجهات الطالب الأخرى وإظهار شاشة المراجعة المستقلة
     ['view-start', 'view-quiz', 'view-result'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -9065,7 +9297,6 @@ function showQuizReview() {
         }
     });
     
-    // إظهار صفحة المراجعة المستقلة بملء الشاشة حصرياً
     const reviewView = document.getElementById('view-quiz-review');
     if (reviewView) {
         reviewView.classList.remove('hidden');
@@ -9440,6 +9671,147 @@ function openStudentRecordDetails(record) {
     modalContainer.classList.remove('hidden');
 } 
 
+function openStudentFullRecordDetailsPage(recordId) {
+    const record = studentRecords.find(r => r.id === recordId);
+    if (!record) {
+        alert("عذراً، لم يتم العثور على تفاصيل هذا الاختبار.");
+        return;
+    }
+
+    let pageView = document.getElementById('view-student-full-record-details');
+    if (!pageView) {
+        pageView = document.createElement('div');
+        pageView.id = 'view-student-full-record-details';
+        pageView.className = 'admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto text-right';
+        pageView.innerHTML = `
+            <div class="max-w-5xl mx-auto w-full space-y-6">
+                <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                    <h2 class="text-2xl font-black text-sky-950 flex items-center gap-3">
+                        <i class="fa-solid fa-file-lines text-sky-600"></i> مَرَاجَعَةُ تَفَاصِيلِ وَرَقَةِ الِاخْتِبَارِ
+                    </h2>
+                    <div class="flex gap-2 items-center flex-wrap">
+                        <button type="button" onclick="closeStudentFullRecordDetailsPage()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold px-5 py-2.5 rounded-xl text-sm cursor-pointer shadow transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-arrow-right"></i> الْعَوْدَةُ لِلسِّجِلِّ
+                        </button>
+                    </div>
+                </div>
+                <div id="student-full-record-content" class="space-y-6 pb-12"></div>
+            </div>
+        `;
+        document.body.appendChild(pageView);
+    }
+
+    const contentContainer = document.getElementById('student-full-record-content');
+    let html = `
+        <div class="bg-sky-900 text-white p-6 rounded-3xl shadow-md border-b-4 border-amber-500 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h3 class="font-black text-white text-xl sm:text-2xl mb-1">${escapeHTML(record.topic)}</h3>
+                <p class="text-xs sm:text-sm text-sky-200 font-bold">تاريخ الاختبار: ${escapeHTML(record.date)} | المدة: ${escapeHTML(record.duration || '--')}</p>
+            </div>
+            <div class="bg-white/10 px-5 py-3 rounded-2xl border border-white/20 text-center">
+                <span class="block text-xs text-sky-200 font-bold">الدرجة النهائية</span>
+                <span class="font-black text-amber-400 text-xl">${record.score} / ${record.total} (${record.pct}%)</span>
+            </div>
+        </div>
+        <div class="space-y-6">
+    `;
+
+    if (record.breakdown && Array.isArray(record.breakdown)) {
+        let currentSec = "";
+        record.breakdown.forEach((item, idx) => {
+            if (item.sectionTitle && item.sectionTitle !== currentSec) {
+                currentSec = item.sectionTitle;
+                html += `<div class="bg-purple-100 text-purple-950 font-black text-lg p-4 rounded-2xl my-6 border-2 border-purple-300 flex items-center gap-2"><i class="fa-solid fa-folder-open text-purple-600"></i> ${escapeHTML(currentSec)}</div>`;
+            }
+
+            let isEssay = item.type === 'essay';
+            let statusBadge = "";
+
+            if (isEssay) {
+                if (item.essayGrade === true || item.isCorrect === true) {
+                    statusBadge = '<span class="text-emerald-700 bg-emerald-50 px-3.5 py-1.5 rounded-xl text-sm font-black border border-emerald-200">صحيح (مصحح ذكياً) ✓</span>';
+                } else if (item.essayGrade === 0 || item.essayGrade === false) {
+                    statusBadge = '<span class="text-rose-700 bg-rose-50 px-3.5 py-1.5 rounded-xl text-sm font-black border border-emerald-200">خطأ / صفر ✗</span>';
+                } else {
+                    statusBadge = '<span class="text-amber-700 bg-amber-50 px-3.5 py-1.5 rounded-xl text-sm font-black border border-emerald-200">بانتظار تصحيح المعلم ⏳</span>';
+                }
+            } else {
+                statusBadge = item.isCorrect ? 
+                    '<span class="text-emerald-700 bg-emerald-50 px-3.5 py-1.5 rounded-xl text-sm font-black border border-emerald-200">إجابة صحيحة ✓</span>' : 
+                    '<span class="text-rose-700 bg-rose-50 px-3.5 py-1.5 rounded-xl text-sm font-black border border-emerald-200">إجابة خاطئة ✗</span>';
+            }
+
+            let explanationHtml = '';
+            if (item.explanation && item.explanation.trim() !== "") {
+                explanationHtml = `
+                    <div class="p-5 bg-amber-50/90 rounded-2xl border-2 border-amber-300 text-base text-amber-950 font-bold space-y-1.5 mt-4 shadow-xs">
+                        <div class="flex items-center gap-2 text-amber-800 font-black text-lg">
+                            <i class="fa-solid fa-circle-info"></i> التعليل والشرح:
+                        </div>
+                        <p class="leading-relaxed font-semibold text-slate-900">${escapeHTML(item.explanation)}</p>
+                    </div>
+                `;
+            }
+
+            html += `
+                <div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 space-y-5 shadow-sm">
+                    <div class="flex justify-between items-center border-b pb-4 flex-wrap gap-2">
+                        <span class="font-black text-slate-900 text-lg">السؤال (${item.qIndex || (idx + 1)}): ${escapeHTML(item.qText)}</span>
+                        ${statusBadge}
+                    </div>
+
+                    <div class="text-base font-bold text-slate-800 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        <strong class="text-sky-900 block mb-1">إجابتك:</strong> ${escapeHTML(item.userAnswer)}
+                    </div>
+            `;
+
+            if (isEssay) {
+                html += `
+                    <div class="text-base font-bold text-emerald-950 bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200">
+                        <strong class="text-emerald-800 block mb-1">الإجابة النموذجية المقبولة:</strong> ${escapeHTML(item.correctAnswer)}
+                    </div>
+                `;
+            } else if (item.options && item.options.length > 0) {
+                html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">`;
+                item.options.forEach(opt => {
+                    let optStyle = "bg-white border-slate-200 text-slate-700";
+                    if (opt === item.correctAnswer) optStyle = "bg-emerald-50 border-emerald-300 text-emerald-950 font-black";
+                    else if (opt === item.userAnswer && !item.isCorrect) optStyle = "bg-rose-50 border-rose-300 text-rose-950 font-black";
+                    
+                    html += `<div class="p-4 rounded-2xl border-2 ${optStyle} text-sm font-bold">• ${escapeHTML(opt)}</div>`;
+                });
+                html += `</div>`;
+            }
+
+            html += `${explanationHtml}</div>`;
+        });
+    } else {
+        html += '<div class="p-8 text-center text-slate-500 font-bold bg-white rounded-3xl">لا توجد تفاصيل مفصلة متاحة لهذا السجل.</div>';
+    }
+
+    html += `</div>`;
+    contentContainer.innerHTML = html;
+
+    const portal = document.getElementById('view-student-portal');
+    if (portal) portal.classList.add('hidden');
+    
+    pageView.classList.remove('hidden');
+    pageView.classList.add('flex');
+}
+
+function closeStudentFullRecordDetailsPage() {
+    const pageView = document.getElementById('view-student-full-record-details');
+    if (pageView) {
+        pageView.classList.add('hidden');
+        pageView.classList.remove('flex');
+    }
+    const portal = document.getElementById('view-student-portal');
+    if (portal) {
+        portal.classList.remove('hidden');
+        portal.classList.add('flex');
+    }
+}
+
 // دالة وسيطة آمنة تحدث البيانات محلياً ثم تفتح تفاصيل الورقة بدقة متناهية
 async function openStudentRecordDetailsById(recordId) {
     // 💡 تحديث مصفوفة السجلات من الذاكرة المحلية (localStorage) فوراً لجلب أحدث تصحيحات المعلم
@@ -9457,8 +9829,14 @@ async function openStudentRecordDetailsById(recordId) {
     // البحث عن السجل باستخدام المعرف الفرعي (ID)
     const targetRecord = studentRecords.find(item => item.id === recordId);
     
-    if (targetRecord && typeof openStudentRecordDetails === 'function') {
-        openStudentRecordDetails(targetRecord);
+    if (targetRecord) {
+        // 💡 الانتقال المباشر لفتح صفحة العرض الكاملة والمستقلة المزودة بالتعليقات والشروح
+        if (typeof openStudentFullRecordDetailsPage === 'function') {
+            openStudentFullRecordDetailsPage(recordId);
+        } else {
+            // حل بديل في حال لم يتم تحميل الصفحة الكاملة بعد لأي سبب
+            alert("عذراً، جاري تحديث بيانات الصفحة، حاول مرة أخرى.");
+        }
     } else {
         alert("عذراً، تعذر العثور على تفاصيل هذا السجل.");
     }
@@ -9760,7 +10138,7 @@ function renderAdminExamSectionStep() {
     if (!container) return;
 
     if (adminExamSectionsBuffer.length === 0) {
-        adminExamSectionsBuffer.push({ title: "قسم جديد", questions: [] });
+        adminExamSectionsBuffer.push({ title: "قسم جديد", passageText: "", img: "", fileUrl: "", questions: [] });
     }
 
     if (adminExamCurrentSectionIndex >= adminExamSectionsBuffer.length) {
@@ -9768,6 +10146,11 @@ function renderAdminExamSectionStep() {
     }
 
     const sec = adminExamSectionsBuffer[adminExamCurrentSectionIndex];
+
+    // التأكد من وجود الخصائص لكي لا تحدث أخطاء برمجية في الأقسام القديمة
+    if (sec.passageText === undefined) sec.passageText = "";
+    if (sec.img === undefined) sec.img = "";
+    if (sec.fileUrl === undefined) sec.fileUrl = "";
 
     // 💡 شريط ترقيم الأقسام العلوي (Steps Indicator)
     let stepsIndicatorHtml = '<div class="flex flex-wrap gap-2 items-center mb-4 pb-3 border-b-2 border-purple-200">';
@@ -9796,51 +10179,93 @@ function renderAdminExamSectionStep() {
                 });
             }
 
-            questionsHtml += `
-                <div class="p-6 sm:p-8 bg-white rounded-3xl border-3 border-purple-100 space-y-5 shadow-md relative">
-                    <div class="flex justify-between items-center border-b-2 border-purple-100 pb-3">
-                        <span class="font-black text-purple-950 text-lg"><i class="fa-solid fa-circle-question ml-2 text-purple-600"></i> السؤال رقم (${qIdx + 1})</span>
-                        <div class="flex items-center gap-3">
-                            <label class="text-sm font-black text-slate-700">الدرجة:</label>
-                            <input type="number" min="1" value="${q.mark || 1}" onchange="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'mark', this.value)" class="w-24 p-2.5 rounded-xl border-2 border-slate-300 font-black text-center text-base bg-white">
-                            <button type="button" onclick="deleteExamQuestion(${adminExamCurrentSectionIndex}, ${qIdx})" class="text-rose-600 hover:text-rose-800 font-black text-sm cursor-pointer bg-rose-50 px-4 py-2 rounded-xl border border-rose-200 transition"><i class="fa-solid fa-trash ml-1"></i> حذف السؤال</button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                        <div class="sm:col-span-3">
-                            <label class="block mb-2 font-black text-slate-900 text-base">نص السؤال:</label>
-                            <textarea rows="3" oninput="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'text', this.value)" placeholder="اكتب نص السؤال هنا..." class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-white font-black text-slate-900 text-xl leading-relaxed focus:outline-none focus:border-purple-600 shadow-inner">${escapeHTML(q.text || '')}</textarea>
-                        </div>
-                        <div>
-                            <label class="block mb-2 font-black text-slate-900 text-base">نوع السؤال:</label>
-                            <select onchange="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'type', this.value); renderAdminExamSectionStep();" class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-white font-black text-purple-950 text-lg focus:outline-none focus:border-purple-600">
-                                <option value="mcq" ${q.type !== 'essay' ? 'selected' : ''}>اختيار من متعدد</option>
-                                <option value="essay" ${q.type === 'essay' ? 'selected' : ''}>سؤال مقالي</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    ${q.type === 'essay' ? `
-                        <div class="pt-2">
-                            <label class="block mb-2 font-black text-emerald-950 text-base">الإجابة النموذجية أو المفتاح المقبول:</label>
-                            <input type="text" oninput="updateExamQuestionField(${adminExamCurrentSectionIndex},${qIdx}, 'ans', this.value)" placeholder="اكتب الإجابة النموذجية..." class="w-full p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 font-black text-emerald-950 text-lg focus:outline-none focus:border-emerald-600 shadow-inner" value="${escapeHTML(q.ans || '')}">
-                        </div>
-                    ` : `
-                        <div class="space-y-3 pt-2">
-                            <div class="flex justify-between items-center">
-                                <label class="font-black text-slate-900 text-base">خيارات الإجابة:</label>
-                                <button type="button" onclick="addExamQuestionOption(${adminExamCurrentSectionIndex},${qIdx})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-4 py-2.5 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة خيار</button>
-                            </div>
-                            <div class="space-y-2">${optsHtml}</div>
-                            <div class="pt-4">
-                                <label class="block mb-2 font-black text-emerald-950 text-base">الإجابة الصحيحة بالضبط (تطابق أحد الخيارات):</label>
-                                <input type="text" oninput="updateExamQuestionField(${adminExamCurrentSectionIndex},${qIdx}, 'ans', this.value)" placeholder="انسخ نص الإجابة الصحيحة تماماً..." class="w-full p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 font-black text-emerald-950 text-lg focus:outline-none focus:border-emerald-600 shadow-inner" value="${escapeHTML(q.ans || '')}">
-                            </div>
-                        </div>
-                    `}
+            // 💡 تجهيز حقول الإجابات النموذجية المتعددة وزر معالجة الأخطاء الذكية للسؤال المقالي
+    let essayModelInputsHtml = '';
+    let questionCorrectionToggleHtml = '';
+    
+    if (q.type === 'essay') {
+        let modelAnsList = Array.isArray(q.modelAnswers) && q.modelAnswers.length > 0 ? q.modelAnswers : [q.ans || ''];
+        modelAnsList.forEach((ansVal, aIdx) => {
+            let rowId = `m_row_${adminExamCurrentSectionIndex}_${qIdx}_${aIdx}`;
+            essayModelInputsHtml += `
+                <div class="flex items-center gap-2 model-ans-row mt-2" id="${rowId}">
+                    <input type="text" oninput="updateMonthlyModelAnswer(${adminExamCurrentSectionIndex}, ${qIdx}, ${aIdx}, this.value)" placeholder="اكتب إجابة نموذجية صحيحة..." class="w-full p-3.5 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 font-black text-emerald-950 text-base focus:outline-none focus:border-emerald-600 shadow-inner" value="${escapeHTML(ansVal)}">
+                    ${aIdx > 0 ? `<button type="button" onclick="document.getElementById('${rowId}').remove(); collectMonthlyModelAnswers(${adminExamCurrentSectionIndex},${qIdx});" class="text-rose-500 hover:text-rose-700 p-3 cursor-pointer bg-slate-100 rounded-xl transition" title="حذف الخانة"><i class="fa-solid fa-xmark text-lg"></i></button>` : ''}
                 </div>
             `;
+        });
+
+        // 💡 إعداد زر تفعيل أو تعطيل المعالجة الذكية لهذا السؤال المقالي بالتحديد
+        let isQuestionCorrectionActive = q.disableCorrection !== true;
+        questionCorrectionToggleHtml = `
+            <div class="flex items-center gap-2 mt-3 bg-amber-50 p-3.5 rounded-2xl border border-amber-200 shadow-xs">
+                <input type="checkbox" id="mexam_corr_${adminExamCurrentSectionIndex}_${qIdx}" onchange="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'disableCorrection', !this.checked)" ${isQuestionCorrectionActive ? 'checked' : ''} class="w-5 h-5 text-amber-600 rounded cursor-pointer">
+                <label for="mexam_corr_${adminExamCurrentSectionIndex}_${qIdx}" class="text-xs sm:text-sm font-black text-amber-950 cursor-pointer">
+                    تفعيل معالجة الأخطاء الإملائية والتشكيلية الذكية لهذه الإجابة (إلغاؤها يعتمد مطابقة حرفية تامة)
+                </label>
+            </div>
+        `;
+    }
+
+    questionsHtml += `
+        <div class="p-6 sm:p-8 bg-white rounded-3xl border-3 border-purple-100 space-y-5 shadow-md relative">
+            <div class="flex justify-between items-center border-b-2 border-purple-100 pb-3">
+                <span class="font-black text-purple-950 text-lg"><i class="fa-solid fa-circle-question ml-2 text-purple-600"></i> السؤال رقم (${qIdx + 1})</span>
+                <div class="flex items-center gap-3">
+                    <label class="text-sm font-black text-slate-700">الدرجة:</label>
+                    <input type="number" min="1" value="${q.mark || 1}" onchange="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'mark', this.value)" class="w-24 p-2.5 rounded-xl border-2 border-slate-300 font-black text-center text-base bg-white">
+                    <button type="button" onclick="deleteExamQuestion(${adminExamCurrentSectionIndex}, ${qIdx})" class="text-rose-600 hover:text-rose-800 font-black text-sm cursor-pointer bg-rose-50 px-4 py-2 rounded-xl border border-rose-200 transition"><i class="fa-solid fa-trash ml-1"></i> حذف السؤال</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div class="sm:col-span-3">
+                    <label class="block mb-2 font-black text-slate-900 text-base">نص السؤال:</label>
+                    <textarea rows="3" oninput="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'text', this.value)" placeholder="اكتب نص السؤال هنا..." class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-white font-black text-slate-900 text-xl leading-relaxed focus:outline-none focus:border-purple-600 shadow-inner">${escapeHTML(q.text || '')}</textarea>
+                </div>
+                <div>
+                    <label class="block mb-2 font-black text-slate-900 text-base">نوع السؤال:</label>
+                    <select onchange="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'type', this.value); renderAdminExamSectionStep();" class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-white font-black text-purple-950 text-lg focus:outline-none focus:border-purple-600">
+                        <option value="mcq" ${q.type !== 'essay' ? 'selected' : ''}>اختيار من متعدد</option>
+                        <option value="essay" ${q.type === 'essay' ? 'selected' : ''}>سؤال مقالي</option>
+                    </select>
+                </div>
+            </div>
+
+            ${q.type === 'essay' ? `
+                <div class="pt-2 space-y-3 bg-emerald-50/40 p-4 rounded-2xl border border-emerald-200">
+                    <div class="flex justify-between items-center">
+                        <label class="block font-black text-emerald-950 text-base"><i class="fa-solid fa-check-double ml-1"></i> الإجابات النموذجية الصحيحة (يمكنك إضافة أكثر من إجابة مقبولة):</label>
+                        <button type="button" onclick="addMonthlyModelAnswerInput(${adminExamCurrentSectionIndex},${qIdx})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer transition shadow-sm">
+                            <i class="fa-solid fa-plus ml-1"></i> إضافة إجابة أخرى
+                        </button>
+                    </div>
+                    <div id="monthly_model_container_${adminExamCurrentSectionIndex}_${qIdx}" class="space-y-2">
+                        ${essayModelInputsHtml}
+                    </div>
+                    ${questionCorrectionToggleHtml}
+                </div>
+            ` : `
+                <div class="space-y-3 pt-2">
+                    <div class="flex justify-between items-center">
+                        <label class="font-black text-slate-900 text-base">خيارات الإجابة:</label>
+                        <button type="button" onclick="addExamQuestionOption(${adminExamCurrentSectionIndex},${qIdx})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-4 py-2.5 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة خيار</button>
+                    </div>
+                    <div class="space-y-2">${optsHtml}</div>
+                    <div class="pt-4">
+                        <label class="block mb-2 font-black text-emerald-950 text-base">الإجابة الصحيحة بالضبط (تطابق أحد الخيارات):</label>
+                        <input type="text" oninput="updateExamQuestionField(${adminExamCurrentSectionIndex},${qIdx}, 'ans', this.value)" placeholder="انسخ نص الإجابة الصحيحة تماماً..." class="w-full p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 font-black text-emerald-950 text-lg focus:outline-none focus:border-emerald-600 shadow-inner" value="${escapeHTML(q.ans || '')}">
+                    </div>
+                </div>
+            `}
+
+          <!-- حقل التعليل والشرح لكل سؤال -->
+            <div class="pt-3 bg-amber-50/50 p-4 rounded-2xl border border-amber-200 mt-3">
+                <label class="block mb-1 text-amber-950 text-sm font-black"><i class="fa-solid fa-circle-info text-amber-600 ml-1"></i> التعليل أو الشرح (يظهر للطالب في مراجعة الإجابات):</label>
+                <textarea rows="2" oninput="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'exp', this.value)" placeholder="اكتب سبب صحة الإجابة أو الشرح التفصيلي..." class="w-full p-3 rounded-xl border-2 border-amber-300 bg-white font-bold text-slate-800 text-sm focus:outline-none focus:border-amber-600 shadow-inner">${escapeHTML(q.exp || '')}</textarea>
+            </div>
+        </div>
+    `;
         });
     } else {
         questionsHtml = '<p class="text-center text-slate-500 p-10 font-black text-lg">لا توجد أسئلة في هذا القسم بعد. اضغط على زر إضافة سؤال أدناه.</p>';
@@ -9862,6 +10287,27 @@ function renderAdminExamSectionStep() {
                 </div>
             </div>
 
+            <!-- الحقول التمهيدية للقسم (فقرة، صورة، ورابط ملف) قبل أسئلة القسم -->
+            <div class="bg-white p-6 rounded-2xl border-2 border-purple-200 space-y-4 shadow-sm">
+                <span class="text-sm font-black text-purple-950 block border-b pb-2"><i class="fa-solid fa-file-lines ml-1 text-purple-600"></i> محتوى تمهيدي للقسم (يظهر للطالب قبل أسئلة هذا القسم):</span>
+                
+                <div>
+                    <label class="block mb-1 text-slate-700 text-xs font-bold">نص الفقرة أو التوجيهات (التي تُبنى عليها الأسئلة):</label>
+                    <textarea rows="3" oninput="adminExamSectionsBuffer[${adminExamCurrentSectionIndex}].passageText = this.value" placeholder="اكتب النص التمهيدي أو القطعة القرائية هنا..." class="w-full p-3 rounded-xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-900 text-sm focus:outline-none focus:border-purple-600">${escapeHTML(sec.passageText || '')}</textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block mb-1 text-slate-700 text-xs font-bold">رابط صورة توضيحية للقسم:</label>
+                        <input type="text" oninput="adminExamSectionsBuffer[${adminExamCurrentSectionIndex}].img = this.value" placeholder="https://..." class="w-full p-2.5 rounded-xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-900 text-xs dir-ltr focus:outline-none focus:border-purple-600" value="${escapeHTML(sec.img || '')}">
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-slate-700 text-xs font-bold">رابط ملف خارجي (PDF أو مستند):</label>
+                        <input type="text" oninput="adminExamSectionsBuffer[${adminExamCurrentSectionIndex}].fileUrl = this.value" placeholder="https://..." class="w-full p-2.5 rounded-xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-900 text-xs dir-ltr focus:outline-none focus:border-purple-600" value="${escapeHTML(sec.fileUrl || '')}">
+                    </div>
+                </div>
+            </div>
+
             <div class="space-y-6">${questionsHtml}</div>
 
             <div class="pt-4 flex justify-center">
@@ -9878,6 +10324,33 @@ function renderAdminExamSectionStep() {
         </div>
     `;
 }
+// دوال دعم الإجابات النموذجية المتعددة للامتحانات الشهرية
+function addMonthlyModelAnswerInput(sIdx, qIdx) {
+    if (!adminExamSectionsBuffer[sIdx].questions[qIdx].modelAnswers) {
+        let oldAns = adminExamSectionsBuffer[sIdx].questions[qIdx].ans || '';
+        adminExamSectionsBuffer[sIdx].questions[qIdx].modelAnswers = [oldAns];
+    }
+    adminExamSectionsBuffer[sIdx].questions[qIdx].modelAnswers.push("");
+    renderAdminExamSectionStep();
+}
+
+function updateMonthlyModelAnswer(sIdx, qIdx, aIdx, val) {
+    if (!adminExamSectionsBuffer[sIdx].questions[qIdx].modelAnswers) {
+        adminExamSectionsBuffer[sIdx].questions[qIdx].modelAnswers = [adminExamSectionsBuffer[sIdx].questions[qIdx].ans || ''];
+    }
+    adminExamSectionsBuffer[sIdx].questions[qIdx].modelAnswers[aIdx] = val;
+    adminExamSectionsBuffer[sIdx].questions[qIdx].ans = adminExamSectionsBuffer[sIdx].questions[qIdx].modelAnswers[0] || val;
+}
+
+function collectMonthlyModelAnswers(sIdx, qIdx) {
+    const container = document.getElementById(`monthly_model_container_${sIdx}_${qIdx}`);
+    if (!container) return;
+    const inputs = container.querySelectorAll('input');
+    let arr = [];
+    inputs.forEach(inp => { if(inp.value.trim()) arr.push(inp.value.trim()); });
+    adminExamSectionsBuffer[sIdx].questions[qIdx].modelAnswers = arr;
+    if (arr.length > 0) adminExamSectionsBuffer[sIdx].questions[qIdx].ans = arr[0];
+}
 
 // دوال التحكم المساعدة للتنقل والإضافة والحذف
 function navigateAdminExamSteps(dir) {
@@ -9886,7 +10359,13 @@ function navigateAdminExamSteps(dir) {
 }
 
 function addNewExamSectionStep() {
-    adminExamSectionsBuffer.push({ title: `القسم (${adminExamSectionsBuffer.length + 1})`, questions: [{ text: "", type: "mcq", options: ["", "", "", ""], ans: "", mark: 1 }] });
+    adminExamSectionsBuffer.push({ 
+        title: `القسم (${adminExamSectionsBuffer.length + 1})`, 
+        passageText: "", // 💡 فقرة أو تعليمات القسم التمهيدية
+        img: "",         // 💡 رابط صورة القسم
+        fileUrl: "",     // 💡 رابط الملف الخارجي
+        questions: [{ text: "", type: "mcq", options: ["", "", "", ""], ans: "", mark: 1 }] 
+    });
     adminExamCurrentSectionIndex = adminExamSectionsBuffer.length - 1;
     renderAdminExamSectionStep();
 }
@@ -9931,6 +10410,7 @@ function updateExamQuestionField(sIdx, qIdx, field, val) {
         adminExamSectionsBuffer[sIdx].questions[qIdx].options[oIdx] = val;
     }
     else if (field === 'ans') adminExamSectionsBuffer[sIdx].questions[qIdx].ans = val;
+    else if (field === 'exp') adminExamSectionsBuffer[sIdx].questions[qIdx].exp = val; // 💡 التقاط وتحديث حقل التعليل والشرح
     else if (field === 'mark') adminExamSectionsBuffer[sIdx].questions[qIdx].mark = parseInt(val) || 1;
 }
 
@@ -9946,7 +10426,7 @@ function removeExamQuestionOption(sIdx, qIdx, oIdx) {
 }
 
 // دالة حفظ الامتحان عند الانتهاء من الأقسام
-function saveMonthlyExamData() {
+async function saveMonthlyExamData() {
     const editId = document.getElementById('edit-monthly-exam-id').value;
     const title = document.getElementById('mexam-title-input').value.trim();
     const stage = document.getElementById('mexam-stage-input').value;
@@ -9987,15 +10467,36 @@ function saveMonthlyExamData() {
 
     localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
     
-    // حفظ سحابي تلقائي
-    if (typeof saveState === 'function') {
-        saveState(true);
-    }
+    // 💡 تفعيل مؤشر التحميل المرئي والنسبة المئوية أثناء الحفظ السحابي
+    allowCloudLoadingOverlay = true;
+    const textEl = document.getElementById('cloud-loading-text');
+    const overlay = document.getElementById('cloud-loading-overlay');
+    if (textEl) textEl.textContent = "جَارِي فَحْصِ وَرَفْعِ الْامْتِحَانِ الشَّهْرِيِّ...";
+    if (overlay) overlay.style.display = 'flex';
 
-    alert("تم حفظ الامتحان الشهري بنجاح!");
-    openAdminSectionPage('view-admin-monthly-exams');
-    if (typeof renderAdminMonthlyExamsList === 'function') {
-        renderAdminMonthlyExamsList();
+    try {
+        if (typeof saveState === 'function') {
+            await saveState(true); // الانتظار حتى اكتمال الرفع السحابي والنسبة المئوية
+        }
+
+        if (textEl) textEl.textContent = "تَمَّ حِفْظُ الْامْتِحَانِ الشَّهْرِيِّ بِنَجَاح!";
+        
+        setTimeout(() => {
+            allowCloudLoadingOverlay = false;
+            if (overlay) overlay.style.display = 'none';
+            
+            alert("تم حفظ الامتحان الشهري بنجاح!");
+            openAdminSectionPage('view-admin-monthly-exams');
+            if (typeof renderAdminMonthlyExamsList === 'function') {
+                renderAdminMonthlyExamsList();
+            }
+        }, 800);
+
+    } catch (e) {
+        allowCloudLoadingOverlay = false;
+        if (overlay) overlay.style.display = 'none';
+        console.error(e);
+        alert("حدث خطأ أثناء الحفظ السحابي: " + e.message);
     }
 }
 
@@ -10119,6 +10620,9 @@ function addExamQuestionToSection(secId, qType = 'mcq', qData = null) {
             `;
         });
 
+       // التأكد من استرجاع حالة تعطيل/تفعيل التصحيح الذكي (افتراضياً مفعلة ما لم تكن false)
+        let isCorrectionActive = qData ? (qData.disableCorrection !== true) : true;
+
         div.innerHTML = `
             <div class="flex justify-between items-center border-b pb-2">
                 <span class="font-black text-amber-900 text-xs"><i class="fa-solid fa-pen-nib ml-1"></i> سؤال مقالي مستقل</span>
@@ -10139,6 +10643,15 @@ function addExamQuestionToSection(secId, qType = 'mcq', qData = null) {
                     ${ansRowsHtml}
                 </div>
             </div>
+
+            <!-- 💡 زر تفعيل أو تعطيل معالجة الأخطاء الإملائية والتشكيلية الذكية لهذا السؤال المقالي -->
+            <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 flex items-center gap-2">
+                <input type="checkbox" id="${qId}_correction_cb" class="q-correction-input w-4 h-4 text-amber-600 rounded cursor-pointer" ${isCorrectionActive ? 'checked' : ''}>
+                <label for="${qId}_correction_cb" class="text-[11px] font-black text-amber-950 cursor-pointer">
+                    تفعيل معالجة الأخطاء الإملائية والتشكيلية الذكية لهذه الإجابة (إلغاؤها يعتمد مطابقة حرفية تامة)
+                </label>
+            </div>
+
             <textarea placeholder="التعليل أو الشرح..." class="q-exp-input w-full p-2 rounded-xl border bg-white text-[11px]" rows="1">${escapeHTML(qExp)}</textarea>
         `;
     } else {
@@ -10495,6 +11008,22 @@ function startStudentMonthlyExam(examId) {
     });
     sectionsPaletteHtml += '</div>';
 
+    // 💡 1. بناء ترويسة القسم (فقرة، صورة، أو رابط ملف) لتظهر قبل الأسئلة
+    let passageContent = section.passageText || section.passage || section.text || "";
+    let sectionHeaderHtml = '';
+    
+    if (passageContent || section.img || section.fileUrl) {
+        sectionHeaderHtml = `
+            <div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-purple-200 space-y-4 shadow-sm text-right mb-6">
+                ${section.img ? `<div class="text-center my-4"><img src="${escapeHTML(section.img)}" class="max-h-80 rounded-2xl mx-auto object-contain border-2 shadow-md"></div>` : ''}
+                
+                ${passageContent ? `<p class="text-slate-900 text-lg sm:text-xl leading-relaxed whitespace-pre-line font-bold">${typeof formatText === 'function' ? formatText(passageContent, true) : escapeHTML(passageContent)}</p>` : ''}
+                
+                ${section.fileUrl ? `<div class="pt-2"><a href="${escapeHTML(section.fileUrl)}" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white font-black px-5 py-3 rounded-2xl inline-flex items-center gap-2 text-sm sm:text-base shadow"><i class="fa-solid fa-file-arrow-down"></i> تحميل الملف المرفق للقسم</a></div>` : ''}
+            </div>
+        `;
+    }
+
     let questionsHtml = '';
 
     // 2. بناء أسئلة القسم الحالي النشط
@@ -10545,6 +11074,9 @@ function startStudentMonthlyExam(examId) {
                     <span>القسم (${sIdx + 1} من ${exam.sections.length}): ${escapeHTML(section.title || 'قسم الاختبار')}</span>
                     <span class="text-xs bg-white/20 px-2.5 py-1 rounded-xl">إجمالي الأسئلة: ${section.questions ? section.questions.length : 0}</span>
                 </div>
+                
+                <!-- 💡 2. حقن محتوى القسم التمهيدي هنا ليظهر قبل الأسئلة مباشرة -->
+                ${sectionHeaderHtml}
                 
                 <div class="space-y-6">${questionsHtml}</div>
                 
@@ -10657,7 +11189,6 @@ function startMonthlyExam(examId) {
 
     let examView = document.getElementById('view-student-monthly-exam');
     if (!examView) {
-        // إنشاء واجهة حل الامتحان طارئاً إذا كانت مفقودة في الـ HTML
         examView = document.createElement('div');
         examView.id = 'view-student-monthly-exam';
         examView.className = 'hidden flex-col space-y-6 bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 min-h-[80vh] text-right';
@@ -10701,20 +11232,32 @@ function startMonthlyExam(examId) {
 
     if (exam.sections && exam.sections.length > 0) {
         exam.sections.forEach((sec, sIdx) => {
-            let secHtml = `
-                <div class="bg-purple-50/40 p-6 rounded-3xl border-2 border-purple-200 space-y-4 exam-solve-section" data-sec-idx="${sIdx}">
-                    <h3 class="font-black text-purple-950 text-lg border-b pb-2">القسم ${sIdx + 1}: ${escapeHTML(sec.title || 'عام')}</h3>
-            `;
-
-            if (sec.passageText) {
-                secHtml += `
-                    <div class="bg-white p-5 rounded-2xl border space-y-3 shadow-sm">
-                        <h5 class="font-black text-slate-900 text-sm">${escapeHTML(sec.passageTitle || 'اقرأ النص ثم أجب:')}</h5>
-                        ${sec.passageImg ? `<div class="text-center"><img src="${escapeHTML(sec.passageImg)}" class="max-h-56 mx-auto object-contain rounded-xl border"></div>` : ''}
-                        <p class="text-slate-800 text-sm sm:text-base leading-relaxed whitespace-pre-line font-bold">${escapeHTML(sec.passageText)}</p>
+            
+            // 💡 1. التقاط الشامل للفقرة التمهيدية مهما كان مسمى الحقل المخزنة به
+            let passageContent = sec.passageText || sec.passage || sec.text || "";
+            let sectionHeaderHtml = '';
+            
+            if (passageContent || sec.img || sec.fileUrl) {
+                sectionHeaderHtml = `
+                    <div class="bg-purple-50/80 p-6 sm:p-8 rounded-3xl border-2 border-purple-200 space-y-4 mb-6 shadow-sm text-right">
+                        ${sec.title ? `<h4 class="font-black text-purple-950 text-xl sm:text-2xl border-b border-purple-200 pb-3"><i class="fa-solid fa-bookmark text-purple-600 ml-2"></i>${escapeHTML(sec.title)}</h4>` : ''}
+                        
+                        ${sec.img ? `<div class="text-center my-4"><img src="${escapeHTML(sec.img)}" class="max-h-80 rounded-2xl mx-auto object-contain border-2 shadow-md"></div>` : ''}
+                        
+                        ${passageContent ? `<p class="text-slate-900 text-lg sm:text-xl leading-relaxed whitespace-pre-line font-bold">${typeof formatText === 'function' ? formatText(passageContent, true) : escapeHTML(passageContent)}</p>` : ''}
+                        
+                        ${sec.fileUrl ? `<div class="pt-2"><a href="${escapeHTML(sec.fileUrl)}" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white font-black px-5 py-3 rounded-2xl inline-flex items-center gap-2 text-sm sm:text-base shadow"><i class="fa-solid fa-file-arrow-down"></i> تحميل الملف المرفق للقسم</a></div>` : ''}
                     </div>
                 `;
             }
+
+            let secHtml = `
+                <div class="bg-purple-50/40 p-6 rounded-3xl border-2 border-purple-200 space-y-4 exam-solve-section" data-sec-idx="${sIdx}">
+                    <h3 class="font-black text-purple-950 text-lg border-b pb-2">القسم ${sIdx + 1}: ${escapeHTML(sec.title || 'عام')}</h3>
+                    
+                    <!-- 💡 2. حقن محتوى القسم التمهيدي هنا ليظهر قبل السؤال الأول مباشرة -->
+                    ${sectionHeaderHtml}
+            `;
 
             if (sec.questions && sec.questions.length > 0) {
                 secHtml += `<div class="space-y-4 pt-2">`;
@@ -10722,28 +11265,27 @@ function startMonthlyExam(examId) {
                     let qUniqueId = `mexam_q_${sIdx}_${qIdx}`;
                     let markVal = parseFloat(q.mark) || 1;
                     
-                    // التعديل الذكي: التحقق من وجود خيارات أو نوع mcq لضمان تصنيف السؤال كاختيار من متعدد
                     let isMultipleChoice = (q.options && Array.isArray(q.options) && q.options.length > 0) || q.type === 'mcq';
 
                     if (isMultipleChoice) {
                         let optsHtml = q.options.map((opt) => `
-                            <label class="block p-3.5 bg-white rounded-2xl border-2 border-slate-200 hover:border-purple-400 font-bold text-sm cursor-pointer transition shadow-xs">
-                                <input type="radio" name="${qUniqueId}" value="${escapeHTML(opt)}" class="ml-2 text-purple-600"> ${escapeHTML(opt)}
+                            <label class="block p-4 bg-white rounded-2xl border-2 border-slate-200 hover:border-purple-400 font-black text-base sm:text-lg cursor-pointer transition shadow-xs">
+                                <input type="radio" name="${qUniqueId}" value="${escapeHTML(opt)}" class="ml-3 text-purple-600 w-5 h-5"> ${escapeHTML(opt)}
                             </label>
                         `).join('');
 
                         secHtml += `
                             <div class="bg-white p-5 rounded-2xl border-2 border-slate-200 space-y-3 exam-solve-q-item" data-q-type="mcq" data-q-mark="${markVal}" data-q-correct="${escapeHTML(q.ans)}">
-                                // لعنوان السؤال ورقم السؤال
-<p class="font-black text-slate-900 text-lg sm:text-xl leading-relaxed">س${qIdx + 1}: ${escapeHTML(q.text)} <span class="text-sm text-purple-700 font-bold">(${markVal} درجة)</span></p>
-
-// لخيارات الاختيار من متعدد (Radio Labels)
-<label class="block p-4 bg-white rounded-2xl border-2 border-slate-200 hover:border-purple-400 font-black text-base sm:text-lg cursor-pointer transition shadow-xs">
-    <input type="radio" name="${qUniqueId}" value="${escapeHTML(opt)}" class="ml-3 text-purple-600 w-5 h-5"> ${escapeHTML(opt)}
-</label>
-
-// لمربع النص المقالي (Textarea)
-<textarea placeholder="اكتب إجابتك هنا..." class="student-essay-answer-input w-full p-4 rounded-xl border-2 border-slate-300 bg-white font-bold text-base sm:text-lg leading-relaxed focus:outline-none focus:border-purple-600" rows="4"></textarea>
+                                <p class="font-black text-slate-900 text-lg sm:text-xl leading-relaxed">س${qIdx + 1}: ${escapeHTML(q.text)} <span class="text-sm text-purple-700 font-bold">(${markVal} درجة)</span></p>
+                                <div class="space-y-3 pt-2">${optsHtml}</div>
+                            </div>
+                        `;
+                    } else {
+                        secHtml += `
+                            <div class="bg-white p-5 rounded-2xl border-2 border-slate-200 space-y-3 exam-solve-q-item" data-q-type="essay" data-q-mark="${markVal}">
+                                <p class="font-black text-slate-900 text-lg sm:text-xl leading-relaxed">س${qIdx + 1}: ${escapeHTML(q.text)} <span class="text-sm text-purple-700 font-bold">(${markVal} درجة)</span></p>
+                                <textarea placeholder="اكتب إجابتك هنا..." class="student-essay-answer-input w-full p-4 rounded-xl border-2 border-slate-300 bg-white font-bold text-base sm:text-lg leading-relaxed focus:outline-none focus:border-purple-600" rows="4"></textarea>
+                            </div>
                         `;
                     }
                 });
@@ -10755,7 +11297,6 @@ function startMonthlyExam(examId) {
         });
     }
 
-    // الانتقال لواجهة حل الامتحان وإخفاء البوابة
     const studentPortal = document.getElementById('view-student-portal');
     if (studentPortal) {
         studentPortal.classList.add('hidden');
@@ -10767,6 +11308,7 @@ function startMonthlyExam(examId) {
 
     startMonthlyExamTimer(exam.duration || 45);
 }
+
 // مؤقت امتحان الطالب الشهري والشامل الآمن
 function startMonthlyExamTimer(durationMins) {
     let timerSeconds = (durationMins || 45) * 60;
@@ -10797,9 +11339,32 @@ function startMonthlyExamTimer(durationMins) {
     }, 1000);
 }
 
-// دالة مساعدة لتنظيف النص وتجاهل التشكيل والمسافات الزائدة والمطابقة الإملائية الشاملة
-function cleanArabicText(str) {
+// دالة مساعدة لتنظيف النص مع مراعاة خيار المعالجة الذكية لكل سؤال على حدة
+function cleanArabicText(str, sectionType = 'essay', disableCorrection = false) {
     if (!str || typeof str !== 'string') return '';
+
+    // إذا كان المعلم قد ألغى تفعيل المعالجة الذكية لهذا السؤال (disableCorrection = true)، 
+    // أو إذا كان التصحيح معطلاً عبر إعدادات القسم العامة:
+    let applyCorrection = true;
+    if (disableCorrection === true) {
+        applyCorrection = false;
+    } else {
+        if (sectionType === 'essay') {
+            applyCorrection = appSettings.enableEssayLinguisticCorrection !== false;
+        } else if (sectionType === 'monthly') {
+            applyCorrection = appSettings.enableMonthlyLinguisticCorrection !== false;
+        }
+    }
+
+    // إذا كان التصحيح الذكي معطلاً لهذا السؤال، نكتفي بإزالة التشكيل والمسافات الزائدة فقط (مطابقة حرفية مرنة للتشكيل)
+    if (!applyCorrection) {
+        return str
+            .replace(/[\u0610-\u061A\u064B-\u065F\u0670]/g, '') // إزالة التشكيل فقط
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    // إذا كان مفعلاً، يتم تطبيق التصحيح اللغوي الذكي والشامل (توحيد الألفات، الهاء والتاء، إلخ)
     return str
         .replace(/[\u0610-\u061A\u064B-\u065F\u0670]/g, '') // إزالة التشكيل
         .replace(/[إأآا]/g, 'ا') // توحيد الهمزات والألفات
@@ -10839,7 +11404,7 @@ function submitStudentMonthlyExam() {
                 let markVal = parseFloat(q.mark) || 1;
                 maxPossibleScore += markVal;
 
-                let isAnswered = userAns.trim() !== "";
+                let isAnswered = String(userAns).trim() !== "";
                 if (isAnswered) totalAnswered++;
 
                 let isCorrect = false;
@@ -10847,27 +11412,35 @@ function submitStudentMonthlyExam() {
                 let correctAnswerText = q.ans || (q.options ? q.options[0] : "إجابة نموذجية");
 
                 if (q.type === 'essay') {
-                    let cleanUserAns = isAnswered ? userAns.trim().replace(/\s+/g, ' ') : "";
-                    let validAnswers = [];
-                    if (Array.isArray(q.modelAnswers)) {
-                        validAnswers = q.modelAnswers.map(a => String(a).trim().replace(/\s+/g, ' '));
-                    } else if (q.ans) {
-                        validAnswers = String(q.ans).split(/[\u060C,;|/]| أو /).map(a => a.trim().replace(/\s+/g, ' ')).filter(Boolean);
-                    }
+                    // استخدام دالة التنظيف اللغوي الذكي مع تخصيص سياق الامتحانات الشهرية ومرونة تفعيل/تعطيل التصحيح لكل سؤال
+let cleanUserAns = isAnswered ? cleanArabicText(String(userAns), 'monthly', q.disableCorrection) : "";
 
+// التعديل الشامل: تجميع ومناظرة إجابة الطالب مع كافة الإجابات النموذجية المتعددة المضافة
+let validAnswers = [];
+if (Array.isArray(q.modelAnswers) && q.modelAnswers.length > 0) {
+    validAnswers = q.modelAnswers.map(a => cleanArabicText(String(a), 'monthly', q.disableCorrection)).filter(Boolean);
+} else if (q.ans) {
+    validAnswers = String(q.ans).split(/[\u060C,;|/]| أو /).map(a => cleanArabicText(a, 'monthly', q.disableCorrection)).filter(Boolean);
+}
+
+                    // فحص مطابقة إجابة الطالب مع أي نموذج من الإجابات المضافة
                     let matchedModel = validAnswers.length > 0 && validAnswers.some(ansOpt => ansOpt === cleanUserAns);
 
                     if (matchedModel) {
+                        // تطابقت مع أحد النماذج المضافة! منح الدرجة الكاملة فوراً تلقائياً
                         isCorrect = true;
                         essayGrade = true;
                         totalScore += markVal;
+                        correctAnswerText = validAnswers.join(' أو ');
                     } else if (!isAnswered) {
                         isCorrect = false;
                         essayGrade = false;
                     } else {
+                        // لم تتطابق مع أي نموذج صحيح مضاف ➔ تُرحّل فوراً إلى طابور مراجعة المعلم
                         isCorrect = false;
                         essayGrade = undefined;
                         pendingEssayCount++;
+                        correctAnswerText = validAnswers.join(' أو ') || q.ans || "إجابة مقالية (بانتظار تقييم المعلم)";
                     }
                 } else {
                     if (isAnswered && userAns === q.ans) {
@@ -10885,6 +11458,7 @@ function submitStudentMonthlyExam() {
                     isCorrect,
                     type: q.type || 'mcq',
                     essayGrade,
+                    explanation: formatText(q.exp || "", true), // 💡 تمرير التعليل والشرح لكي يظهر بوضوح في صفحة مراجعة الطالب
                     sectionTitle: sec.title || `القسم ${sIdx + 1}`
                 });
             });
@@ -10954,7 +11528,7 @@ function submitStudentMonthlyExam() {
 
     const resMsg = document.getElementById('res-msg');
     if (pendingEssayCount > 0) {
-        resMsg.innerHTML = `أتممت الامتحان الشهري بنجاح!<br><span class="text-amber-700 font-black text-sm sm:text-base bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 inline-block mt-2">⚠️ تم احتساب الأسئلة الموضوعية، ويوجد (${pendingEssayCount}) أسئلة مقالية بانتظار مراجعة وتقييم المعلم.</span>`;
+        resMsg.innerHTML = `أتممت الامتحان الشهري بنجاح!<br><span class="text-amber-700 font-black text-sm sm:text-base bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 inline-block mt-2">⚠️ تم احتساب الأسئلة المطابقة، ويوجد (${pendingEssayCount}) أسئلة مقالية بانتظار مراجعة وتقييم المعلم.</span>`;
     } else {
         resMsg.textContent = appSettings.successMessage || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز.";
     }
