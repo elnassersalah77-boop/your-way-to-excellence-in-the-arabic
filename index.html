@@ -260,28 +260,34 @@ select, select option {
     <!-- الحاوية المرنة (تتوسط الشاشة وتتحرك للأعلى عند الاختيار) -->
     <div id="portal-body-wrapper" class="flex-grow flex flex-col justify-center transition-all duration-700 ease-in-out">
         
-       <!-- التبويبات الثلاثة بتصميم ملون، خط كبير، وسميك جداً -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 bg-slate-100 border-b-2 border-slate-250 shadow-inner z-10 relative">
-        
-        <!-- تبويب الشروحات والقواعد -->
-        <button onclick="showPortalTab('expl')" id="tab-btn-expl" class="portal-tab-btn py-5 px-4 rounded-2xl font-black text-xl sm:text-2xl transition shadow-md bg-sky-50 text-sky-900 border-3 border-sky-400 hover:bg-sky-100 hover:border-sky-600 flex flex-col items-center gap-2 cursor-pointer">
-            <i class="fa-solid fa-book-open text-3xl text-sky-600"></i>
-            <span>الشُّرُوحَاتُ وَالْقَوَاعِدُ</span>
-        </button>
+      <!-- التبويبات الأربعة بتصميم ملون ومتناسق -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 bg-slate-100 border-b-2 border-slate-250 shadow-inner z-10 relative">
+    
+    <!-- 1. تبويب الشروحات والقواعد -->
+    <button onclick="showPortalTab('expl')" id="tab-btn-expl" class="portal-tab-btn py-4 px-3 rounded-2xl font-black text-lg sm:text-xl transition shadow-md bg-sky-50 text-sky-900 border-3 border-sky-400 hover:bg-sky-100 flex flex-col items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-book-open text-2xl text-sky-600"></i>
+        <span>الشُّرُوحَاتُ وَالْقَوَاعِدُ</span>
+    </button>
 
-        <!-- تبويب التدريبات والاختبارات -->
-        <button onclick="showPortalTab('exam')" id="tab-btn-exam" class="portal-tab-btn py-5 px-4 rounded-2xl font-black text-xl sm:text-2xl transition shadow-md bg-amber-50 text-amber-950 border-3 border-amber-400 hover:bg-amber-100 hover:border-amber-600 flex flex-col items-center gap-2 cursor-pointer">
-            <i class="fa-solid fa-pen-nib text-3xl text-amber-600"></i>
-            <span>التَّدْرِيبَاتُ وَالِاخْتِبَارَاتُ</span>
-        </button>
+    <!-- 2. تبويب التدريبات والاختبارات -->
+    <button onclick="showPortalTab('exam')" id="tab-btn-exam" class="portal-tab-btn py-4 px-3 rounded-2xl font-black text-lg sm:text-xl transition shadow-md bg-amber-50 text-amber-950 border-3 border-amber-400 hover:bg-amber-100 flex flex-col items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-pen-nib text-2xl text-amber-600"></i>
+        <span>التَّدْرِيبَاتُ وَالِاخْتِبَارَاتُ</span>
+    </button>
 
-        <!-- تبويب السجل الدراسي -->
-        <button onclick="showPortalTab('records')" id="tab-btn-records" class="portal-tab-btn py-5 px-4 rounded-2xl font-black text-xl sm:text-2xl transition shadow-md bg-emerald-50 text-emerald-950 border-3 border-emerald-400 hover:bg-emerald-100 hover:border-emerald-600 flex flex-col items-center gap-2 cursor-pointer">
-            <i class="fa-solid fa-chart-line text-3xl text-emerald-600"></i>
-            <span>سِجِلُّ الِاخْتِبَارَاتِ</span>
-        </button>
+    <!-- 3. تبويب الامتحانات الشهرية والشاملة (الجديد - قبل السجل) -->
+    <button onclick="showPortalTab('monthly-exams')" id="tab-btn-monthly-exams" class="portal-tab-btn py-4 px-3 rounded-2xl font-black text-lg sm:text-xl transition shadow-md bg-purple-50 text-purple-950 border-3 border-purple-400 hover:bg-purple-100 flex flex-col items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-file-lines text-2xl text-purple-600"></i>
+        <span>الِامْتِحَانَاتُ الشَّهْرِيَّةُ</span>
+    </button>
 
-    </div>
+    <!-- 4. تبويب السجل الدراسي -->
+    <button onclick="showPortalTab('records')" id="tab-btn-records" class="portal-tab-btn py-4 px-3 rounded-2xl font-black text-lg sm:text-xl transition shadow-md bg-emerald-50 text-emerald-950 border-3 border-emerald-400 hover:bg-emerald-100 flex flex-col items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-chart-line text-2xl text-emerald-600"></i>
+        <span>سِجِلُّ الِاخْتِبَارَاتِ</span>
+    </button>
+
+</div>
 
         <!-- مساحة محتوى التبويبات (مخفية في البداية) -->
         <div id="portal-content-area" class="p-6 sm:p-10 hidden">
@@ -318,6 +324,17 @@ select, select option {
                 <div id="portal-topic-bank-stats-card" class="hidden mt-6"></div>
                 <button id="portal-exam-btn" onclick="startQuiz()" class="hidden w-full bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white px-6 py-4 rounded-2xl shadow-xl transition transform hover:-translate-y-0.5 font-black text-xl mt-6 cursor-pointer"><span id="portal-start-btn-text">ابْدَأِ الِاخْتِبَارِ الْآنَ</span> <i class="fa-solid fa-play mr-2"></i></button>
             </div>
+
+<!-- تبويب الامتحانات الشهرية والشاملة للطالب -->
+<div id="portal-tab-monthly-exams" class="portal-tab-content hidden space-y-6 max-w-3xl mx-auto text-center animate-fade-in">
+    <h3 class="text-xl font-black text-purple-950 mb-2"><i class="fa-solid fa-clipboard-list text-purple-600 ml-2"></i>قَائِمَةُ الِامْتِحَانَاتِ الشَّهْرِيَّةِ وَالشَّامِلَةِ</h3>
+    <p class="text-slate-600 text-sm font-bold mb-6">اختر الامتحان المتاح لصفك وابدأ الحل وفق الزمن المخصص لكل امتحان.</p>
+    
+    <!-- قائمة الامتحانات المتاحة للطالب -->
+    <div id="student-monthly-exams-list" class="space-y-4 text-right">
+        <!-- تضاف الامتحانات ديناميكياً حسب صف المرحلة -->
+    </div>
+</div>
 
             <!-- تبويب السجل الشخصي للطالب -->
             <div id="portal-tab-records" class="portal-tab-content hidden space-y-4 animate-fade-in">
@@ -566,6 +583,33 @@ select, select option {
             </div>
         </div>
     </div>
+<!-- VIEW: شاشة حل الامتحان الشهري والشامل للطالب -->
+<div id="view-student-monthly-exam" class="hidden flex-col space-y-6 bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 min-h-[80vh] text-right">
+    <div class="flex justify-between items-center border-b pb-4 flex-wrap gap-3">
+        <div>
+            <span class="text-xs text-slate-500 font-bold block">الطالب: <strong id="student-mexam-student-name" class="text-purple-900">---</strong></span>
+            <h3 id="student-mexam-title" class="font-black text-purple-950 text-xl sm:text-2xl">عنوان الامتحان</h3>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="bg-amber-100 text-amber-950 px-4 py-2 rounded-2xl font-black text-sm border border-amber-300 flex items-center gap-2 shadow-inner">
+                <i class="fa-solid fa-clock text-amber-600"></i>
+                <span id="student-mexam-timer">--:--</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- حاوية أقسام وأسئلة الامتحان -->
+    <div id="student-mexam-sections-container" class="space-y-8 flex-grow">
+        <!-- تضاف الأقسام والأسئلة هنا ديناميكياً -->
+    </div>
+
+    <!-- أزرار الإنهاء والتسليم -->
+    <div class="flex justify-between items-center pt-6 border-t">
+        <button type="button" onclick="confirmExitStudentMonthlyExam()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold px-6 py-3 rounded-xl cursor-pointer transition">خروج بدون تسليم</button>
+        <button type="button" onclick="submitStudentMonthlyExam()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-8 py-3.5 rounded-xl cursor-pointer shadow transition text-base">تسليم إجابات الامتحان</button>
+    </div>
+</div>
+
 <!-- 1. لوحة الإدارة الرئيسية (قائمة الأقسام المستقلة) -->
     <div id="view-admin-dashboard" class="admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto">
     <div class="max-w-6xl mx-auto w-full space-y-6">
@@ -584,7 +628,10 @@ select, select option {
             <button onclick="openAdminSectionPage('view-admin-topics')" class="p-6 bg-white rounded-2xl shadow border-2 border-slate-200 hover:border-sky-500 text-right font-bold text-lg transition flex items-center justify-between cursor-pointer"><span><i class="fa-solid fa-book text-sky-600 ml-2"></i> الموضوعات الدراسية</span><i class="fa-solid fa-chevron-left text-slate-400"></i></button>
             <button onclick="openAdminSectionPage('view-admin-questions')" class="p-6 bg-white rounded-2xl shadow border-2 border-slate-200 hover:border-sky-500 text-right font-bold text-lg transition flex items-center justify-between cursor-pointer"><span><i class="fa-solid fa-clipboard-question text-sky-600 ml-2"></i> بنك الأسئلة</span><i class="fa-solid fa-chevron-left text-slate-400"></i></button>
             <button onclick="openAdminSectionPage('view-admin-passages')" class="p-6 bg-white rounded-2xl shadow border-2 border-slate-200 hover:border-indigo-500 text-right font-bold text-lg transition flex items-center justify-between cursor-pointer"><span><i class="fa-solid fa-book-open-reader text-indigo-600 ml-2"></i> إدارة الفقرات والمقالي</span><i class="fa-solid fa-chevron-left text-slate-400"></i></button>
-            <button onclick="openAdminSectionPage('view-admin-quickinfo')" class="p-6 bg-white rounded-2xl shadow border-2 border-slate-200 hover:border-sky-500 text-right font-bold text-lg transition flex items-center justify-between cursor-pointer"><span><i class="fa-solid fa-lightbulb text-sky-600 ml-2"></i> المعلومة السريعة</span><i class="fa-solid fa-chevron-left text-slate-400"></i></button>
+            <button onclick="openAdminSectionPage('view-admin-monthly-exams')" class="p-6 bg-purple-50 rounded-2xl shadow border-2 border-purple-200 hover:border-purple-500 text-right font-bold text-lg transition flex items-center justify-between cursor-pointer">
+                <span><i class="fa-solid fa-file-lines text-purple-600 ml-2"></i> الامتحانات الشهرية والشاملة</span>
+                <i class="fa-solid fa-chevron-left text-slate-400"></i></button>
+                    <button onclick="openAdminSectionPage('view-admin-quickinfo')" class="p-6 bg-white rounded-2xl shadow border-2 border-slate-200 hover:border-sky-500 text-right font-bold text-lg transition flex items-center justify-between cursor-pointer"><span><i class="fa-solid fa-lightbulb text-sky-600 ml-2"></i> المعلومة السريعة</span><i class="fa-solid fa-chevron-left text-slate-400"></i></button>
             <button onclick="openAdminSectionPage('view-admin-students')" class="p-6 bg-white rounded-2xl shadow border-2 border-slate-200 hover:border-sky-500 text-right font-bold text-lg transition flex items-center justify-between cursor-pointer"><span><i class="fa-solid fa-users text-sky-600 ml-2"></i> حسابات الطلاب</span><i class="fa-solid fa-chevron-left text-slate-400"></i></button>
             <button onclick="openAdminSectionPage('view-admin-records')" class="p-6 bg-white rounded-2xl shadow border-2 border-slate-200 hover:border-sky-500 text-right font-bold text-lg transition flex items-center justify-between cursor-pointer"><span><i class="fa-solid fa-chart-bar text-sky-600 ml-2"></i> سجلات النتائج</span><i class="fa-solid fa-chevron-left text-slate-400"></i></button>
             <!-- زر التصحيح السريع الجديد -->
@@ -1349,6 +1396,135 @@ select, select option {
             </div>
         </div>
     </div>
+
+    <!-- 17. صفحة إدارة الامتحانات الشهرية والشاملة (View مستقل) -->
+    <div id="view-admin-monthly-exams" class="admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto text-right">
+        <div class="max-w-6xl mx-auto w-full space-y-6">
+            <!-- شريط الأزرار الثابت العلوي للقسم -->
+            <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                <h2 class="text-2xl font-black text-purple-950 flex items-center gap-3">
+                    <i class="fa-solid fa-file-lines text-purple-600"></i> إِدَارَةُ الِامْتِحَانَاتِ الشَّهْرِيَّةِ وَالشَّامِلَةِ
+                </h2>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="confirmAndSaveAdminSection('monthlyExams')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+                        <i class="fa-solid fa-floppy-disk"></i> حِفْظُ التَّغْيِيرَاتِ
+                    </button>
+                    <button type="button" onclick="showAdminDashboardPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+                        <i class="fa-solid fa-gauge"></i> لَوْحَةُ الْإِدَارَةِ
+                    </button>
+                    <button type="button" onclick="restartHome()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+                        <i class="fa-solid fa-house"></i> الرَّئِيسِيَّةُ
+                    </button>
+                </div>
+            </div>
+            
+            <!-- المحتوى والجدول والفلاتر الخاصة بالامتحانات -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border-2 border-slate-200 space-y-5">
+                
+                <!-- فلاتر التصفية للمرحلة والصف فقط -->
+                <div class="bg-purple-50 p-4 rounded-2xl border-2 border-purple-200 space-y-3">
+                    <h3 class="font-black text-purple-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-purple-600"></i> تصفية وعرض الامتحانات:</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">المرحلة:</label>
+                            <select id="filter-mexam-stage" onchange="filterAdminMonthlyExamsByStage()" class="w-full p-2.5 rounded-xl border text-xs bg-white font-bold text-slate-800"><option value="">كل المراحل</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">الصف:</label>
+                            <select id="filter-mexam-grade" onchange="renderAdminMonthlyExamsList()" class="w-full p-2.5 rounded-xl border text-xs bg-white font-bold text-purple-900"><option value="">كل الصفوف</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- أزرار الإجراءات (إضافة امتحان، استيراد، تصدير) -->
+                <div class="flex flex-wrap justify-between items-center pt-2 border-t border-slate-200 gap-3">
+                    <h3 class="font-black text-slate-800 text-base">قائمة الامتحانات المُصَاغَةُ</h3>
+                    <div class="flex gap-2 flex-wrap">
+                        <button type="button" onclick="exportMonthlyExamsJson()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-download ml-1"></i> تصدير (JSON)</button>
+                        <label class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد (JSON)<input type="file" id="import-monthly-exams-json-file" accept=".json" onchange="importMonthlyExamsJsonFile(event)" class="hidden"></label>
+                        <button type="button" onclick="openMonthlyExamForm()" class="bg-purple-600 hover:bg-purple-700 text-white font-black text-xs px-5 py-2.5 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-plus ml-1"></i> إضافة امتحان جديد</button>
+                    </div>
+                </div>
+
+                <!-- جدول عرض الامتحانات -->
+                <div class="overflow-x-auto border rounded-2xl bg-white shadow-sm">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 font-bold text-xs border-b">
+                                <th class="p-3.5">عنوان الامتحان</th>
+                                <th class="p-3.5">المرحلة والصف</th>
+                                <th class="p-3.5 text-center">الزمن (دقيقة)</th>
+                                <th class="p-3.5 text-center">الأقسام والأسئلة</th>
+                                <th class="p-3.5 text-center">الحالة</th>
+                                <th class="p-3.5 text-center">التحكم والإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-monthly-exams-tbody" class="divide-y text-sm font-bold text-slate-800">
+                            <tr><td colspan="6" class="p-6 text-center text-slate-400">لا توجد امتحانات مضافة حتى الآن.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+<!-- 18. صفحة إضافة وتعديل الامتحان الشهري والشامل (View مستقل) -->
+<div id="view-admin-monthly-exam-form" class="admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto text-right">
+    <div class="max-w-5xl mx-auto w-full space-y-6">
+        <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-200 flex flex-wrap justify-between items-center gap-4">
+    <h2 id="monthly-exam-form-title" class="text-2xl font-black text-purple-950 flex items-center gap-3">
+        <i class="fa-solid fa-file-pen text-purple-600"></i> إِضَافَةُ / تَعْدِيلُ امْتِحَانٍ
+    </h2>
+    <div class="flex flex-wrap items-center gap-2">
+        <!-- أزرار الاستيراد والتصدير الفردية للامتحان -->
+        <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد امتحان<input type="file" accept=".json" onchange="importSingleMonthlyExamJson(event)" class="hidden"></label>
+        <button type="button" onclick="exportSingleMonthlyExamJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-download ml-1"></i> تصدير امتحان</button>
+        
+        <button type="button" onclick="saveMonthlyExamData()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حِفْظُ الِامْتِحَانِ</button>
+        <button type="button" onclick="openAdminSectionPage('view-admin-monthly-exams')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-arrow-right"></i> عَوْدَةٌ لِلْقَائِمَةِ</button>
+    </div>
+</div>
+
+        <input type="hidden" id="edit-monthly-exam-id" value="">
+
+        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border-2 border-slate-200 space-y-5 text-xs font-bold">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block mb-1 text-slate-700 text-sm">عنوان الامتحان:</label>
+                    <input type="text" id="mexam-title-input" class="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-sm font-black" placeholder="مثال: امتحان الشهر الأول">
+                </div>
+                <div>
+                    <label class="block mb-1 text-slate-700 text-sm">المرحلة الدراسية:</label>
+                    <select id="mexam-stage-input" class="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-sm font-bold text-slate-800"><option value="">اختر المرحلة</option></select>
+                </div>
+                <div>
+                    <label class="block mb-1 text-slate-700 text-sm">الصف الدراسي:</label>
+                    <select id="mexam-grade-input" class="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-sm font-bold text-purple-900"><option value="">اختر الصف</option></select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block mb-1 text-slate-700 text-sm">زمن الامتحان بالدقائق:</label>
+                    <input type="number" id="mexam-duration-input" class="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-sm font-black" value="45" min="5">
+                </div>
+                <div class="flex items-center gap-3 pt-6">
+                    <input type="checkbox" id="mexam-active-input" class="w-6 h-6 text-purple-600 rounded cursor-pointer" checked>
+                    <label for="mexam-active-input" class="cursor-pointer text-slate-900 text-sm font-black">تفعيل هذا الامتحان ليظهر للطلاب</label>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t-2 border-slate-200 space-y-4">
+                <div class="flex justify-between items-center flex-wrap gap-3">
+                    <h3 class="font-black text-purple-950 text-lg"><i class="fa-solid fa-layer-group ml-1 text-purple-600"></i> أقسام الامتحان</h3>
+                    <button type="button" onclick="addExamSectionBlock()" class="bg-purple-600 hover:bg-purple-700 text-white font-black px-4 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-plus ml-1"></i> إضافة قسم جديد للامتحان</button>
+                </div>
+                <div id="exam-sections-builder-container" class="space-y-6"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- 15. صفحة تفاصيل إجابة الطالب (View مستقل) -->
     <div id="view-admin-record-details" class="admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto text-right">
         <div class="max-w-6xl mx-auto w-full space-y-6">
@@ -1876,7 +2052,9 @@ select, select option {
 // ==========================================
 // إدارة الفقرات والأسئلة المقالية (النسخة الكاملة والمحدثة)
 // ==========================================
-
+if (typeof monthlyExamsBank === 'undefined') {
+    var monthlyExamsBank = JSON.parse(localStorage.getItem('monthlyExamsBank')) || [];
+}
 let passagesBank = JSON.parse(localStorage.getItem('passagesBank')) || [];
 let currentAdminPassagesPage = 1;
 const adminPassagesItemsPerPage = 20;
@@ -2756,164 +2934,190 @@ window.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        function updateCloudCacheSnapshot() {
-            // ... باقي كود الدالة هنا ...
-        }
         // ================== CLOUD SYNC & LAZY LOADING ==================
         function updateCloudCacheSnapshot() {
-            if (!window._cloudCache) window._cloudCache = {};
-            const cleanObj = (obj) => JSON.parse(JSON.stringify(obj || {}));
-            
-            window._cloudCache["settings"] = JSON.stringify({
-                stagesData: cleanObj(stagesData), gradeStatus: cleanObj(gradeStatus),
-                branchesData: cleanObj(branchesData), topicsData: cleanObj(topicsData),
-                appSettings: cleanObj(appSettings)
-            });
+    if (!window._cloudCache) window._cloudCache = {};
+    const cleanObj = (obj) => JSON.parse(JSON.stringify(obj || {}));
+    
+    window._cloudCache["settings"] = JSON.stringify({
+        stagesData: cleanObj(stagesData), gradeStatus: cleanObj(gradeStatus),
+        branchesData: cleanObj(branchesData), topicsData: cleanObj(topicsData),
+        appSettings: cleanObj(appSettings)
+    });
 
-            const qChunkSize = 300; let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
-            for (let i = 0; i < qTotalParts; i++) {
-                window._cloudCache[`questions_part_${i}`] = JSON.stringify({ chunk: (questionBank || []).slice(i * qChunkSize, (i + 1) * qChunkSize) });
-            }
-            window._cloudCache["questions_meta"] = JSON.stringify({ totalParts: qTotalParts });
+    const qChunkSize = 300; let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
+    for (let i = 0; i < qTotalParts; i++) {
+        window._cloudCache[`questions_part_${i}`] = JSON.stringify({ chunk: (questionBank || []).slice(i * qChunkSize, (i + 1) * qChunkSize) });
+    }
+    window._cloudCache["questions_meta"] = JSON.stringify({ totalParts: qTotalParts });
 
-            const pChunkSize = 300; let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
-            for (let i = 0; i < pTotalParts; i++) {
-                window._cloudCache[`paragraphs_part_${i}`] = JSON.stringify({ chunk: (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize) });
-            }
-            window._cloudCache["paragraphs_meta"] = JSON.stringify({ totalParts: pTotalParts });
+    const pChunkSize = 300; let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
+    for (let i = 0; i < pTotalParts; i++) {
+        window._cloudCache[`paragraphs_part_${i}`] = JSON.stringify({ chunk: (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize) });
+    }
+    window._cloudCache["paragraphs_meta"] = JSON.stringify({ totalParts: pTotalParts });
 
-            // 💡 إضافة كاش بنك الفقرات والمقالي الجديد بنظام الـ Chunks
-            const passChunkSize = 300; let passTotalParts = Math.ceil((passagesBank || []).length / passChunkSize) || 1;
-            for (let i = 0; i < passTotalParts; i++) {
-                window._cloudCache[`passages_part_${i}`] = JSON.stringify({ chunk: (passagesBank || []).slice(i * passChunkSize, (i + 1) * passChunkSize) });
-            }
-            window._cloudCache["passages_meta"] = JSON.stringify({ totalParts: passTotalParts });
+    const passChunkSize = 300; let passTotalParts = Math.ceil((passagesBank || []).length / passChunkSize) || 1;
+    for (let i = 0; i < passTotalParts; i++) {
+        window._cloudCache[`passages_part_${i}`] = JSON.stringify({ chunk: (passagesBank || []).slice(i * passChunkSize, (i + 1) * passChunkSize) });
+    }
+    window._cloudCache["passages_meta"] = JSON.stringify({ totalParts: passTotalParts });
 
-            const qiChunkSize = 300; let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
-            for (let i = 0; i < qiTotalParts; i++) {
-                const qiChunk = (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize).map(qi => {
-                    let qiCopy = JSON.parse(JSON.stringify(qi));
-                    if (qiCopy.sections) {
-                        qiCopy.sections.forEach(sec => {
-                            if (sec.subItems) {
-                                sec.subItems.forEach(sub => {
-                                    if (sub.tableData) {
-                                        sub.tableDataJson = JSON.stringify(sub.tableData);
-                                        delete sub.tableData;
-                                    }
-                                });
+    // تجزئة وحفظ الامتحانات الشهرية والشاملة سحابياً ومحلياً
+    const currentMonthlyExams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : JSON.parse(localStorage.getItem('monthlyExamsBank'))) || [];
+    const mexamChunkSize = 300; let mexamTotalParts = Math.ceil(currentMonthlyExams.length / mexamChunkSize) || 1;
+    for (let i = 0; i < mexamTotalParts; i++) {
+        window._cloudCache[`monthlyExams_part_${i}`] = JSON.stringify({ chunk: currentMonthlyExams.slice(i * mexamChunkSize, (i + 1) * mexamChunkSize) });
+    }
+    window._cloudCache["monthlyExams_meta"] = JSON.stringify({ totalParts: mexamTotalParts });
+
+    const qiChunkSize = 300; let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
+    for (let i = 0; i < qiTotalParts; i++) {
+        const qiChunk = (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize).map(qi => {
+            let qiCopy = JSON.parse(JSON.stringify(qi));
+            if (qiCopy.sections) {
+                qiCopy.sections.forEach(sec => {
+                    if (sec.subItems) {
+                        sec.subItems.forEach(sub => {
+                            if (sub.tableData) {
+                                sub.tableDataJson = JSON.stringify(sub.tableData);
+                                delete sub.tableData;
                             }
                         });
                     }
-                    return qiCopy;
                 });
-                window._cloudCache[`quickinfo_part_${i}`] = JSON.stringify({ chunk: qiChunk });
             }
-            window._cloudCache["quickinfo_meta"] = JSON.stringify({ totalParts: qiTotalParts });
+            return qiCopy;
+        });
+        window._cloudCache[`quickinfo_part_${i}`] = JSON.stringify({ chunk: qiChunk });
+    }
+    window._cloudCache["quickinfo_meta"] = JSON.stringify({ totalParts: qiTotalParts });
 
-            const stChunkSize = 300; let stTotalParts = Math.ceil((studentsAccounts || []).length / stChunkSize) || 1;
-            for (let i = 0; i < stTotalParts; i++) {
-                window._cloudCache[`students_part_${i}`] = JSON.stringify({ chunk: (studentsAccounts || []).slice(i * stChunkSize, (i + 1) * stChunkSize) });
-            }
-            window._cloudCache["students_meta"] = JSON.stringify({ totalParts: stTotalParts });
+    const stChunkSize = 300; let stTotalParts = Math.ceil((studentsAccounts || []).length / stChunkSize) || 1;
+    for (let i = 0; i < stTotalParts; i++) {
+        window._cloudCache[`students_part_${i}`] = JSON.stringify({ chunk: (studentsAccounts || []).slice(i * stChunkSize, (i + 1) * stChunkSize) });
+    }
+    window._cloudCache["students_meta"] = JSON.stringify({ totalParts: stTotalParts });
 
-            const rChunkSize = 300; let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
-            for (let i = 0; i < rTotalParts; i++) {
-                window._cloudCache[`records_part_${i}`] = JSON.stringify({ chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) });
-            }
-            window._cloudCache["records_meta"] = JSON.stringify({ totalParts: rTotalParts });
-        }
+    const rChunkSize = 300; let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
+    for (let i = 0; i < rTotalParts; i++) {
+        window._cloudCache[`records_part_${i}`] = JSON.stringify({ chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) });
+    }
+    window._cloudCache["records_meta"] = JSON.stringify({ totalParts: rTotalParts });
+}
 
        async function loadDataFromCloud() {
-            // 💡 إظهار شاشة التحميل البارزة للطالب فور فتح المنصة
-            if (typeof toggleCloudLoading === 'function') {
-                toggleCloudLoading(true, "جَارِي تَحْوِيلُ وَتَجْهِيزُ الْمَنْصَةِ...");
+    if (typeof toggleCloudLoading === 'function') {
+        toggleCloudLoading(true, "جَارِي تَحْوِيلُ وَتَجْهِيزُ الْمَنْصَةِ...");
+    }
+    
+    try {
+        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseGetDoc) {
+            const db = window.firebaseDb; const doc = window.firebaseDoc; const getDoc = window.firebaseGetDoc;
+            const initialPromises = [ 
+                getDoc(doc(db, "platformData", "settings")), 
+                getDoc(doc(db, "platformData", "questions_meta")), 
+                getDoc(doc(db, "platformData", "paragraphs_meta")), 
+                getDoc(doc(db, "platformData", "passages_meta")).catch(() => ({ exists: () => false })), 
+                getDoc(doc(db, "platformData", "monthlyExams_meta")).catch(() => ({ exists: () => false })), // جلب ميتاداتا الامتحانات الشهرية
+                getDoc(doc(db, "platformData", "quickinfo_meta")),
+                getDoc(doc(db, "platformData", "students_meta"))
+            ];
+            const [settingsSnap, qMetaSnap, pMetaSnap, passMetaSnap, mexamMetaSnap, qiMetaSnap, stMetaSnap] = await Promise.all(initialPromises);
+
+            if (settingsSnap.exists()) {
+                const data = settingsSnap.data();
+                if (data.stagesData) stagesData = data.stagesData;
+                if (data.gradeStatus) gradeStatus = data.gradeStatus;
+                if (data.branchesData) branchesData = data.branchesData;
+                if (data.topicsData) topicsData = data.topicsData;
+                if (data.appSettings) appSettings = { ...defaultSettings, ...data.appSettings };
             }
+
+            let chunkPromises = [];
+            let qTotal = qMetaSnap.exists() ? (qMetaSnap.data().totalParts || 0) : 0;
+            let pTotal = pMetaSnap.exists() ? (pMetaSnap.data().totalParts || 0) : 0;
+            let passTotal = (passMetaSnap && passMetaSnap.exists && passMetaSnap.exists()) ? (passMetaSnap.data().totalParts || 0) : 0; 
+            let mexamTotal = (mexamMetaSnap && mexamMetaSnap.exists && mexamMetaSnap.exists()) ? (mexamMetaSnap.data().totalParts || 0) : 0; // إجمالي أجزاء الامتحانات
+            let qiTotal = qiMetaSnap.exists() ? (qiMetaSnap.data().totalParts || 0) : 0;
+            let stTotal = stMetaSnap.exists() ? (stMetaSnap.data().totalParts || 0) : 0;
+
+            for (let i = 0; i < qTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `questions_part_${i}`)));
+            for (let i = 0; i < pTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `paragraphs_part_${i}`)));
+            for (let i = 0; i < passTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `passages_part_${i}`))); 
+            for (let i = 0; i < mexamTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `monthlyExams_part_${i}`))); // جلب أجزاء الامتحانات الشهرية
+            for (let i = 0; i < qiTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `quickinfo_part_${i}`)));
+            for (let i = 0; i < stTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `students_part_${i}`)));
+
+            const chunksSnaps = await Promise.all(chunkPromises);
+            questionBank = []; paragraphs = []; passagesBank = []; 
             
-            try {
-                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseGetDoc) {
-                    const db = window.firebaseDb; const doc = window.firebaseDoc; const getDoc = window.firebaseGetDoc;
-                    const initialPromises = [ 
-                        getDoc(doc(db, "platformData", "settings")), 
-                        getDoc(doc(db, "platformData", "questions_meta")), 
-                        getDoc(doc(db, "platformData", "paragraphs_meta")), 
-                        getDoc(doc(db, "platformData", "passages_meta")).catch(() => ({ exists: () => false })), 
-                        getDoc(doc(db, "platformData", "quickinfo_meta")),
-                        getDoc(doc(db, "platformData", "students_meta"))
-                    ];
-                    const [settingsSnap, qMetaSnap, pMetaSnap, passMetaSnap, qiMetaSnap, stMetaSnap] = await Promise.all(initialPromises);
+            // تهيئة آمنة لمصفوفة الامتحانات الشهرية مع استرجاع المحلي إن وجد
+            if (typeof monthlyExamsBank !== 'undefined') {
+                monthlyExamsBank = JSON.parse(localStorage.getItem('monthlyExamsBank')) || [];
+            } else {
+                window.monthlyExamsBank = JSON.parse(localStorage.getItem('monthlyExamsBank')) || [];
+            }
 
-                    if (settingsSnap.exists()) {
-                        const data = settingsSnap.data();
-                        if (data.stagesData) stagesData = data.stagesData;
-                        if (data.gradeStatus) gradeStatus = data.gradeStatus;
-                        if (data.branchesData) branchesData = data.branchesData;
-                        if (data.topicsData) topicsData = data.topicsData;
-                        if (data.appSettings) appSettings = { ...defaultSettings, ...data.appSettings };
-                    }
+            quickInfoList = []; studentsAccounts = []; studentRecords = [];
+            let snapIndex = 0;
+            
+            for (let i = 0; i < qTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) questionBank = questionBank.concat(snap.data().chunk); }
+            for (let i = 0; i < pTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) paragraphs = paragraphs.concat(snap.data().chunk); }
+            for (let i = 0; i < passTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) passagesBank = passagesBank.concat(snap.data().chunk); } 
+            
+            // تجميع أجزاء الامتحانات الشهرية القادمة من السحابة ودمجها محلياً
+            let cloudMonthlyExams = [];
+            for (let i = 0; i < mexamTotal; i++) { 
+                let snap = chunksSnaps[snapIndex++]; 
+                if (snap && snap.exists && snap.exists() && snap.data().chunk) {
+                    cloudMonthlyExams = cloudMonthlyExams.concat(snap.data().chunk);
+                } 
+            }
+            if (cloudMonthlyExams.length > 0) {
+                monthlyExamsBank = cloudMonthlyExams;
+                localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+            }
 
-                    let chunkPromises = [];
-                    let qTotal = qMetaSnap.exists() ? (qMetaSnap.data().totalParts || 0) : 0;
-                    let pTotal = pMetaSnap.exists() ? (pMetaSnap.data().totalParts || 0) : 0;
-                    let passTotal = (passMetaSnap && passMetaSnap.exists && passMetaSnap.exists()) ? (passMetaSnap.data().totalParts || 0) : 0; 
-                    let qiTotal = qiMetaSnap.exists() ? (qiMetaSnap.data().totalParts || 0) : 0;
-                    let stTotal = stMetaSnap.exists() ? (stMetaSnap.data().totalParts || 0) : 0;
-
-                    for (let i = 0; i < qTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `questions_part_${i}`)));
-                    for (let i = 0; i < pTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `paragraphs_part_${i}`)));
-                    for (let i = 0; i < passTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `passages_part_${i}`))); 
-                    for (let i = 0; i < qiTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `quickinfo_part_${i}`)));
-                    for (let i = 0; i < stTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `students_part_${i}`)));
-
-                    const chunksSnaps = await Promise.all(chunkPromises);
-                    questionBank = []; paragraphs = []; passagesBank = []; quickInfoList = []; studentsAccounts = []; studentRecords = [];
-                    let snapIndex = 0;
-                    
-                    for (let i = 0; i < qTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) questionBank = questionBank.concat(snap.data().chunk); }
-                    for (let i = 0; i < pTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) paragraphs = paragraphs.concat(snap.data().chunk); }
-                    for (let i = 0; i < passTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) passagesBank = passagesBank.concat(snap.data().chunk); } 
-                    
-                    for (let i = 0; i < qiTotal; i++) { 
-                        let snap = chunksSnaps[snapIndex++]; 
-                        if (snap && snap.exists && snap.exists() && snap.data().chunk) {
-                            let loadedChunk = snap.data().chunk.map(qi => {
-                                if (qi.sections) {
-                                    qi.sections.forEach(sec => {
-                                        if (sec.subItems) {
-                                            sec.subItems.forEach(sub => {
-                                                if (sub.tableDataJson) {
-                                                    try {
-                                                        sub.tableData = JSON.parse(sub.tableDataJson);
-                                                    } catch(e) { sub.tableData = []; }
-                                                }
-                                            });
+            for (let i = 0; i < qiTotal; i++) { 
+                let snap = chunksSnaps[snapIndex++]; 
+                if (snap && snap.exists && snap.exists() && snap.data().chunk) {
+                    let loadedChunk = snap.data().chunk.map(qi => {
+                        if (qi.sections) {
+                            qi.sections.forEach(sec => {
+                                if (sec.subItems) {
+                                    sec.subItems.forEach(sub => {
+                                        if (sub.tableDataJson) {
+                                            try {
+                                                sub.tableData = JSON.parse(sub.tableDataJson);
+                                            } catch(e) { sub.tableData = []; }
                                         }
                                     });
                                 }
-                                return qi;
                             });
-                            quickInfoList = quickInfoList.concat(loadedChunk); 
-                        } 
-                    }
-                    
-                    for (let i = 0; i < stTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) studentsAccounts = studentsAccounts.concat(snap.data().chunk); }
-                }
-            } catch (e) { 
-                console.log("استخدام البيانات المحلية:", e); 
+                        }
+                        return qi;
+                    });
+                    quickInfoList = quickInfoList.concat(loadedChunk); 
+                } 
             }
             
-            // تحديث الكاش وإخفاء شاشة التحميل بلطف لتظهر صفحة البداية جاهزة
-            updateCloudCacheSnapshot();
-            if (typeof toggleCloudLoading === 'function') {
-                toggleCloudLoading(false); 
-            }
-            if (typeof initApp === 'function') {
-                initApp();
-            }
+            for (let i = 0; i < stTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) studentsAccounts = studentsAccounts.concat(snap.data().chunk); }
         }
+    } catch (e) { 
+        console.log("استخدام البيانات المحلية:", e); 
+    }
+    
+    updateCloudCacheSnapshot();
+    if (typeof toggleCloudLoading === 'function') {
+        toggleCloudLoading(false); 
+    }
+    if (typeof initApp === 'function') {
+        initApp();
+    }
+}
 
-        // 💡 إظهار علامة التحميل فور تشغيل الصفحة قبل بدء فحص السحابة
-       window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', () => {
             if (typeof toggleCloudLoading === 'function') {
                 toggleCloudLoading(true, "جَارِي التَّحْمِيل...");
             }
@@ -2985,102 +3189,104 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 }
               
+async function saveState(showLoading = true) {
+    try {
+        // حفظ محلي فوري لمنع أي ضياع للبيانات في المتصفح (LocalStorage)
+        if (typeof monthlyExamsBank !== 'undefined') {
+            localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+        }
 
-        async function saveState(showLoading = true) {
-            try {
-                if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
-                    const db = window.firebaseDb; 
-                    const textEl = document.getElementById('cloud-loading-text');
-                    
-                    if (!window._cloudCache) updateCloudCacheSnapshot();
-                    
-                    let tasks = [];
-                    const addTask = (id, data) => {
-                        const str = JSON.stringify(data);
-                        if (window._cloudCache[id] !== str) {
-                            tasks.push({ id, data, str });
-                        }
-                    };
-
-                    const cleanObj = (obj) => JSON.parse(JSON.stringify(obj || {}));
-
-                    addTask("settings", {
-                        stagesData: cleanObj(stagesData), gradeStatus: cleanObj(gradeStatus),
-                        branchesData: cleanObj(branchesData), topicsData: cleanObj(topicsData),
-                        appSettings: cleanObj(appSettings)
-                    });
-
-                    const qChunkSize = 300; let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
-                    for (let i = 0; i < qTotalParts; i++) addTask(`questions_part_${i}`, { chunk: (questionBank || []).slice(i * qChunkSize, (i + 1) * qChunkSize) });
-                    addTask("questions_meta", { totalParts: qTotalParts });
-
-                    const pChunkSize = 300; let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
-                    for (let i = 0; i < pTotalParts; i++) addTask(`paragraphs_part_${i}`, { chunk: (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize) });
-                    addTask("paragraphs_meta", { totalParts: pTotalParts });
-
-                    // 💡 إضافة حفظ بنك الفقرات والمقالي بنظام الدفعات (Chunks) والفحص القبلي
-                    const passChunkSize = 300; let passTotalParts = Math.ceil((passagesBank || []).length / passChunkSize) || 1;
-                    for (let i = 0; i < passTotalParts; i++) addTask(`passages_part_${i}`, { chunk: (passagesBank || []).slice(i * passChunkSize, (i + 1) * passChunkSize) });
-                    addTask("passages_meta", { totalParts: passTotalParts });
-
-                    // تنظيف ومعالجة مصفوفة المعلومات السريعة وجداولها لتفادي خطأ المصفوفات المتداخلة تماماً
-                    const qiChunkSize = 300; 
-                    let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
-                    const sanitizedQi = sanitizeQuickInfoList(quickInfoList);
-                    for (let i = 0; i < qiTotalParts; i++) {
-                        addTask(`quickinfo_part_${i}`, { chunk: sanitizedQi.slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
-                    }
-                    addTask("quickinfo_meta", { totalParts: qiTotalParts });
-
-                    const stChunkSize = 300; let stTotalParts = Math.ceil((studentsAccounts || []).length / stChunkSize) || 1;
-                    for (let i = 0; i < stTotalParts; i++) addTask(`students_part_${i}`, { chunk: (studentsAccounts || []).slice(i * stChunkSize, (i + 1) * stChunkSize) });
-                    addTask("students_meta", { totalParts: stTotalParts });
-
-                    const rChunkSize = 300; let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
-                    for (let i = 0; i < rTotalParts; i++) addTask(`records_part_${i}`, { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) });
-                    addTask("records_meta", { totalParts: rTotalParts });
-
-                    let totalTasks = tasks.length;
-                    
-                    if (totalTasks === 0) {
-                        if (showLoading) {
-                            toggleCloudLoading(true, "لَمْ يَحْدُث أيُّ تَغْيِير (تَمَّ التحقق محلياً بِنَجَاح).");
-                            setTimeout(() => { toggleCloudLoading(false); }, 700);
-                        }
-                        return; 
-                    }
-
-                    if (showLoading) {
-                        toggleCloudLoading(true, `جَارِي رَفْع التَّعْدِيلَات حقيقيَّة (${totalTasks} مِلَفّاً)...`);
-                    }
-
-                    let completedTasks = 0;
-
-                    for (let task of tasks) {
-                        await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
-                        window._cloudCache[task.id] = task.str; 
-                        completedTasks++;
-                        let pct = Math.round((completedTasks / totalTasks) * 100);
-                        if (showLoading && textEl) {
-                            textEl.textContent = `جَارِي رَفْع المُتَغَيِّرَات... ${pct}% (${completedTasks}/${totalTasks})`;
-                        }
-                    }
-                    
-                    if (showLoading) {
-                        if (textEl) textEl.textContent = "تَمَّ الْحِفْظُ وَالتَّحْدِيثُ بِنَجَاح!";
-                        setTimeout(() => { toggleCloudLoading(false); }, 1000);
-                    }
+        if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
+            const db = window.firebaseDb; 
+            const textEl = document.getElementById('cloud-loading-text');
+            
+            if (!window._cloudCache) updateCloudCacheSnapshot();
+            
+            let tasks = [];
+            const addTask = (id, data) => {
+                const str = JSON.stringify(data);
+                if (window._cloudCache[id] !== str) {
+                    tasks.push({ id, data, str });
                 }
-            } catch (e) { 
-                console.error("خطأ الحفظ:", e); 
-                if (showLoading) {
-                    const textEl = document.getElementById('cloud-loading-text');
-                    if (textEl) textEl.textContent = "حَدَثَ خَطَأٌ فِي الحِفْظ!";
-                    alert("تعذر الحفظ السحابي: " + e.message); 
-                    toggleCloudLoading(false);
+            };
+
+            const cleanObj = (obj) => JSON.parse(JSON.stringify(obj || {}));
+
+            addTask("settings", {
+                stagesData: cleanObj(stagesData), gradeStatus: cleanObj(gradeStatus),
+                branchesData: cleanObj(branchesData), topicsData: cleanObj(topicsData),
+                appSettings: cleanObj(appSettings)
+            });
+
+            const qChunkSize = 300; let qTotalParts = Math.ceil((questionBank || []).length / qChunkSize) || 1;
+            for (let i = 0; i < qTotalParts; i++) addTask(`questions_part_${i}`, { chunk: (questionBank || []).slice(i * qChunkSize, (i + 1) * qChunkSize) });
+            addTask("questions_meta", { totalParts: qTotalParts });
+
+            const pChunkSize = 300; let pTotalParts = Math.ceil((paragraphs || []).length / pChunkSize) || 1;
+            for (let i = 0; i < pTotalParts; i++) addTask(`paragraphs_part_${i}`, { chunk: (paragraphs || []).slice(i * pChunkSize, (i + 1) * pChunkSize) });
+            addTask("paragraphs_meta", { totalParts: pTotalParts });
+
+            const passChunkSize = 300; let passTotalParts = Math.ceil((passagesBank || []).length / passChunkSize) || 1;
+            for (let i = 0; i < passTotalParts; i++) addTask(`passages_part_${i}`, { chunk: (passagesBank || []).slice(i * passChunkSize, (i + 1) * passChunkSize) });
+            addTask("passages_meta", { totalParts: passTotalParts });
+
+            // إضافة مهام حفظ الامتحانات الشهرية للسحابة بدقة تامة
+            const currentMonthlyExams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : JSON.parse(localStorage.getItem('monthlyExamsBank'))) || [];
+            const mexamChunkSize = 300; let mexamTotalParts = Math.ceil(currentMonthlyExams.length / mexamChunkSize) || 1;
+            for (let i = 0; i < mexamTotalParts; i++) {
+                addTask(`monthlyExams_part_${i}`, { chunk: currentMonthlyExams.slice(i * mexamChunkSize, (i + 1) * mexamChunkSize) });
+            }
+            addTask("monthlyExams_meta", { totalParts: mexamTotalParts });
+
+            const qiChunkSize = 300; 
+            let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
+            const sanitizedQi = sanitizeQuickInfoList(quickInfoList);
+            for (let i = 0; i < qiTotalParts; i++) {
+                addTask(`quickinfo_part_${i}`, { chunk: sanitizedQi.slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
+            }
+            addTask("quickinfo_meta", { totalParts: qiTotalParts });
+
+            const stChunkSize = 300; let stTotalParts = Math.ceil((studentsAccounts || []).length / stChunkSize) || 1;
+            for (let i = 0; i < stTotalParts; i++) addTask(`students_part_${i}`, { chunk: (studentsAccounts || []).slice(i * stChunkSize, (i + 1) * stChunkSize) });
+            addTask("students_meta", { totalParts: stTotalParts });
+
+            const rChunkSize = 300; let rTotalParts = Math.ceil((studentRecords || []).length / rChunkSize) || 1;
+            for (let i = 0; i < rTotalParts; i++) addTask(`records_part_${i}`, { chunk: (studentRecords || []).slice(i * rChunkSize, (i + 1) * rChunkSize) });
+            addTask("records_meta", { totalParts: rTotalParts });
+
+            let totalTasks = tasks.length;
+            
+            if (showLoading) {
+                toggleCloudLoading(true, `جَارِي فَحْصِ وَرَفْع التَّعْدِيلَات... (${totalTasks} ملفاً)`);
+            }
+
+            let completedTasks = 0;
+
+            for (let task of tasks) {
+                await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
+                window._cloudCache[task.id] = task.str; 
+                completedTasks++;
+                let pct = Math.round((completedTasks / totalTasks) * 100);
+                if (showLoading && textEl) {
+                    textEl.textContent = `جَارِي رَفْع المُتَغَيِّرَات... ${pct}% (${completedTasks}/${totalTasks})`;
                 }
             }
+            
+            if (showLoading) {
+                if (textEl) textEl.textContent = "تَمَّ الْحِفْظُ وَالتَّحْدِيثُ بِنَجَاح!";
+                setTimeout(() => { toggleCloudLoading(false); }, 1000);
+            }
         }
+    } catch (e) { 
+        console.error("خطأ الحفظ:", e); 
+        if (showLoading) {
+            const textEl = document.getElementById('cloud-loading-text');
+            if (textEl) textEl.textContent = "حَدَثَ خَطَأٌ فِي الحِفْظ!";
+            alert("تعذر الحفظ السحابي: " + e.message); 
+            toggleCloudLoading(false);
+        }
+    }
+}        
 // ================== GENERAL, INIT & SETTINGS ==================
         function validateArabicName(inputEl) {
             let val = inputEl.value;
@@ -3925,6 +4131,11 @@ async function showPortalTab(tabName) {
         populatePortalBranches('expl');
     } else if (tabName === 'exam') {
         populatePortalBranches('exam');
+    } else if (tabName === 'monthly-exams') {
+        // استدعاء دالة عرض الامتحانات الشهرية والشاملة المتاحة للطالب
+        if (typeof renderStudentMonthlyExams === 'function') {
+            renderStudentMonthlyExams();
+        }
     } else if (tabName === 'records') {
         // 💡 إظهار مؤشر التحميل الإجباري للطالب وسحب أحدث التصحيحات من السحابة
         if (typeof toggleCloudLoading === 'function') {
@@ -3950,7 +4161,6 @@ async function showPortalTab(tabName) {
         }
     }
 }
-
 // 4. تعبئة الفروع في البوابة بناءً على صف الطالب
 function populatePortalBranches(type) {
     const stage = currentStudentSession.stage;
@@ -4909,34 +5119,44 @@ window.restartHome = function() {
     }
 
     function showQuizReview() {
-        if (!quizState || !quizState.questions || quizState.questions.length === 0) {
-            alert("لا توجد بيانات اختبار للمراجعة حالياً.");
-            return;
-        }
+    if (!quizState || !quizState.questions || quizState.questions.length === 0) {
+        alert("لا توجد بيانات اختبار للمراجعة حالياً.");
+        return;
+    }
+    
+    let html = '<div class="space-y-6">';
+    quizState.questions.forEach((q, idx) => {
+        let userAns = quizState.answers[idx]; 
+        let isAnswered = userAns !== null && userAns !== undefined && String(userAns).trim() !== "";
         
-        let html = '<div class="space-y-6">';
-        quizState.questions.forEach((q, idx) => {
-            let userAns = quizState.answers[idx]; 
-            let isAnswered = userAns !== null && userAns !== undefined && String(userAns).trim() !== "";
-            
-            let optsHtml = '';
-            let statusBadge = '';
+        let optsHtml = '';
+        let statusBadge = '';
 
-            // 💡 تصميم ذكي لصفحة المراجعة يفرق بين إجابة الطالب المقالية والاختيارية
-            if (q.type === 'essay') {
-                statusBadge = isAnswered ? '<span class="text-amber-600 font-black text-base">تمت الإجابة ✓</span>' : '<span class="text-rose-600 font-black text-base">تُرك فارغاً ✗</span>';
-                optsHtml = `
-                    <div class="p-6 rounded-2xl border-2 bg-amber-50/50 border-amber-200 text-base sm:text-lg font-bold text-slate-800 whitespace-pre-line shadow-sm">
-                        <strong class="text-amber-900 block mb-2"><i class="fa-solid fa-pen-nib ml-1"></i> إجابتك المقالية:</strong>
-                        ${isAnswered ? escapeHTML(userAns) : '<span class="text-rose-500">لا توجد إجابة</span>'}
-                    </div>
-                    ${q.ans ? `<div class="p-6 mt-4 rounded-2xl border-2 bg-emerald-50 border-emerald-200 text-base sm:text-lg font-bold text-emerald-900 whitespace-pre-line shadow-sm"><strong class="block mb-2"><i class="fa-solid fa-check ml-1"></i> مفتاح الإجابة النموذجية:</strong><br>${escapeHTML(q.ans)}</div>` : ''}
-                `;
+        // 💡 تصميم ذكي ومحسن لصفحة المراجعة لتمييز المقالي الصحيح والمطابق تماماً
+        if (q.type === 'essay') {
+            let isEssayCorrect = q.isCorrect === true || q.essayGrade === true;
+            
+            if (isEssayCorrect) {
+                statusBadge = '<span class="text-emerald-600 font-black text-base">إجابة صحيحة ومطابقة ✓</span>';
             } else {
-                let isCorrect = isAnswered && userAns === q.ans;
-                statusBadge = isAnswered ? (isCorrect ? '<span class="text-emerald-600 font-black text-base">صحيحة ✓</span>' : '<span class="text-rose-600 font-black text-base">خاطئة ✗</span>') : '<span class="text-amber-600 font-black text-base">لم يجب عليها</span>';
-                
-                optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4">';
+                statusBadge = isAnswered ? '<span class="text-amber-600 font-black text-base">بانتظار تصحيح المعلم ⏳</span>' : '<span class="text-rose-600 font-black text-base">تُرك فارغاً ✗</span>';
+            }
+
+            let boxStyle = isEssayCorrect ? "bg-emerald-50/50 border-emerald-300 text-emerald-950" : "bg-amber-50/50 border-amber-200 text-slate-800";
+
+            optsHtml = `
+                <div class="p-6 rounded-2xl border-2 ${boxStyle} text-base sm:text-lg font-bold whitespace-pre-line shadow-sm">
+                    <strong class="block mb-2"><i class="fa-solid fa-pen-nib ml-1"></i> إجابتك المقالية:</strong>
+                    ${isAnswered ? escapeHTML(userAns) : '<span class="text-rose-500">لا توجد إجابة</span>'}
+                </div>
+                ${q.ans ? `<div class="p-6 mt-4 rounded-2xl border-2 bg-emerald-50 border-emerald-200 text-base sm:text-lg font-bold text-emerald-900 whitespace-pre-line shadow-sm"><strong class="block mb-2"><i class="fa-solid fa-check ml-1"></i> مفتاح الإجابة النموذجية:</strong><br>${escapeHTML(q.ans)}</div>` : ''}
+            `;
+        } else {
+            let isCorrect = isAnswered && userAns === q.ans;
+            statusBadge = isAnswered ? (isCorrect ? '<span class="text-emerald-600 font-black text-base">صحيحة ✓</span>' : '<span class="text-rose-600 font-black text-base">خاطئة ✗</span>') : '<span class="text-amber-600 font-black text-base">لم يجب عليها</span>';
+            
+            optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4">';
+            if (q.opts) {
                 q.opts.forEach(opt => {
                     let isThisCorrect = opt === q.ans; 
                     let isThisUser = opt === userAns; 
@@ -4952,45 +5172,46 @@ window.restartHome = function() {
                     }
                     optsHtml += `<div class="p-5 rounded-2xl border-2 ${optStyle} text-base sm:text-lg font-bold">• ${formatText(opt, q.tashkeel)}${optBadge}</div>`;
                 });
-                optsHtml += '</div>';
             }
-
-            html += `<div class="bg-white p-8 rounded-3xl border-3 border-slate-200 shadow-lg space-y-4">
-                <div class="flex justify-between items-center border-b pb-3">
-                    <h4 class="font-black text-xl sm:text-2xl text-sky-950">س${idx+1}: ${formatText(q.q, q.tashkeel)}</h4>
-                    <span>${statusBadge}</span>
-                </div>
-                ${optsHtml}
-                ${q.exp && q.type !== 'essay' ? `<div class="p-5 bg-sky-50 rounded-2xl border-2 border-sky-200 text-base sm:text-lg text-sky-950 font-bold leading-relaxed"><strong>التعليل والشرح:</strong> ${formatText(q.exp, q.tashkeel)}</div>` : ''}
-            </div>`;
-        });
-        html += '</div>';
-
-        const reviewBody = document.getElementById('student-review-body');
-        if (reviewBody) reviewBody.innerHTML = html; 
-
-        const reviewPdfBtn = document.getElementById('review-screen-pdf-btn');
-        if (reviewPdfBtn) {
-            if (typeof appSettings !== 'undefined' && appSettings.enableStudentPDF !== false) {
-                reviewPdfBtn.classList.remove('hidden');
-                reviewPdfBtn.classList.add('flex');
-            } else {
-                reviewPdfBtn.classList.add('hidden');
-                reviewPdfBtn.classList.remove('flex');
-            }
+            optsHtml += '</div>';
         }
 
-        ['view-start', 'view-quiz', 'view-result'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
-        });
+        html += `<div class="bg-white p-8 rounded-3xl border-3 border-slate-200 shadow-lg space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h4 class="font-black text-xl sm:text-2xl text-sky-950">س${idx+1}: ${formatText(q.q, q.tashkeel)}</h4>
+                <span>${statusBadge}</span>
+            </div>
+            ${optsHtml}
+            ${q.exp && q.type !== 'essay' ? `<div class="p-5 bg-sky-50 rounded-2xl border-2 border-sky-200 text-base sm:text-lg text-sky-950 font-bold leading-relaxed"><strong>التعليل والشرح:</strong> ${formatText(q.exp, q.tashkeel)}</div>` : ''}
+        </div>`;
+    });
+    html += '</div>';
 
-        const reviewView = document.getElementById('modal-student-review');
-        if (reviewView) {
-            reviewView.classList.remove('hidden');
-            reviewView.classList.add('flex');
+    const reviewBody = document.getElementById('student-review-body');
+    if (reviewBody) reviewBody.innerHTML = html; 
+
+    const reviewPdfBtn = document.getElementById('review-screen-pdf-btn');
+    if (reviewPdfBtn) {
+        if (typeof appSettings !== 'undefined' && appSettings.enableStudentPDF !== false) {
+            reviewPdfBtn.classList.remove('hidden');
+            reviewPdfBtn.classList.add('flex');
+        } else {
+            reviewPdfBtn.classList.add('hidden');
+            reviewPdfBtn.classList.remove('flex');
         }
     }
+
+    ['view-start', 'view-quiz', 'view-result'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+    });
+
+    const reviewView = document.getElementById('modal-student-review');
+    if (reviewView) {
+        reviewView.classList.remove('hidden');
+        reviewView.classList.add('flex');
+    }
+}
 
     function exportStudentReviewPDF() {
         const pdfBtn = document.getElementById('student-pdf-btn') || document.getElementById('review-screen-pdf-btn');
@@ -5316,20 +5537,29 @@ window.restartHome = function() {
             }
         }
 // ================== ADMIN CORE & TABS ==================
-        function handleAdminAccess() {
-            document.getElementById('admin-login-pwd-input').value = "";
-            document.getElementById('modal-admin-login').classList.remove('hidden');
-            document.getElementById('modal-admin-login').classList.add('flex');
+       function handleAdminAccess() {
+            const pwdInput = document.getElementById('admin-login-pwd-input');
+            if (pwdInput) pwdInput.value = "";
+            const modal = document.getElementById('modal-admin-login');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
         }
 
         function closeAdminLoginModal() {
-            document.getElementById('modal-admin-login').classList.add('hidden');
-            document.getElementById('modal-admin-login').classList.remove('flex');
+            const modal = document.getElementById('modal-admin-login');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
         }
 
         async function verifyAdminPassword() {
-            const pwd = document.getElementById('admin-login-pwd-input').value;
-            // الاعتماد حصراً على كلمة المرور المخزنة في إعدادات المنصة فقط وإلغاء الافتراضية
+            const pwdInput = document.getElementById('admin-login-pwd-input');
+            const pwd = pwdInput ? pwdInput.value : "";
+            
+            // الاعتماد حصراً على كلمة المرور المخزنة في إعدادات المنصة فقط
             if (pwd === appSettings.adminPass) {
                 closeAdminLoginModal();
                 
@@ -5339,9 +5569,15 @@ window.restartHome = function() {
                 
                 setTimeout(async () => {
                     try {
-                        await loadAdminRecordsFromCloud();
-                        openAdminDashboard();
-                        loadAdminData();
+                        if (typeof loadAdminRecordsFromCloud === 'function') {
+                            await loadAdminRecordsFromCloud();
+                        }
+                        
+                        // التوجيه للوحة التحكم الرئيسية الموحدة
+                        showAdminDashboardPage();
+                        
+                        // تحديث بيانات الأقسام إذا كانت الدوال موجودة
+                        if (typeof loadAdminData === 'function') loadAdminData();
                     } catch (e) {
                         console.error("خطأ في تحميل الإدارة:", e);
                     } finally {
@@ -5353,6 +5589,22 @@ window.restartHome = function() {
 
             } else { 
                 alert("كلمة المرور خاطئة!"); 
+                if (pwdInput) {
+                    pwdInput.value = "";
+                    pwdInput.focus();
+                }
+            }
+        }
+
+        function showAdminDashboardPage() {
+            document.querySelectorAll('.admin-section-view').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            });
+            const dashboard = document.getElementById('view-admin-dashboard');
+            if (dashboard) {
+                dashboard.classList.remove('hidden');
+                dashboard.classList.add('flex');
             }
         }
 
@@ -5442,9 +5694,7 @@ async function openAdminDashboard() {
 }
 
 // العودة إلى لوحة الإدارة الرئيسية
-function showAdminDashboardPage() {
-    openAdminDashboard();
-}
+ 
 
 // فتح صفحة قسم معين من لوحة الإدارة
 async function openAdminSectionPage(sectionId) {
@@ -5493,6 +5743,10 @@ async function openAdminSectionPage(sectionId) {
         else if (sectionId === 'view-admin-passages' && typeof renderPassagesTable === 'function') { if (typeof populatePassageAdminFilters === 'function') populatePassageAdminFilters(); renderPassagesTable(); }
         else if (sectionId === 'view-admin-quickinfo' && typeof renderAdminQuickInfoList === 'function') { if (typeof populateQiAdminFilters === 'function') populateQiAdminFilters(); renderAdminQuickInfoList(); }
         else if (sectionId === 'view-admin-students' && typeof renderAdminStudentsList === 'function') renderAdminStudentsList();
+        else if (sectionId === 'view-admin-monthly-exams') {
+            if (typeof populateAdminMonthlyExamsFilters === 'function') populateAdminMonthlyExamsFilters();
+            if (typeof renderAdminMonthlyExamsList === 'function') renderAdminMonthlyExamsList();
+        }
         
         if (typeof updateQuickGradingBadge === 'function') {
             updateQuickGradingBadge();
@@ -9091,7 +9345,7 @@ function renderStudentPersonalRecords() {
 
     tbody.innerHTML = html;
 }
-// دالة عرض تفاصيل ورقة اختبار الطالب (تعرض الدرجة الفعلية بدلاً من قيد الانتظار)
+// دالة عرض تفاصيل ورقة اختبار الطالب المحسنة (تتعرف على الأسئلة الموضوعية حتى في السجلات القديمة)
 function openStudentRecordDetails(record) {
     let modalContainer = document.getElementById('student-details-modal');
     if (!modalContainer) {
@@ -9105,39 +9359,34 @@ function openStudentRecordDetails(record) {
     if (record.breakdown && Array.isArray(record.breakdown)) {
         record.breakdown.forEach((item, index) => {
             let statusBadge = '';
-            let isEssay = item.type === 'essay' || item.type === 'passage_standalone' || item.type === 'passage_sub' || (!item.opts && !item.options);
+            
+            // 💡 اكتشاف ذكي ومحسن للاختيار من متعدد حتى في السجلات القديمة
+            let isMcq = item.type === 'mcq' || (item.options && item.options.length > 0) || (item.userAnswer && (item.userAnswer === item.correctAnswer || item.userAnswer === "لم يُجب") && !String(item.correctAnswer).includes(' أو '));
+            let isEssayCorrect = item.isCorrect === true || item.essayGrade === true;
 
-            if (isEssay) {
-                // فحص قيمة تقييم المعلم (سواء كانت true/false أو رقمية مثل 1, 0.5, 0)
-                const gradeVal = item.essayGrade;
-                const isGraded = gradeVal !== undefined && gradeVal !== null && gradeVal !== '';
-
-                if (isGraded) {
-                    // تحديد العبارة أو الدرجة بناءً على تقييم المعلم
-                    let gradeText = "";
-                    let badgeColor = "bg-emerald-100 text-emerald-800";
-
-                    if (gradeVal === true || gradeVal === "true" || gradeVal === 1 || gradeVal === "1") {
-                        gradeText = "الدرجة: 1 (صحيح)";
-                    } else if (gradeVal === 0.5 || gradeVal === "0.5") {
-                        gradeText = "الدرجة: 0.5 (نصف)";
-                        badgeColor = "bg-amber-100 text-amber-800";
-                    } else if (gradeVal === false || gradeVal === "false" || gradeVal === 0 || gradeVal === "0") {
-                        gradeText = "الدرجة: 0 (صفر)";
-                        badgeColor = "bg-rose-100 text-rose-800";
-                    } else {
-                        gradeText = `التقدير: ${gradeVal}`;
-                    }
-
-                    statusBadge = `<span class="px-2.5 py-1 ${badgeColor} rounded-md text-xs font-black">✨ ${gradeText}</span>`;
+            if (isMcq) {
+                if (item.isCorrect) {
+                    statusBadge = '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-xs font-black">✓ إجابة موضوعية صحيحة</span>';
                 } else {
-                    statusBadge = '<span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-md text-xs font-black">⏳ قيد انتظار تصحيح المعلم</span>';
+                    statusBadge = '<span class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-md text-xs font-black">✕ إجابة موضوعية خاطئة</span>';
                 }
             } else {
-                if (item.isCorrect) {
-                    statusBadge = '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-xs font-black">✓ إجابة موضوعية صحيحة (1)</span>';
+                // الأسئلة المقالية
+                if (isEssayCorrect) {
+                    statusBadge = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-xs font-black">✨ إجابة صحيحة ومطابقة (${item.mark || 1})</span>`;
                 } else {
-                    statusBadge = '<span class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-md text-xs font-black">✕ إجابة موضوعية خاطئة (0)</span>';
+                    const gradeVal = item.essayGrade;
+                    const isGraded = gradeVal !== undefined && gradeVal !== null && gradeVal !== '';
+
+                    if (isGraded) {
+                        if (gradeVal === false || gradeVal === "false" || gradeVal === 0 || gradeVal === "0") {
+                            statusBadge = '<span class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-md text-xs font-black">الدرجة: 0 (خطأ)</span>';
+                        } else {
+                            statusBadge = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-xs font-black">✨ الدرجة: ${gradeVal}</span>`;
+                        }
+                    } else {
+                        statusBadge = '<span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-md text-xs font-black">⏳ قيد انتظار تصحيح المعلم</span>';
+                    }
                 }
             }
 
@@ -9189,7 +9438,7 @@ function openStudentRecordDetails(record) {
         </div>
     `;
     modalContainer.classList.remove('hidden');
-}
+} 
 
 // دالة وسيطة آمنة تحدث البيانات محلياً ثم تفتح تفاصيل الورقة بدقة متناهية
 async function openStudentRecordDetailsById(recordId) {
@@ -9212,6 +9461,1757 @@ async function openStudentRecordDetailsById(recordId) {
         openStudentRecordDetails(targetRecord);
     } else {
         alert("عذراً، تعذر العثور على تفاصيل هذا السجل.");
+    }
+}
+// ==========================================
+// إدارة الامتحانات الشهرية والشاملة (النظام الشامل)
+// ==========================================
+
+// تصفية الامتحانات في لوحة المعلم للمرحلة والصف فقط
+function filterAdminMonthlyExamsByStage() {
+    const stage = document.getElementById('filter-mexam-stage').value;
+    const gradeSel = document.getElementById('filter-mexam-grade');
+    if (!gradeSel) return;
+    gradeSel.innerHTML = '<option value="">كل الصفوف</option>';
+    if (stage && stagesData[stage]) {
+        stagesData[stage].forEach(g => {
+            if (gradeStatus[`${stage}_${g}`] !== false) {
+                gradeSel.innerHTML += `<option value="${g}">${g}</option>`;
+            }
+        });
+    }
+    renderAdminMonthlyExamsList();
+}
+
+// متغيرات الترقيم لقائمة الامتحانات الشهرية
+let currentAdminMonthlyExamsPage = 1;
+const adminMonthlyExamsItemsPerPage = 10; // عرض 10 امتحانات في كل صفحة
+
+// دالة عرض وتصفية جدول الامتحانات الشهرية (بتنسيق مرتب للأزرار ومنع الازدحام)
+function renderAdminMonthlyExamsList() {
+    const tbody = document.getElementById('admin-monthly-exams-tbody');
+    if (!tbody) return;
+
+    const fStage = document.getElementById('filter-mexam-stage')?.value || '';
+    const fGrade = document.getElementById('filter-mexam-grade')?.value || '';
+
+    // تصفية الامتحانات حسب المرحلة والصف
+    const filtered = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : []).map((item, idx) => ({...item, originalIdx: idx})).filter(exam => {
+        if (fStage && exam.stage !== fStage) return false;
+        if (fGrade && exam.grade !== fGrade) return false;
+        return true;
+    });
+
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 font-bold">لا توجد امتحانات مضافة مطابقة للفلاتر الحالية.</td></tr>`;
+        let oldPag = document.getElementById('monthly-exams-pagination');
+        if (oldPag) oldPag.remove();
+        return;
+    }
+
+    // حساب الصفحات
+    const totalPages = Math.ceil(filtered.length / adminMonthlyExamsItemsPerPage) || 1;
+    if (currentAdminMonthlyExamsPage > totalPages) currentAdminMonthlyExamsPage = totalPages;
+    if (currentAdminMonthlyExamsPage < 1) currentAdminMonthlyExamsPage = 1;
+
+    const startIndex = (currentAdminMonthlyExamsPage - 1) * adminMonthlyExamsItemsPerPage;
+    const endIndex = Math.min(startIndex + adminMonthlyExamsItemsPerPage, filtered.length);
+    const pageItems = filtered.slice(startIndex, endIndex);
+
+    let html = '';
+    pageItems.forEach((exam, loopIdx) => {
+        const globalIdx = exam.originalIdx;
+        const isActive = exam.active !== false;
+        const sectionsCount = exam.sections ? exam.sections.length : 0;
+        let totalQuestions = 0;
+        if (exam.sections) {
+            exam.sections.forEach(s => { if (s.questions) totalQuestions += s.questions.length; });
+        }
+
+        html += `
+            <tr class="hover:bg-slate-50 transition border-b text-sm font-bold text-slate-800">
+                <td class="p-3 text-center w-10"><input type="checkbox" value="${globalIdx}" class="mexam-select-cb w-4 h-4 text-purple-600 rounded cursor-pointer"></td>
+                <td class="p-3.5 font-black text-purple-950">${escapeHTML(exam.title)}</td>
+                <td class="p-3.5 text-slate-600">${escapeHTML(exam.stage)} / ${escapeHTML(exam.grade)}</td>
+                <td class="p-3.5 text-center font-mono">${exam.duration || 45} دقيقة</td>
+                <td class="p-3.5 text-center"><span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-black">${sectionsCount} أقسام (${totalQuestions} سؤال)</span></td>
+                <td class="p-3.5 text-center">
+                    <button type="button" onclick="toggleMonthlyExamActivation(${globalIdx})" class="px-3 py-1 rounded-xl font-extrabold text-xs ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'} cursor-pointer transition shadow-xs">${isActive ? 'مفعل للطلاب' : 'مخفي'}</button>
+                </td>
+                <td class="p-3.5 text-center">
+                    <div class="flex items-center justify-center gap-1.5">
+                        <div class="flex flex-col gap-1">
+                            <button type="button" onclick="moveMonthlyExamFiltered(${loopIdx}, -1, '${fStage}', '${fGrade}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 w-7 h-7 rounded-md text-xs cursor-pointer flex items-center justify-center" title="تحريك لأعلى"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button type="button" onclick="moveMonthlyExamFiltered(${loopIdx}, 1, '${fStage}', '${fGrade}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 w-7 h-7 rounded-md text-xs cursor-pointer flex items-center justify-center" title="تحريك لأسفل"><i class="fa-solid fa-arrow-down"></i></button>
+                        </div>
+                        <button type="button" onclick="previewMonthlyExam(${globalIdx})" class="bg-amber-500 hover:bg-amber-600 text-white w-8 h-8 rounded-xl font-bold cursor-pointer flex items-center justify-center shadow-xs" title="معاينة"><i class="fa-solid fa-eye"></i></button>
+                        <button type="button" onclick="duplicateMonthlyExam(${globalIdx})" class="bg-indigo-500 hover:bg-indigo-600 text-white w-8 h-8 rounded-xl font-bold cursor-pointer flex items-center justify-center shadow-xs" title="تكرار"><i class="fa-solid fa-copy"></i></button>
+                        <button type="button" onclick="openMonthlyExamForm('${exam.id}')" class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-xl text-xs font-black cursor-pointer shadow-xs transition flex items-center gap-1" title="تعديل"><i class="fa-solid fa-pen"></i> تعديل</button>
+                        <button type="button" onclick="deleteMonthlyExam('${exam.id}')" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-xl text-xs font-black cursor-pointer shadow-xs transition flex items-center gap-1" title="حذف"><i class="fa-solid fa-trash"></i> حذف</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+
+    // ضبط ترويسة الجدول لتشمل خانة الاختيار الشامل
+    const tableHeaderRow = tbody.closest('table').querySelector('thead tr');
+    if (tableHeaderRow && !tableHeaderRow.querySelector('.mexam-master-cb')) {
+        tableHeaderRow.innerHTML = `
+            <th class="p-3 text-center w-10"><input type="checkbox" onclick="toggleSelectAllMonthlyExams(this)" class="mexam-master-cb w-4 h-4 text-purple-600 rounded cursor-pointer"></th>
+            <th class="p-3.5">عنوان الامتحان</th>
+            <th class="p-3.5">المرحلة والصف</th>
+            <th class="p-3.5 text-center">الزمن (دقيقة)</th>
+            <th class="p-3.5 text-center">الأقسام والأسئلة</th>
+            <th class="p-3.5 text-center">الحالة</th>
+            <th class="p-3.5 text-center">التحكم والإجراءات</th>
+        `;
+    }
+
+    // شريط الترقيم وحذف المحدد أسفل الجدول
+    let paginationContainer = document.getElementById('monthly-exams-pagination');
+    if (!paginationContainer) {
+        paginationContainer = document.createElement('div');
+        paginationContainer.id = 'monthly-exams-pagination';
+        paginationContainer.className = 'flex flex-wrap justify-between items-center bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 mt-4 gap-3';
+        tbody.closest('.overflow-x-auto').after(paginationContainer);
+    }
+
+    let pageButtonsHtml = '<div class="flex items-center gap-1.5 flex-wrap justify-center">';
+    for (let i = 1; i <= totalPages; i++) {
+        let isSelected = i === currentAdminMonthlyExamsPage;
+        pageButtonsHtml += `
+            <button type="button" onclick="currentAdminMonthlyExamsPage = ${i}; renderAdminMonthlyExamsList();" class="w-9 h-9 rounded-xl font-black text-xs transition cursor-pointer shadow-xs flex items-center justify-center ${isSelected ? 'bg-purple-700 text-white ring-2 ring-purple-400' : 'bg-white text-purple-950 border-2 border-purple-200 hover:bg-purple-100'}">
+                ${i}
+            </button>
+        `;
+    }
+    pageButtonsHtml += '</div>';
+
+    paginationContainer.innerHTML = `
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="deleteSelectedMonthlyExams()" class="bg-rose-600 hover:bg-rose-700 text-white font-black px-4 py-2.5 rounded-xl text-xs transition cursor-pointer shadow-xs flex items-center gap-1.5">
+                <i class="fa-solid fa-trash-can"></i> حذف المحددة
+            </button>
+        </div>
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="changeMonthlyExamsPage(-1)" ${currentAdminMonthlyExamsPage === 1 ? 'disabled' : ''} class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-black px-4 py-2.5 rounded-xl text-xs transition disabled:opacity-40 cursor-pointer shadow-xs">السابق</button>
+            ${pageButtonsHtml}
+            <button type="button" onclick="changeMonthlyExamsPage(1)" ${currentAdminMonthlyExamsPage === totalPages ? 'disabled' : ''} class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-black px-4 py-2.5 rounded-xl text-xs transition disabled:opacity-40 cursor-pointer shadow-xs">التالي</button>
+        </div>
+    `;
+}
+// دوال التحكم المساعدة (ترتيب، تكرار، معاينة، وتحديد الكل والحذف الجماعي)
+function toggleSelectAllMonthlyExams(master) {
+    const checkboxes = document.querySelectorAll('.mexam-select-cb');
+    checkboxes.forEach(cb => cb.checked = master.checked);
+}
+
+function deleteSelectedMonthlyExams() {
+    const checkboxes = document.querySelectorAll('.mexam-select-cb:checked');
+    if (checkboxes.length === 0) {
+        alert("يرجى تحديد امتحان واحد على الأقل للحذف.");
+        return;
+    }
+    if (confirm(`هل أنت متأكد من حذف الامتحانات الـ (${checkboxes.length}) المحددة نهائياً؟`)) {
+        let indicesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.value));
+        monthlyExamsBank = monthlyExamsBank.filter((_, idx) => !indicesToDelete.includes(idx));
+        localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+        if (typeof saveState === 'function') saveState(true);
+        renderAdminMonthlyExamsList();
+    }
+}
+
+function moveMonthlyExamFiltered(filteredIdx, dir, fStage, fGrade) {
+    let filtered = monthlyExamsBank.map((item, idx) => ({...item, originalIdx: idx})).filter(exam => {
+        if (fStage && exam.stage !== fStage) return false;
+        if (fGrade && exam.grade !== fGrade) return false;
+        return true;
+    });
+
+    let target = filtered[filteredIdx];
+    let swap = filtered[filteredIdx + dir];
+    if (!target || !swap) return;
+
+    let temp = monthlyExamsBank[target.originalIdx];
+    monthlyExamsBank[target.originalIdx] = monthlyExamsBank[swap.originalIdx];
+    monthlyExamsBank[swap.originalIdx] = temp;
+
+    localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+    if (typeof saveState === 'function') saveState(false);
+    renderAdminMonthlyExamsList();
+}
+
+function duplicateMonthlyExam(idx) {
+    const examToCopy = monthlyExamsBank[idx];
+    if (!examToCopy) return;
+    
+    let copy = JSON.parse(JSON.stringify(examToCopy));
+    copy.id = 'mexam_' + Date.now();
+    copy.title = (copy.title || '') + " (نسخة)";
+    
+    monthlyExamsBank.push(copy);
+    localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+    if (typeof saveState === 'function') saveState(true);
+    renderAdminMonthlyExamsList();
+}
+
+// دالة تفعيل/إخفاء الامتحان الشهري
+function toggleMonthlyExamActivation(idx) {
+    if (typeof monthlyExamsBank !== 'undefined' && monthlyExamsBank[idx]) {
+        monthlyExamsBank[idx].active = monthlyExamsBank[idx].active === false ? true : false;
+        localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+        if (typeof saveState === 'function') saveState(false);
+        renderAdminMonthlyExamsList();
+    }
+}
+
+// دالة حذف الامتحان الشهري
+function deleteMonthlyExam(id) {
+    if (confirm("هل أنت متأكد من حذف هذا الامتحان الشهري نهائياً؟")) {
+        monthlyExamsBank = monthlyExamsBank.filter(e => e.id !== id);
+        localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+        if (typeof saveState === 'function') saveState(true);
+        renderAdminMonthlyExamsList();
+    }
+}
+
+function populateMonthlyExamStages() {
+    const stageSel = document.getElementById('filter-mexam-stage');
+    const formStageSel = document.getElementById('mexam-stage-input');
+    if (stageSel) {
+        stageSel.innerHTML = '<option value="">كل المراحل</option>';
+        Object.keys(stagesData).forEach(s => {
+            if (gradeStatus[`stage_active_${s}`] !== false) stageSel.innerHTML += `<option value="${s}">${s}</option>`;
+        });
+    }
+    if (formStageSel) {
+        formStageSel.innerHTML = '<option value="">اختر المرحلة</option>';
+        Object.keys(stagesData).forEach(s => {
+            if (gradeStatus[`stage_active_${s}`] !== false) formStageSel.innerHTML += `<option value="${s}">${s}</option>`;
+        });
+        formStageSel.onchange = () => {
+            const gradeSel = document.getElementById('mexam-grade-input');
+            gradeSel.innerHTML = '<option value="">اختر الصف</option>';
+            const st = formStageSel.value;
+            if (st && stagesData[st]) {
+                stagesData[st].forEach(g => {
+                    if (gradeStatus[`${st}_${g}`] !== false) gradeSel.innerHTML += `<option value="${g}">${g}</option>`;
+                });
+            }
+        };
+    }
+}
+
+// متغير لتتبع القسم النشط حالياً في نموذج إدارة الامتحان الشهري
+let adminExamCurrentSectionIndex = 0;
+let adminExamSectionsBuffer = [];
+
+// 1. دالة فتح نموذج إضافة/تعديل الامتحان مع دعم عرض الأقسام كخطوات منفصلة
+function openMonthlyExamForm(examId = null) {
+    const mainView = document.getElementById('view-admin-monthly-exams');
+    const formView = document.getElementById('view-admin-monthly-exam-form');
+    
+    if (mainView) { mainView.classList.add('hidden'); mainView.classList.remove('flex'); }
+    if (formView) { formView.classList.remove('hidden'); formView.classList.add('flex'); }
+    
+    // تعبئة قوائم المراحل والصفوف
+    populateMonthlyExamFormDropdowns();
+
+    adminExamCurrentSectionIndex = 0;
+    adminExamSectionsBuffer = [];
+
+    if (examId) {
+        document.getElementById('monthly-exam-form-title').innerHTML = '<i class="fa-solid fa-file-pen text-purple-600"></i> تَعْدِيلُ الِامْتِحَانِ الشَّهْرِيِّ';
+        document.getElementById('edit-monthly-exam-id').value = examId;
+        const exam = monthlyExamsBank.find(e => e.id === examId);
+        if (exam) {
+            document.getElementById('mexam-title-input').value = exam.title || '';
+            document.getElementById('mexam-stage-input').value = exam.stage || '';
+            if(document.getElementById('mexam-stage-input').onchange) document.getElementById('mexam-stage-input').onchange();
+            document.getElementById('mexam-grade-input').value = exam.grade || '';
+            document.getElementById('mexam-duration-input').value = exam.duration || 45;
+            document.getElementById('mexam-active-input').checked = exam.active !== false;
+            
+            adminExamSectionsBuffer = exam.sections ? JSON.parse(JSON.stringify(exam.sections)) : [];
+        }
+    } else {
+        document.getElementById('monthly-exam-form-title').innerHTML = '<i class="fa-solid fa-file-pen text-purple-600"></i> إِضَافَةُ امْتِحَانٍ شَهْرِيٍّ جَدِيدٍ';
+        document.getElementById('edit-monthly-exam-id').value = '';
+        document.getElementById('mexam-title-input').value = '';
+        document.getElementById('mexam-stage-input').value = '';
+        if(document.getElementById('mexam-stage-input').onchange) document.getElementById('mexam-stage-input').onchange();
+        document.getElementById('mexam-duration-input').value = 45;
+        document.getElementById('mexam-active-input').checked = true;
+        
+        // البدء بقسم افتراضي أول
+        adminExamSectionsBuffer = [{ title: "القسم الأول", questions: [{ text: "", type: "mcq", options: ["", "", "", ""], ans: "", mark: 1 }] }];
+    }
+
+    renderAdminExamSectionStep();
+}
+
+// 2. عرض القسم الحالي في شاشة مستقلة مع شريط ترقيم الأقسام العلوي وخطوط كبيرة
+function renderAdminExamSectionStep() {
+    const container = document.getElementById('exam-sections-builder-container');
+    if (!container) return;
+
+    if (adminExamSectionsBuffer.length === 0) {
+        adminExamSectionsBuffer.push({ title: "قسم جديد", questions: [] });
+    }
+
+    if (adminExamCurrentSectionIndex >= adminExamSectionsBuffer.length) {
+        adminExamCurrentSectionIndex = adminExamSectionsBuffer.length - 1;
+    }
+
+    const sec = adminExamSectionsBuffer[adminExamCurrentSectionIndex];
+
+    // 💡 شريط ترقيم الأقسام العلوي (Steps Indicator)
+    let stepsIndicatorHtml = '<div class="flex flex-wrap gap-2 items-center mb-4 pb-3 border-b-2 border-purple-200">';
+    adminExamSectionsBuffer.forEach((s, idx) => {
+        let isCurrent = idx === adminExamCurrentSectionIndex;
+        stepsIndicatorHtml += `
+            <button type="button" onclick="adminExamCurrentSectionIndex = ${idx}; renderAdminExamSectionStep();" class="px-4 py-2 rounded-2xl font-black text-sm transition cursor-pointer shadow-xs ${isCurrent ? 'bg-purple-700 text-white ring-2 ring-purple-400 scale-105' : 'bg-white text-purple-900 border-2 border-purple-200 hover:bg-purple-100'}">
+                القسم ${idx + 1}
+            </button>
+        `;
+    });
+    stepsIndicatorHtml += '</div>';
+
+    let questionsHtml = '';
+    if (sec.questions && sec.questions.length > 0) {
+        sec.questions.forEach((q, qIdx) => {
+            let optsHtml = '';
+            if (q.type !== 'essay' && q.options) {
+                q.options.forEach((opt, oIdx) => {
+                    optsHtml += `
+                        <div class="flex items-center gap-2 mt-3">
+                            <input type="text" placeholder="الخيار ${oIdx + 1}" oninput="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'opt_${oIdx}', this.value)" class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-white font-black text-lg text-slate-900 focus:border-purple-600 focus:outline-none shadow-xs" value="${escapeHTML(opt)}">
+                            <button type="button" onclick="removeExamQuestionOption(${adminExamCurrentSectionIndex}, ${qIdx}, ${oIdx})" class="text-rose-500 hover:text-rose-700 p-3.5 cursor-pointer bg-slate-100 rounded-2xl transition" title="حذف الخيار"><i class="fa-solid fa-xmark text-xl"></i></button>
+                        </div>
+                    `;
+                });
+            }
+
+            questionsHtml += `
+                <div class="p-6 sm:p-8 bg-white rounded-3xl border-3 border-purple-100 space-y-5 shadow-md relative">
+                    <div class="flex justify-between items-center border-b-2 border-purple-100 pb-3">
+                        <span class="font-black text-purple-950 text-lg"><i class="fa-solid fa-circle-question ml-2 text-purple-600"></i> السؤال رقم (${qIdx + 1})</span>
+                        <div class="flex items-center gap-3">
+                            <label class="text-sm font-black text-slate-700">الدرجة:</label>
+                            <input type="number" min="1" value="${q.mark || 1}" onchange="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'mark', this.value)" class="w-24 p-2.5 rounded-xl border-2 border-slate-300 font-black text-center text-base bg-white">
+                            <button type="button" onclick="deleteExamQuestion(${adminExamCurrentSectionIndex}, ${qIdx})" class="text-rose-600 hover:text-rose-800 font-black text-sm cursor-pointer bg-rose-50 px-4 py-2 rounded-xl border border-rose-200 transition"><i class="fa-solid fa-trash ml-1"></i> حذف السؤال</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        <div class="sm:col-span-3">
+                            <label class="block mb-2 font-black text-slate-900 text-base">نص السؤال:</label>
+                            <textarea rows="3" oninput="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'text', this.value)" placeholder="اكتب نص السؤال هنا..." class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-white font-black text-slate-900 text-xl leading-relaxed focus:outline-none focus:border-purple-600 shadow-inner">${escapeHTML(q.text || '')}</textarea>
+                        </div>
+                        <div>
+                            <label class="block mb-2 font-black text-slate-900 text-base">نوع السؤال:</label>
+                            <select onchange="updateExamQuestionField(${adminExamCurrentSectionIndex}, ${qIdx}, 'type', this.value); renderAdminExamSectionStep();" class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-white font-black text-purple-950 text-lg focus:outline-none focus:border-purple-600">
+                                <option value="mcq" ${q.type !== 'essay' ? 'selected' : ''}>اختيار من متعدد</option>
+                                <option value="essay" ${q.type === 'essay' ? 'selected' : ''}>سؤال مقالي</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    ${q.type === 'essay' ? `
+                        <div class="pt-2">
+                            <label class="block mb-2 font-black text-emerald-950 text-base">الإجابة النموذجية أو المفتاح المقبول:</label>
+                            <input type="text" oninput="updateExamQuestionField(${adminExamCurrentSectionIndex},${qIdx}, 'ans', this.value)" placeholder="اكتب الإجابة النموذجية..." class="w-full p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 font-black text-emerald-950 text-lg focus:outline-none focus:border-emerald-600 shadow-inner" value="${escapeHTML(q.ans || '')}">
+                        </div>
+                    ` : `
+                        <div class="space-y-3 pt-2">
+                            <div class="flex justify-between items-center">
+                                <label class="font-black text-slate-900 text-base">خيارات الإجابة:</label>
+                                <button type="button" onclick="addExamQuestionOption(${adminExamCurrentSectionIndex},${qIdx})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-4 py-2.5 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-plus ml-1"></i> إضافة خيار</button>
+                            </div>
+                            <div class="space-y-2">${optsHtml}</div>
+                            <div class="pt-4">
+                                <label class="block mb-2 font-black text-emerald-950 text-base">الإجابة الصحيحة بالضبط (تطابق أحد الخيارات):</label>
+                                <input type="text" oninput="updateExamQuestionField(${adminExamCurrentSectionIndex},${qIdx}, 'ans', this.value)" placeholder="انسخ نص الإجابة الصحيحة تماماً..." class="w-full p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 font-black text-emerald-950 text-lg focus:outline-none focus:border-emerald-600 shadow-inner" value="${escapeHTML(q.ans || '')}">
+                            </div>
+                        </div>
+                    `}
+                </div>
+            `;
+        });
+    } else {
+        questionsHtml = '<p class="text-center text-slate-500 p-10 font-black text-lg">لا توجد أسئلة في هذا القسم بعد. اضغط على زر إضافة سؤال أدناه.</p>';
+    }
+
+    container.innerHTML = `
+        <div class="bg-purple-50/80 p-6 sm:p-8 rounded-3xl border-3 border-purple-300 space-y-6 shadow-md">
+            <!-- شريط ترقيم الأقسام العلوي -->
+            ${stepsIndicatorHtml}
+
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-b-3 border-purple-200 pb-4">
+                <div class="flex items-center gap-3 w-full sm:w-auto flex-wrap">
+                    <span class="bg-purple-600 text-white font-black px-5 py-2.5 rounded-2xl text-base shadow">القسم (${adminExamCurrentSectionIndex + 1} من ${adminExamSectionsBuffer.length})</span>
+                    <input type="text" oninput="updateExamSectionTitle(${adminExamCurrentSectionIndex}, this.value)" placeholder="عنوان القسم (مثال: أولاً: النص الشعري)" class="w-full sm:w-96 p-3.5 rounded-2xl border-2 border-purple-300 bg-white font-black text-purple-950 text-lg focus:outline-none focus:border-purple-600 shadow-xs" value="${escapeHTML(sec.title || '')}">
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" onclick="deleteCurrentExamSection(${adminExamCurrentSectionIndex})" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-black px-4 py-3 rounded-xl text-xs cursor-pointer transition shadow-sm"><i class="fa-solid fa-trash ml-1"></i> حذف هذا القسم</button>
+                    <button type="button" onclick="addNewExamSectionStep()" class="bg-purple-600 hover:bg-purple-700 text-white font-black px-4 py-3 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-plus ml-1"></i> قسم جديد</button>
+                </div>
+            </div>
+
+            <div class="space-y-6">${questionsHtml}</div>
+
+            <div class="pt-4 flex justify-center">
+                <button type="button" onclick="addExamQuestionToCurrentSection(${adminExamCurrentSectionIndex})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-8 py-4 rounded-2xl text-lg cursor-pointer shadow-lg transition flex items-center gap-3">
+                    <i class="fa-solid fa-circle-plus text-2xl"></i> إضافة سؤال جديد لهذا القسم
+                </button>
+            </div>
+
+            <div class="flex justify-between items-center pt-6 border-t-3 border-purple-200 mt-6">
+                <button type="button" onclick="navigateAdminExamSteps(-1)" ${adminExamCurrentSectionIndex === 0 ? 'disabled' : ''} class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-black px-8 py-3.5 rounded-2xl cursor-pointer transition disabled:opacity-40 text-base">القسم السابق</button>
+                <span class="font-black text-purple-950 text-lg">الصفحة ${adminExamCurrentSectionIndex + 1} من ${adminExamSectionsBuffer.length}</span>
+                <button type="button" onclick="navigateAdminExamSteps(1)" ${adminExamCurrentSectionIndex === adminExamSectionsBuffer.length - 1 ? 'disabled' : ''} class="bg-purple-600 hover:bg-purple-700 text-white font-black px-8 py-3.5 rounded-2xl cursor-pointer transition disabled:opacity-40 text-base">القسم التالي</button>
+            </div>
+        </div>
+    `;
+}
+
+// دوال التحكم المساعدة للتنقل والإضافة والحذف
+function navigateAdminExamSteps(dir) {
+    adminExamCurrentSectionIndex += dir;
+    renderAdminExamSectionStep();
+}
+
+function addNewExamSectionStep() {
+    adminExamSectionsBuffer.push({ title: `القسم (${adminExamSectionsBuffer.length + 1})`, questions: [{ text: "", type: "mcq", options: ["", "", "", ""], ans: "", mark: 1 }] });
+    adminExamCurrentSectionIndex = adminExamSectionsBuffer.length - 1;
+    renderAdminExamSectionStep();
+}
+
+function deleteCurrentExamSection(sIdx) {
+    if (adminExamSectionsBuffer.length <= 1) {
+        alert("يجب أن يحتوي الامتحان على قسم واحد على الأقل.");
+        return;
+    }
+    if (confirm("هل أنت متأكد من حذف هذا القسم بكافة أسئلته؟")) {
+        adminExamSectionsBuffer.splice(sIdx, 1);
+        if (adminExamCurrentSectionIndex >= adminExamSectionsBuffer.length) {
+            adminExamCurrentSectionIndex = adminExamSectionsBuffer.length - 1;
+        }
+        renderAdminExamSectionStep();
+    }
+}
+
+function updateExamSectionTitle(sIdx, val) {
+    adminExamSectionsBuffer[sIdx].title = val;
+}
+
+function addExamQuestionToCurrentSection(sIdx) {
+    adminExamSectionsBuffer[sIdx].questions.push({ text: "", type: "mcq", options: ["", "", "", ""], ans: "", mark: 1 });
+    renderAdminExamSectionStep();
+}
+
+function deleteExamQuestion(sIdx, qIdx) {
+    adminExamSectionsBuffer[sIdx].questions.splice(qIdx, 1);
+    renderAdminExamSectionStep();
+}
+
+function updateExamQuestionField(sIdx, qIdx, field, val) {
+    if (field === 'text') adminExamSectionsBuffer[sIdx].questions[qIdx].text = val;
+    else if (field === 'type') {
+        adminExamSectionsBuffer[sIdx].questions[qIdx].type = val;
+        if (val === 'essay') delete adminExamSectionsBuffer[sIdx].questions[qIdx].options;
+        else if (!adminExamSectionsBuffer[sIdx].questions[qIdx].options) adminExamSectionsBuffer[sIdx].questions[qIdx].options = ["", "", "", ""];
+    }
+    else if (field.startsWith('opt_')) {
+        let oIdx = parseInt(field.replace('opt_', ''));
+        adminExamSectionsBuffer[sIdx].questions[qIdx].options[oIdx] = val;
+    }
+    else if (field === 'ans') adminExamSectionsBuffer[sIdx].questions[qIdx].ans = val;
+    else if (field === 'mark') adminExamSectionsBuffer[sIdx].questions[qIdx].mark = parseInt(val) || 1;
+}
+
+function addExamQuestionOption(sIdx, qIdx) {
+    if (!adminExamSectionsBuffer[sIdx].questions[qIdx].options) adminExamSectionsBuffer[sIdx].questions[qIdx].options = [];
+    adminExamSectionsBuffer[sIdx].questions[qIdx].options.push("");
+    renderAdminExamSectionStep();
+}
+
+function removeExamQuestionOption(sIdx, qIdx, oIdx) {
+    adminExamSectionsBuffer[sIdx].questions[qIdx].options.splice(oIdx, 1);
+    renderAdminExamSectionStep();
+}
+
+// دالة حفظ الامتحان عند الانتهاء من الأقسام
+function saveMonthlyExamData() {
+    const editId = document.getElementById('edit-monthly-exam-id').value;
+    const title = document.getElementById('mexam-title-input').value.trim();
+    const stage = document.getElementById('mexam-stage-input').value;
+    const grade = document.getElementById('mexam-grade-input').value;
+    const duration = parseInt(document.getElementById('mexam-duration-input').value) || 45;
+    const active = document.getElementById('mexam-active-input').checked;
+
+    if (!title || !stage || !grade) {
+        alert("يرجى إدخال عنوان الامتحان واختيار المرحلة والصف بدقة.");
+        return;
+    }
+
+    if (adminExamSectionsBuffer.length === 0) {
+        alert("يرجى إضافة قسم واحد على الأقل.");
+        return;
+    }
+
+    const examObj = {
+        id: editId || 'mexam_' + Date.now(),
+        title,
+        stage,
+        grade,
+        duration,
+        active,
+        sections: adminExamSectionsBuffer
+    };
+
+    if (typeof monthlyExamsBank === 'undefined') {
+        window.monthlyExamsBank = JSON.parse(localStorage.getItem('monthlyExamsBank')) || [];
+    }
+
+    if (editId) {
+        const idx = monthlyExamsBank.findIndex(e => e.id === editId);
+        if (idx !== -1) monthlyExamsBank[idx] = examObj;
+    } else {
+        monthlyExamsBank.push(examObj);
+    }
+
+    localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+    
+    // حفظ سحابي تلقائي
+    if (typeof saveState === 'function') {
+        saveState(true);
+    }
+
+    alert("تم حفظ الامتحان الشهري بنجاح!");
+    openAdminSectionPage('view-admin-monthly-exams');
+    if (typeof renderAdminMonthlyExamsList === 'function') {
+        renderAdminMonthlyExamsList();
+    }
+}
+
+// دالة فلترة وعرض الامتحانات الشهرية والشاملة للمدير أو الطالب
+// 1. الدالة الشاملة للفلترة والعرض مع دعم كافة الاحتمالات
+function filterAndRenderMonthlyExams() {
+    const container = document.getElementById('admin-monthly-exams-list') || document.getElementById('student-monthly-exams-list') || document.getElementById('monthly-exams-container');
+    if (!container) return;
+
+    // البحث عن الفلاتر بأي اسم محتمل
+    const stageSel = document.getElementById('filter-monthly-stage') || document.getElementById('exam-stage-filter') || document.getElementById('filter-stage') || document.getElementById('select-monthly-stage');
+    const gradeSel = document.getElementById('filter-monthly-grade') || document.getElementById('exam-grade-filter') || document.getElementById('filter-grade') || document.getElementById('select-monthly-grade');
+
+    const stageVal = stageSel ? stageSel.value : '';
+    const gradeVal = gradeSel ? gradeSel.value : '';
+
+    const exams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : []);
+
+    const filtered = exams.filter(ex => {
+        let matchStage = !stageVal || stageVal === 'all' || stageVal === '' || ex.stage === stageVal;
+        let matchGrade = !gradeVal || gradeVal === 'all' || gradeVal === '' || ex.grade === gradeVal;
+        return matchStage && matchGrade;
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center bg-white rounded-2xl border text-slate-400 font-bold">لا توجد امتحانات شهرية مطابقة لمعايير التصفية الحالية.</div>`;
+        return;
+    }
+
+    let html = '';
+    filtered.forEach(exam => {
+        let totalMarks = 0;
+        if (exam.sections) {
+            exam.sections.forEach(sec => {
+                if (sec.questions) {
+                    sec.questions.forEach(q => { totalMarks += (parseFloat(q.mark) || 1); });
+                }
+            });
+        }
+
+        html += `
+            <div class="bg-white p-6 rounded-3xl border-2 border-purple-200 shadow-md flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="space-y-1 text-right">
+                    <h4 class="font-black text-purple-950 text-xl">${escapeHTML(exam.title)}</h4>
+                    <p class="text-slate-500 text-xs font-bold">🎯 المرحلة: ${escapeHTML(exam.stage || '')} | الصف: ${escapeHTML(exam.grade || '')} | ⏱️ الزمن: ${exam.duration || 45} دقيقة | 🏆 المجموع: ${totalMarks} درجة</p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" onclick="startStudentMonthlyExam('${exam.id}')" class="bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-black px-6 py-3.5 rounded-2xl shadow-lg transition cursor-pointer">
+                        ابْدَأِ الِامْتِحَانَ <i class="fa-solid fa-play mr-2"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+// دالة تعبئة وتحديث فلاتر المرحلة والصف الخاصة بقسم الامتحانات الشهرية في لوحة الإدارة
+function populateAdminMonthlyExamsFilters() {
+    const stageSel = document.getElementById('filter-mexam-stage');
+    const gradeSel = document.getElementById('filter-mexam-grade');
+    if (!stageSel) return;
+
+    // تعبئة مراحل التعليم المتاحة بناءً على stagesData وحالة التفعيل
+    stageSel.innerHTML = '<option value="">كل المراحل</option>';
+    Object.keys(stagesData).forEach(s => {
+        if (gradeStatus[`stage_active_${s}`] !== false) {
+            stageSel.innerHTML += `<option value="${s}">${s}</option>`;
+        }
+    });
+
+    if (gradeSel) {
+        gradeSel.innerHTML = '<option value="">كل الصفوف</option>';
+    }
+
+    // عرض الامتحانات مباشرة بعد تعبئة الفلاتر
+    if (typeof renderAdminMonthlyExamsList === 'function') {
+        renderAdminMonthlyExamsList();
+    }
+}
+
+// 2. ربط الفلاتر برمجياً والتأكد من عملها فوراً عند تغيير القيم أو تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    const stageSel = document.getElementById('filter-monthly-stage') || document.getElementById('exam-stage-filter') || document.getElementById('filter-stage');
+    const gradeSel = document.getElementById('filter-monthly-grade') || document.getElementById('exam-grade-filter') || document.getElementById('filter-grade');
+
+    if (stageSel) stageSel.addEventListener('change', filterAndRenderMonthlyExams);
+    if (gradeSel) gradeSel.addEventListener('change', filterAndRenderMonthlyExams);
+
+    // تشغيل الفلترة كبداية لعرض الامتحانات المتاحة
+    if (typeof filterAndRenderMonthlyExams === 'function') {
+        filterAndRenderMonthlyExams();
+    }
+});
+
+       
+function addExamQuestionToSection(secId, qType = 'mcq', qData = null) {
+    const secDiv = document.getElementById(secId);
+    if (!secDiv) return;
+    const qContainer = secDiv.querySelector('.sec-questions-container');
+    const qId = 'q_' + Date.now() + Math.random().toString(36).substring(2);
+
+    let qText = qData ? qData.text || '' : '';
+    let qMark = qData ? qData.mark || 1 : 1;
+    let qExp = qData ? qData.exp || '' : '';
+
+    const div = document.createElement('div');
+    div.className = 'p-4 bg-white border-2 border-slate-200 rounded-2xl space-y-3 exam-q-item relative shadow-xs';
+    div.dataset.qtype = qType;
+    div.id = qId;
+
+    if (qType === 'essay') {
+        let modelAnswers = qData && qData.modelAnswers ? qData.modelAnswers : (qData && qData.ans ? [qData.ans] : [""]);
+        let ansRowsHtml = '';
+        modelAnswers.forEach((ansVal, aIdx) => {
+            let rowId = qId + '_ans_' + aIdx;
+            ansRowsHtml += `
+                <div class="flex items-center gap-2 mt-1.5 model-ans-row" id="${rowId}">
+                    <input type="text" placeholder="إجابة نموذجية صحيحة مقبولة للتصحيح الآلي..." class="q-model-ans-input w-full p-2.5 rounded-xl border border-emerald-300 bg-emerald-50/50 text-xs font-bold" value="${escapeHTML(ansVal)}">
+                    <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-500 hover:text-rose-700 p-2 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            `;
+        });
+
+        div.innerHTML = `
+            <div class="flex justify-between items-center border-b pb-2">
+                <span class="font-black text-amber-900 text-xs"><i class="fa-solid fa-pen-nib ml-1"></i> سؤال مقالي مستقل</span>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-bold text-slate-700">الدرجة:</label>
+                    <input type="number" min="0.5" step="0.5" class="q-mark-input w-16 p-1.5 rounded-lg border text-center text-xs font-black" value="${qMark}">
+                    <button type="button" onclick="document.getElementById('${qId}').remove()" class="text-rose-600 font-bold text-xs cursor-pointer"><i class="fa-solid fa-trash ml-1"></i> حذف</button>
+                </div>
+            </div>
+            <textarea placeholder="اكتب نص السؤال المقالي..." class="q-text-input w-full p-2.5 rounded-xl border bg-white text-xs font-bold" rows="2">${escapeHTML(qText)}</textarea>
+            
+            <div class="bg-emerald-50/70 p-3 rounded-xl border border-emerald-200 space-y-2">
+                <div class="flex justify-between items-center">
+                    <label class="text-[11px] font-black text-emerald-900">إجابات نموذجية صحيحة للتصحيح الآلي (إن طابقت إحداها تُصحح تلقائياً وإلا ترحل للمعلم):</label>
+                    <button type="button" onclick="addExamEssayModelAnswer('${qId}')" class="bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg cursor-pointer">إضافة إجابة أخرى</button>
+                </div>
+                <div class="q-model-ans-container space-y-1.5">
+                    ${ansRowsHtml}
+                </div>
+            </div>
+            <textarea placeholder="التعليل أو الشرح..." class="q-exp-input w-full p-2 rounded-xl border bg-white text-[11px]" rows="1">${escapeHTML(qExp)}</textarea>
+        `;
+    } else {
+        let opts = qData && qData.options ? qData.options : ["", "", "", ""];
+        let correctAns = qData ? qData.ans || '' : '';
+        let optsRowsHtml = '';
+        opts.forEach((optVal, oIdx) => {
+            let rowId = qId + '_opt_' + oIdx;
+            optsRowsHtml += `
+                <div class="flex items-center gap-2 opt-row" id="${rowId}">
+                    <input type="text" placeholder="الخيار ${oIdx + 1}" class="q-opt-input w-full p-2.5 rounded-xl border text-xs font-bold bg-white" value="${escapeHTML(optVal)}">
+                    <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-500 hover:text-rose-700 p-1.5 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            `;
+        });
+
+        div.innerHTML = `
+            <div class="flex justify-between items-center border-b pb-2">
+                <span class="font-black text-sky-900 text-xs"><i class="fa-solid fa-list-ul ml-1"></i> اختيار من متعدد</span>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-bold text-slate-700">الدرجة:</label>
+                    <input type="number" min="0.5" step="0.5" class="q-mark-input w-16 p-1.5 rounded-lg border text-center text-xs font-black" value="${qMark}">
+                    <button type="button" onclick="document.getElementById('${qId}').remove()" class="text-rose-600 font-bold text-xs cursor-pointer"><i class="fa-solid fa-trash ml-1"></i> حذف</button>
+                </div>
+            </div>
+            <input type="text" placeholder="نص السؤال..." class="q-text-input w-full p-2.5 rounded-xl border bg-white text-xs font-bold" value="${escapeHTML(qText)}">
+            
+            <div class="bg-white p-3 rounded-xl border border-slate-200 space-y-2">
+                <div class="flex justify-between items-center pb-1 border-b">
+                    <label class="text-[11px] font-black text-slate-700">الخيارات:</label>
+                    <button type="button" onclick="addExamMCQOption('${qId}')" class="bg-indigo-100 text-indigo-800 text-[10px] font-bold px-2.5 py-1 rounded-lg cursor-pointer">إضافة خيار</button>
+                </div>
+                <div class="q-options-container space-y-2">
+                    ${optsRowsHtml}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-black text-emerald-800 mb-1">الإجابة الصحيحة بالضبط:</label>
+                <input type="text" placeholder="انسخ نص الإجابة الصحيحة تماماً..." class="q-ans-input w-full p-2.5 rounded-xl border border-emerald-300 bg-emerald-50 text-xs font-black text-emerald-900" value="${escapeHTML(correctAns)}">
+            </div>
+            <textarea placeholder="التعليل أو الشرح..." class="q-exp-input w-full p-2 rounded-xl border bg-white text-[11px]" rows="1">${escapeHTML(qExp)}</textarea>
+        `;
+    }
+    qContainer.appendChild(div);
+}
+
+function addExamEssayModelAnswer(qId) {
+    const qDiv = document.getElementById(qId);
+    if (!qDiv) return;
+    const container = qDiv.querySelector('.q-model-ans-container');
+    const rowId = qId + '_ans_' + Date.now();
+    const div = document.createElement('div');
+    div.className = 'flex items-center gap-2 mt-1.5 model-ans-row';
+    div.id = rowId;
+    div.innerHTML = `
+        <input type="text" placeholder="إجابة نموذجية صحيحة مقبولة للتصحيح الآلي..." class="q-model-ans-input w-full p-2.5 rounded-xl border border-emerald-300 bg-emerald-50/50 text-xs font-bold" value="">
+        <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-500 hover:text-rose-700 p-2 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+    `;
+    container.appendChild(div);
+}
+
+function addExamMCQOption(qId) {
+    const qDiv = document.getElementById(qId);
+    if (!qDiv) return;
+    const container = qDiv.querySelector('.q-options-container');
+    const rowId = qId + '_opt_' + Date.now();
+    const div = document.createElement('div');
+    div.className = 'flex items-center gap-2 opt-row';
+    div.id = rowId;
+    div.innerHTML = `
+        <input type="text" placeholder="خيار جديد" class="q-opt-input w-full p-2.5 rounded-xl border text-xs font-bold bg-white" value="">
+        <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-rose-500 hover:text-rose-700 p-1.5 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+    `;
+    container.appendChild(div);
+}
+
+function toggleMonthlyExamActive(idx) {
+    monthlyExamsBank[idx].active = monthlyExamsBank[idx].active === false ? true : false;
+    localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+    renderAdminMonthlyExamsList();
+}
+
+function moveMonthlyExam(idx, dir) {
+    if (idx + dir < 0 || idx + dir >= monthlyExamsBank.length) return;
+    let temp = monthlyExamsBank[idx];
+    monthlyExamsBank[idx] = monthlyExamsBank[idx + dir];
+    monthlyExamsBank[idx + dir] = temp;
+    localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+    if (typeof saveState === 'function') saveState(false);
+    renderAdminMonthlyExamsList();
+}
+
+function previewMonthlyExam(idx) {
+    const exam = monthlyExamsBank[idx];
+    if (!exam) return;
+    
+    let html = `<div class="space-y-6 text-right">
+        <div class="bg-purple-50 p-6 rounded-3xl border-2 border-purple-200 text-purple-950 font-black space-y-2">
+            <h3 class="text-2xl">${escapeHTML(exam.title)}</h3>
+            <div class="text-sm font-bold text-slate-700">المسار: ${escapeHTML(exam.stage)} ➔ ${escapeHTML(exam.grade)} | الزمن: ${exam.duration || 45} دقيقة</div>
+        </div>`;
+
+    if (exam.sections && exam.sections.length > 0) {
+        exam.sections.forEach((sec, sIdx) => {
+            html += `<div class="bg-white p-6 rounded-3xl border-2 border-slate-200 space-y-4 shadow-sm">
+                <h4 class="font-black text-purple-900 text-xl border-b pb-2">القسم ${sIdx + 1}: ${escapeHTML(sec.title || 'قسم عام')}</h4>`;
+            
+            if (sec.questions && sec.questions.length > 0) {
+                sec.questions.forEach((q, qIdx) => {
+                    html += `<div class="p-4 bg-slate-50 rounded-2xl border space-y-2">
+                        <div class="font-black text-slate-900">س${qIdx + 1}: ${escapeHTML(q.text)} <span class="text-xs text-purple-700 font-bold">(${q.mark || 1} درجة)</span></div>`;
+                    if (q.type !== 'essay' && q.options) {
+                        html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">`;
+                        q.options.forEach(opt => {
+                            let isCorrect = opt === q.ans;
+                            html += `<div class="p-2.5 rounded-xl border text-sm font-bold ${isCorrect ? 'bg-emerald-100 border-emerald-400 text-emerald-950' : 'bg-white text-slate-700'}">• ${escapeHTML(opt)}</div>`;
+                        });
+                        html += `</div>`;
+                    } else {
+                        html += `<div class="text-xs font-bold text-emerald-800 bg-emerald-50 p-2.5 rounded-xl">الإجابة النموذجية: ${escapeHTML(q.ans || 'غير مضافة')}</div>`;
+                    }
+                    html += `</div>`;
+                });
+            }
+            html += `</div>`;
+        });
+    }
+    html += `</div>`;
+
+    document.getElementById('preview-card-body-view').innerHTML = html;
+
+    // تعديل زر العودة في شريط المعاينة العلوي ليعود لقائمة الامتحانات الشهرية حصرياً
+    const backBtn = document.querySelector('#view-admin-preview-card button[onclick*="openAdminSectionPage"]');
+    if (backBtn) {
+        backBtn.setAttribute('onclick', "openAdminSectionPage('view-admin-monthly-exams')");
+        backBtn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> عَوْدَةٌ لِقَائِمَةِ الِامْتِحَانَاتِ';
+    }
+
+    openAdminSectionPage('view-admin-preview-card');
+}
+
+// تصدير امتحان مفرد كملف JSON
+function exportSingleMonthlyExamJson() {
+    const editId = document.getElementById('edit-monthly-exam-id').value;
+    if (!editId) {
+        alert("يرجى فتح امتحان للتعديل أولاً لتصديره.");
+        return;
+    }
+    const exam = monthlyExamsBank.find(e => e.id === editId);
+    if (!exam) return;
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exam, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `exam_${exam.title.replace(/\s+/g, '_')}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+// استيراد امتحان مفرد من ملف JSON
+function importSingleMonthlyExamJson(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const imported = JSON.parse(e.target.result);
+            if (imported && imported.title && imported.sections) {
+                imported.id = 'mexam_' + Date.now();
+                monthlyExamsBank.push(imported);
+                localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+                openMonthlyExamForm(imported.id);
+                alert("تم استيراد الامتحان وفتحه بنجاح!");
+            } else {
+                alert("ملف الـ JSON غير صالح للامتحانات الشهرية.");
+            }
+        } catch (err) {
+            alert("حدث خطأ أثناء قراءة الملف.");
+        }
+    };
+    reader.readAsText(file);
+}
+
+function exportMonthlyExamsJson() {
+    if (monthlyExamsBank.length === 0) { alert("لا توجد امتحانات للتصدير."); return; }
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(monthlyExamsBank, null, 2));
+    const a = document.createElement('a');
+    a.setAttribute("href", dataStr);
+    a.setAttribute("download", "monthly_exams_export.json");
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+
+function importMonthlyExamsJsonFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const imported = JSON.parse(e.target.result);
+            if (Array.isArray(imported)) {
+                imported.forEach(item => {
+                    if (!monthlyExamsBank.some(e => e.id === item.id)) monthlyExamsBank.push(item);
+                });
+                localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+                renderAdminMonthlyExamsList();
+                alert("تم استيراد الامتحانات بنجاح!");
+            }
+        } catch(err) { alert("ملف JSON غير صالح."); }
+    };
+    reader.readAsText(file);
+}
+
+// ================== عرض الامتحانات للطالب في التبويب الرابع ==================
+function renderStudentMonthlyExams() {
+    const container = document.getElementById('student-monthly-exams-list');
+    if (!container) return;
+
+    const stage = currentStudentSession.stage;
+    const grade = currentStudentSession.grade;
+
+    // التأكد من جلب الامتحانات من مصفوفة الامتحانات الشهرية وتصفيتها بناءً على صف المرحلة
+    const availableExams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : []).filter(e => e.active !== false && e.stage === stage && e.grade === grade);
+
+    if (availableExams.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center bg-white rounded-2xl border text-slate-400 font-bold">لا توجد امتحانات شهرية أو شاملة متاحة لصفك حالياً.</div>`;
+        return;
+    }
+
+    let html = '';
+    availableExams.forEach(exam => {
+        let totalMarks = 0;
+        let qCount = 0;
+        if (exam.sections) {
+            exam.sections.forEach(sec => {
+                if (sec.questions) {
+                    qCount += sec.questions.length;
+                    sec.questions.forEach(q => { totalMarks += (parseFloat(q.mark) || 1); });
+                }
+            });
+        }
+
+        html += `
+            <div class="bg-white p-6 rounded-3xl border-2 border-purple-200 shadow-md flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="space-y-1 text-right">
+                    <h4 class="font-black text-purple-950 text-xl">${escapeHTML(exam.title)}</h4>
+                    <p class="text-slate-500 text-xs font-bold">⏱️ الزمن المخصص: ${exam.duration || 45} دقيقة | 📝 عدد الأسئلة: ${qCount} | 🏆 المجموع الكلي: ${totalMarks} درجة</p>
+                </div>
+                <button type="button" onclick="startStudentMonthlyExam('${exam.id}')" class="bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-black px-6 py-3.5 rounded-2xl shadow-lg transition cursor-pointer shrink-0">
+                    ابْدَأِ الِامْتِحَانَ الآن <i class="fa-solid fa-play mr-2"></i>
+                </button>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+// دالة عرض وتشغيل الامتحان الشهري للطالب بنظام الصفحات المستقلة والخريطة الجانبية
+let studentMonthlyExamState = {
+    exam: null,
+    currentSectionIndex: 0,
+    answers: {}, // تخزين إجابات الطالب لكل سؤال
+    startTime: null,
+    timerInterval: null
+};
+
+function startStudentMonthlyExam(examId) {
+    const exam = monthlyExamsBank.find(e => e.id === examId);
+    if (!exam || !exam.sections || exam.sections.length === 0) {
+        alert("عذراً، هذا الامتحان غير متاح أو لا يحتوي على أسئلة.");
+        return;
+    }
+
+    studentMonthlyExamState = {
+        exam: exam,
+        currentSectionIndex: 0,
+        answers: {},
+        startTime: Date.now(),
+        timerInterval: null
+    };
+
+    // إخفاء البوابة وإظهار شاشة الامتحان الشهري
+    document.getElementById('view-student-portal').classList.add('hidden');
+    document.getElementById('view-student-portal').classList.remove('flex');
+    
+    let examView = document.getElementById('view-student-monthly-exam');
+    if (!examView) {
+        // إنشاء شاشة الامتحان إذا لم تكن موجودة
+        examView = document.createElement('div');
+        examView.id = 'view-student-monthly-exam';
+        examView.className = 'hidden flex-col space-y-6 bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 min-h-[80vh] text-right';
+        document.querySelector('main').appendChild(examView);
+    }
+    
+    document.getElementById('student-mexam-student-name').textContent = currentStudentSession.name;
+    document.getElementById('student-mexam-title').textContent = exam.title;
+
+    examView.classList.remove('hidden');
+    examView.classList.add('flex');
+
+    renderStudentMonthlyExamSection();
+    startStudentMonthlyExamTimer(exam.duration || 45);
+}
+
+  function renderStudentMonthlyExamSection() {
+    const state = studentMonthlyExamState;
+    const exam = state.exam;
+    const sIdx = state.currentSectionIndex;
+    const section = exam.sections[sIdx];
+
+    const container = document.getElementById('student-mexam-sections-container');
+    if (!container) return;
+
+    // 1. القائمة الجانبية اليسرى (بأسماء الأقسام ومربعاتها، وتشغل 25% من المساحة وثابتة تماماً)
+    let sectionsPaletteHtml = '<div class="space-y-2.5 bg-white p-3 rounded-2xl border-2 border-purple-100 shadow-md">';
+    sectionsPaletteHtml += '<h4 class="font-black text-purple-950 text-xs mb-2 border-b pb-1.5"><i class="fa-solid fa-bars-progress ml-1"></i> الأقسام</h4>';
+    
+    exam.sections.forEach((sec, idx) => {
+        let isCurrent = idx === sIdx;
+        
+        let subPaletteBoxesHtml = '';
+        if (sec.questions && sec.questions.length > 0) {
+            sec.questions.forEach((q, qIdx) => {
+                let qUniqueKey = `sec_${idx}_q_${qIdx}`;
+                let userAns = state.answers[qUniqueKey] || '';
+                let isAnswered = userAns !== null && userAns !== undefined && String(userAns).trim() !== '';
+                let boxColorClass = isAnswered ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-700 border';
+
+                subPaletteBoxesHtml += `
+                    <div id="palette_box_${idx}_${qIdx}" class="w-5 h-5 rounded font-black text-[9px] flex items-center justify-center ${boxColorClass} transition-all duration-300">
+                        ${qIdx + 1}
+                    </div>
+                `;
+            });
+        }
+
+        sectionsPaletteHtml += `
+            <div class="p-2.5 bg-slate-50 rounded-xl border ${isCurrent ? 'border-purple-500 bg-purple-50/50 ring-1 ring-purple-400' : 'border-slate-200'} shadow-2xs flex flex-col justify-between gap-2">
+                <button type="button" onclick="switchToMonthlyExamSection(${idx})" class="w-full text-right px-2.5 py-2 rounded-lg font-black text-xs transition cursor-pointer flex flex-col gap-0.5 ${isCurrent ? 'bg-purple-600 text-white shadow-xs' : 'bg-white text-slate-800 hover:bg-slate-100'}">
+                    <span class="text-[11px] opacity-90">القسم (${idx + 1})</span>
+                    <span class="truncate text-xs font-extrabold">${escapeHTML(sec.title || 'قسم')}</span>
+                </button>
+                
+                ${subPaletteBoxesHtml ? `
+                    <div class="flex flex-wrap gap-1 items-center justify-start pt-1.5 border-t border-slate-200/60">
+                        ${subPaletteBoxesHtml}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    });
+    sectionsPaletteHtml += '</div>';
+
+    let questionsHtml = '';
+
+    // 2. بناء أسئلة القسم الحالي النشط
+    if (section.questions && section.questions.length > 0) {
+        section.questions.forEach((q, qIdx) => {
+            let qUniqueKey = `sec_${sIdx}_q_${qIdx}`;
+            let userAns = state.answers[qUniqueKey] || '';
+            let markVal = q.mark || 1;
+
+            if (q.type === 'essay') {
+                questionsHtml += `
+                    <div class="p-6 bg-slate-50 rounded-3xl border-2 border-slate-200 space-y-4 shadow-sm">
+                        <h4 class="font-black text-slate-900 text-lg sm:text-xl leading-relaxed">س${qIdx + 1}: ${escapeHTML(q.text)} <span class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200">(${markVal} درجة)</span></h4>
+                        <textarea oninput="saveStudentMonthlyAnswer(${sIdx}, ${qIdx}, this.value); updateMonthlySectionPalette(${sIdx});" placeholder="اكتب إجابتك هنا بوضوح..." class="w-full p-4 rounded-2xl border-2 border-slate-300 bg-white font-bold text-slate-900 text-base sm:text-lg leading-relaxed focus:outline-none focus:border-purple-600 shadow-inner" rows="4">${escapeHTML(userAns)}</textarea>
+                    </div>
+                `;
+            } else {
+                let optsHtml = '';
+                if (q.options) {
+                    q.options.forEach(opt => {
+                        let isChecked = userAns === opt;
+                        optsHtml += `
+                            <label class="block p-4 bg-white rounded-2xl border-2 ${isChecked ? 'border-purple-500 bg-purple-50/50 text-purple-950 shadow-sm' : 'border-slate-200 hover:border-slate-300 text-slate-800'} font-black text-base sm:text-lg cursor-pointer transition flex items-center gap-3">
+                                <input type="radio" name="${qUniqueKey}" value="${escapeHTML(opt)}" ${isChecked ? 'checked' : ''} onchange="saveStudentMonthlyAnswer(${sIdx}, ${qIdx}, '${escapeHTML(opt).replace(/'/g, "\\'")}'); updateMonthlySectionPalette(${sIdx});" class="w-5 h-5 text-purple-600 cursor-pointer">
+                                <span>${escapeHTML(opt)}</span>
+                            </label>
+                        `;
+                    });
+                }
+                questionsHtml += `
+                    <div class="p-6 bg-slate-50 rounded-3xl border-2 border-slate-200 space-y-4 shadow-sm">
+                        <h4 class="font-black text-slate-900 text-lg sm:text-xl leading-relaxed">س${qIdx + 1}: ${escapeHTML(q.text)} <span class="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200">(${markVal} درجة)</span></h4>
+                        <div class="space-y-3">${optsHtml}</div>
+                    </div>
+                `;
+            }
+        });
+    } else {
+        questionsHtml = '<p class="text-center text-slate-500 p-6">لا توجد أسئلة في هذا القسم.</p>';
+    }
+
+    // 3. تخطيط الشبكة بنسبة 75% للأسئلة (col-span-9) و 25% للأقسام (col-span-3 مع التثبيت)
+    container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- الجانب الأيمن (الأسئلة تشغل 9 أعمدة = 75%) -->
+            <div class="lg:col-span-9 space-y-6">
+                <div class="bg-purple-900 text-white p-4 rounded-2xl font-black text-base flex justify-between items-center shadow">
+                    <span>القسم (${sIdx + 1} من ${exam.sections.length}): ${escapeHTML(section.title || 'قسم الاختبار')}</span>
+                    <span class="text-xs bg-white/20 px-2.5 py-1 rounded-xl">إجمالي الأسئلة: ${section.questions ? section.questions.length : 0}</span>
+                </div>
+                
+                <div class="space-y-6">${questionsHtml}</div>
+                
+                <!-- أزرار التنقل بين الأقسام -->
+                <div class="flex justify-between items-center pt-6 border-t mt-6 bg-white p-4 rounded-2xl shadow-sm">
+                    <button type="button" onclick="navigateMonthlyExamSection(-1)" ${sIdx === 0 ? 'disabled' : ''} class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold px-6 py-3 rounded-xl cursor-pointer transition disabled:opacity-40">القسم السابق</button>
+                    <span class="font-black text-slate-600 text-sm">صفحة ${sIdx + 1} من ${exam.sections.length}</span>
+                    <button type="button" onclick="navigateMonthlyExamSection(1)" ${sIdx === exam.sections.length - 1 ? 'disabled' : ''} class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold px-6 py-3 rounded-xl cursor-pointer transition disabled:opacity-40">القسم التالي</button>
+                </div>
+            </div>
+
+            <!-- الجانب الأيسر (الأقسام تشغل 3 أعمدة = 25% وثابتة تماماً أثناء التمرير) -->
+            <div class="lg:col-span-3 lg:sticky lg:top-24">
+                ${sectionsPaletteHtml}
+            </div>
+        </div>
+    `;
+}
+
+// دالة لتحديث ألوان مربعات خريطة الأسئلة الخاصة بالقسم بناءً على إجابات الطالب
+function updateMonthlySectionPalette(sectionIndex) {
+    const state = studentMonthlyExamState;
+    if (!state || !state.exam) return;
+
+    // تحديث مربعات الخريطة لجميع الأقسام في الشريط العلوي لتتفاعل لحظياً
+    state.exam.sections.forEach((sec, idx) => {
+        if (sec.questions) {
+            sec.questions.forEach((q, qIdx) => {
+                let qUniqueKey = `sec_${idx}_q_${qIdx}`;
+                let userAns = state.answers[qUniqueKey] || "";
+                let isAnswered = userAns !== null && userAns !== undefined && String(userAns).trim() !== "";
+
+                let paletteBox = document.getElementById(`palette_box_${idx}_${qIdx}`);
+                if (paletteBox) {
+                    if (isAnswered) {
+                        paletteBox.className = "w-6 h-6 rounded-md font-black text-[10px] flex items-center justify-center bg-emerald-500 text-white shadow-sm transition-all duration-300";
+                    } else {
+                        paletteBox.className = "w-6 h-6 rounded-md font-black text-[10px] flex items-center justify-center bg-slate-200 text-slate-700 border transition-all duration-300";
+                    }
+                }
+            });
+        }
+    });
+}
+
+   
+function saveStudentMonthlyAnswer(secIdx, qIdx, val) {
+    let key = `sec_${secIdx}_q_${qIdx}`;
+    studentMonthlyExamState.answers[key] = val;
+}
+
+function switchToMonthlyExamSection(idx) {
+    studentMonthlyExamState.currentSectionIndex = idx;
+    renderStudentMonthlyExamSection();
+}
+
+function navigateMonthlyExamSection(direction) {
+    let newIdx = studentMonthlyExamState.currentSectionIndex + direction;
+    if (newIdx >= 0 && newIdx < studentMonthlyExamState.exam.sections.length) {
+        studentMonthlyExamState.currentSectionIndex = newIdx;
+        renderStudentMonthlyExamSection();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+function startStudentMonthlyExamTimer(durationMins) {
+    let timerSeconds = durationMins * 60;
+    const display = document.getElementById('student-mexam-timer');
+    if (studentMonthlyExamState.timerInterval) clearInterval(studentMonthlyExamState.timerInterval);
+
+    studentMonthlyExamState.timerInterval = setInterval(() => {
+        if (timerSeconds <= 0) {
+            clearInterval(studentMonthlyExamState.timerInterval);
+            alert("انتهى وقت الامتحان!");
+            submitStudentMonthlyExam();
+        } else {
+            let mins = Math.floor(timerSeconds / 60);
+            let secs = timerSeconds % 60;
+            if (display) display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            timerSeconds--;
+        }
+    }, 1000);
+}
+
+function confirmExitStudentMonthlyExam() {
+    if (confirm("هل أنت متأكد من الخروج من الامتحان دون تسليم؟ ستفقد إجاباتك الحالية.")) {
+        if (studentMonthlyExamState.timerInterval) clearInterval(studentMonthlyExamState.timerInterval);
+        document.getElementById('view-student-monthly-exam').classList.add('hidden');
+        document.getElementById('view-student-monthly-exam').classList.remove('flex');
+        document.getElementById('view-student-portal').classList.remove('hidden');
+        document.getElementById('view-student-portal').classList.add('flex');
+    }
+}
+
+
+// دالة بدء تشغيل الامتحان للطالب المتوافقة مع زر العرض والمصححة تماماً
+let currentStudentMonthlyExamState = { examId: null, timerInterval: null, startTime: null };
+
+function startMonthlyExam(examId) {
+    const exam = monthlyExamsBank.find(e => e.id === examId);
+    if (!exam) return;
+
+    currentStudentMonthlyExamState = { examId: exam.id, startTime: Date.now(), timerInterval: null };
+
+    const nameEl = document.getElementById('student-mexam-student-name');
+    if (nameEl) nameEl.textContent = currentStudentSession.name;
+    
+    const titleEl = document.getElementById('student-mexam-title');
+    if (titleEl) titleEl.textContent = exam.title;
+
+    let examView = document.getElementById('view-student-monthly-exam');
+    if (!examView) {
+        // إنشاء واجهة حل الامتحان طارئاً إذا كانت مفقودة في الـ HTML
+        examView = document.createElement('div');
+        examView.id = 'view-student-monthly-exam';
+        examView.className = 'hidden flex-col space-y-6 bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 min-h-[80vh] text-right';
+        examView.innerHTML = `
+            <div class="flex justify-between items-center border-b pb-4 flex-wrap gap-3">
+                <div>
+                    <span class="text-xs text-slate-500 font-bold block">الطالب: <strong id="student-mexam-student-name" class="text-purple-900">---</strong></span>
+                    <h3 id="student-mexam-title" class="font-black text-purple-950 text-xl sm:text-2xl">عنوان الامتحان</h3>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="bg-amber-100 text-amber-950 px-4 py-2 rounded-2xl font-black text-sm border border-amber-300 flex items-center gap-2 shadow-inner">
+                        <i class="fa-solid fa-clock text-amber-600"></i>
+                        <span id="student-mexam-timer">--:--</span>
+                    </div>
+                </div>
+            </div>
+            <div id="student-mexam-sections-container" class="space-y-8 flex-grow"></div>
+            <div class="flex justify-between items-center pt-6 border-t">
+                <button type="button" onclick="confirmExitStudentMonthlyExam()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold px-6 py-3 rounded-xl cursor-pointer transition">خروج بدون تسليم</button>
+                <button type="button" onclick="submitStudentMonthlyExam()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-8 py-3.5 rounded-xl cursor-pointer shadow transition text-base">تسليم إجابات الامتحان</button>
+            </div>
+        `;
+        const parentTarget = document.querySelector('main') || document.body;
+        parentTarget.appendChild(examView);
+    }
+
+    let container = document.getElementById('student-mexam-sections-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'student-mexam-sections-container';
+        container.className = 'space-y-8 flex-grow';
+        const borderElem = examView.querySelector('.border-t');
+        if (borderElem) {
+            examView.insertBefore(container, borderElem);
+        } else {
+            examView.appendChild(container);
+        }
+    }
+
+    container.innerHTML = '';
+
+    if (exam.sections && exam.sections.length > 0) {
+        exam.sections.forEach((sec, sIdx) => {
+            let secHtml = `
+                <div class="bg-purple-50/40 p-6 rounded-3xl border-2 border-purple-200 space-y-4 exam-solve-section" data-sec-idx="${sIdx}">
+                    <h3 class="font-black text-purple-950 text-lg border-b pb-2">القسم ${sIdx + 1}: ${escapeHTML(sec.title || 'عام')}</h3>
+            `;
+
+            if (sec.passageText) {
+                secHtml += `
+                    <div class="bg-white p-5 rounded-2xl border space-y-3 shadow-sm">
+                        <h5 class="font-black text-slate-900 text-sm">${escapeHTML(sec.passageTitle || 'اقرأ النص ثم أجب:')}</h5>
+                        ${sec.passageImg ? `<div class="text-center"><img src="${escapeHTML(sec.passageImg)}" class="max-h-56 mx-auto object-contain rounded-xl border"></div>` : ''}
+                        <p class="text-slate-800 text-sm sm:text-base leading-relaxed whitespace-pre-line font-bold">${escapeHTML(sec.passageText)}</p>
+                    </div>
+                `;
+            }
+
+            if (sec.questions && sec.questions.length > 0) {
+                secHtml += `<div class="space-y-4 pt-2">`;
+                sec.questions.forEach((q, qIdx) => {
+                    let qUniqueId = `mexam_q_${sIdx}_${qIdx}`;
+                    let markVal = parseFloat(q.mark) || 1;
+                    
+                    // التعديل الذكي: التحقق من وجود خيارات أو نوع mcq لضمان تصنيف السؤال كاختيار من متعدد
+                    let isMultipleChoice = (q.options && Array.isArray(q.options) && q.options.length > 0) || q.type === 'mcq';
+
+                    if (isMultipleChoice) {
+                        let optsHtml = q.options.map((opt) => `
+                            <label class="block p-3.5 bg-white rounded-2xl border-2 border-slate-200 hover:border-purple-400 font-bold text-sm cursor-pointer transition shadow-xs">
+                                <input type="radio" name="${qUniqueId}" value="${escapeHTML(opt)}" class="ml-2 text-purple-600"> ${escapeHTML(opt)}
+                            </label>
+                        `).join('');
+
+                        secHtml += `
+                            <div class="bg-white p-5 rounded-2xl border-2 border-slate-200 space-y-3 exam-solve-q-item" data-q-type="mcq" data-q-mark="${markVal}" data-q-correct="${escapeHTML(q.ans)}">
+                                // لعنوان السؤال ورقم السؤال
+<p class="font-black text-slate-900 text-lg sm:text-xl leading-relaxed">س${qIdx + 1}: ${escapeHTML(q.text)} <span class="text-sm text-purple-700 font-bold">(${markVal} درجة)</span></p>
+
+// لخيارات الاختيار من متعدد (Radio Labels)
+<label class="block p-4 bg-white rounded-2xl border-2 border-slate-200 hover:border-purple-400 font-black text-base sm:text-lg cursor-pointer transition shadow-xs">
+    <input type="radio" name="${qUniqueId}" value="${escapeHTML(opt)}" class="ml-3 text-purple-600 w-5 h-5"> ${escapeHTML(opt)}
+</label>
+
+// لمربع النص المقالي (Textarea)
+<textarea placeholder="اكتب إجابتك هنا..." class="student-essay-answer-input w-full p-4 rounded-xl border-2 border-slate-300 bg-white font-bold text-base sm:text-lg leading-relaxed focus:outline-none focus:border-purple-600" rows="4"></textarea>
+                        `;
+                    }
+                });
+                secHtml += `</div>`;
+            }
+
+            secHtml += `</div>`;
+            container.innerHTML += secHtml;
+        });
+    }
+
+    // الانتقال لواجهة حل الامتحان وإخفاء البوابة
+    const studentPortal = document.getElementById('view-student-portal');
+    if (studentPortal) {
+        studentPortal.classList.add('hidden');
+        studentPortal.classList.remove('flex');
+    }
+
+    examView.classList.remove('hidden');
+    examView.classList.add('flex');
+
+    startMonthlyExamTimer(exam.duration || 45);
+}
+// مؤقت امتحان الطالب الشهري والشامل الآمن
+function startMonthlyExamTimer(durationMins) {
+    let timerSeconds = (durationMins || 45) * 60;
+    const display = document.getElementById('student-mexam-timer');
+    
+    // استخدام المتغير الموحد لمنع أي خطأ تكرار أو عدم تعريف
+    if (typeof currentStudentMonthlyExamState !== 'undefined' && currentStudentMonthlyExamState.timerInterval) {
+        clearInterval(currentStudentMonthlyExamState.timerInterval);
+    }
+
+    if (typeof currentStudentMonthlyExamState === 'undefined') {
+        window.currentStudentMonthlyExamState = { timerInterval: null };
+    }
+
+    currentStudentMonthlyExamState.timerInterval = setInterval(() => {
+        if (timerSeconds <= 0) {
+            clearInterval(currentStudentMonthlyExamState.timerInterval);
+            alert("انتهى وقت الامتحان!");
+            submitStudentMonthlyExam();
+        } else {
+            let mins = Math.floor(timerSeconds / 60);
+            let secs = timerSeconds % 60;
+            if (display) {
+                display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            timerSeconds--;
+        }
+    }, 1000);
+}
+
+// دالة مساعدة لتنظيف النص وتجاهل التشكيل والمسافات الزائدة والمطابقة الإملائية الشاملة
+function cleanArabicText(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str
+        .replace(/[\u0610-\u061A\u064B-\u065F\u0670]/g, '') // إزالة التشكيل
+        .replace(/[إأآا]/g, 'ا') // توحيد الهمزات والألفات
+        .replace(/[ؤ]/g, 'و')
+        .replace(/[ئى]/g, 'ي') // توحيد الياء والألف المقصورة
+        .replace(/ة/g, 'ه') // توحيد التاء المربوطة والهاء
+        .replace(/[\u0021-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007E\u060C\u061B\u061F]/g, ' ') // استبدال الفواصل وعلامات الترقيم بمسافة
+        .replace(/\s+/g, ' ') // توحيد المسافات الزائدة
+        .trim();
+}
+
+// دالة تسليم امتحان الطالب الشهري النهائية والمحمية بالكامل
+function submitStudentMonthlyExam() {
+    if (!confirm("هل أنت متأكد من تسليم إجابات الامتحان النهائي؟ لن يمكنك التعديل بعد الانتهاء.")) {
+        return;
+    }
+
+    const state = studentMonthlyExamState;
+    if (!state || !state.exam) return;
+
+    if (state.timerInterval) clearInterval(state.timerInterval);
+
+    const exam = state.exam;
+    let totalScore = 0;
+    let maxPossibleScore = 0;
+    let breakdownDetails = [];
+    let pendingEssayCount = 0;
+    let totalAnswered = 0;
+    let totalQuestionsCount = 0;
+
+    exam.sections.forEach((sec, sIdx) => {
+        if (sec.questions) {
+            sec.questions.forEach((q, qIdx) => {
+                totalQuestionsCount++;
+                let qUniqueKey = `sec_${sIdx}_q_${qIdx}`;
+                let userAns = state.answers[qUniqueKey] || "";
+                let markVal = parseFloat(q.mark) || 1;
+                maxPossibleScore += markVal;
+
+                let isAnswered = userAns.trim() !== "";
+                if (isAnswered) totalAnswered++;
+
+                let isCorrect = false;
+                let essayGrade = undefined;
+                let correctAnswerText = q.ans || (q.options ? q.options[0] : "إجابة نموذجية");
+
+                if (q.type === 'essay') {
+                    let cleanUserAns = isAnswered ? userAns.trim().replace(/\s+/g, ' ') : "";
+                    let validAnswers = [];
+                    if (Array.isArray(q.modelAnswers)) {
+                        validAnswers = q.modelAnswers.map(a => String(a).trim().replace(/\s+/g, ' '));
+                    } else if (q.ans) {
+                        validAnswers = String(q.ans).split(/[\u060C,;|/]| أو /).map(a => a.trim().replace(/\s+/g, ' ')).filter(Boolean);
+                    }
+
+                    let matchedModel = validAnswers.length > 0 && validAnswers.some(ansOpt => ansOpt === cleanUserAns);
+
+                    if (matchedModel) {
+                        isCorrect = true;
+                        essayGrade = true;
+                        totalScore += markVal;
+                    } else if (!isAnswered) {
+                        isCorrect = false;
+                        essayGrade = false;
+                    } else {
+                        isCorrect = false;
+                        essayGrade = undefined;
+                        pendingEssayCount++;
+                    }
+                } else {
+                    if (isAnswered && userAns === q.ans) {
+                        isCorrect = true;
+                        totalScore += markVal;
+                    }
+                }
+
+                breakdownDetails.push({
+                    qIndex: totalQuestionsCount,
+                    qText: formatText(q.text, true),
+                    options: q.options ? q.options.map(opt => formatText(opt, true)) : [],
+                    userAnswer: isAnswered ? formatText(userAns, true) : "لم يُجب",
+                    correctAnswer: formatText(correctAnswerText, true),
+                    isCorrect,
+                    type: q.type || 'mcq',
+                    essayGrade,
+                    sectionTitle: sec.title || `القسم ${sIdx + 1}`
+                });
+            });
+        }
+    });
+
+    const pct = maxPossibleScore > 0 ? Math.round((totalScore / maxPossibleScore) * 100) : 0;
+    const durationSecs = Math.floor((Date.now() - state.startTime) / 1000);
+    const passThreshold = maxPossibleScore / 2;
+
+    let examStatus = "بانتظار التصحيح";
+    if (pendingEssayCount === 0) {
+        examStatus = totalScore >= passThreshold ? "ناجح" : "راسب";
+    } else {
+        examStatus = totalScore >= passThreshold ? "ناجح" : "بانتظار التصحيح";
+    }
+
+    const newRecord = {
+        id: 'rec_' + Date.now(),
+        name: currentStudentSession.name,
+        stage: currentStudentSession.stage,
+        grade: currentStudentSession.grade,
+        branch: "امتحان شهري وشامل",
+        topic: exam.title,
+        stageGrade: `${currentStudentSession.stage} ➔ ${currentStudentSession.grade} ➔ امتحان (${exam.title})`,
+        score: totalScore,
+        objectiveTotal: maxPossibleScore,
+        total: maxPossibleScore,
+        pct,
+        status: examStatus,
+        pendingEssayCount,
+        date: new Date().toLocaleString('ar-EG'),
+        duration: `${Math.floor(durationSecs / 60)}د و ${durationSecs % 60}ث`,
+        answeredCount: `${totalAnswered} من ${totalQuestionsCount}`,
+        breakdown: breakdownDetails
+    };
+
+    let existingRecords = [];
+    try {
+        existingRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+    } catch(e) {
+        existingRecords = studentRecords || [];
+    }
+    existingRecords.unshift(newRecord);
+    studentRecords = existingRecords;
+    localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+
+    const examView = document.getElementById('view-student-monthly-exam');
+    if (examView) {
+        examView.classList.add('hidden');
+        examView.classList.remove('flex');
+    }
+
+    const resView = document.getElementById('view-result');
+    if (resView) {
+        resView.classList.remove('hidden');
+        resView.classList.add('flex');
+    }
+
+    document.getElementById('res-score').textContent = `${totalScore} / ${maxPossibleScore}`;
+    document.getElementById('res-pct').textContent = `${pct}٪`;
+    document.getElementById('display-answered-count').textContent = `${totalAnswered} من ${totalQuestionsCount}`;
+
+    const passFailEl = document.getElementById('res-pass-fail');
+    passFailEl.textContent = examStatus;
+    passFailEl.className = `text-lg font-black ${examStatus === 'ناجح' ? 'text-emerald-600' : examStatus === 'راسب' ? 'text-rose-600' : 'text-amber-600'}`;
+
+    const resMsg = document.getElementById('res-msg');
+    if (pendingEssayCount > 0) {
+        resMsg.innerHTML = `أتممت الامتحان الشهري بنجاح!<br><span class="text-amber-700 font-black text-sm sm:text-base bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 inline-block mt-2">⚠️ تم احتساب الأسئلة الموضوعية، ويوجد (${pendingEssayCount}) أسئلة مقالية بانتظار مراجعة وتقييم المعلم.</span>`;
+    } else {
+        resMsg.textContent = appSettings.successMessage || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز.";
+    }
+
+    document.getElementById('cert-btn-container').classList.add('hidden');
+    document.getElementById('student-pdf-btn').classList.add('hidden');
+
+    setTimeout(() => { saveStudentRecordsBackground(); }, 10);
+}
+
+function renderMonthlyQuizQuestion() {
+    const state = activeMonthlyExamState;
+    const idx = state.currentIndex;
+    const q = state.questions[idx];
+    const mExamView = document.getElementById('view-monthly-quiz');
+
+    let passageHtml = '';
+    if (q.passageText || q.passageImg) {
+        passageHtml = `
+            <div class="bg-purple-50 p-5 rounded-2xl border-2 border-purple-200 space-y-3 mb-4">
+                <h4 class="font-black text-purple-950 text-base">${escapeHTML(q.passageTitle || 'اقْرَأْ ثُمَّ أَجِبْ:')}</h4>
+                ${q.passageImg ? `<div class="text-center"><img src="${escapeHTML(q.passageImg)}" class="max-h-60 rounded-xl mx-auto object-contain border"></div>` : ''}
+                <p class="text-slate-800 text-sm sm:text-base leading-relaxed font-semibold whitespace-pre-line">${escapeHTML(q.passageText)}</p>
+            </div>
+        `;
+    }
+
+    let optionsHtml = '';
+    if (q.type === 'essay') {
+        const savedAns = state.answers[idx] || "";
+        optionsHtml = `
+            <div class="bg-amber-50 p-5 rounded-3xl border-3 border-amber-200 shadow-sm">
+                <label class="block text-amber-950 font-black text-lg mb-3"><i class="fa-solid fa-pen-nib ml-2 text-amber-600"></i> إجابتك المقالية:</label>
+                <textarea id="mexam-essay-input" rows="6" class="w-full p-5 bg-white border-2 border-slate-300 rounded-2xl font-bold text-slate-900 text-lg leading-loose focus:outline-none focus:border-amber-500 shadow-inner" placeholder="اكتب إجابتك هنا بوضوح...">${escapeHTML(savedAns)}</textarea>
+            </div>
+        `;
+    } else if (q.options) {
+        optionsHtml = '<div class="space-y-3">';
+        q.options.forEach(opt => {
+            const isSelected = state.answers[idx] === opt;
+            optionsHtml += `
+                <button type="button" onclick="selectMonthlyExamOption('${escapeHTML(opt).replace(/'/g, "\\'")}')" class="w-full text-right p-4 rounded-2xl font-bold transition flex items-center justify-between border-2 cursor-pointer text-lg ${isSelected ? 'bg-purple-50 border-purple-600 text-purple-950 shadow-md' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}">
+                    <span>${escapeHTML(opt)}</span>
+                    <i class="fa-regular ${isSelected ? 'fa-circle-check text-purple-600' : 'fa-circle text-slate-300'}"></i>
+                </button>
+            `;
+        });
+        optionsHtml += '</div>';
+    }
+
+    mExamView.innerHTML = `
+        <div class="flex justify-between items-center border-b pb-4">
+            <div>
+                <span class="text-xs text-purple-700 font-black bg-purple-100 px-3 py-1 rounded-xl">القسم: ${escapeHTML(q.sectionTitle)}</span>
+                <h3 class="font-black text-slate-900 text-base sm:text-lg mt-1">${escapeHTML(state.examTitle)}</h3>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-100 text-amber-950 px-4 py-2 rounded-2xl font-black text-sm border flex items-center gap-2">
+                    <i class="fa-solid fa-clock text-amber-600"></i>
+                    <span id="mexam-display-timer">--:--</span>
+                </div>
+                <div class="bg-purple-100 text-purple-950 px-4 py-2 rounded-2xl font-black text-sm border">
+                    سؤال <span id="mexam-q-idx">${idx + 1}</span> من <span id="mexam-total-q">${state.questions.length}</span> (درجة السؤال: ${q.mark || 1})
+                </div>
+            </div>
+        </div>
+
+        ${passageHtml}
+
+        <div class="bg-slate-50 p-6 rounded-2xl border-2 border-slate-200 shadow-sm">
+            <h2 class="text-lg sm:text-2xl font-black text-slate-900 leading-relaxed text-right">س${idx + 1}: ${escapeHTML(q.text)}</h2>
+        </div>
+
+        <div class="space-y-3">
+            ${optionsHtml}
+        </div>
+
+        <div class="flex justify-between items-center pt-4 border-t">
+            <button type="button" onclick="prevMonthlyQuestion()" ${idx === 0 ? 'disabled' : ''} class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold px-6 py-3 rounded-xl cursor-pointer transition disabled:opacity-40">السابق</button>
+            <button type="button" onclick="confirmSubmitMonthlyExam()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-8 py-3 rounded-xl cursor-pointer shadow transition">تسليم الامتحان</button>
+            <button type="button" onclick="nextMonthlyQuestion()" ${idx === state.questions.length - 1 ? 'hidden' : ''} class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold px-6 py-3 rounded-xl cursor-pointer transition">التالي</button>
+        </div>
+    `;
+
+    if (q.type === 'essay') {
+        document.getElementById('mexam-essay-input').addEventListener('input', function(e) {
+            activeMonthlyExamState.answers[idx] = e.target.value;
+        });
+    }
+}
+
+function selectMonthlyExamOption(opt) {
+    const idx = activeMonthlyExamState.currentIndex;
+    activeMonthlyExamState.answers[idx] = opt;
+    renderMonthlyQuizQuestion();
+}
+
+function prevMonthlyQuestion() {
+    if (activeMonthlyExamState.currentIndex > 0) {
+        activeMonthlyExamState.currentIndex--;
+        renderMonthlyQuizQuestion();
+    }
+}
+
+function nextMonthlyQuestion() {
+    if (activeMonthlyExamState.currentIndex < activeMonthlyExamState.questions.length - 1) {
+        activeMonthlyExamState.currentIndex++;
+        renderMonthlyQuizQuestion();
+    }
+}
+
+function confirmSubmitMonthlyExam() {
+    if (confirm("هل أنت متأكد من تسليم الامتحان النهائي؟ لا يمكن التراجع بعد التسليم.")) {
+        submitMonthlyExam();
+    }
+}
+
+function submitMonthlyExam() {
+    const state = activeMonthlyExamState;
+    if (state.isSubmitted) return;
+    state.isSubmitted = true;
+    window.onbeforeunload = null; // إيقاف التحذير
+
+    if (state.timerInterval) clearInterval(state.timerInterval);
+
+    let earnedScore = 0;
+    let totalExamPossibleMarks = 0;
+    let pendingEssayCount = 0;
+    let breakdownDetails = [];
+
+    state.questions.forEach((q, idx) => {
+        const userAns = state.answers[idx];
+        const isAnswered = userAns !== null && userAns !== undefined && String(userAns).trim() !== "";
+        const qMark = parseFloat(q.mark) || 1;
+        totalExamPossibleMarks += qMark;
+
+        let isCorrect = false;
+        let essayGrade = undefined;
+        let finalCorrectText = q.ans || '';
+
+        if (q.type === 'essay') {
+            let cleanUserAns = isAnswered ? String(userAns).trim().replace(/\s+/g, ' ') : "";
+            let validModels = [];
+            if (Array.isArray(q.modelAnswers)) validModels = q.modelAnswers.map(a => String(a).trim().replace(/\s+/g, ' '));
+            else if (q.ans) validModels = [String(q.ans).trim().replace(/\s+/g, ' ')];
+
+            let matched = validModels.length > 0 && validModels.some(m => m === cleanUserAns);
+
+            if (matched) {
+                isCorrect = true;
+                essayGrade = true;
+                earnedScore += qMark;
+                finalCorrectText = validModels.join(' أو ');
+            } else if (!isAnswered) {
+                isCorrect = false;
+                essayGrade = false;
+                finalCorrectText = validModels.join(' أو ') || "إجابة مقالية";
+            } else {
+                isCorrect = false;
+                essayGrade = undefined; // بانتظار تصحيح المعلم
+                pendingEssayCount++;
+                finalCorrectText = validModels.join(' أو ') || "بانتظار تصحيح المعلم";
+            }
+        } else {
+            isCorrect = isAnswered && userAns === q.ans;
+            if (isCorrect) earnedScore += qMark;
+        }
+
+        breakdownDetails.push({
+            qIndex: idx + 1,
+            qText: q.text,
+            options: q.options || [],
+            userAnswer: isAnswered ? userAns : "لم يُجب",
+            correctAnswer: finalCorrectText,
+            isCorrect,
+            type: q.type || 'mcq',
+            mark: qMark,
+            essayGrade,
+            explanation: q.exp || ''
+        });
+    });
+
+    const halfTotal = totalExamPossibleMarks / 2;
+    let examStatus = pendingEssayCount === 0 ? (earnedScore >= halfTotal ? "ناجح" : "راسب") : (earnedScore >= halfTotal ? "ناجح" : "بانتظار التصحيح");
+    const pct = totalExamPossibleMarks > 0 ? Math.round((earnedScore / totalExamPossibleMarks) * 100) : 0;
+    const durationSecs = Math.floor((Date.now() - state.startTime) / 1000);
+
+    const newRecord = {
+        id: 'rec_mexam_' + Date.now(),
+        name: currentStudentSession.name,
+        stage: state.stage,
+        grade: state.grade,
+        branch: "امتحان شهري/شامل",
+        topic: state.examTitle,
+        stageGrade: `${state.stage} ➔ ${state.grade} ➔ امتحان (${state.examTitle})`,
+        score: earnedScore,
+        objectiveTotal: totalExamPossibleMarks,
+        total: totalExamPossibleMarks,
+        pct,
+        status: examStatus,
+        pendingEssayCount,
+        date: new Date().toLocaleString('ar-EG'),
+        duration: `${Math.floor(durationSecs / 60)}د و ${durationSecs % 60}ث`,
+        answeredCount: `امتحان شامل`,
+        breakdown: breakdownDetails
+    };
+
+    // حفظ السجل في الذاكرة والمحلي والسحابة
+    let existingRecords = [];
+    try { existingRecords = JSON.parse(localStorage.getItem('studentRecords')) || []; } catch(e) { existingRecords = studentRecords || []; }
+    existingRecords.unshift(newRecord);
+    studentRecords = existingRecords;
+    localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+
+    // إخفاء شاشة الامتحان وإظهار بوابة الطالب مع الانتقال لتبويب السجل
+    document.getElementById('view-monthly-quiz').classList.add('hidden');
+    document.getElementById('view-monthly-quiz').classList.remove('flex');
+    document.getElementById('view-student-portal').classList.remove('hidden');
+    document.getElementById('view-student-portal').classList.add('flex');
+
+    showPortalTab('records');
+    alert(`تم تسليم الامتحان بنجاح!\nدرجتك الحالية: ${earnedScore} من ${totalExamPossibleMarks} (${pct}%)`);
+
+    setTimeout(() => { if (typeof saveStudentRecordsBackground === 'function') saveStudentRecordsBackground(); }, 10);
+}
+// 1. تعبئة قوائم المرحلة والصف لنموذج الامتحان الشهري ببيانات المنصة
+function populateMonthlyExamFormDropdowns() {
+    const stageSel = document.getElementById('mexam-stage-input');
+    const gradeSel = document.getElementById('mexam-grade-input');
+    if (!stageSel || !gradeSel) return;
+
+    stageSel.innerHTML = '<option value="">اختر المرحلة</option>';
+    Object.keys(stagesData).forEach(stage => {
+        if (gradeStatus[`stage_active_${stage}`] !== false) {
+            stageSel.innerHTML += `<option value="${stage}">${stage}</option>`;
+        }
+    });
+
+    stageSel.onchange = () => {
+        gradeSel.innerHTML = '<option value="">اختر الصف</option>';
+        const st = stageSel.value;
+        if (st && stagesData[st]) {
+            stagesData[st].forEach(g => {
+                if (gradeStatus[`${st}_${g}`] !== false) {
+                    gradeSel.innerHTML += `<option value="${g}">${g}</option>`;
+                }
+            });
+        }
+    };
+}
+
+// 2. جسر ربط لضمان عمل زر "إضافة قسم جديد للامتحان" مع النظام الحديث
+function addExamSectionBlock() {
+    if (typeof addNewExamSectionStep === 'function') {
+        addNewExamSectionStep();
+    } else {
+        console.error("دالة إضافة الأقسام الجديدة غير معرفة.");
     }
 }
     </script>
