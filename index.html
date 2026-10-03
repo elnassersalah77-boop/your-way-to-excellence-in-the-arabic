@@ -3069,7 +3069,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 getDoc(doc(db, "platformData", "questions_meta")), 
                 getDoc(doc(db, "platformData", "paragraphs_meta")), 
                 getDoc(doc(db, "platformData", "passages_meta")).catch(() => ({ exists: () => false })), 
-                getDoc(doc(db, "platformData", "monthlyExams_meta")).catch(() => ({ exists: () => false })), // جلب ميتاداتا الامتحانات الشهرية
+                getDoc(doc(db, "platformData", "monthlyExams_meta")).catch(() => ({ exists: () => false })), 
                 getDoc(doc(db, "platformData", "quickinfo_meta")),
                 getDoc(doc(db, "platformData", "students_meta"))
             ];
@@ -3084,63 +3084,63 @@ window.addEventListener('DOMContentLoaded', () => {
                 if (data.appSettings) appSettings = { ...defaultSettings, ...data.appSettings };
             }
 
-            let chunkPromises = [];
             let qTotal = qMetaSnap.exists() ? (qMetaSnap.data().totalParts || 0) : 0;
             let pTotal = pMetaSnap.exists() ? (pMetaSnap.data().totalParts || 0) : 0;
             let passTotal = (passMetaSnap && passMetaSnap.exists && passMetaSnap.exists()) ? (passMetaSnap.data().totalParts || 0) : 0; 
-            let mexamTotal = (mexamMetaSnap && mexamMetaSnap.exists && mexamMetaSnap.exists()) ? (mexamMetaSnap.data().totalParts || 0) : 0; // إجمالي أجزاء الامتحانات
+            let mexamTotal = (mexamMetaSnap && mexamMetaSnap.exists && mexamMetaSnap.exists()) ? (mexamMetaSnap.data().totalParts || 0) : 0;
             let qiTotal = qiMetaSnap.exists() ? (qiMetaSnap.data().totalParts || 0) : 0;
             let stTotal = stMetaSnap.exists() ? (stMetaSnap.data().totalParts || 0) : 0;
 
-            for (let i = 0; i < qTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `questions_part_${i}`)));
-            for (let i = 0; i < pTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `paragraphs_part_${i}`)));
-            for (let i = 0; i < passTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `passages_part_${i}`))); 
-            for (let i = 0; i < mexamTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `monthlyExams_part_${i}`))); // جلب أجزاء الامتحانات الشهرية
-            for (let i = 0; i < qiTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `quickinfo_part_${i}`)));
-            for (let i = 0; i < stTotal; i++) chunkPromises.push(getDoc(doc(db, "platformData", `students_part_${i}`)));
+            // جلب الأجزاء بالترتيب الثابت والمحدد لكل قسم على حدة لتجنب أي تداخل في المؤشرات
+            let qChunks = [], pChunks = [], passChunks = [], mexamChunks = [], qiChunks = [], stChunks = [];
 
-            const chunksSnaps = await Promise.all(chunkPromises);
-            questionBank = []; paragraphs = []; passagesBank = []; 
-            
-            // تهيئة آمنة لمصفوفة الامتحانات الشهرية مع استرجاع المحلي إن وجد
-            if (typeof monthlyExamsBank !== 'undefined') {
-                monthlyExamsBank = JSON.parse(localStorage.getItem('monthlyExamsBank')) || [];
-            } else {
-                window.monthlyExamsBank = JSON.parse(localStorage.getItem('monthlyExamsBank')) || [];
-            }
+            for (let i = 0; i < qTotal; i++) qChunks.push(getDoc(doc(db, "platformData", `questions_part_${i}`)));
+            for (let i = 0; i < pTotal; i++) pChunks.push(getDoc(doc(db, "platformData", `paragraphs_part_${i}`)));
+            for (let i = 0; i < passTotal; i++) passChunks.push(getDoc(doc(db, "platformData", `passages_part_${i}`))); 
+            for (let i = 0; i < mexamTotal; i++) mexamChunks.push(getDoc(doc(db, "platformData", `monthlyExams_part_${i}`)));
+            for (let i = 0; i < qiTotal; i++) qiChunks.push(getDoc(doc(db, "platformData", `quickinfo_part_${i}`)));
+            for (let i = 0; i < stTotal; i++) stChunks.push(getDoc(doc(db, "platformData", `students_part_${i}`)));
 
-            quickInfoList = []; studentsAccounts = []; studentRecords = [];
-            let snapIndex = 0;
-            
-            for (let i = 0; i < qTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) questionBank = questionBank.concat(snap.data().chunk); }
-            for (let i = 0; i < pTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) paragraphs = paragraphs.concat(snap.data().chunk); }
-            for (let i = 0; i < passTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) passagesBank = passagesBank.concat(snap.data().chunk); } 
-            
-            // تجميع أجزاء الامتحانات الشهرية القادمة من السحابة ودمجها محلياً
+            const [qSnaps, pSnaps, passSnaps, mexamSnaps, qiSnaps, stSnaps] = await Promise.all([
+                Promise.all(qChunks),
+                Promise.all(pChunks),
+                Promise.all(passChunks),
+                Promise.all(mexamChunks),
+                Promise.all(qiChunks),
+                Promise.all(stChunks)
+            ]);
+
+            // تفريغ وتعبئة المصفوفات بأمان تام
+            questionBank = [];
+            qSnaps.forEach(snap => { if (snap && snap.exists() && snap.data().chunk) questionBank = questionBank.concat(snap.data().chunk); });
+
+            paragraphs = [];
+            pSnaps.forEach(snap => { if (snap && snap.exists() && snap.data().chunk) paragraphs = paragraphs.concat(snap.data().chunk); });
+
+            passagesBank = [];
+            passSnaps.forEach(snap => { if (snap && snap.exists() && snap.data().chunk) passagesBank = passagesBank.concat(snap.data().chunk); });
+
+            // تجميع الامتحانات الشهرية وسحبها مباشرة
             let cloudMonthlyExams = [];
-            for (let i = 0; i < mexamTotal; i++) { 
-                let snap = chunksSnaps[snapIndex++]; 
-                if (snap && snap.exists && snap.exists() && snap.data().chunk) {
-                    cloudMonthlyExams = cloudMonthlyExams.concat(snap.data().chunk);
-                } 
-            }
+            mexamSnaps.forEach(snap => { if (snap && snap.exists() && snap.data().chunk) cloudMonthlyExams = cloudMonthlyExams.concat(snap.data().chunk); });
+            
             if (cloudMonthlyExams.length > 0) {
                 monthlyExamsBank = cloudMonthlyExams;
                 localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+            } else {
+                monthlyExamsBank = JSON.parse(localStorage.getItem('monthlyExamsBank')) || [];
             }
 
-            for (let i = 0; i < qiTotal; i++) { 
-                let snap = chunksSnaps[snapIndex++]; 
-                if (snap && snap.exists && snap.exists() && snap.data().chunk) {
+            quickInfoList = [];
+            qiSnaps.forEach(snap => {
+                if (snap && snap.exists() && snap.data().chunk) {
                     let loadedChunk = snap.data().chunk.map(qi => {
                         if (qi.sections) {
                             qi.sections.forEach(sec => {
                                 if (sec.subItems) {
                                     sec.subItems.forEach(sub => {
                                         if (sub.tableDataJson) {
-                                            try {
-                                                sub.tableData = JSON.parse(sub.tableDataJson);
-                                            } catch(e) { sub.tableData = []; }
+                                            try { sub.tableData = JSON.parse(sub.tableDataJson); } catch(e) { sub.tableData = []; }
                                         }
                                     });
                                 }
@@ -3148,14 +3148,17 @@ window.addEventListener('DOMContentLoaded', () => {
                         }
                         return qi;
                     });
-                    quickInfoList = quickInfoList.concat(loadedChunk); 
-                } 
-            }
-            
-            for (let i = 0; i < stTotal; i++) { let snap = chunksSnaps[snapIndex++]; if (snap && snap.exists && snap.exists() && snap.data().chunk) studentsAccounts = studentsAccounts.concat(snap.data().chunk); }
+                    quickInfoList = quickInfoList.concat(loadedChunk);
+                }
+            });
+
+            studentsAccounts = [];
+            stSnaps.forEach(snap => { if (snap && snap.exists() && snap.data().chunk) studentsAccounts = studentsAccounts.concat(snap.data().chunk); });
+
         }
     } catch (e) { 
         console.log("استخدام البيانات المحلية:", e); 
+        monthlyExamsBank = JSON.parse(localStorage.getItem('monthlyExamsBank')) || [];
     }
     
     updateCloudCacheSnapshot();
