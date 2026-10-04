@@ -3087,11 +3087,14 @@ window.addEventListener('DOMContentLoaded', () => {
             let qTotal = qMetaSnap.exists() ? (qMetaSnap.data().totalParts || 0) : 0;
             let pTotal = pMetaSnap.exists() ? (pMetaSnap.data().totalParts || 0) : 0;
             let passTotal = (passMetaSnap && passMetaSnap.exists && passMetaSnap.exists()) ? (passMetaSnap.data().totalParts || 0) : 0; 
-            let mexamTotal = (mexamMetaSnap && mexamMetaSnap.exists && mexamMetaSnap.exists()) ? (mexamMetaSnap.data().totalParts || 0) : 0;
+            
+            // 💡 تحسين جبار: ضمان جلب أجزاء الامتحانات حتى لو لم تتواجد الـ Meta عبر محاولة جلب الجزء الأول افتراضياً
+            let mexamTotal = (mexamMetaSnap && mexamMetaSnap.exists && mexamMetaSnap.exists()) ? (mexamMetaSnap.data().totalParts || 0) : 1;
+            if (mexamTotal < 1) mexamTotal = 1; 
+
             let qiTotal = qiMetaSnap.exists() ? (qiMetaSnap.data().totalParts || 0) : 0;
             let stTotal = stMetaSnap.exists() ? (stMetaSnap.data().totalParts || 0) : 0;
 
-            // عزل الطلبات في مصفوفات مستقلة تماماً لمنع أي تداخل في الفهارس (Indexes)
             let qChunks = [], pChunks = [], passChunks = [], mexamChunks = [], qiChunks = [], stChunks = [];
 
             for (let i = 0; i < qTotal; i++) qChunks.push(getDoc(doc(db, "platformData", `questions_part_${i}`)));
@@ -3119,20 +3122,27 @@ window.addEventListener('DOMContentLoaded', () => {
             passagesBank = [];
             passSnaps.forEach(snap => { if (snap && snap.exists() && snap.data().chunk) passagesBank = passagesBank.concat(snap.data().chunk); });
 
-            // 💡 التعديل الحاسم: جلب وتجميع أجزاء الامتحانات الشهرية وسحبها مباشرة وتخزينها محلياً
+            // 💡 تجميع محكم وآمن للامتحانات الشهرية من السحابة والذاكرة المحلية
             let cloudMonthlyExams = [];
             mexamSnaps.forEach(snap => { 
-                if (snap && snap.exists() && snap.data().chunk) {
+                if (snap && snap.exists && snap.exists() && snap.data().chunk) {
                     cloudMonthlyExams = cloudMonthlyExams.concat(snap.data().chunk);
                 } 
             });
             
-            if (cloudMonthlyExams.length > 0) {
-                monthlyExamsBank = cloudMonthlyExams;
-                localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
-            } else {
-                monthlyExamsBank = JSON.parse(localStorage.getItem('monthlyExamsBank')) || [];
-            }
+            let localMonthlyExams = [];
+            try {
+                localMonthlyExams = JSON.parse(localStorage.getItem('monthlyExamsBank')) || [];
+            } catch(e) { localMonthlyExams = []; }
+
+            // دمج ذكي بين السحابة والمحلي لمنع أي فراغ
+            let examMap = new Map();
+            [...localMonthlyExams, ...cloudMonthlyExams].forEach(ex => {
+                if (ex && ex.id) examMap.set(ex.id, ex);
+            });
+            
+            monthlyExamsBank = Array.from(examMap.values());
+            localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
 
             quickInfoList = [];
             qiSnaps.forEach(snap => {
