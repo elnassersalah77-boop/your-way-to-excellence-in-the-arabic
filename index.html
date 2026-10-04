@@ -3091,7 +3091,7 @@ window.addEventListener('DOMContentLoaded', () => {
             let qiTotal = qiMetaSnap.exists() ? (qiMetaSnap.data().totalParts || 0) : 0;
             let stTotal = stMetaSnap.exists() ? (stMetaSnap.data().totalParts || 0) : 0;
 
-            // جلب الأجزاء بالترتيب الثابت والمحدد لكل قسم على حدة لتجنب أي تداخل في المؤشرات
+            // عزل الطلبات في مصفوفات مستقلة تماماً لمنع أي تداخل في الفهارس (Indexes)
             let qChunks = [], pChunks = [], passChunks = [], mexamChunks = [], qiChunks = [], stChunks = [];
 
             for (let i = 0; i < qTotal; i++) qChunks.push(getDoc(doc(db, "platformData", `questions_part_${i}`)));
@@ -3110,7 +3110,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 Promise.all(stChunks)
             ]);
 
-            // تفريغ وتعبئة المصفوفات بأمان تام
             questionBank = [];
             qSnaps.forEach(snap => { if (snap && snap.exists() && snap.data().chunk) questionBank = questionBank.concat(snap.data().chunk); });
 
@@ -3120,9 +3119,13 @@ window.addEventListener('DOMContentLoaded', () => {
             passagesBank = [];
             passSnaps.forEach(snap => { if (snap && snap.exists() && snap.data().chunk) passagesBank = passagesBank.concat(snap.data().chunk); });
 
-            // تجميع الامتحانات الشهرية وسحبها مباشرة
+            // 💡 التعديل الحاسم: جلب وتجميع أجزاء الامتحانات الشهرية وسحبها مباشرة وتخزينها محلياً
             let cloudMonthlyExams = [];
-            mexamSnaps.forEach(snap => { if (snap && snap.exists() && snap.data().chunk) cloudMonthlyExams = cloudMonthlyExams.concat(snap.data().chunk); });
+            mexamSnaps.forEach(snap => { 
+                if (snap && snap.exists() && snap.data().chunk) {
+                    cloudMonthlyExams = cloudMonthlyExams.concat(snap.data().chunk);
+                } 
+            });
             
             if (cloudMonthlyExams.length > 0) {
                 monthlyExamsBank = cloudMonthlyExams;
@@ -3244,7 +3247,7 @@ window.addEventListener('DOMContentLoaded', () => {
               
 async function saveState(showLoading = true) {
     try {
-        // حفظ محلي فوري لمنع أي ضياع للبيانات في المتصفح
+        // حفظ محلي فوري لمنع أي ضياع للبيانات في المتصفح (LocalStorage)
         if (typeof monthlyExamsBank !== 'undefined') {
             localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
         }
@@ -3283,11 +3286,9 @@ async function saveState(showLoading = true) {
             for (let i = 0; i < passTotalParts; i++) addTask(`passages_part_${i}`, { chunk: (passagesBank || []).slice(i * passChunkSize, (i + 1) * passChunkSize) });
             addTask("passages_meta", { totalParts: passTotalParts });
 
-            // 💡 التعديل الجذري: تجزئة وحفظ الامتحانات الشهرية والشاملة سحابياً وتحديث الميتاداتا الخاصة بها
+            // إضافة مهام حفظ الامتحانات الشهرية للسحابة بدقة تامة
             const currentMonthlyExams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : JSON.parse(localStorage.getItem('monthlyExamsBank'))) || [];
-            const mexamChunkSize = 300; 
-            let mexamTotalParts = Math.ceil(currentMonthlyExams.length / mexamChunkSize) || 1;
-            
+            const mexamChunkSize = 300; let mexamTotalParts = Math.ceil(currentMonthlyExams.length / mexamChunkSize) || 1;
             for (let i = 0; i < mexamTotalParts; i++) {
                 addTask(`monthlyExams_part_${i}`, { chunk: currentMonthlyExams.slice(i * mexamChunkSize, (i + 1) * mexamChunkSize) });
             }
@@ -3312,7 +3313,7 @@ async function saveState(showLoading = true) {
             let totalTasks = tasks.length;
             
             if (showLoading) {
-                toggleCloudLoading(true, `جَارِي فَحْصِ وَرَفْعِ التَّعْدِيلَات... (${totalTasks} ملفاً)`);
+                toggleCloudLoading(true, `جَارِي فَحْصِ وَرَفْع التَّعْدِيلَات... (${totalTasks} ملفاً)`);
             }
 
             let completedTasks = 0;
@@ -3323,7 +3324,7 @@ async function saveState(showLoading = true) {
                 completedTasks++;
                 let pct = Math.round((completedTasks / totalTasks) * 100);
                 if (showLoading && textEl) {
-                    textEl.textContent = `جَارِي رَفْعِ المُتَغَيِّرَات... ${pct}% (${completedTasks}/${totalTasks})`;
+                    textEl.textContent = `جَارِي رَفْع المُتَغَيِّرَات... ${pct}% (${completedTasks}/${totalTasks})`;
                 }
             }
             
@@ -3341,7 +3342,7 @@ async function saveState(showLoading = true) {
             toggleCloudLoading(false);
         }
     }
-}       
+}        
 // ================== GENERAL, INIT & SETTINGS ==================
         function validateArabicName(inputEl) {
             let val = inputEl.value;
@@ -10881,25 +10882,11 @@ function renderStudentMonthlyExams() {
     const stage = currentStudentSession.stage;
     const grade = currentStudentSession.grade;
 
-    // جلب الامتحانات من المصفوفة أو التخزين المحلي
-    const allExams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : JSON.parse(localStorage.getItem('monthlyExamsBank'))) || [];
-
-    console.log("=== تشخيص الامتحانات الشهرية ===");
-    console.log("بيانات الطالب الحالي:", { stage, grade });
-    console.log("جميع الامتحانات المسجلة في النظام:", allExams);
-
-    // تصفية الامتحانات مع تجاهل مؤقت لشرط الصف للمعاينة أو فحصه بدقة
-    const availableExams = allExams.filter(e => {
-        console.log(`فحص امتحان [${e.title}] -> مرحلة: ${e.stage} (مطابق: ${e.stage === stage}), صف: ${e.grade} (مطابق: ${e.grade === grade}), مفعل: ${e.active}`);
-        return e.active !== false && e.stage === stage && e.grade === grade;
-    });
+    // التأكد من جلب الامتحانات من مصفوفة الامتحانات الشهرية وتصفيتها بناءً على صف المرحلة
+    const availableExams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : []).filter(e => e.active !== false && e.stage === stage && e.grade === grade);
 
     if (availableExams.length === 0) {
-        container.innerHTML = `
-            <div class="p-8 text-center bg-white rounded-3xl border-2 border-purple-200 text-slate-500 font-bold space-y-2">
-                <p>لا توجد امتحانات شهرية أو شاملة متاحة لصفك (${grade}) حالياً.</p>
-                <p class="text-xs text-slate-400">تأكد من مطابقة المرحلة والصف وتفعيل الامتحان من لوحة الإدارة.</p>
-            </div>`;
+        container.innerHTML = `<div class="p-8 text-center bg-white rounded-2xl border text-slate-400 font-bold">لا توجد امتحانات شهرية أو شاملة متاحة لصفك حالياً.</div>`;
         return;
     }
 
