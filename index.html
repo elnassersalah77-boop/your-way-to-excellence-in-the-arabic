@@ -326,16 +326,17 @@ select, select option {
             </div>
 
 <!-- تبويب الامتحانات الشهرية والشاملة للطالب -->
-<div id="portal-tab-monthly-exams" class="portal-tab-content hidden space-y-6 max-w-3xl mx-auto text-center animate-fade-in">
-    <h3 class="text-xl font-black text-purple-950 mb-2"><i class="fa-solid fa-clipboard-list text-purple-600 ml-2"></i>قَائِمَةُ الِامْتِحَانَاتِ الشَّهْرِيَّةِ وَالشَّامِلَةِ</h3>
+<div id="portal-tab-monthly-exams" class="portal-tab-content hidden space-y-6 w-full max-w-full px-2 sm:px-6 text-center animate-fade-in">
+    <h3 class="text-xl sm:text-2xl font-black text-purple-950 mb-2">
+        <i class="fa-solid fa-clipboard-list text-purple-600 ml-2"></i>قَائِمَةُ الِامْتِحَانَاتِ وَالتَّقْيِيماتِ الدِّرَاسِيَّةِ
+    </h3>
     <p class="text-slate-600 text-sm font-bold mb-6">اختر الامتحان المتاح لصفك وابدأ الحل وفق الزمن المخصص لكل امتحان.</p>
     
-    <!-- قائمة الامتحانات المتاحة للطالب -->
-    <div id="student-monthly-exams-list" class="space-y-4 text-right">
-        <!-- تضاف الامتحانات ديناميكياً حسب صف المرحلة -->
+    <!-- قائمة الأعمدة الثلاثة تمتد بكامل العرض لتلغي الفراغات الجانبية -->
+    <div id="student-monthly-exams-list" class="space-y-4 text-right w-full">
+        <!-- تضاف الأعمدة والأكواد ديناميكياً -->
     </div>
 </div>
-
             <!-- تبويب السجل الشخصي للطالب -->
             <div id="portal-tab-records" class="portal-tab-content hidden space-y-4 animate-fade-in">
                 <h3 class="text-xl font-black text-emerald-950 text-center mb-4"><i class="fa-solid fa-medal text-emerald-600 ml-2"></i>سِجِلِّي الدِّرَاسِيُّ</h3>
@@ -1407,91 +1408,100 @@ select, select option {
 
     <!-- 17. صفحة إدارة الامتحانات الشهرية والشاملة (View مستقل) -->
     <div id="view-admin-monthly-exams" class="admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto text-right">
-        <div class="max-w-6xl mx-auto w-full space-y-6">
-            <!-- شريط الأزرار الثابت العلوي للقسم -->
-            <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-200 flex flex-wrap justify-between items-center gap-4">
-                <h2 class="text-2xl font-black text-purple-950 flex items-center gap-3">
-                    <i class="fa-solid fa-file-lines text-purple-600"></i> إِدَارَةُ الِامْتِحَانَاتِ الشَّهْرِيَّةِ وَالشَّامِلَةِ
-                </h2>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" onclick="confirmAndSaveAdminSection('monthlyExams')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
-                        <i class="fa-solid fa-floppy-disk"></i> حِفْظُ التَّغْيِيرَاتِ
-                    </button>
-                    <button type="button" onclick="showAdminDashboardPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
-                        <i class="fa-solid fa-gauge"></i> لَوْحَةُ الْإِدَارَةِ
-                    </button>
-                    <button type="button" onclick="restartHome()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
-                        <i class="fa-solid fa-house"></i> الرَّئِيسِيَّةُ
-                    </button>
-                </div>
-            </div>
-            
-            <!-- المحتوى والجدول والفلاتر الخاصة بالامتحانات -->
-            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border-2 border-slate-200 space-y-5">
-                
-                <!-- فلاتر التصفية للمرحلة والصف فقط -->
-                <div class="bg-purple-50 p-4 rounded-2xl border-2 border-purple-200 space-y-3">
-                    <h3 class="font-black text-purple-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-purple-600"></i> تصفية وعرض الامتحانات:</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">المرحلة:</label>
-                            <select id="filter-mexam-stage" onchange="filterAdminMonthlyExamsByStage()" class="w-full p-2.5 rounded-xl border text-xs bg-white font-bold text-slate-800"><option value="">كل المراحل</option></select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">الصف:</label>
-                            <select id="filter-mexam-grade" onchange="renderAdminMonthlyExamsList()" class="w-full p-2.5 rounded-xl border text-xs bg-white font-bold text-purple-900"><option value="">كل الصفوف</option></select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- أزرار الإجراءات (إضافة امتحان، استيراد، تصدير) -->
-                <div class="flex flex-wrap justify-between items-center pt-2 border-t border-slate-200 gap-3">
-                    <h3 class="font-black text-slate-800 text-base">قائمة الامتحانات المُصَاغَةُ</h3>
-                    <div class="flex gap-2 flex-wrap">
-                        <button type="button" onclick="exportMonthlyExamsJson()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-download ml-1"></i> تصدير (JSON)</button>
-                        <label class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد (JSON)<input type="file" id="import-monthly-exams-json-file" accept=".json" onchange="importMonthlyExamsJsonFile(event)" class="hidden"></label>
-                        <button type="button" onclick="openMonthlyExamForm()" class="bg-purple-600 hover:bg-purple-700 text-white font-black text-xs px-5 py-2.5 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-plus ml-1"></i> إضافة امتحان جديد</button>
-                    </div>
-                </div>
-
-                <!-- جدول عرض الامتحانات -->
-                <div class="overflow-x-auto border rounded-2xl bg-white shadow-sm">
-                    <table class="w-full text-right border-collapse">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700 font-bold text-xs border-b">
-                                <th class="p-3.5">عنوان الامتحان</th>
-                                <th class="p-3.5">المرحلة والصف</th>
-                                <th class="p-3.5 text-center">الزمن (دقيقة)</th>
-                                <th class="p-3.5 text-center">الأقسام والأسئلة</th>
-                                <th class="p-3.5 text-center">الحالة</th>
-                                <th class="p-3.5 text-center">التحكم والإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-monthly-exams-tbody" class="divide-y text-sm font-bold text-slate-800">
-                            <tr><td colspan="6" class="p-6 text-center text-slate-400">لا توجد امتحانات مضافة حتى الآن.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
+    <div class="max-w-6xl mx-auto w-full space-y-6">
+        <!-- شريط الأزرار الثابت العلوي للقسم -->
+        <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-200 flex flex-wrap justify-between items-center gap-4">
+            <h2 class="text-2xl font-black text-purple-950 flex items-center gap-3">
+                <i class="fa-solid fa-file-lines text-purple-600"></i> إِدَارَةُ الِامْتِحَانَاتِ وَالتَّقْيِيمَاتِ
+            </h2>
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="confirmAndSaveAdminSection('monthlyExams')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+                    <i class="fa-solid fa-floppy-disk"></i> حِفْظُ التَّغْيِيرَاتِ
+                </button>
+                <button type="button" onclick="showAdminDashboardPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+                    <i class="fa-solid fa-gauge"></i> لَوْحَةُ الْإِدَارَةِ
+                </button>
+                <button type="button" onclick="restartHome()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+                    <i class="fa-solid fa-house"></i> الرَّئِيسِيَّةُ
+                </button>
             </div>
         </div>
+        
+        <!-- المحتوى والجدول والفلاتر الخاصة بالامتحانات -->
+        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border-2 border-slate-200 space-y-5">
+            
+            <!-- فلاتر التصفية للمرحلة والالصف ونوع الامتحان -->
+            <div class="bg-purple-50 p-4 rounded-2xl border-2 border-purple-200 space-y-3">
+                <h3 class="font-black text-purple-950 text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-purple-600"></i> تصفية وعرض الامتحانات:</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">المرحلة:</label>
+                        <select id="filter-mexam-stage" onchange="filterAdminMonthlyExamsByStage()" class="w-full p-2.5 rounded-xl border text-xs bg-white font-bold text-slate-800"><option value="">كل المراحل</option></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">الصف:</label>
+                        <select id="filter-mexam-grade" onchange="renderAdminMonthlyExamsList()" class="w-full p-2.5 rounded-xl border text-xs bg-white font-bold text-purple-900"><option value="">كل الصفوف</option></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">نوع الامتحان:</label>
+                        <select id="filter-mexam-type" onchange="renderAdminMonthlyExamsList()" class="w-full p-2.5 rounded-xl border text-xs bg-white font-bold text-purple-950">
+                            <option value="">كل الأنواع</option>
+                            <option value="weekly">تقييم أسبوعي</option>
+                            <option value="monthly">امتحان شهري</option>
+                            <option value="final">امتحان نهائي واسترشادي</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أزرار الإجراءات (إضافة امتحان، استيراد، تصدير) -->
+            <div class="flex flex-wrap justify-between items-center pt-2 border-t border-slate-200 gap-3">
+                <h3 class="font-black text-slate-800 text-base">قائمة الامتحانات والتَّقْيِيمات المُصَاغَةُ</h3>
+                <div class="flex gap-2 flex-wrap">
+                    <button type="button" onclick="exportMonthlyExamsJson()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-download ml-1"></i> تصدير (JSON)</button>
+                    <label class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد (JSON)<input type="file" id="import-monthly-exams-json-file" accept=".json" onchange="importMonthlyExamsJsonFile(event)" class="hidden"></label>
+                    <button type="button" onclick="openMonthlyExamForm()" class="bg-purple-600 hover:bg-purple-700 text-white font-black text-xs px-5 py-2.5 rounded-xl cursor-pointer shadow transition"><i class="fa-solid fa-plus ml-1"></i> إضافة امتحان جديد</button>
+                </div>
+            </div>
+
+            <!-- جدول عرض الامتحانات -->
+            <div class="overflow-x-auto border rounded-2xl bg-white shadow-sm">
+                <table class="w-full text-right border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-700 font-bold text-xs border-b">
+                            <th class="p-3.5">عنوان الامتحان</th>
+                            <th class="p-3.5">المرحلة والالصف</th>
+                            <th class="p-3.5 text-center">الزمن (دقيقة)</th>
+                            <th class="p-3.5 text-center">الأقسام والأسئلة</th>
+                            <th class="p-3.5 text-center">الحالة</th>
+                            <th class="p-3.5 text-center">التحكم والإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-monthly-exams-tbody" class="divide-y text-sm font-bold text-slate-800">
+                        <tr><td colspan="6" class="p-6 text-center text-slate-400">لا توجد امتحانات مضافة حتى الآن.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
     </div>
+</div>
 <!-- 18. صفحة إضافة وتعديل الامتحان الشهري والشامل (View مستقل) -->
 <div id="view-admin-monthly-exam-form" class="admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto text-right">
     <div class="max-w-5xl mx-auto w-full space-y-6">
         <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-200 flex flex-wrap justify-between items-center gap-4">
-    <h2 id="monthly-exam-form-title" class="text-2xl font-black text-purple-950 flex items-center gap-3">
-        <i class="fa-solid fa-file-pen text-purple-600"></i> إِضَافَةُ / تَعْدِيلُ امْتِحَانٍ
-    </h2>
-    <div class="flex flex-wrap items-center gap-2">
-        <!-- أزرار الاستيراد والتصدير الفردية للامتحان -->
-        <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد امتحان<input type="file" accept=".json" onchange="importSingleMonthlyExamJson(event)" class="hidden"></label>
-        <button type="button" onclick="exportSingleMonthlyExamJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-download ml-1"></i> تصدير امتحان</button>
-        
-        <button type="button" onclick="saveMonthlyExamData()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حِفْظُ الِامْتِحَانِ</button>
-        <button type="button" onclick="openAdminSectionPage('view-admin-monthly-exams')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-arrow-right"></i> عَوْدَةٌ لِلْقَائِمَةِ</button>
-    </div>
-</div>
+            <h2 id="monthly-exam-form-title" class="text-2xl font-black text-purple-950 flex items-center gap-3">
+                <i class="fa-solid fa-file-pen text-purple-600"></i> إِضَافَةُ / تَعْدِيلُ امْتِحَانٍ
+            </h2>
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- أزرار الاستيراد والتصدير الفردية للامتحان -->
+                <label class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-upload ml-1"></i> استيراد امتحان<input type="file" accept=".json" onchange="importSingleMonthlyExamJson(event)" class="hidden"></label>
+                <button type="button" onclick="exportSingleMonthlyExamJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-download ml-1"></i> تصدير امتحان</button>
+                
+                <button type="button" onclick="saveMonthlyExamData()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> حِفْظُ الِامْتِحَانِ</button>
+                <button type="button" onclick="openAdminSectionPage('view-admin-monthly-exams')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-arrow-right"></i> عَوْدَةٌ لِلْقَائِمَةِ</button>
+            </div>
+        </div>
 
         <input type="hidden" id="edit-monthly-exam-id" value="">
 
@@ -1511,12 +1521,21 @@ select, select option {
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- صف الحقول المحدث (الزمن، نوع الامتحان، ومربع التفعيل) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
                 <div>
                     <label class="block mb-1 text-slate-700 text-sm">زمن الامتحان بالدقائق:</label>
                     <input type="number" id="mexam-duration-input" class="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-sm font-black" value="45" min="5">
                 </div>
-                <div class="flex items-center gap-3 pt-6">
+                <div>
+                    <label class="block mb-1 text-slate-700 text-sm">نوع الامتحان:</label>
+                    <select id="mexam-type-input" class="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-sm font-black text-purple-950">
+                        <option value="weekly">تقييم أسبوعي</option>
+                        <option value="monthly" selected>امتحان شهري</option>
+                        <option value="final">امتحان نهائي واسترشادي</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-3 pt-5">
                     <input type="checkbox" id="mexam-active-input" class="w-6 h-6 text-purple-600 rounded cursor-pointer" checked>
                     <label for="mexam-active-input" class="cursor-pointer text-slate-900 text-sm font-black">تفعيل هذا الامتحان ليظهر للطلاب</label>
                 </div>
@@ -1532,7 +1551,6 @@ select, select option {
         </div>
     </div>
 </div>
-
 <!-- 15. صفحة تفاصيل إجابة الطالب (View مستقل) -->
     <div id="view-admin-record-details" class="admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto text-right">
         <div class="max-w-6xl mx-auto w-full space-y-6">
@@ -9888,11 +9906,13 @@ function renderAdminMonthlyExamsList() {
 
     const fStage = document.getElementById('filter-mexam-stage')?.value || '';
     const fGrade = document.getElementById('filter-mexam-grade')?.value || '';
+    const fType = document.getElementById('filter-mexam-type')?.value || '';
 
-    // تصفية الامتحانات حسب المرحلة والصف
+    // تصفية الامتحانات حسب المرحلة، الصف، ونوع الامتحان
     const filtered = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : []).map((item, idx) => ({...item, originalIdx: idx})).filter(exam => {
         if (fStage && exam.stage !== fStage) return false;
         if (fGrade && exam.grade !== fGrade) return false;
+        if (fType && exam.type !== fType && (fType !== 'monthly' || exam.type)) return false;
         return true;
     });
 
@@ -9919,15 +9939,23 @@ function renderAdminMonthlyExamsList() {
         const globalIdx = exam.originalIdx;
         const isActive = exam.active !== false;
         const sectionsCount = exam.sections ? exam.sections.length : 0;
+        
         let totalQuestions = 0;
         if (exam.sections) {
             exam.sections.forEach(s => { if (s.questions) totalQuestions += s.questions.length; });
         }
 
+        let typeBadge = '<span class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-purple-100 text-purple-800">امتحان شهري</span>';
+        if (exam.type === 'weekly') typeBadge = '<span class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-sky-100 text-sky-800">تقييم أسبوعي</span>';
+        else if (exam.type === 'final') typeBadge = '<span class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-100 text-emerald-800">نهائي واسترشادي</span>';
+
         html += `
             <tr class="hover:bg-slate-50 transition border-b text-sm font-bold text-slate-800">
                 <td class="p-3 text-center w-10"><input type="checkbox" value="${globalIdx}" class="mexam-select-cb w-4 h-4 text-purple-600 rounded cursor-pointer"></td>
-                <td class="p-3.5 font-black text-purple-950">${escapeHTML(exam.title)}</td>
+                <td class="p-3.5 font-black text-purple-950">
+                    ${escapeHTML(exam.title)}
+                    <div class="mt-1">${typeBadge}</div>
+                </td>
                 <td class="p-3.5 text-slate-600">${escapeHTML(exam.stage)} / ${escapeHTML(exam.grade)}</td>
                 <td class="p-3.5 text-center font-mono">${exam.duration || 45} دقيقة</td>
                 <td class="p-3.5 text-center"><span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-black">${sectionsCount} أقسام (${totalQuestions} سؤال)</span></td>
@@ -9998,6 +10026,7 @@ function renderAdminMonthlyExamsList() {
         </div>
     `;
 }
+
 // دوال التحكم المساعدة (ترتيب، تكرار، معاينة، وتحديد الكل والحذف الجماعي)
 function toggleSelectAllMonthlyExams(master) {
     const checkboxes = document.querySelectorAll('.mexam-select-cb');
@@ -10058,21 +10087,28 @@ function toggleMonthlyExamActivation(idx) {
     if (typeof monthlyExamsBank !== 'undefined' && monthlyExamsBank[idx]) {
         monthlyExamsBank[idx].active = monthlyExamsBank[idx].active === false ? true : false;
         localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
-        if (typeof saveState === 'function') saveState(false);
         renderAdminMonthlyExamsList();
+        saveState(false); // حفظ خلفي صامت
     }
 }
 
+function toggleMonthlyExamTashkeel(idx) {
+    if (typeof monthlyExamsBank !== 'undefined' && monthlyExamsBank[idx]) {
+        monthlyExamsBank[idx].tashkeel = monthlyExamsBank[idx].tashkeel === false ? true : false;
+        localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+        renderAdminMonthlyExamsList();
+        saveState(false); // حفظ خلفي صامت
+    }
+}
 // دالة حذف الامتحان الشهري
 function deleteMonthlyExam(id) {
-    if (confirm("هل أنت متأكد من حذف هذا الامتحان الشهري نهائياً؟")) {
+    if (confirm("هل أنت متأكد من حذف هذا الامتحان نهائياً؟")) {
         monthlyExamsBank = monthlyExamsBank.filter(e => e.id !== id);
         localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
-        if (typeof saveState === 'function') saveState(true);
         renderAdminMonthlyExamsList();
+        saveState(true); // حفظ سحابي شامل مع مؤشر التحميل
     }
 }
-
 function populateMonthlyExamStages() {
     const stageSel = document.getElementById('filter-mexam-stage');
     const formStageSel = document.getElementById('mexam-stage-input');
@@ -10154,7 +10190,7 @@ function renderAdminExamSectionStep() {
     if (!container) return;
 
     if (adminExamSectionsBuffer.length === 0) {
-        adminExamSectionsBuffer.push({ title: "قسم جديد", passageText: "", img: "", fileUrl: "", questions: [] });
+        adminExamSectionsBuffer.push({ title: "قسم جديد", passageText: "", img: "", fileUrl: "", active: true, questions: [] });
     }
 
     if (adminExamCurrentSectionIndex >= adminExamSectionsBuffer.length) {
@@ -10167,14 +10203,17 @@ function renderAdminExamSectionStep() {
     if (sec.passageText === undefined) sec.passageText = "";
     if (sec.img === undefined) sec.img = "";
     if (sec.fileUrl === undefined) sec.fileUrl = "";
+    if (sec.active === undefined) sec.active = true; // تفعيل القسم افتراضياً للأقسام القديمة
 
     // 💡 شريط ترقيم الأقسام العلوي (Steps Indicator)
     let stepsIndicatorHtml = '<div class="flex flex-wrap gap-2 items-center mb-4 pb-3 border-b-2 border-purple-200">';
     adminExamSectionsBuffer.forEach((s, idx) => {
         let isCurrent = idx === adminExamCurrentSectionIndex;
+        let isSecActive = s.active !== false;
         stepsIndicatorHtml += `
-            <button type="button" onclick="adminExamCurrentSectionIndex = ${idx}; renderAdminExamSectionStep();" class="px-4 py-2 rounded-2xl font-black text-sm transition cursor-pointer shadow-xs ${isCurrent ? 'bg-purple-700 text-white ring-2 ring-purple-400 scale-105' : 'bg-white text-purple-900 border-2 border-purple-200 hover:bg-purple-100'}">
-                القسم ${idx + 1}
+            <button type="button" onclick="adminExamCurrentSectionIndex = ${idx}; renderAdminExamSectionStep();" class="px-4 py-2 rounded-2xl font-black text-sm transition cursor-pointer shadow-xs flex items-center gap-1.5 ${isCurrent ? 'bg-purple-700 text-white ring-2 ring-purple-400 scale-105' : 'bg-white text-purple-900 border-2 border-purple-200 hover:bg-purple-100'}">
+                <span>القسم ${idx + 1}</span>
+                <span class="w-2 h-2 rounded-full ${isSecActive ? 'bg-emerald-400' : 'bg-rose-400'}" title="${isSecActive ? 'مفعل' : 'مخفي'}"></span>
             </button>
         `;
     });
@@ -10297,7 +10336,12 @@ function renderAdminExamSectionStep() {
                     <span class="bg-purple-600 text-white font-black px-5 py-2.5 rounded-2xl text-base shadow">القسم (${adminExamCurrentSectionIndex + 1} من ${adminExamSectionsBuffer.length})</span>
                     <input type="text" oninput="updateExamSectionTitle(${adminExamCurrentSectionIndex}, this.value)" placeholder="عنوان القسم (مثال: أولاً: النص الشعري)" class="w-full sm:w-96 p-3.5 rounded-2xl border-2 border-purple-300 bg-white font-black text-purple-950 text-lg focus:outline-none focus:border-purple-600 shadow-xs" value="${escapeHTML(sec.title || '')}">
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
+                <div class="flex items-center gap-2 shrink-0 flex-wrap">
+                    <!-- 💡 زر تفعيل/إخفاء هذا القسم حصرياً -->
+                    <div class="flex items-center gap-2 bg-white px-4 py-2.5 rounded-2xl border-2 border-purple-200 shadow-xs">
+                        <input type="checkbox" id="sec_active_toggle" onchange="adminExamSectionsBuffer[${adminExamCurrentSectionIndex}].active = this.checked;" ${sec.active !== false ? 'checked' : ''} class="w-5 h-5 text-purple-600 rounded cursor-pointer">
+                        <label for="sec_active_toggle" class="cursor-pointer text-xs sm:text-sm font-black text-purple-950">تفعيل هذا القسم</label>
+                    </div>
                     <button type="button" onclick="deleteCurrentExamSection(${adminExamCurrentSectionIndex})" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-black px-4 py-3 rounded-xl text-xs cursor-pointer transition shadow-sm"><i class="fa-solid fa-trash ml-1"></i> حذف هذا القسم</button>
                     <button type="button" onclick="addNewExamSectionStep()" class="bg-purple-600 hover:bg-purple-700 text-white font-black px-4 py-3 rounded-xl text-xs cursor-pointer shadow transition"><i class="fa-solid fa-plus ml-1"></i> قسم جديد</button>
                 </div>
@@ -10340,6 +10384,7 @@ function renderAdminExamSectionStep() {
         </div>
     `;
 }
+
 // دوال دعم الإجابات النموذجية المتعددة للامتحانات الشهرية
 function addMonthlyModelAnswerInput(sIdx, qIdx) {
     if (!adminExamSectionsBuffer[sIdx].questions[qIdx].modelAnswers) {
@@ -10380,6 +10425,7 @@ function addNewExamSectionStep() {
         passageText: "", // 💡 فقرة أو تعليمات القسم التمهيدية
         img: "",         // 💡 رابط صورة القسم
         fileUrl: "",     // 💡 رابط الملف الخارجي
+        active: true,    // 💡 تفعيل القسم افتراضياً
         questions: [{ text: "", type: "mcq", options: ["", "", "", ""], ans: "", mark: 1 }] 
     });
     adminExamCurrentSectionIndex = adminExamSectionsBuffer.length - 1;
@@ -10448,6 +10494,7 @@ async function saveMonthlyExamData() {
     const stage = document.getElementById('mexam-stage-input').value;
     const grade = document.getElementById('mexam-grade-input').value;
     const duration = parseInt(document.getElementById('mexam-duration-input').value) || 45;
+    const examType = document.getElementById('mexam-type-input') ? document.getElementById('mexam-type-input').value : 'monthly'; // 💡 التقاط نوع الامتحان الجديد
     const active = document.getElementById('mexam-active-input').checked;
 
     if (!title || !stage || !grade) {
@@ -10466,6 +10513,7 @@ async function saveMonthlyExamData() {
         stage,
         grade,
         duration,
+        type: examType, // 💡 تخزين نوع الامتحان ضمن كائن البيانات
         active,
         sections: adminExamSectionsBuffer
     };
@@ -10483,11 +10531,11 @@ async function saveMonthlyExamData() {
 
     localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
     
-    // 💡 تفعيل مؤشر التحميل المرئي والنسبة المئوية أثناء الحفظ السحابي
+    // تفعيل مؤشر التحميل المرئي والنسبة المئوية أثناء الحفظ السحابي
     allowCloudLoadingOverlay = true;
     const textEl = document.getElementById('cloud-loading-text');
     const overlay = document.getElementById('cloud-loading-overlay');
-    if (textEl) textEl.textContent = "جَارِي فَحْصِ وَرَفْعِ الْامْتِحَانِ الشَّهْرِيِّ...";
+    if (textEl) textEl.textContent = "جَارِي فَحْصِ وَرَفْعِ الِامْتِحَانِ...";
     if (overlay) overlay.style.display = 'flex';
 
     try {
@@ -10495,13 +10543,13 @@ async function saveMonthlyExamData() {
             await saveState(true); // الانتظار حتى اكتمال الرفع السحابي والنسبة المئوية
         }
 
-        if (textEl) textEl.textContent = "تَمَّ حِفْظُ الْامْتِحَانِ الشَّهْرِيِّ بِنَجَاح!";
+        if (textEl) textEl.textContent = "تَمَّ حِفْظُ الِامْتِحَانِ بِنَجَاح!";
         
         setTimeout(() => {
             allowCloudLoadingOverlay = false;
             if (overlay) overlay.style.display = 'none';
             
-            alert("تم حفظ الامتحان الشهري بنجاح!");
+            alert("تم حفظ الامتحان بنجاح!");
             openAdminSectionPage('view-admin-monthly-exams');
             if (typeof renderAdminMonthlyExamsList === 'function') {
                 renderAdminMonthlyExamsList();
@@ -10892,16 +10940,14 @@ function renderStudentMonthlyExams() {
     const stage = currentStudentSession.stage;
     const grade = currentStudentSession.grade;
 
-    // التأكد من جلب الامتحانات من مصفوفة الامتحانات الشهرية وتصفيتها بناءً على صف المرحلة
-    const availableExams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : []).filter(e => e.active !== false && e.stage === stage && e.grade === grade);
+    const allExams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : JSON.parse(localStorage.getItem('monthlyExamsBank')) || []);
+    const availableExams = allExams.filter(e => e.active !== false && e.stage === stage && e.grade === grade);
 
-    if (availableExams.length === 0) {
-        container.innerHTML = `<div class="p-8 text-center bg-white rounded-2xl border text-slate-400 font-bold">لا توجد امتحانات شهرية أو شاملة متاحة لصفك حالياً.</div>`;
-        return;
-    }
+    const weeklyExams = availableExams.filter(e => e.type === 'weekly');
+    const monthlyExams = availableExams.filter(e => e.type === 'monthly' || !e.type);
+    const finalExams = availableExams.filter(e => e.type === 'final');
 
-    let html = '';
-    availableExams.forEach(exam => {
+    const generateExamCardHtml = (exam) => {
         let totalMarks = 0;
         let qCount = 0;
         if (exam.sections) {
@@ -10913,21 +10959,57 @@ function renderStudentMonthlyExams() {
             });
         }
 
-        html += `
-            <div class="bg-white p-6 rounded-3xl border-2 border-purple-200 shadow-md flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="space-y-1 text-right">
-                    <h4 class="font-black text-purple-950 text-xl">${escapeHTML(exam.title)}</h4>
-                    <p class="text-slate-500 text-xs font-bold">⏱️ الزمن المخصص: ${exam.duration || 45} دقيقة | 📝 عدد الأسئلة: ${qCount} | 🏆 المجموع الكلي: ${totalMarks} درجة</p>
+        return `
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border-2 border-purple-200 shadow-sm space-y-3 transition-transform hover:-translate-y-1 text-right w-full">
+                <div>
+                    <h5 class="font-black text-purple-950 text-base sm:text-lg">${escapeHTML(exam.title)}</h5>
+                    <p class="text-slate-500 text-xs font-bold mt-1.5 flex items-center gap-2 flex-wrap">
+                        <span>⏱️ الزمن: ${exam.duration || 45}د</span>
+                        <span>📝 الأسئلة: ${qCount}</span>
+                        <span>🏆 الدرجة: ${totalMarks}</span>
+                    </p>
                 </div>
-                <button type="button" onclick="startStudentMonthlyExam('${exam.id}')" class="bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-black px-6 py-3.5 rounded-2xl shadow-lg transition cursor-pointer shrink-0">
-                    ابْدَأِ الِامْتِحَانَ الآن <i class="fa-solid fa-play mr-2"></i>
+                <button type="button" onclick="startStudentMonthlyExam('${exam.id}')" class="w-full bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-black px-4 py-3 rounded-xl shadow transition cursor-pointer text-xs sm:text-sm flex items-center justify-center gap-2">
+                    <span>ابْدَأِ الحَلَّ الآن</span> <i class="fa-solid fa-play"></i>
                 </button>
             </div>
         `;
-    });
-    container.innerHTML = html;
-}
+    };
 
+    container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+            <!-- العمود الأول: التقييمات الأسبوعية -->
+            <div class="bg-sky-50/80 p-4 sm:p-6 rounded-3xl border-2 border-sky-200 space-y-4 w-full">
+                <h4 class="font-black text-sky-950 text-base sm:text-lg border-b-2 border-sky-200 pb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-week text-sky-600"></i> التقييمات الأسبوعية
+                </h4>
+                <div class="space-y-3 w-full">
+                    ${weeklyExams.length > 0 ? weeklyExams.map(generateExamCardHtml).join('') : '<p class="text-slate-400 text-xs font-bold text-center py-8">لا توجد تقييمات أسبوعية متاحة حالياً.</p>'}
+                </div>
+            </div>
+
+            <!-- العمود الثاني: الامتحانات الشهرية -->
+            <div class="bg-purple-50/80 p-4 sm:p-6 rounded-3xl border-2 border-purple-200 space-y-4 w-full">
+                <h4 class="font-black text-purple-950 text-base sm:text-lg border-b-2 border-purple-200 pb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-file-lines text-purple-600"></i> الامتحانات الشهرية
+                </h4>
+                <div class="space-y-3 w-full">
+                    ${monthlyExams.length > 0 ? monthlyExams.map(generateExamCardHtml).join('') : '<p class="text-slate-400 text-xs font-bold text-center py-8">لا توجد امتحانات شهرية متاحة حالياً.</p>'}
+                </div>
+            </div>
+
+            <!-- العمود الثالث: الامتحانات النهائية والاسترشادية -->
+            <div class="bg-emerald-50/80 p-4 sm:p-6 rounded-3xl border-2 border-emerald-200 space-y-4 w-full">
+                <h4 class="font-black text-emerald-950 text-base sm:text-lg border-b-2 border-emerald-200 pb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-award text-emerald-600"></i> الامتحانات النهائية والاسترشادية
+                </h4>
+                <div class="space-y-3 w-full">
+                    ${finalExams.length > 0 ? finalExams.map(generateExamCardHtml).join('') : '<p class="text-slate-400 text-xs font-bold text-center py-8">لا توجد امتحانات نهائية متاحة حالياً.</p>'}
+                </div>
+            </div>
+        </div>
+    `;
+}
 // دالة عرض وتشغيل الامتحان الشهري للطالب بنظام الصفحات المستقلة والخريطة الجانبية
 let studentMonthlyExamState = {
     exam: null,
