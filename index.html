@@ -1863,7 +1863,7 @@ select, select option {
                     <i class="fa-solid fa-eye text-amber-500"></i> مُعَايَنَةُ الْمُحْتَوَى
                 </h2>
                 <div class="flex gap-2 items-center flex-wrap">
-                    <button type="button" onclick="openAdminSectionPage('view-admin-passages')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-4 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-arrow-right"></i> إِغْلَاقٌ وَعَوْدَةٌ</button>
+                   <button type="button" onclick="openAdminSectionPage('view-admin-quickinfo')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-arrow-right"></i> عَوْدَةٌ لِلْمَعْلُومَاتِ السَّرِيعَةِ</button>
                     <button type="button" onclick="showAdminDashboardPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-3 py-2.5 rounded-xl text-xs cursor-pointer shadow flex items-center gap-1.5"><i class="fa-solid fa-gauge"></i> الْإِدَارَةُ</button>
                 </div>
             </div>
@@ -4012,7 +4012,6 @@ function generateQuickInfoCardHtml(qi, pageIndex = 0) {
         <div class="space-y-5">${subItemsHtml}</div>
     </div>`;
 
-    // توليد أزرار أرقام الصفحات تفاعلياً لكي تنتقل مباشرة عند الضغط على أي رقم
     let pageNumbersHtml = '';
     sections.forEach((_, idx) => {
         let isCurrentPage = idx === currentQiPageIndex;
@@ -4023,21 +4022,17 @@ function generateQuickInfoCardHtml(qi, pageIndex = 0) {
         `;
     });
 
-    let prevPageIndex = currentQiPageIndex - 1;
-    let nextPageIndex = currentQiPageIndex + 1;
-
-    let paginationButtonsHtml = `
+   let paginationButtonsHtml = `
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t-2 border-slate-200 mt-6">
-            <button type="button" onclick="goToQiPage(${prevPageIndex})" class="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold px-6 py-3 rounded-xl transition cursor-pointer ${currentQiPageIndex === 0 ? 'opacity-40 pointer-events-none' : ''}">
+            <button type="button" onclick="changeQiPreviewPage(-1)" class="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold px-6 py-3 rounded-xl transition cursor-pointer ${currentQiPageIndex === 0 ? 'opacity-40 pointer-events-none' : ''}">
                 <i class="fa-solid fa-arrow-right ml-1"></i> القسم السابق
             </button>
             
-            <!-- أزرار أرقام الصفحات -->
             <div class="flex flex-wrap gap-2 justify-center items-center">
                 ${pageNumbersHtml}
             </div>
 
-            <button type="button" onclick="goToQiPage(${nextPageIndex})" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-6 py-3 rounded-xl transition cursor-pointer ${currentQiPageIndex === sections.length - 1 ? 'opacity-40 pointer-events-none' : ''}">
+            <button type="button" onclick="changeQiPreviewPage(1)" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-6 py-3 rounded-xl transition cursor-pointer ${currentQiPageIndex === sections.length - 1 ? 'opacity-40 pointer-events-none' : ''}">
                 القسم التالي <i class="fa-solid fa-arrow-left mr-1"></i>
             </button>
         </div>
@@ -4050,10 +4045,10 @@ function generateQuickInfoCardHtml(qi, pageIndex = 0) {
         <div class="space-y-6">${sectionContentHtml}</div>
         ${sections.length > 1 ? paginationButtonsHtml : ''}
     </div>`;
-}        
+}      
 
-// 💡  دالة التنقل بين الصفحات هنا مباشرة:
-function changeQiPage(direction) {
+// 💡 دالة الانتقال عبر الأزرار (السابق والتالي)
+function changeQiPreviewPage(direction) {
     if (!activeQiDataObject) return;
     
     let sections = activeQiDataObject.sections ? activeQiDataObject.sections.filter(sec => sec.active !== false) : [];
@@ -4066,23 +4061,24 @@ function changeQiPage(direction) {
 
     currentQiPageIndex = newIndex;
     
-    const container = document.getElementById('quick-info-content-container');
+    const container = document.getElementById('preview-card-body-view') || document.getElementById('quick-info-content-container');
     if (container) {
         container.innerHTML = generateQuickInfoCardHtml(activeQiDataObject, currentQiPageIndex);
         container.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
-function goToQiPage(pageIndex) {
+// 💡 دالة الانتقال المباشر عبر أرقام الشرائح (مع ربطها بالنطاق العام لضمان الاستجابة الفورية)
+window.goToQiPage = function(pageIndex) {
     if (!activeQiDataObject) return;
     currentQiPageIndex = pageIndex;
-    const container = document.getElementById('quick-info-content-container');
+    
+    const container = document.getElementById('preview-card-body-view') || document.getElementById('quick-info-content-container');
     if (container) {
         container.innerHTML = generateQuickInfoCardHtml(activeQiDataObject, currentQiPageIndex);
         container.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-}
-
+};
         // ================== CASCADING DROPDOWNS & SMART SKIP ==================
         function getSelectedBranch() {
             const branchSel = document.getElementById('start-branch-select');
@@ -7884,70 +7880,73 @@ function changeAdminQiSectionPage(newIndex) {
             reader.readAsText(file); 
         }
 
-        function exportSingleQuickInfoJson() { 
-            let obj = { 
-                title: document.getElementById('modal-qi-title')?.value.trim() || '', 
-                img: document.getElementById('modal-qi-img')?.value.trim() || '', 
-                active: document.getElementById('modal-qi-active')?.checked ?? true, 
-                tashkeel: document.getElementById('modal-qi-tashkeel')?.checked ?? true, 
-                sections: [], attachments: [] 
-            }; 
-            document.querySelectorAll('.qi-section-block').forEach(secBlock => { 
-                let mainHeader = secBlock.querySelector('.qi-sec-main-header')?.value.trim() || ''; 
-                let mainActive = secBlock.querySelector('.qi-sec-active')?.checked ?? true; 
-                let subItems = []; 
-                secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => { 
-                    let subTitle = subBlock.querySelector('.qi-sub-title')?.value.trim() || ''; 
-                    let subText = subBlock.querySelector('.qi-sub-text')?.value.trim() || ''; 
-                    let subImg = subBlock.querySelector('.qi-sub-img')?.value.trim() || ''; 
-                    let subActive = subBlock.querySelector('.qi-sub-active')?.checked ?? true; 
-                    if (subTitle || subText) subItems.push({ title: subTitle, text: subText, img: subImg, active: subActive }); 
-                }); 
-                if (mainHeader || subItems.length > 0) obj.sections.push({ mainHeader, active: mainActive, subItems }); 
-            }); 
-            document.querySelectorAll('.qi-attachment-block').forEach(attBlock => { 
-                let label = attBlock.querySelector('.qi-att-label')?.value.trim() || ''; 
-                let url = attBlock.querySelector('.qi-att-url')?.value.trim() || ''; 
-                if (url) obj.attachments.push({ label: label || "اطّلع على", url }); 
-            }); 
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj, null, 2)); 
-            let a = document.createElement('a'); a.href = dataStr; a.download = `single_quickinfo.json`; a.click(); 
-        }
+       function exportSingleQuickInfoJson() {
+    const editId = document.getElementById('edit-quickinfo-id').value;
+    // إذا كنت تصدر البطاقة الحالية قيد التعديل أو المحددة
+    let qiToExport = null;
+    
+    // يمكنك جلب البطاقة من مصفوفة quickInfoList بناءً على الفهرس أو المعرف
+    if (editId !== "-1" && quickInfoList[editId]) {
+        qiToExport = quickInfoList[editId];
+    } else {
+        alert("يرجى فتح بطاقة معلومة سريعة لتصديرها.");
+        return;
+    }
 
-        function importSingleQuickInfoJson(event) { 
-            let file = event.target.files[0]; if (!file) return; 
-            let reader = new FileReader(); 
-            reader.onload = function(e) { 
-                try { 
-                    let imp = JSON.parse(e.target.result); 
-                    let singleItem = Array.isArray(imp) ? imp[0] : imp;
-                    if (singleItem && typeof singleItem === 'object') { 
-                        if (singleItem.title !== undefined && document.getElementById('modal-qi-title')) document.getElementById('modal-qi-title').value = singleItem.title; 
-                        if (singleItem.img !== undefined && document.getElementById('modal-qi-img')) document.getElementById('modal-qi-img').value = singleItem.img;
-                        if (singleItem.active !== undefined && document.getElementById('modal-qi-active')) document.getElementById('modal-qi-active').checked = singleItem.active;
-                        if (singleItem.tashkeel !== undefined && document.getElementById('modal-qi-tashkeel')) document.getElementById('modal-qi-tashkeel').checked = singleItem.tashkeel;
-                        
-                        const container = document.getElementById('quickinfo-sections-builder-container');
-                        if (container) {
-                            container.innerHTML = "";
-                            if (singleItem.sections && Array.isArray(singleItem.sections) && singleItem.sections.length > 0) {
-                                singleItem.sections.forEach(sec => addQuickInfoSectionBlock(sec.mainHeader || "", sec.active !== false, sec.subItems || []));
-                            } else { addQuickInfoSectionBlock("", true, []); }
-                        }
-                        const attContainer = document.getElementById('quickinfo-attachments-builder-container');
-                        if (attContainer) {
-                            attContainer.innerHTML = "";
-                            if (singleItem.attachments && Array.isArray(singleItem.attachments)) {
-                                singleItem.attachments.forEach(att => addQiAttachmentBlock(att.label || "", att.url || ""));
+    // تنظيف وتعقيم بيانات الجداول لتتطابق مع نظام الشرائح الجديد
+    const sanitized = sanitizeQuickInfoList([qiToExport]);
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sanitized[0], null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `quickinfo_${qiToExport.topic || 'card'}_export.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+        function importSingleQuickInfoJson(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const imported = JSON.parse(e.target.result);
+            
+            // معالجة واستعادة الجداول المتداخلة من نظام الشرائح الجديد
+            let processedCard = Array.isArray(imported) ? imported[0] : imported;
+            
+            if (processedCard && processedCard.sections) {
+                processedCard.sections.forEach(sec => {
+                    if (sec.subItems) {
+                        sec.subItems.forEach(sub => {
+                            if (sub.tableDataJson) {
+                                try { sub.tableData = JSON.parse(sub.tableDataJson); } catch(err) { sub.tableData = []; }
                             }
-                        }
-                        alert("تم استيراد تفاصيل البطاقة للنافذة بنجاح!"); 
-                    } else { alert("بيانات الملف غير صالحة للاستيراد."); }
-                } catch(err) { alert("خطأ أثناء الاستيراد: تأكد من أن الملف بصيغة JSON صحيحة."); } 
-                event.target.value = ''; 
-            }; 
-            reader.readAsText(file); 
+                        });
+                    }
+                });
+            }
+
+            if (processedCard && processedCard.title) {
+                // إدراج البطاقة المستوردة في قائمة المعلومات السريعة
+                quickInfoList.push(processedCard);
+                localStorage.setItem('quickInfoList', JSON.stringify(quickInfoList));
+                
+                if (typeof renderAdminQuickInfoList === 'function') {
+                    renderAdminQuickInfoList();
+                }
+                alert("تم استيراد بطاقة المعلومة السريعة (بنظام الشرائح الجديد) بنجاح!");
+            } else {
+                alert("ملف الـ JSON المستورد غير مطابق لهيكل المعلومة السريعة.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("حدث خطأ أثناء قراءة ملف الاستيراد.");
         }
+    };
+    reader.readAsText(file);
+}
 
         // --- STUDENTS ACCOUNTS MANAGEMENT ---
         function populateStudentModalGrades(selectedGrade = "") {
