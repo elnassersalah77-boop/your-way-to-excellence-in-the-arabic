@@ -4047,7 +4047,7 @@ function generateQuickInfoCardHtml(qi, pageIndex = 0) {
     </div>`;
 }      
 
-// 💡 دالة الانتقال عبر الأزرار (السابق والتالي)
+// دالة التنقل عبر أزرار السابق والتالي (للطالب والمعاينة)
 function changeQiPreviewPage(direction) {
     if (!activeQiDataObject) return;
     
@@ -4055,30 +4055,30 @@ function changeQiPreviewPage(direction) {
     if (sections.length === 0) return;
 
     let newIndex = currentQiPageIndex + direction;
-    
     if (newIndex < 0) newIndex = 0;
     if (newIndex >= sections.length) newIndex = sections.length - 1;
 
     currentQiPageIndex = newIndex;
     
-    const container = document.getElementById('preview-card-body-view') || document.getElementById('quick-info-content-container');
+    const container = document.getElementById('quick-info-content-container') || document.getElementById('preview-card-body-view');
     if (container) {
         container.innerHTML = generateQuickInfoCardHtml(activeQiDataObject, currentQiPageIndex);
         container.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
-// 💡 دالة الانتقال المباشر عبر أرقام الشرائح (مع ربطها بالنطاق العام لضمان الاستجابة الفورية)
+// دالة التنقل المباشر عبر أرقام الشرائح (معتمدة عالمياً لتشمل صفحة الطالب)
 window.goToQiPage = function(pageIndex) {
     if (!activeQiDataObject) return;
     currentQiPageIndex = pageIndex;
     
-    const container = document.getElementById('preview-card-body-view') || document.getElementById('quick-info-content-container');
+    const container = document.getElementById('quick-info-content-container') || document.getElementById('preview-card-body-view');
     if (container) {
         container.innerHTML = generateQuickInfoCardHtml(activeQiDataObject, currentQiPageIndex);
         container.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 };
+
         // ================== CASCADING DROPDOWNS & SMART SKIP ==================
         function getSelectedBranch() {
             const branchSel = document.getElementById('start-branch-select');
