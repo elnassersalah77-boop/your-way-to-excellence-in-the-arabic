@@ -4060,6 +4060,7 @@ function changeQiPreviewPage(direction) {
 
     currentQiPageIndex = newIndex;
     
+    // استهداف حاوية الطالب أولاً، ثم حاوية المعاينة لضمان التحديث الشامل
     const container = document.getElementById('quick-info-content-container') || document.getElementById('preview-card-body-view');
     if (container) {
         container.innerHTML = generateQuickInfoCardHtml(activeQiDataObject, currentQiPageIndex);
