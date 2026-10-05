@@ -7695,73 +7695,81 @@ function changeAdminQiSectionPage(newIndex) {
     if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-        function saveQuickInfoFromModal() {
-            let idx = parseInt(document.getElementById('edit-quickinfo-id').value); 
-            let title = document.getElementById('modal-qi-title').value.trim(); 
-            let stage = document.getElementById('modal-qi-stage').value; 
-            let grade = document.getElementById('modal-qi-grade').value; 
-            let branch = document.getElementById('modal-qi-branch').value; 
-            let topic = document.getElementById('modal-qi-topic-select').value; 
-            let img = document.getElementById('modal-qi-img').value.trim(); 
-            let active = document.getElementById('modal-qi-active').checked; 
-            let tashkeel = document.getElementById('modal-qi-tashkeel').checked;
-            
-            let titleAlign = document.getElementById('modal-qi-title-align') ? document.getElementById('modal-qi-title-align').value : 'text-right'; // محاذاة العنوان الرئيسي للبطاقة
-            
-            if (!title || !stage || !grade || !branch || !topic) { alert("أكمل الفلاتر والعنوان."); return; }
-            
-            let sections = []; 
-            document.querySelectorAll('.qi-section-block').forEach(secBlock => { 
-                let mainHeader = secBlock.querySelector('.qi-sec-main-header').value.trim(); 
-                let mainActive = secBlock.querySelector('.qi-sec-active').checked; 
-                let headerAlign = secBlock.querySelector('.qi-sec-align') ? secBlock.querySelector('.qi-sec-align').value : 'text-right'; // التقاط محاذاة العنوان الرئيسي للقسم
-                let subItems = [];
-                
-                secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => { 
-                    let subTitle = subBlock.querySelector('.qi-sub-title').value.trim(); 
-                    let subTitleAlign = subBlock.querySelector('.qi-sub-align') ? subBlock.querySelector('.qi-sub-align').value : 'text-right'; // التقاط محاذاة العنوان الفرعي
-                    let subText = subBlock.querySelector('.qi-sub-text').value.trim(); 
-                    let subImg = subBlock.querySelector('.qi-sub-img').value.trim(); 
-                    let subActive = subBlock.querySelector('.qi-sub-active').checked; 
-                    
-                    // جمع بيانات جدول الشرح التفاعلي إن وجد
-                    let tableData = [];
-                    subBlock.querySelectorAll('.qi-table-row').forEach(row => {
-                        let rowCells = [];
-                        row.querySelectorAll('.qi-table-cell').forEach(cell => {
-                            rowCells.push(cell.value.trim());
-                        });
-                        if (rowCells.some(c => c !== "")) tableData.push(rowCells);
-                    });
+       function saveQuickInfoFromModal() {
+    let idx = parseInt(document.getElementById('edit-quickinfo-id').value); 
+    let title = document.getElementById('modal-qi-title').value.trim(); 
+    let stage = document.getElementById('modal-qi-stage').value; 
+    let grade = document.getElementById('modal-qi-grade').value; 
+    let branch = document.getElementById('modal-qi-branch').value; 
+    let topic = document.getElementById('modal-qi-topic-select').value; 
+    let img = document.getElementById('modal-qi-img').value.trim(); 
+    let active = document.getElementById('modal-qi-active').checked; 
+    let tashkeel = document.getElementById('modal-qi-tashkeel').checked;
+    
+    let titleAlign = document.getElementById('modal-qi-title-align') ? document.getElementById('modal-qi-title-align').value : 'text-right';
+    
+    // فحص قيم الفلاتر والعنوان في وحدة التحكم للتاكد من عدم فراغها
+    console.log("Values check:", { title, stage, grade, branch, topic, sectionsCount: document.querySelectorAll('.qi-section-block').length });
 
-                    if (subTitle || subText || tableData.length > 0) {
-                        subItems.push({ title: subTitle, titleAlign: subTitleAlign, text: subText, img: subImg, active: subActive, tableData: tableData });
-                    }
-                }); 
-                
-                if (mainHeader || subItems.length > 0) {
-                    sections.push({ mainHeader, headerAlign, active: mainActive, subItems }); 
-                }
+    if (!title || !stage || !grade || !branch || !topic) { 
+        alert("يرجى التأكد من اختيار جميع الفلاتر وعنوان البطاقة."); 
+        return; 
+    }
+    
+    let sections = []; 
+    document.querySelectorAll('.qi-section-block').forEach(secBlock => { 
+        let mainHeader = secBlock.querySelector('.qi-sec-main-header').value.trim(); 
+        let mainActive = secBlock.querySelector('.qi-sec-active').checked; 
+        let headerAlign = secBlock.querySelector('.qi-sec-align') ? secBlock.querySelector('.qi-sec-align').value : 'text-right';
+        let subItems = [];
+        
+        secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => { 
+            let subTitle = subBlock.querySelector('.qi-sub-title').value.trim(); 
+            let subTitleAlign = subBlock.querySelector('.qi-sub-align') ? subBlock.querySelector('.qi-sub-align').value : 'text-right';
+            let subText = subBlock.querySelector('.qi-sub-text').value.trim(); 
+            let subImg = subBlock.querySelector('.qi-sub-img').value.trim(); 
+            let subActive = subBlock.querySelector('.qi-sub-active').checked; 
+            
+            let tableData = [];
+            subBlock.querySelectorAll('.qi-table-row').forEach(row => {
+                let rowCells = [];
+                row.querySelectorAll('.qi-table-cell').forEach(cell => {
+                    rowCells.push(cell.value.trim());
+                });
+                if (rowCells.some(c => c !== "")) tableData.push(rowCells);
             });
-            
-            let attachments = []; 
-            document.querySelectorAll('.qi-attachment-block').forEach(attBlock => { 
-                let label = attBlock.querySelector('.qi-att-label').value.trim(); 
-                let url = attBlock.querySelector('.qi-att-url').value.trim(); 
-                if (url) attachments.push({ label: label || "اطّلع على", url }); 
-            });
-            
-            let qiObj = { title, titleAlign, stage, grade, branch, topic, img, sections, attachments, active, tashkeel };
-            
-            if (idx === -1) quickInfoList.push(qiObj); 
-            else quickInfoList[idx] = qiObj;
-            
-            saveState(); 
-            renderAdminQuickInfoList(); 
-            
-            openAdminSectionPage('view-admin-quickinfo'); 
-            alert("تم الحفظ بنجاح!");
+
+            if (subTitle || subText || tableData.length > 0) {
+                subItems.push({ title: subTitle, titleAlign: subTitleAlign, text: subText, img: subImg, active: subActive, tableData: tableData });
+            }
+        }); 
+        
+        if (mainHeader || subItems.length > 0) {
+            sections.push({ mainHeader, headerAlign, active: mainActive, subItems }); 
         }
+    });
+    
+    let attachments = []; 
+    document.querySelectorAll('.qi-attachment-block').forEach(attBlock => { 
+        let label = attBlock.querySelector('.qi-att-label').value.trim(); 
+        let url = attBlock.querySelector('.qi-att-url').value.trim(); 
+        if (url) attachments.push({ label: label || "اطّلع على", url }); 
+    });
+    
+    let qiObj = { title, titleAlign, stage, grade, branch, topic, img, sections, attachments, active, tashkeel };
+    
+    if (isNaN(idx) || idx === -1) {
+        quickInfoList.push(qiObj); 
+    } else {
+        quickInfoList[idx] = qiObj;
+    }
+    
+    saveState(); 
+    renderAdminQuickInfoList(); 
+    
+    openAdminSectionPage('view-admin-quickinfo'); 
+    alert("تم الحفظ بنجاح!");
+}
 
       function addQuickInfoSectionBlock() {
     if (!window.currentEditingQiSections) window.currentEditingQiSections = [];
