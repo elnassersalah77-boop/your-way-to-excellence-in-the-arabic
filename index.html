@@ -7913,11 +7913,11 @@ function changeAdminQiSectionPage(newIndex) {
         try {
             const imported = JSON.parse(e.target.result);
             
-            // معالجة واستعادة الجداول المتداخلة من نظام الشرائح الجديد
-            let processedCard = Array.isArray(imported) ? imported[0] : imported;
+            // معالجة البيانات واستعادة الجداول المتداخلة من نظام الشرائح الجديد
+            let cardData = Array.isArray(imported) ? imported[0] : imported;
             
-            if (processedCard && processedCard.sections) {
-                processedCard.sections.forEach(sec => {
+            if (cardData && cardData.sections) {
+                cardData.sections.forEach(sec => {
                     if (sec.subItems) {
                         sec.subItems.forEach(sub => {
                             if (sub.tableDataJson) {
@@ -7928,21 +7928,33 @@ function changeAdminQiSectionPage(newIndex) {
                 });
             }
 
-            if (processedCard && processedCard.title) {
-                // إدراج البطاقة المستوردة في قائمة المعلومات السريعة
-                quickInfoList.push(processedCard);
-                localStorage.setItem('quickInfoList', JSON.stringify(quickInfoList));
+            if (cardData && cardData.title) {
+                // تعبئة حقول نموذج التعديل والإضافة بالبيانات المستوردة فوراً
+                document.getElementById('modal-qi-title').value = cardData.title || '';
+                if(document.getElementById('modal-qi-stage')) document.getElementById('modal-qi-stage').value = cardData.stage || '';
+                if(document.getElementById('modal-qi-grade')) document.getElementById('modal-qi-grade').value = cardData.grade || '';
+                if(document.getElementById('modal-qi-branch')) document.getElementById('modal-qi-branch').value = cardData.branch || '';
+                if(document.getElementById('modal-qi-topic-select')) document.getElementById('modal-qi-topic-select').value = cardData.topic || '';
+                if(document.getElementById('modal-qi-img')) document.getElementById('modal-qi-img').value = cardData.img || '';
                 
-                if (typeof renderAdminQuickInfoList === 'function') {
-                    renderAdminQuickInfoList();
+                if(document.getElementById('modal-qi-active')) document.getElementById('modal-qi-active').checked = cardData.active !== false;
+                if(document.getElementById('modal-qi-tashkeel')) document.getElementById('modal-qi-tashkeel').checked = cardData.tashkeel !== false;
+
+                // إعادة بناء الأقسام والشرائح والجداول داخل نموذج التعديل
+                if (typeof renderQuickInfoSectionsBuilder === 'function') {
+                    renderQuickInfoSectionsBuilder(cardData.sections || []);
                 }
-                alert("تم استيراد بطاقة المعلومة السريعة (بنظام الشرائح الجديد) بنجاح!");
+                if (typeof renderQiAttachmentsBuilder === 'function') {
+                    renderQiAttachmentsBuilder(cardData.attachments || []);
+                }
+
+                alert("تم استيراد وتعبئة بيانات البطاقة (بنظام الشرائح الجديد) بنجاح!");
             } else {
-                alert("ملف الـ JSON المستورد غير مطابق لهيكل المعلومة السريعة.");
+                alert("ملف الـ JSON المستورد لا يحتوي على هيكل بطاقة معلومة سريعة صالح.");
             }
         } catch (err) {
             console.error(err);
-            alert("حدث خطأ أثناء قراءة ملف الاستيراد.");
+            alert("حدث خطأ أثناء قراءة وفك تشفير ملف الاستيراد.");
         }
     };
     reader.readAsText(file);
