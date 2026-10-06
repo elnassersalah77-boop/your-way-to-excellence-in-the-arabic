@@ -4991,13 +4991,12 @@ window.restartHome = function() {
     function confirmCloseQuickInfo() { if (confirm("تأكيد إغلاق المعلومة السريعة؟")) closeQuickInfo(); }
 
     async function finishQuizSubmission() {
-    // 💡 حماية لمنع تكرار التسليم إذا تم تسليم الاختبار بالفعل
     if (quizState.isSubmitted) return;
     quizState.isSubmitted = true;
 
     if (quizState.timerInterval) clearInterval(quizState.timerInterval);
     
-    let objectiveScore = 0; 
+    let totalScore = 0; 
     let answeredCount = 0; 
     let pendingEssayCount = 0; 
     let breakdownDetails = [];
@@ -5007,35 +5006,49 @@ window.restartHome = function() {
         const isAnswered = userAns !== null && userAns !== undefined && String(userAns).trim() !== "";
         if (isAnswered) answeredCount++; 
         
+        let questionMaxScore = 1; 
+        let earnedScore = 0;
         let isCorrect = false;
         let correctAnswerText = q.ans;
-        let essayGrade = undefined;
+        let gradeText = "خطأ / صفر";
 
         if (q.type === 'essay') {
-           
-            // فحص هل إجابة الطالب تطابق أياً من الإجابات النموذجية المعتمدة
+            let cleanUserAns = String(userAns || "").trim().toLowerCase();
+            let validAnswers = [];
+            if (Array.isArray(q.modelAnswers)) {
+                validAnswers = q.modelAnswers.map(a => String(a || "").trim().toLowerCase());
+            } else if (q.ans) {
+                validAnswers = [String(q.ans).trim().toLowerCase()];
+            }
+
             let matchedModel = validAnswers.length > 0 && validAnswers.some(ansOpt => ansOpt === cleanUserAns);
 
-            if (matchedModel) {
-                // تطابقت الإجابة! احتساب الدرجة الكاملة تلقائياً فوراً
+            if (matchedModel || (q.essayGrade === true)) {
+                earnedScore = questionMaxScore;
                 isCorrect = true;
-                essayGrade = true; 
-                objectiveScore++; 
-                markQuestionAsAnswered(quizState.topic, q.q);
-                correctAnswerText = validAnswers.join(' أو ');
+                gradeText = "صحيح (درجة كاملة)";
+                totalScore += earnedScore;
+                correctAnswerText = q.modelAnswers ? q.modelAnswers.join(' أو ') : q.ans;
             } else if (!isAnswered) {
+                earnedScore = 0;
                 isCorrect = false;
-                essayGrade = false;
-                correctAnswerText = validAnswers.join(' أو ') || q.ans || "إجابة مقالية";
+                gradeText = "لم يُجب (صفر)";
             } else {
-                // لم تتطابق، تحول لطابور تصحيح المعلم كالمعتاد
+                earnedScore = 0;
                 isCorrect = false;
-                essayGrade = undefined; 
+                gradeText = "بانتظار مراجعة المعلم";
                 pendingEssayCount++;
-                correctAnswerText = validAnswers.join(' أو ') || q.ans || "إجابة مقالية (بانتظار تقييم المعلم)";
             }
         } else {
-            isCorrect = userAns === q.ans;
+            isCorrect = isAnswered && userAns === q.ans;
+            if (isCorrect) {
+                earnedScore = questionMaxScore;
+                totalScore += earnedScore;
+                gradeText = "صحيح";
+            } else {
+                earnedScore = 0;
+                gradeText = "خطأ / صفر";
+            }
         }
 
         breakdownDetails.push({ 
@@ -5045,31 +5058,24 @@ window.restartHome = function() {
             userAnswer: isAnswered ? formatText(userAns, q.tashkeel) : "لم يُجب", 
             correctAnswer: formatText(correctAnswerText, q.tashkeel), 
             isCorrect,
+            earnedScore,
+            maxScore: questionMaxScore,
+            gradeText,
             type: q.type || 'mcq',
-            essayGrade, 
             explanation: formatText(q.exp || "", q.tashkeel) 
         });
-        
-        if (isCorrect && q.type !== 'essay') { 
-            objectiveScore++; 
-            markQuestionAsAnswered(quizState.topic, q.q); 
-        }
     });
 
-    const total = quizState.questions.length; 
-    const score = objectiveScore; 
-    // احتساب إجمالي الأسئلة (الموضوعية + المقالية المصححة تلقائياً)
-    const objectiveTotal = quizState.questions.filter(q => q.type !== 'essay' || (q.type === 'essay' && q.essayGrade === true)).length;
-    const halfTotal = total / 2;
+    const totalQuestionsCount = quizState.questions.length; 
+    const finalScore = totalScore; 
+    const halfTotal = totalQuestionsCount / 2;
 
-    let examStatus = "بانتظار التصحيح";
-    if (pendingEssayCount === 0) {
-        examStatus = score >= halfTotal ? "ناجح" : "راسب";
-    } else {
-        examStatus = score >= halfTotal ? "ناجح" : "بانتظار التصحيح";
+    let examStatus = finalScore >= halfTotal ? "ناجح" : "راسب";
+    if (pendingEssayCount > 0 && finalScore < halfTotal) {
+        examStatus = "بانتظار التصحيح";
     }
 
-    const pct = total > 0 ? Math.round((score / total) * 100) : 0; 
+    const finalPct = totalQuestionsCount > 0 ? Math.round((finalScore / totalQuestionsCount) * 100) : 0; 
     const durationSecs = Math.floor((Date.now() - quizState.startTime) / 1000);
 
     const newRecord = { 
@@ -5080,19 +5086,18 @@ window.restartHome = function() {
         branch: quizState.branch, 
         topic: quizState.topic,
         stageGrade: `${quizState.stage} ➔ ${quizState.grade} ➔ ${quizState.branch} (${quizState.topic})`, 
-        score, 
-        objectiveTotal: total, 
-        total, 
-        pct, 
+        score: finalScore, 
+        objectiveTotal: totalQuestionsCount, 
+        total: totalQuestionsCount, 
+        pct: finalPct, 
         status: examStatus, 
         pendingEssayCount, 
         date: new Date().toLocaleString('ar-EG'), 
         duration: `${Math.floor(durationSecs / 60)}د و ${durationSecs % 60}ث`, 
-        answeredCount: `${answeredCount} من ${total}`, 
+        answeredCount: `${answeredCount} من ${totalQuestionsCount}`, 
         breakdown: breakdownDetails 
     };
 
-    // التحديث الفوري لمصفوفة السجلات المحلية والذاكرة
     let existingRecords = [];
     try {
         existingRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
@@ -5102,20 +5107,17 @@ window.restartHome = function() {
     
     existingRecords.unshift(newRecord);
     studentRecords = existingRecords;
-    
-    // الحفظ الفوري في الـ LocalStorage
     localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
-    // واجهة النتيجة
     document.getElementById('view-quiz').classList.add('hidden'); 
     const resView = document.getElementById('view-result');
     document.getElementById('quick-info-top-btn').classList.add('hidden');
     
-    document.getElementById('res-score').textContent = `${score} / ${total}`; 
-    document.getElementById('res-pct').textContent = `${pct}٪`;
+    document.getElementById('res-score').textContent = `${finalScore} / ${totalQuestionsCount}`; 
+    document.getElementById('res-pct').textContent = `${finalPct}%`;
     
     const answeredEl = document.getElementById('display-answered-count');
-    if (answeredEl) answeredEl.textContent = `${answeredCount} من ${total}`;
+    if (answeredEl) answeredEl.textContent = `${answeredCount} من ${totalQuestionsCount}`;
 
     const passFailEl = document.getElementById('res-pass-fail');
     passFailEl.textContent = examStatus; 
@@ -5126,7 +5128,7 @@ window.restartHome = function() {
     const iconEl = document.getElementById('res-icon-i');
 
     if (pendingEssayCount > 0) {
-        resMsg.innerHTML = `أتممت الاختبار بنجاح!<br><span class="text-amber-700 font-black text-sm sm:text-base bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 inline-block mt-2">⚠️ تم تصحيح الأسئلة المطابقة، ويوجد (${pendingEssayCount}) أسئلة مقالية في انتظار مراجعة المعلم.</span>`;
+        resMsg.innerHTML = `أتممت الاختبار بنجاح!<br><span class="text-amber-700 font-black text-sm sm:text-base bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 inline-block mt-2">⚠️ بانتظار مراجعة وتصحيح (${pendingEssayCount}) أسئلة مقالية من المعلم.</span>`;
     } else {
         resMsg.textContent = appSettings.successMessage || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز.";
     }
@@ -5137,16 +5139,11 @@ window.restartHome = function() {
         iconEl.className = "fa-solid fa-trophy";
         document.getElementById('cert-btn-container').classList.remove('hidden'); 
         if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); 
-    } else if (examStatus === 'راسب') {
+    } else {
         resView.className = "flex flex-col items-center justify-center text-center space-y-6 bg-rose-50/60 rounded-3xl p-8 shadow-xl border-2 border-rose-200 transition-all duration-300";
         iconContainer.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-rose-100 text-rose-600 border-4 border-rose-300";
         iconEl.className = "fa-solid fa-xmark";
         document.getElementById('cert-btn-container').classList.add('hidden'); 
-    } else {
-        resView.className = "flex flex-col items-center justify-center text-center space-y-6 bg-amber-50/60 rounded-3xl p-8 shadow-xl border-2 border-amber-200 transition-all duration-300";
-        iconContainer.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-amber-100 text-amber-700 border-4 border-amber-300";
-        iconEl.className = "fa-solid fa-hourglass-half";
-        document.getElementById('cert-btn-container').classList.add('hidden');
     }
 
     const pdfBtn = document.getElementById('student-pdf-btn');
@@ -5158,7 +5155,6 @@ window.restartHome = function() {
         }
     }
 
-    // مزامنة فورية في الخلفية لتحديث لوحة التحكم
     setTimeout(() => { saveStudentRecordsBackground(); }, 10);
 }
 
@@ -5301,8 +5297,6 @@ window.restartHome = function() {
 
 function openStudentQuizReview() {
     let details = [];
-    
-    // 1. محاولة جلب تفاصيل أحدث سجل محفوظ للطالب
     let existingRecords = [];
     try {
         existingRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
@@ -5310,61 +5304,33 @@ function openStudentQuizReview() {
         existingRecords = [];
     }
 
-    // إذا كانت السجلات موجودة، نأخذ السجل الأول (أو الأحدث)
     if (existingRecords.length > 0 && existingRecords[0].breakdown && existingRecords[0].breakdown.length > 0) {
         details = existingRecords[0].breakdown;
     } 
-    // 2. محاولة احتياطية من quizState للاختبارات العادية
-    else if (typeof quizState !== 'undefined' && quizState.questions && quizState.questions.length > 0) {
-        details = quizState.questions.map((q, idx) => {
-            const userAns = quizState.answers[idx];
-            const isAnswered = userAns !== null && userAns !== undefined && String(userAns).trim() !== "";
-            let correctAnswerText = q.ans;
-            if (Array.isArray(q.modelAnswers)) correctAnswerText = q.modelAnswers.join(' أو ');
-            
-            return {
-                qIndex: idx + 1,
-                qText: formatText(q.q, q.tashkeel),
-                options: q.opts ? q.opts.map(opt => formatText(opt, q.tashkeel)) : [],
-                userAnswer: isAnswered ? formatText(userAns, q.tashkeel) : "لم يُجب",
-                correctAnswer: formatText(correctAnswerText, q.tashkeel),
-                isCorrect: userAns === q.ans,
-                type: q.type || 'mcq',
-                explanation: formatText(q.exp || "", q.tashkeel)
-            };
-        });
-    }
 
     let reviewHtml = "";
     if (details.length === 0) {
         reviewHtml = `<div class="bg-white p-8 rounded-3xl text-center text-slate-500 font-bold text-lg">لا توجد تفاصيل مراجعة متاحة حالياً.</div>`;
     } else {
-        let currentSection = "";
         details.forEach(item => {
-            // دعم عرض عنوان القسم في الامتحانات الشهرية والشاملة
-            if (item.sectionTitle && item.sectionTitle !== currentSection) {
-                currentSection = item.sectionTitle;
-                reviewHtml += `<div class="bg-sky-100/90 border-2 border-sky-300 text-sky-950 font-black text-xl p-4 rounded-2xl my-6 flex items-center gap-2"><i class="fa-solid fa-folder-open text-sky-600"></i> ${escapeHTML(currentSection)}</div>`;
-            }
-
             if (item.type === 'essay') {
-                let isEssayCorrect = item.isCorrect === true || item.essayGrade === true;
-                let essayStatusText = isEssayCorrect ? '<span class="text-emerald-600 font-black text-base">إجابة صحيحة ومطابقة ✓</span>' : (item.essayGrade === 0 ? '<span class="text-rose-600 font-black text-base">خطأ / صفر ✗</span>' : '<span class="text-amber-600 font-black text-base">بانتظار تصحيح المعلم ⏳</span>');
+                let scoreBadge = `<span class="bg-indigo-100 text-indigo-900 px-3 py-1 rounded-xl text-sm font-black">الدرجة: ${item.earnedScore !== undefined ? item.earnedScore : 0} / ${item.maxScore || 1} (${item.gradeText || 'بانتظار المراجعة'})</span>`;
 
                 reviewHtml += `<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-amber-300 shadow-sm space-y-4">
-                    <div class="flex justify-between items-center border-b pb-3">
+                    <div class="flex justify-between items-center border-b pb-3 flex-wrap gap-2">
                         <h4 class="font-black text-xl text-amber-950">س${item.qIndex}: ${escapeHTML(item.qText)}</h4>
-                        <span>${essayStatusText}</span>
+                        ${scoreBadge}
                     </div>
                     <div class="text-lg text-slate-800 font-bold bg-amber-50 p-4 rounded-xl border border-amber-200">
                         <strong class="text-amber-700 block mb-1">إجابتك:</strong> ${escapeHTML(item.userAnswer)}
                     </div>
-                    ${item.correctAnswer && item.correctAnswer !== "إجابة مقالية (بانتظار تقييم المعلم)" ? `<div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-base font-bold text-emerald-900"><strong>الإجابة النموذجية:</strong> ${escapeHTML(item.correctAnswer)}</div>` : ''}
+                    ${item.correctAnswer ? `<div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-base font-bold text-emerald-900"><strong>الإجابة النموذجية المقبولة:</strong> ${escapeHTML(item.correctAnswer)}</div>` : ''}
+                    ${item.explanation ? `<div class="p-4 bg-sky-50/70 rounded-2xl border border-sky-200 text-base text-sky-950 font-bold"><strong>التعليل والشرح:</strong> ${escapeHTML(item.explanation)}</div>` : ''}
                 </div>`;
             } else {
-                let statusBadge = item.userAnswer !== "لم يُجب" && item.userAnswer !== "لم يجب" ? 
-                    (item.isCorrect ? '<span class="text-emerald-600 font-black text-base">صحيحة ✓</span>' : '<span class="text-rose-600 font-black text-base">خاطئة ✗</span>') : 
-                    '<span class="text-amber-600 font-black text-base">لم يجب عليها</span>';
+                let statusBadge = item.isCorrect ? 
+                    `<span class="bg-emerald-100 text-emerald-900 px-3 py-1 rounded-xl text-sm font-black">صحيح (${item.earnedScore || 1}/${item.maxScore || 1}) ✓</span>` : 
+                    `<span class="bg-rose-100 text-rose-900 px-3 py-1 rounded-xl text-sm font-black">خطأ (0/${item.maxScore || 1}) ✗</span>`;
 
                 let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">';
                 if (item.options) {
@@ -5378,9 +5344,9 @@ function openStudentQuizReview() {
                 optsHtml += '</div>';
 
                 reviewHtml += `<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 shadow-sm space-y-4">
-                    <div class="flex justify-between items-center border-b pb-3">
+                    <div class="flex justify-between items-center border-b pb-3 flex-wrap gap-2">
                         <h4 class="font-black text-xl text-sky-950">س${item.qIndex}: ${escapeHTML(item.qText)}</h4>
-                        <span>${statusBadge}</span>
+                        ${statusBadge}
                     </div>
                     <div class="text-base text-slate-700 font-bold bg-slate-50 p-3 rounded-xl">إجابتك: <strong class="text-sky-900">${escapeHTML(item.userAnswer)}</strong></div>
                     ${optsHtml}
