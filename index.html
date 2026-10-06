@@ -5023,6 +5023,7 @@ window.restartHome = function() {
 
             let matchedModel = validAnswers.length > 0 && validAnswers.some(ansOpt => ansOpt === cleanUserAns);
 
+            // دعم التصحيح التلقائي أو الذكي
             if (matchedModel || (q.essayGrade === true)) {
                 earnedScore = questionMaxScore;
                 isCorrect = true;
@@ -5034,10 +5035,15 @@ window.restartHome = function() {
                 isCorrect = false;
                 gradeText = "لم يُجب (صفر)";
             } else {
-                earnedScore = 0;
-                isCorrect = false;
-                gradeText = "بانتظار مراجعة المعلم";
-                pendingEssayCount++;
+                // إذا لم تتطابق تلقائياً، تترك للمراجعة اليدوية من المعلم
+                earnedScore = q.earnedScore !== undefined ? q.earnedScore : 0;
+                isCorrect = earnedScore > 0;
+                gradeText = q.gradeText || "بانتظار مراجعة المعلم";
+                if (q.earnedScore === undefined) {
+                    pendingEssayCount++;
+                } else {
+                    totalScore += earnedScore;
+                }
             }
         } else {
             isCorrect = isAnswered && userAns === q.ans;
@@ -5058,7 +5064,7 @@ window.restartHome = function() {
             userAnswer: isAnswered ? formatText(userAns, q.tashkeel) : "لم يُجب", 
             correctAnswer: formatText(correctAnswerText, q.tashkeel), 
             isCorrect,
-            earnedScore,
+            earnedScore: earnedScore,
             maxScore: questionMaxScore,
             gradeText,
             type: q.type || 'mcq',
@@ -5157,6 +5163,7 @@ window.restartHome = function() {
 
     setTimeout(() => { saveStudentRecordsBackground(); }, 10);
 }
+
 
     function openCertModal() {
         if (!quizState.name) return;
@@ -9861,6 +9868,7 @@ async function openStudentRecordDetailsById(recordId) {
         alert("عذراً، تعذر العثور على تفاصيل هذا السجل.");
     }
 }
+
 // ==========================================
 // إدارة الامتحانات الشهرية والشاملة (النظام الشامل)
 // ==========================================
