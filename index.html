@@ -5082,7 +5082,7 @@ window.restartHome = function() {
             if (matchedModel) {
                 earnedScore = questionMaxScore;
                 isCorrect = true;
-                gradeText = "صحيح (مصحح ذكياً)";
+                gradeText = `مصحح ذكياً (${earnedScore}/${questionMaxScore})`;
                 objectiveScore += earnedScore;
                 correctAnswerText = q.modelAnswers ? q.modelAnswers.join(' أو ') : q.ans;
             } else if (!isAnswered) {
@@ -8722,62 +8722,63 @@ function renderCurrentQuickGradingItem() {
         </div>
     `;
 }
+// 1. أضف الدالة المساعدة هنا أولاً:
+function recalculateRecordScore(rec) {
+    if (!rec || !rec.breakdown) return;
+    let totalScore = 0;
+    let pending = 0;
+
+    rec.breakdown.forEach(item => {
+        const hasNoOpts = (!item.opts || item.opts.length === 0) && (!item.options || item.options.length === 0);
+        const isMarkedPending = item.correctAnswer && String(item.correctAnswer).includes('بانتظار');
+        const isExplicitEssay = item.type === 'essay' || item.type === 'passage_standalone' || item.type === 'passage_sub';
+        const isItemEssay = hasNoOpts || isMarkedPending || isExplicitEssay;
+
+        if (isItemEssay) {
+            if (item.earnedScore !== undefined && item.earnedScore !== null && !isNaN(item.earnedScore) && item.gradeText !== "بانتظار تصحيح المعلم") {
+                totalScore += parseFloat(item.earnedScore);
+            } else if (item.essayGrade !== undefined && item.essayGrade !== null && !isNaN(item.essayGrade) && typeof item.essayGrade === 'number') {
+                totalScore += parseFloat(item.essayGrade);
+                item.earnedScore = parseFloat(item.essayGrade);
+            } else {
+                pending++;
+            }
+        } else {
+            if (item.earnedScore !== undefined && item.earnedScore !== null && !isNaN(item.earnedScore)) {
+                totalScore += parseFloat(item.earnedScore);
+            } else if (item.isCorrect) {
+                totalScore += 1;
+            }
+        }
+    });
+
+    let totalQ = rec.total || rec.breakdown.length || 20;
+    rec.score = Number(totalScore.toFixed(1));
+    if (rec.score > totalQ) rec.score = totalQ;
+    
+    rec.pendingEssayCount = pending;
+    rec.pct = totalQ > 0 ? Math.round((rec.score / totalQ) * 100) : 0;
+
+    let halfTotal = totalQ / 2;
+    if (pending === 0) {
+        rec.status = rec.score >= halfTotal ? "ناجح" : "راسب";
+    } else {
+        rec.status = "بانتظار التصحيح";
+    }
+}
 
 function submitQuickGrade(recordIndex, breakdownIndex, gradeValue) {
     if (studentRecords[recordIndex] && studentRecords[recordIndex].breakdown[breakdownIndex]) {
         let rec = studentRecords[recordIndex];
         let item = rec.breakdown[breakdownIndex];
         
-        // تعيين الدرجة الجديدة بدقة
-        const numericGrade = parseFloat(gradeValue) || 0;
+        const numericGrade = (gradeValue !== undefined && gradeValue !== null && !isNaN(gradeValue)) ? parseFloat(gradeValue) : 0;
         item.essayGrade = numericGrade;
+        item.earnedScore = numericGrade;
         item.isCorrect = numericGrade > 0;
-        
-        // 💡 الحل الجذري: حساب المجموع الكلي من جديد بشكل دقيق وصافي
-        let totalObjectiveScore = 0;
-        let totalEssayScore = 0;
-        let pendingCount = 0;
+        item.gradeText = `تصحيح المعلم (${numericGrade}/${item.maxScore || 1})`;
 
-        rec.breakdown.forEach(b => {
-            const hasNoOpts = (!b.opts || b.opts.length === 0) && (!b.options || b.options.length === 0);
-            const isMarkedPending = b.correctAnswer && String(b.correctAnswer).includes('بانتظار');
-            const isExplicitEssay = b.type === 'essay' || b.type === 'passage_standalone' || b.type === 'passage_sub';
-            const isItemEssay = hasNoOpts || isMarkedPending || isExplicitEssay;
-            
-            if (isItemEssay) {
-                if (b.essayGrade !== undefined && b.essayGrade !== null && b.essayGrade !== '') {
-                    totalEssayScore += parseFloat(b.essayGrade);
-                } else {
-                    pendingCount++;
-                }
-            } else {
-                // الأسئلة الموضوعية العادية
-                if (b.isCorrect) {
-                    totalObjectiveScore += (b.grade !== undefined && b.grade !== null) ? parseFloat(b.grade) : 1;
-                }
-            }
-        });
-
-        // اعتماد المجموع الصافي بدقة متناهية ومنزلة عشرية واحدة
-        rec.score = Number((totalObjectiveScore + totalEssayScore).toFixed(1));
-        let totalQ = rec.total || rec.breakdown.length;
-        if (rec.score > totalQ) rec.score = totalQ;
-        
-        rec.pendingEssayCount = pendingCount;
-        
-        let objTotal = rec.objectiveTotal !== undefined ? rec.objectiveTotal : totalQ;
-        let currentDenom = (pendingCount > 0 && rec.objectiveTotal) ? objTotal : totalQ;
-        
-        rec.pct = currentDenom > 0 ? Math.round((rec.score / currentDenom) * 100) : 0;
-        
-        let halfTotal = totalQ / 2;
-        if (pendingCount === 0) {
-            let finalPct = Math.round((rec.score / totalQ) * 100);
-            rec.pct = finalPct;
-            rec.status = rec.score >= halfTotal ? "ناجح" : "راسب";
-        } else {
-            rec.status = rec.score >= halfTotal ? "ناجح" : "بانتظار التصحيح";
-        }
+        recalculateRecordScore(rec);
 
         Object.keys(rec).forEach(key => {
             if (rec[key] === undefined) rec[key] = null;
@@ -8932,63 +8933,20 @@ function gradeEssayQuestion(recordIndex, breakdownIndex, gradeValue) {
         let rec = studentRecords[recordIndex];
         let item = rec.breakdown[breakdownIndex];
         
-        // تنظيف وحفظ الدرجة الجديدة بدقة
-        const numericGrade = parseFloat(gradeValue) || 0;
+        const numericGrade = (gradeValue !== undefined && gradeValue !== null && !isNaN(gradeValue)) ? parseFloat(gradeValue) : 0;
         item.essayGrade = numericGrade;
+        item.earnedScore = numericGrade;
         item.isCorrect = numericGrade > 0;
+        item.gradeText = `تصحيح المعلم (${numericGrade}/${item.maxScore || 1})`;
 
-        // إعادة حساب المجموع الكلي للطالب من جديد بشكل دقيق وصافي
-        let totalObjectiveScore = 0;
-        let totalEssayScore = 0;
-        let pendingCount = 0;
-
-        rec.breakdown.forEach(b => {
-            const hasNoOpts = (!b.opts || b.opts.length === 0) && (!b.options || b.options.length === 0);
-            const isMarkedPending = b.correctAnswer && String(b.correctAnswer).includes('بانتظار');
-            const isExplicitEssay = b.type === 'essay' || b.type === 'passage_standalone' || b.type === 'passage_sub';
-            const isItemEssay = hasNoOpts || isMarkedPending || isExplicitEssay;
-            
-            if (isItemEssay) {
-                if (b.essayGrade !== undefined && b.essayGrade !== null && b.essayGrade !== '') {
-                    totalEssayScore += parseFloat(b.essayGrade);
-                } else {
-                    pendingCount++;
-                }
-            } else {
-                if (b.isCorrect) {
-                    totalObjectiveScore += (b.grade !== undefined && b.grade !== null) ? parseFloat(b.grade) : 1;
-                }
-            }
-        });
-
-        rec.score = Number((totalObjectiveScore + totalEssayScore).toFixed(1));
-        let totalQ = rec.total || rec.breakdown.length;
-        if (rec.score > totalQ) rec.score = totalQ;
-        
-        rec.pendingEssayCount = pendingCount;
-        
-        let objTotal = rec.objectiveTotal !== undefined ? rec.objectiveTotal : totalQ;
-        let currentDenom = (pendingCount > 0 && rec.objectiveTotal) ? objTotal : totalQ;
-        
-        rec.pct = currentDenom > 0 ? Math.round((rec.score / currentDenom) * 100) : 0;
-        
-        let halfTotal = totalQ / 2;
-        if (pendingCount === 0) {
-            let finalPct = Math.round((rec.score / totalQ) * 100);
-            rec.pct = finalPct;
-            rec.status = rec.score >= halfTotal ? "ناجح" : "راسب";
-        } else {
-            rec.status = rec.score >= halfTotal ? "ناجح" : "بانتظار التصحيح";
-        }
+        recalculateRecordScore(rec);
 
         Object.keys(rec).forEach(key => {
             if (rec[key] === undefined) rec[key] = null;
         });
 
-        // الحفظ الفوري في الذاكرة
         localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
-        // تحديث جدول السجلات ونافذة التفاصيل فوراً لتظهر التعديلات أمامك
         if (typeof renderAdminRecordsTable === 'function') {
             renderAdminRecordsTable();
         }
@@ -9873,9 +9831,11 @@ function openStudentFullRecordDetailsPage(recordId) {
             let statusBadge = "";
 
             if (isEssay) {
-                if (item.essayGrade === true || item.isCorrect === true) {
-                    statusBadge = '<span class="text-emerald-700 bg-emerald-50 px-3.5 py-1.5 rounded-xl text-sm font-black border border-emerald-200">صحيح (مصحح ذكياً) ✓</span>';
-                } else if (item.essayGrade === 0 || item.essayGrade === false) {
+    if (item.essayGrade === true || item.isCorrect === true || (typeof item.essayGrade === 'number' && item.essayGrade > 0)) {
+        let score = item.earnedScore !== undefined && item.earnedScore !== null ? item.earnedScore : (typeof item.essayGrade === 'number' ? item.essayGrade : 1);
+        let max = item.maxScore || 1;
+        statusBadge = `<span class="text-emerald-700 bg-emerald-50 px-3.5 py-1.5 rounded-xl text-sm font-black border border-emerald-200">مصحح ذكياً (${score}/${max}) ✓</span>`;
+    } else if (item.essayGrade === 0 || item.essayGrade === false) {
                     statusBadge = '<span class="text-rose-700 bg-rose-50 px-3.5 py-1.5 rounded-xl text-sm font-black border border-emerald-200">خطأ / صفر ✗</span>';
                 } else {
                     statusBadge = '<span class="text-amber-700 bg-amber-50 px-3.5 py-1.5 rounded-xl text-sm font-black border border-emerald-200">بانتظار تصحيح المعلم ⏳</span>';
