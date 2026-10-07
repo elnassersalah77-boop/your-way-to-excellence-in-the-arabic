@@ -3201,12 +3201,68 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 }
 
-        window.addEventListener('DOMContentLoaded', () => {
+       window.addEventListener('DOMContentLoaded', () => {
             if (typeof toggleCloudLoading === 'function') {
                 toggleCloudLoading(true, "جَارِي التَّحْمِيل...");
             }
             loadDataFromCloud();
         });
+
+        // دالة تنظيف السجلات القديمة تلقائياً لتجنب ظهور قيم null في النسبة أو الدرجة
+        function sanitizeExistingRecords() {
+    try {
+        let recs = JSON.parse(localStorage.getItem('studentRecords')) || [];
+        let updated = false;
+        recs = recs.map(r => {
+            let totalQ = r.total || (r.breakdown ? r.breakdown.length : 0) || 20;
+            let currentScore = 0;
+
+            // حساب دقيق للدرجة من تفاصيل الـ breakdown إن وجدت لضمان عدم ظهور null
+            if (r.breakdown && Array.isArray(r.breakdown)) {
+                r.breakdown.forEach(item => {
+                    if (item.earnedScore !== undefined && item.earnedScore !== null && !isNaN(item.earnedScore)) {
+                        currentScore += parseFloat(item.earnedScore);
+                    }
+                });
+            } else {
+                currentScore = (r.score !== undefined && r.score !== null && !isNaN(r.score)) ? parseFloat(r.score) : 0;
+            }
+
+            // إذا كانت القيم غير موجودة أو تالفة، يتم تصحيحها قيمياً ورقمياً
+            if (r.score === null || r.score === undefined || isNaN(r.score) || r.pct === null || r.pct === undefined || isNaN(r.pct)) {
+                updated = true;
+                r.score = currentScore;
+                r.total = totalQ;
+                r.pct = totalQ > 0 ? Math.round((currentScore / totalQ) * 100) : 0;
+            }
+
+            // التأكد من ضبط الحالة بشكل سليم وعدم بقائها فارغة أو null
+            if (!r.status || r.status === "null" || r.status === "undefined") {
+                updated = true;
+                let pendingCount = r.pendingEssayCount || 0;
+                if (pendingCount > 0) {
+                    r.status = "بانتظار التصحيح";
+                } else {
+                    r.status = currentScore >= (totalQ / 2) ? "ناجح" : "راسب";
+                }
+            }
+
+            return r;
+        });
+
+        if (updated) {
+            localStorage.setItem('studentRecords', JSON.stringify(recs));
+            studentRecords = recs;
+        }
+    } catch(e) {
+        console.log("خطأ في تنظيف السجلات:", e);
+    }
+}
+
+// فحص وتنظيف السجلات تلقائياً فور تحميل الصفحة
+window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(sanitizeExistingRecords, 300);
+});
 
        async function loadAdminRecordsFromCloud() {
     try {
@@ -4996,7 +5052,7 @@ window.restartHome = function() {
 
     if (quizState.timerInterval) clearInterval(quizState.timerInterval);
     
-    let totalScore = 0; 
+    let objectiveScore = 0; 
     let answeredCount = 0; 
     let pendingEssayCount = 0; 
     let breakdownDetails = [];
@@ -5023,33 +5079,27 @@ window.restartHome = function() {
 
             let matchedModel = validAnswers.length > 0 && validAnswers.some(ansOpt => ansOpt === cleanUserAns);
 
-            // دعم التصحيح التلقائي أو الذكي
-            if (matchedModel || (q.essayGrade === true)) {
+            if (matchedModel) {
                 earnedScore = questionMaxScore;
                 isCorrect = true;
-                gradeText = "صحيح (درجة كاملة)";
-                totalScore += earnedScore;
+                gradeText = "صحيح (مصحح ذكياً)";
+                objectiveScore += earnedScore;
                 correctAnswerText = q.modelAnswers ? q.modelAnswers.join(' أو ') : q.ans;
             } else if (!isAnswered) {
                 earnedScore = 0;
                 isCorrect = false;
                 gradeText = "لم يُجب (صفر)";
             } else {
-                // إذا لم تتطابق تلقائياً، تترك للمراجعة اليدوية من المعلم
-                earnedScore = q.earnedScore !== undefined ? q.earnedScore : 0;
-                isCorrect = earnedScore > 0;
-                gradeText = q.gradeText || "بانتظار مراجعة المعلم";
-                if (q.earnedScore === undefined) {
-                    pendingEssayCount++;
-                } else {
-                    totalScore += earnedScore;
-                }
+                earnedScore = 0;
+                isCorrect = false;
+                gradeText = "بانتظار تصحيح المعلم";
+                pendingEssayCount++;
             }
         } else {
             isCorrect = isAnswered && userAns === q.ans;
             if (isCorrect) {
                 earnedScore = questionMaxScore;
-                totalScore += earnedScore;
+                objectiveScore += earnedScore;
                 gradeText = "صحيح";
             } else {
                 earnedScore = 0;
@@ -5072,32 +5122,33 @@ window.restartHome = function() {
         });
     });
 
-    const totalQuestionsCount = quizState.questions.length; 
-    const finalScore = totalScore; 
+    const totalQuestionsCount = quizState.questions.length || 1; 
+    const finalScore = objectiveScore; 
     const halfTotal = totalQuestionsCount / 2;
 
-    let examStatus = finalScore >= halfTotal ? "ناجح" : "راسب";
-    if (pendingEssayCount > 0 && finalScore < halfTotal) {
-        examStatus = "بانتظار التصحيح";
+    let examStatus = "بانتظار التصحيح";
+    if (pendingEssayCount === 0) {
+        examStatus = finalScore >= halfTotal ? "ناجح" : "راسب";
     }
 
-    const finalPct = totalQuestionsCount > 0 ? Math.round((finalScore / totalQuestionsCount) * 100) : 0; 
+    const finalPct = Math.round((finalScore / totalQuestionsCount) * 100); 
     const durationSecs = Math.floor((Date.now() - quizState.startTime) / 1000);
 
+    // بناء كائن السجل بخصائص رقمية مؤكدة لتجنب أي ظهور لـ null
     const newRecord = { 
         id: 'rec_' + Date.now(),
-        name: quizState.name, 
-        stage: quizState.stage, 
-        grade: quizState.grade, 
-        branch: quizState.branch, 
-        topic: quizState.topic,
-        stageGrade: `${quizState.stage} ➔ ${quizState.grade} ➔ ${quizState.branch} (${quizState.topic})`, 
+        name: quizState.name || 'طالب', 
+        stage: quizState.stage || '', 
+        grade: quizState.grade || '', 
+        branch: quizState.branch || '', 
+        topic: quizState.topic || '',
+        stageGrade: `${quizState.stage || ''} ➔ ${quizState.grade || ''} ➔ ${quizState.branch || ''} (${quizState.topic || ''})`, 
         score: finalScore, 
         objectiveTotal: totalQuestionsCount, 
         total: totalQuestionsCount, 
         pct: finalPct, 
         status: examStatus, 
-        pendingEssayCount, 
+        pendingEssayCount: pendingEssayCount, 
         date: new Date().toLocaleString('ar-EG'), 
         duration: `${Math.floor(durationSecs / 60)}د و ${durationSecs % 60}ث`, 
         answeredCount: `${answeredCount} من ${totalQuestionsCount}`, 
@@ -5115,6 +5166,7 @@ window.restartHome = function() {
     studentRecords = existingRecords;
     localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
+    // تحديث واجهة النتيجة للطالب
     document.getElementById('view-quiz').classList.add('hidden'); 
     const resView = document.getElementById('view-result');
     document.getElementById('quick-info-top-btn').classList.add('hidden');
@@ -5127,29 +5179,22 @@ window.restartHome = function() {
 
     const passFailEl = document.getElementById('res-pass-fail');
     passFailEl.textContent = examStatus; 
-    passFailEl.className = `text-lg font-black ${examStatus === 'ناجح' ? 'text-emerald-600' : examStatus === 'راسب' ? 'text-rose-600' : 'text-amber-600'}`;
+    passFailEl.className = `text-lg font-black text-amber-600`;
 
     const resMsg = document.getElementById('res-msg');
     const iconContainer = document.getElementById('res-icon-container');
     const iconEl = document.getElementById('res-icon-i');
 
     if (pendingEssayCount > 0) {
-        resMsg.innerHTML = `أتممت الاختبار بنجاح!<br><span class="text-amber-700 font-black text-sm sm:text-base bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 inline-block mt-2">⚠️ بانتظار مراجعة وتصحيح (${pendingEssayCount}) أسئلة مقالية من المعلم.</span>`;
+        resMsg.innerHTML = `تم تسجيل النتيجة المبدئية بنجاح!<br><span class="text-amber-700 font-black text-sm sm:text-base bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 inline-block mt-2">⏳ درجتك الحالية (${finalScore} من ${totalQuestionsCount})، ومتبقي (${pendingEssayCount}) أسئلة في انتظار تصحيح المعلم.</span>`;
+        iconContainer.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-amber-100 text-amber-700 border-4 border-amber-300";
+        iconEl.className = "fa-solid fa-hourglass-half";
+        document.getElementById('cert-btn-container').classList.add('hidden');
     } else {
         resMsg.textContent = appSettings.successMessage || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز.";
-    }
-
-    if (examStatus === 'ناجح') {
-        resView.className = "flex flex-col items-center justify-center text-center space-y-6 bg-emerald-50/60 rounded-3xl p-8 shadow-xl border-2 border-emerald-200 transition-all duration-300";
         iconContainer.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-emerald-100 text-amber-500 border-4 border-emerald-300";
         iconEl.className = "fa-solid fa-trophy";
-        document.getElementById('cert-btn-container').classList.remove('hidden'); 
-        if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); 
-    } else {
-        resView.className = "flex flex-col items-center justify-center text-center space-y-6 bg-rose-50/60 rounded-3xl p-8 shadow-xl border-2 border-rose-200 transition-all duration-300";
-        iconContainer.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-rose-100 text-rose-600 border-4 border-rose-300";
-        iconEl.className = "fa-solid fa-xmark";
-        document.getElementById('cert-btn-container').classList.add('hidden'); 
+        document.getElementById('cert-btn-container').classList.remove('hidden');
     }
 
     const pdfBtn = document.getElementById('student-pdf-btn');
@@ -5164,6 +5209,79 @@ window.restartHome = function() {
     setTimeout(() => { saveStudentRecordsBackground(); }, 10);
 }
 
+// 💡 أضف دالة التحديث اليدوي للتصحيح السريع هنا بعدها مباشرة:
+function applyManualEssayGrade(recordId, questionIndex, scoreVal, maxVal = 1) {
+    let records = [];
+    try {
+        records = JSON.parse(localStorage.getItem('studentRecords')) || studentRecords || [];
+    } catch(e) {
+        records = studentRecords || [];
+    }
+
+    const rec = records.find(r => r.id === recordId);
+    if (!rec) {
+        alert("عذراً، لم يتم العثور على سجل هذا الطالب.");
+        return;
+    }
+
+    if (!rec.breakdown) rec.breakdown = [];
+
+    // 1. تحديث درجة السؤال المحدد في الـ breakdown بدقة (تدعم 1، 0.5، و 0)
+    if (rec.breakdown[questionIndex]) {
+        rec.breakdown[questionIndex].earnedScore = parseFloat(scoreVal);
+        rec.breakdown[questionIndex].maxScore = parseFloat(maxVal || 1);
+        rec.breakdown[questionIndex].gradeText = `تصحيح المعلم (${scoreVal}/${maxVal || 1})`;
+        rec.breakdown[questionIndex].isCorrect = parseFloat(scoreVal) > 0;
+    }
+
+    // 2. إعادة حساب مجموع الدرجات الإجمالي بدقة تامة (الموضوعي + المقالي المصحح)
+    let calculatedScore = 0;
+    let pendingCount = 0;
+    let totalQ = rec.total || rec.breakdown.length || 1;
+
+    rec.breakdown.forEach(item => {
+        if (item.earnedScore !== undefined && item.earnedScore !== null && !isNaN(item.earnedScore)) {
+            calculatedScore += parseFloat(item.earnedScore);
+        } else {
+            pendingCount++;
+        }
+    });
+
+    rec.score = isNaN(calculatedScore) ? 0 : calculatedScore;
+    rec.total = totalQ;
+    rec.pendingEssayCount = pendingCount;
+    rec.pct = totalQ > 0 ? Math.round((rec.score / totalQ) * 100) : 0;
+
+    // 3. تحديد الحالة النهائية فوراً (ناجح / راسب) أو بقائها بانتظار التصحيح
+    const halfTotal = totalQ / 2;
+    if (pendingCount === 0) {
+        rec.status = rec.score >= halfTotal ? "ناجح" : "راسب";
+    } else {
+        rec.status = "بانتظار التصحيح";
+    }
+
+    // ضمان عدم وجود أي قيم null أو NaN نهائياً في خصائص العرض
+    if (rec.score === null || isNaN(rec.score)) rec.score = 0;
+    if (rec.pct === null || isNaN(rec.pct)) rec.pct = 0;
+    if (!rec.status || rec.status === "null") rec.status = "بانتظار التصحيح";
+
+    // 4. الحفظ الفوري في التخزين المحلي ومزامنة السحابة
+    studentRecords = records;
+    localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+    if (typeof saveAndSyncRecordsToCloud === 'function') {
+        saveAndSyncRecordsToCloud(studentRecords);
+    }
+
+    alert(`تم اعتماد درجة السؤال (${scoreVal}/${maxVal || 1}) وتحديث النتيجة الإجمالية للطالب (${rec.score} / ${totalQ}) بنجاح!`);
+    
+    // تحديث جداول العرض في لوحة المعلم وسجل الطالب فوراً دون إعادة تحميل
+    if (typeof renderAdminRecordsTable === 'function') {
+        renderAdminRecordsTable();
+    }
+    if (typeof renderStudentPersonalRecords === 'function') {
+        renderStudentPersonalRecords();
+    }
+}
 
     function openCertModal() {
         if (!quizState.name) return;
