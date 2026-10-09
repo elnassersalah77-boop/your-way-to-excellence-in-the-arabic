@@ -1329,82 +1329,115 @@ select, select option {
         </div>
     </div>
 
-                <!-- 10. صفحة سجلات النتائج المستقلة -->
-    <div id="view-admin-records" class="admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto">
-        <div class="max-w-6xl mx-auto w-full space-y-6">
-            <!-- شريط الأزرار الثابت العلوي للقسم -->
-            <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-200 flex flex-wrap justify-between items-center gap-4">
-                <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
-                    <i class="fa-solid fa-chart-bar text-sky-600"></i> سِجِلَّاتُ النَّتَائِجِ
-                </h2>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" onclick="showAdminDashboardPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
-                        <i class="fa-solid fa-gauge"></i> لَوْحَةُ الْإِدَارَةِ
-                    </button>
-                    <button type="button" onclick="restartHome()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
-                        <i class="fa-solid fa-house"></i> الرَّئِيسِيَّةُ
-                    </button>
+                <!-- 10. صفحة سجلات النتائج المستقلة (المحدثة بتبويبي الاختبارات والامتحانات) -->
+<div id="view-admin-records" class="admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto text-right">
+    <div class="max-w-6xl mx-auto w-full space-y-6">
+        <!-- شريط الأزرار الثابت العلوي للقسم -->
+        <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-200 flex flex-wrap justify-between items-center gap-4">
+            <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
+                <i class="fa-solid fa-chart-bar text-sky-600"></i> سِجِلَّاتُ النَّتَائِجِ وَالتَّقْيِيمَاتِ
+            </h2>
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="showAdminDashboardPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+                    <i class="fa-solid fa-gauge"></i> لَوْحَةُ الْإِدَارَةِ
+                </button>
+                <button type="button" onclick="restartHome()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+                    <i class="fa-solid fa-house"></i> الرَّئِيسِيَّةُ
+                </button>
+            </div>
+        </div>
+        
+        <!-- محتوى سجلات النتائج المدمج بالتبويبات والفلاتر الذكية -->
+        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border-2 border-slate-200 space-y-5">
+            
+            <!-- أزرار التبويبين (الاختبارات والامتحانات الشهرية/النهائية) -->
+            <div class="flex gap-2 border-b-2 border-slate-200 pb-4">
+                <button type="button" id="rec-tab-quizzes" onclick="switchAdminRecordsTab('quizzes')" class="flex-1 py-3 px-4 rounded-2xl font-black text-sm sm:text-base transition shadow-sm bg-sky-600 text-white border-2 border-sky-500 cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-pen-nib"></i> سجل اختبارات الدرس (الموضوعات)
+                </button>
+                <button type="button" id="rec-tab-exams" onclick="switchAdminRecordsTab('exams')" class="flex-1 py-3 px-4 rounded-2xl font-black text-sm sm:text-base transition shadow-sm bg-white text-purple-950 border-2 border-purple-300 hover:bg-purple-50 cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-lines"></i> سجل الامتحانات (شهرية ونهائية)
+                </button>
+            </div>
+
+            <div class="flex justify-between items-center flex-wrap gap-2">
+                <h3 id="rec-section-title" class="font-bold text-slate-800 text-base">سجل نتائج اختبارات الموضوعات</h3>
+                <div class="flex gap-2">
+                    <button type="button" onclick="exportAllRecordsExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-file-excel ml-1"></i> تصدير (Excel)</button>
+                    <button type="button" onclick="clearRecords()" class="bg-rose-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer">مسح السجل</button>
                 </div>
             </div>
-            
-            <!-- محتوى سجلات النتائج المدمج بالكامل -->
-            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border-2 border-slate-200 space-y-4">
-                <div class="flex justify-between items-center flex-wrap gap-2">
-                    <h3 class="font-bold text-slate-800">سجل نتائج ودخول الطلاب</h3>
-                    <div class="flex gap-2">
-                        <button type="button" onclick="exportAllRecordsExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer shadow"><i class="fa-solid fa-file-excel ml-1"></i> تصدير (Excel)</button>
-                        <button type="button" onclick="clearRecords()" class="bg-rose-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer">مسح السجل</button>
-                    </div>
-                </div>
 
-                <div class="bg-sky-50 p-3 rounded-2xl border border-sky-200 grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs font-bold">
-                    <div>
-                        <label class="block mb-1 text-slate-700">تصفية بالمرحلة:</label>
-                        <select id="admin-rec-stage-filter" onchange="onAdminRecStageChange()" class="w-full p-2 rounded-xl border bg-white text-sky-950 font-bold"><option value="">الكل</option></select>
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-700">تصفية بالصف:</label>
-                        <select id="admin-rec-grade-filter" onchange="onAdminRecGradeChange()" class="w-full p-2 rounded-xl border bg-white text-sky-950 font-bold"><option value="">الكل</option></select>
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-700">تصفية بالفرع:</label>
-                        <select id="admin-rec-branch-filter" onchange="onAdminRecBranchChange()" class="w-full p-2 rounded-xl border bg-white text-sky-950 font-bold"><option value="">الكل</option></select>
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-700">تصفية بالموضوع:</label>
-                        <select id="admin-rec-topic-filter" onchange="renderAdminRecordsTable()" class="w-full p-2 rounded-xl border bg-white text-sky-950 font-bold"><option value="">الكل</option></select>
-                    </div>
+            <!-- فلاتر التبويب الأول: الاختبارات (مرحلة ➔ صف ➔ فرع ➔ موضوع) مع خيار الكل في البداية -->
+            <div id="rec-filters-quizzes" class="bg-sky-50 p-4 rounded-2xl border border-sky-200 grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs font-bold">
+                <div>
+                    <label class="block mb-1 text-slate-700">المرحلة:</label>
+                    <select id="admin-rec-stage-filter" onchange="onAdminRecStageChange()" class="w-full p-2.5 rounded-xl border bg-white text-sky-950 font-bold"><option value="">الكل</option></select>
                 </div>
+                <div>
+                    <label class="block mb-1 text-slate-700">الصف:</label>
+                    <select id="admin-rec-grade-filter" onchange="onAdminRecGradeChange()" class="w-full p-2.5 rounded-xl border bg-white text-sky-950 font-bold"><option value="">الكل</option></select>
+                </div>
+                <div>
+                    <label class="block mb-1 text-slate-700">الفرع:</label>
+                    <select id="admin-rec-branch-filter" onchange="onAdminRecBranchChange()" class="w-full p-2.5 rounded-xl border bg-white text-sky-950 font-bold"><option value="">الكل</option></select>
+                </div>
+                <div>
+                    <label class="block mb-1 text-slate-700">الموضوع:</label>
+                    <select id="admin-rec-topic-filter" onchange="renderAdminRecordsTable()" class="w-full p-2.5 rounded-xl border bg-white text-sky-950 font-bold"><option value="">الكل</option></select>
+                </div>
+            </div>
 
-                <!-- أزرار الترقيم -->
-                <div class="flex justify-between items-center bg-slate-100 p-3 rounded-2xl border">
-                    <button type="button" id="prev-page-btn" onclick="changeRecordsPage(-1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs transition disabled:opacity-50 cursor-pointer">السابق</button>
-                    <span id="pagination-info" class="text-xs font-black text-slate-700">الصفحة 1 من 1</span>
-                    <button type="button" id="next-page-btn" onclick="changeRecordsPage(1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs transition disabled:opacity-50 cursor-pointer">التالي</button>
+            <!-- فلاتر التبويب الثاني: الامتحانات (مرحلة ➔ صف ➔ نوع الامتحان) مع خيار الكل في البداية -->
+            <div id="rec-filters-exams" class="bg-purple-50 p-4 rounded-2xl border border-purple-200 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-bold hidden">
+                <div>
+                    <label class="block mb-1 text-slate-700">المرحلة:</label>
+                    <select id="admin-recexam-stage-filter" onchange="onAdminRecExamStageChange()" class="w-full p-2.5 rounded-xl border bg-white text-purple-950 font-bold"><option value="">الكل</option></select>
                 </div>
+                <div>
+                    <label class="block mb-1 text-slate-700">الصف:</label>
+                    <select id="admin-recexam-grade-filter" onchange="renderAdminRecordsTable()" class="w-full p-2.5 rounded-xl border bg-white text-purple-950 font-bold"><option value="">الكل</option></select>
+                </div>
+                <div>
+                    <label class="block mb-1 text-slate-700">نوع الامتحان:</label>
+                    <select id="admin-recexam-type-filter" onchange="renderAdminRecordsTable()" class="w-full p-2.5 rounded-xl border bg-white text-purple-950 font-bold">
+                        <option value="">كل الأنواع</option>
+                        <option value="weekly">تقييم أسبوعي</option>
+                        <option value="monthly">امتحان شهري</option>
+                        <option value="final">امتحان نهائي واسترشادي</option>
+                    </select>
+                </div>
+            </div>
 
-                <!-- الجدول المحدث (7 أعمدة) لتفاصيل الطالب الكاملة -->
-                <div class="overflow-x-auto border rounded-2xl bg-white">
-                    <table class="w-full text-right border-collapse">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700 font-bold text-xs border-b">
-                                <th class="p-3">#</th>
-                                <th class="p-3">اسم الطالب</th>
-                                <th class="p-3">المسار (مرحلة/صف/فرع/موضوع)</th>
-                                <th class="p-3">الحالة</th>
-                                <th class="p-3">الدرجة</th>
-                                <th class="p-3">التاريخ / المدة</th>
-                                <th class="p-3">تفاصيل</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-tbody" class="divide-y text-sm">
-                            <tr><td colspan="7" class="p-4 text-center text-slate-500">لا توجد سجلات.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <!-- أزرار الترقيم -->
+            <div class="flex justify-between items-center bg-slate-100 p-3 rounded-2xl border">
+                <button type="button" id="prev-page-btn" onclick="changeRecordsPage(-1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs transition disabled:opacity-50 cursor-pointer">السابق</button>
+                <span id="pagination-info" class="text-xs font-black text-slate-700">الصفحة 1 من 1</span>
+                <button type="button" id="next-page-btn" onclick="changeRecordsPage(1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs transition disabled:opacity-50 cursor-pointer">التالي</button>
+            </div>
+
+            <!-- جدول السجلات المحدث -->
+            <div class="overflow-x-auto border rounded-2xl bg-white">
+                <table class="w-full text-right border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-700 font-bold text-xs border-b">
+                            <th class="p-3">#</th>
+                            <th class="p-3">اسم الطالب</th>
+                            <th class="p-3">المسار (المرحلة/الصف/الفرع/الموضوع أو نوع الامتحان)</th>
+                            <th class="p-3">الحالة</th>
+                            <th class="p-3">الدرجة</th>
+                            <th class="p-3">التاريخ / المدة</th>
+                            <th class="p-3">تفاصيل</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-tbody" class="divide-y text-sm">
+                        <tr><td colspan="7" class="p-4 text-center text-slate-500">لا توجد سجلات.</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
     <!-- 17. صفحة إدارة الامتحانات الشهرية والشاملة (View مستقل) -->
     <div id="view-admin-monthly-exams" class="admin-section-view hidden flex-col min-h-screen bg-slate-50 p-4 sm:p-8 w-full fixed inset-0 z-50 overflow-y-auto text-right">
@@ -5175,9 +5208,21 @@ window.restartHome = function() {
     studentRecords = existingRecords;
     localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
-    document.getElementById('view-quiz').classList.add('hidden'); 
+    // 💡 إخفاء شاشة الاختبار وإظهار شاشة النتيجة بوضوح تام لمنع الشاشة البيضاء
+    const viewQuiz = document.getElementById('view-quiz');
+    if (viewQuiz) {
+        viewQuiz.classList.add('hidden'); 
+        viewQuiz.classList.remove('flex');
+    }
+    
     const resView = document.getElementById('view-result');
-    document.getElementById('quick-info-top-btn').classList.add('hidden');
+    if (resView) {
+        resView.classList.remove('hidden');
+        resView.classList.add('flex');
+    }
+
+    const quickBtn = document.getElementById('quick-info-top-btn');
+    if (quickBtn) quickBtn.classList.add('hidden');
     
     document.getElementById('res-score').textContent = `${finalScore} / ${totalQuestionsCount}`; 
     document.getElementById('res-pct').textContent = `${finalPct}%`;
@@ -5187,20 +5232,29 @@ window.restartHome = function() {
 
     const passFailEl = document.getElementById('res-pass-fail');
     passFailEl.textContent = examStatus; 
-    passFailEl.className = `text-lg font-black text-amber-600`;
 
     const resMsg = document.getElementById('res-msg');
     const iconContainer = document.getElementById('res-icon-container');
     const iconEl = document.getElementById('res-icon-i');
 
-    if (pendingEssayCount > 0) {
+    // 💡 التفرقة الدقيقة بين (بانتظار التصحيح، راسب، وناجح) لضمان ألوان وأيقونات صحيحة
+    if (examStatus === "بانتظار التصحيح") {
+        passFailEl.className = `text-lg font-black text-amber-600`;
         resMsg.innerHTML = `تم تسجيل النتيجة المبدئية بنجاح!<br><span class="text-amber-700 font-black text-sm sm:text-base bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 inline-block mt-2">⏳ درجتك الحالية (${finalScore} من ${totalQuestionsCount})، ومتبقي (${pendingEssayCount}) أسئلة في انتظار تصحيح المعلم.</span>`;
         iconContainer.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-amber-100 text-amber-700 border-4 border-amber-300";
         iconEl.className = "fa-solid fa-hourglass-half";
         document.getElementById('cert-btn-container').classList.add('hidden');
+    } else if (examStatus === "راسب") {
+        passFailEl.className = `text-lg font-black text-rose-600`;
+        resMsg.textContent = appSettings.failMessage || "لا تتراجع! المحاولة هي البداية الحقيقية للنجاح، حاول مرة أخرى.";
+        iconContainer.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-rose-100 text-rose-600 border-4 border-rose-300";
+        iconEl.className = "fa-solid fa-circle-xmark";
+        document.getElementById('cert-btn-container').classList.add('hidden');
     } else {
+        // ناجح
+        passFailEl.className = `text-lg font-black text-emerald-600`;
         resMsg.textContent = appSettings.successMessage || "أحسنت! أقطفت ثمرة جهدك، استمر في هذا التميز.";
-        iconContainer.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-emerald-100 text-amber-500 border-4 border-emerald-300";
+        iconContainer.className = "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl shadow-lg bg-emerald-100 text-emerald-600 border-4 border-emerald-300";
         iconEl.className = "fa-solid fa-trophy";
         document.getElementById('cert-btn-container').classList.remove('hidden');
     }
@@ -5945,9 +5999,13 @@ async function openAdminSectionPage(sectionId) {
 
 // دالة تشغيل مؤشر التحميل الإجباري عند النقر على زر سجلات النتائج في لوحة التحكم
 async function openAdminRecordsWithLoader() {
+    // 💡 تشغيل مؤشر التحميل السحابي المرئي ورسالة التنبيه فوراً
     if (typeof toggleCloudLoading === 'function') {
         toggleCloudLoading(true, "جَارِي سَحْبِ وَتَحْمِيلِ كَافَّةِ سِجِلَّاتِ النَّتَائِجِ مِنْ السَّحَابَةِ...");
     }
+
+    // مهلة زمنية قصيرة (50 ميلي ثانية) لإجبار المتصفح على رسم المؤشر قبل عملية الجلب الثقيلة
+    await new Promise(resolve => setTimeout(resolve, 50));
 
     try {
         if (typeof loadAdminRecordsFromCloud === 'function') {
@@ -5956,14 +6014,17 @@ async function openAdminRecordsWithLoader() {
     } catch (e) {
         console.log("خطأ في جلب السجلات:", e);
     } finally {
+        // إخفاء مؤشر التحميل بعد الانتهاء
         if (typeof toggleCloudLoading === 'function') {
             toggleCloudLoading(false);
         }
     }
 
-    openAdminSectionPage('view-admin-records');
+    // فتح واجهة سجل النتائج بعد اكتمال التحميل
+    if (typeof openAdminSectionPage === 'function') {
+        openAdminSectionPage('view-admin-records');
+    }
 }
-
         // زر الخروج النهائي والعودة للرئيسية
         function exitAdmin() {
             document.querySelectorAll('.admin-section-view').forEach(el => {
@@ -8297,10 +8358,136 @@ function changeAdminQiSectionPage(newIndex) {
 
         // --- RECORDS ---
         function populateRecAdminFilters() { const sel = document.getElementById('admin-rec-stage-filter'); sel.innerHTML = '<option value="">الكل</option>'; Object.keys(stagesData).forEach(s => sel.innerHTML += `<option value="${s}">${s}</option>`); onAdminRecStageChange(); }
-        function onAdminRecStageChange() { const st = document.getElementById('admin-rec-stage-filter').value; const sel = document.getElementById('admin-rec-grade-filter'); sel.innerHTML = '<option value="">الكل</option>'; if(st && stagesData[st]) stagesData[st].forEach(g => sel.innerHTML += `<option value="${g}">${g}</option>`); onAdminRecGradeChange(); }
-        function onAdminRecGradeChange() { const st = document.getElementById('admin-rec-stage-filter').value; const gr = document.getElementById('admin-rec-grade-filter').value; const sel = document.getElementById('admin-rec-branch-filter'); sel.innerHTML = '<option value="">الكل</option>'; if(st && gr) branchesData.filter(b=>b.targetGrades && b.targetGrades.some(tg=>tg.stage===st&&tg.grade===gr)).forEach(b => sel.innerHTML += `<option value="${b.branch}">${b.branch}</option>`); onAdminRecBranchChange(); }
-        function onAdminRecBranchChange() { const st = document.getElementById('admin-rec-stage-filter').value; const gr = document.getElementById('admin-rec-grade-filter').value; const br = document.getElementById('admin-rec-branch-filter').value; const sel = document.getElementById('admin-rec-topic-filter'); sel.innerHTML = '<option value="">الكل</option>'; if(st && gr && br) topicsData.filter(t=>t.targetBranches && t.targetBranches.some(tb=>tb.stage===st&&tb.grade===gr&&tb.branch===br)).forEach(t => sel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`); renderAdminRecordsTable(); }
-        
+       // 💡 دالة تعبئة تبويب الاختبارات بالأساس (المرحلة) وتفعيل التتابع
+function populateAdminRecAdminFilters() {
+    const stageSel = document.getElementById('admin-rec-stage-filter');
+    if (!stageSel) return;
+    stageSel.innerHTML = '<option value="">الكل</option>';
+    
+    if (typeof stagesData !== 'undefined') {
+        Object.keys(stagesData).forEach(stage => {
+            if (typeof gradeStatus === 'undefined' || gradeStatus[`stage_active_${stage}`] !== false) {
+                stageSel.innerHTML += `<option value="${stage}">${stage}</option>`;
+            }
+        });
+    }
+    onAdminRecStageChange();
+}
+
+function onAdminRecStageChange() { 
+    const st = document.getElementById('admin-rec-stage-filter')?.value || ''; 
+    const sel = document.getElementById('admin-rec-grade-filter'); 
+    if (!sel) return;
+    sel.innerHTML = '<option value="">الكل</option>'; 
+    if(st && typeof stagesData !== 'undefined' && stagesData[st]) {
+        stagesData[st].forEach(g => {
+            if (typeof gradeStatus === 'undefined' || gradeStatus[`${st}_${g}`] !== false) {
+                sel.innerHTML += `<option value="${g}">${g}</option>`;
+            }
+        });
+    }
+    onAdminRecGradeChange(); 
+}
+
+function onAdminRecGradeChange() { 
+    const st = document.getElementById('admin-rec-stage-filter')?.value || ''; 
+    const gr = document.getElementById('admin-rec-grade-filter')?.value || ''; 
+    const sel = document.getElementById('admin-rec-branch-filter'); 
+    if (!sel) return;
+    sel.innerHTML = '<option value="">الكل</option>'; 
+    if(st && gr && typeof branchesData !== 'undefined') {
+        branchesData.filter(b => b.active !== false && b.targetGrades && b.targetGrades.some(tg => tg.stage === st && tg.grade === gr)).forEach(b => {
+            sel.innerHTML += `<option value="${b.branch}">${b.branch}</option>`;
+        });
+    }
+    onAdminRecBranchChange(); 
+}
+
+function onAdminRecBranchChange() { 
+    const st = document.getElementById('admin-rec-stage-filter')?.value || ''; 
+    const gr = document.getElementById('admin-rec-grade-filter')?.value || ''; 
+    const br = document.getElementById('admin-rec-branch-filter')?.value || ''; 
+    const sel = document.getElementById('admin-rec-topic-filter'); 
+    if (!sel) return;
+    sel.innerHTML = '<option value="">الكل</option>'; 
+    if(st && gr && br && typeof topicsData !== 'undefined') {
+        topicsData.filter(t => t.active !== false && t.targetBranches && t.targetBranches.some(tb => tb.stage === st && tb.grade === gr && tb.branch === br)).forEach(t => {
+            sel.innerHTML += `<option value="${t.topic}">${t.topic}</option>`;
+        });
+    }
+    renderAdminRecordsTable(); 
+}
+
+let currentAdminRecordsTab = 'quizzes'; // 'quizzes' أو 'exams'
+
+// دالة التبديل بين التبويبين مع تفعيل شاشة التحميل والمؤشر
+function switchAdminRecordsTab(tabName) {
+    if (typeof toggleCloudLoading === 'function') {
+        toggleCloudLoading(true, "جَارِي تَحْمِيلِ السِّجِلَّاتِ...");
+    }
+    
+    currentAdminRecordsTab = tabName;
+    window._currentAdminRecordsTab = tabName; // 💡 ضمان توافق المتغير العام مع دالة الفلترة والرسم
+    currentRecordsPage = 1;
+
+    const btnQ = document.getElementById('rec-tab-quizzes');
+    const btnE = document.getElementById('rec-tab-exams');
+    const titleEl = document.getElementById('rec-section-title');
+    const filtersQ = document.getElementById('rec-filters-quizzes');
+    const filtersE = document.getElementById('rec-filters-exams');
+
+    if (tabName === 'quizzes') {
+        if(btnQ) btnQ.className = "flex-1 py-3 px-4 rounded-2xl font-black text-sm sm:text-base transition shadow-sm bg-sky-600 text-white border-2 border-sky-500 cursor-pointer flex items-center justify-center gap-2";
+        if(btnE) btnE.className = "flex-1 py-3 px-4 rounded-2xl font-black text-sm sm:text-base transition shadow-sm bg-white text-purple-950 border-2 border-purple-300 hover:bg-purple-50 cursor-pointer flex items-center justify-center gap-2";
+        if(titleEl) titleEl.textContent = "سجل نتائج اختبارات الموضوعات";
+        if(filtersQ) filtersQ.classList.remove('hidden');
+        if(filtersE) filtersE.classList.add('hidden');
+        if(typeof populateRecAdminFilters === 'function') populateRecAdminFilters();
+    } else {
+        if(btnE) btnE.className = "flex-1 py-3 px-4 rounded-2xl font-black text-sm sm:text-base transition shadow-sm bg-purple-600 text-white border-2 border-purple-500 cursor-pointer flex items-center justify-center gap-2";
+        if(btnQ) btnQ.className = "flex-1 py-3 px-4 rounded-2xl font-black text-sm sm:text-base transition shadow-sm bg-white text-sky-950 border-2 border-sky-300 hover:bg-sky-50 cursor-pointer flex items-center justify-center gap-2";
+        if(titleEl) titleEl.textContent = "سجل الامتحانات الشهرية والنهائية";
+        if(filtersE) filtersE.classList.remove('hidden');
+        if(filtersQ) filtersQ.classList.add('hidden');
+        if (typeof populateAdminRecExamStages === 'function') {
+            populateAdminRecExamStages(); // تفعيل فلاتر الامتحانات إن وجدت
+        }
+    }
+
+    renderAdminRecordsTable();
+    setTimeout(() => { if (typeof toggleCloudLoading === 'function') toggleCloudLoading(false); }, 300);
+}
+
+// فلاتر التبويب الثاني: الامتحانات (مرحلة ➔ صف ➔ نوع الامتحان)
+function populateAdminRecExamStages() {
+    const stageSel = document.getElementById('admin-recexam-stage-filter');
+    if (!stageSel) return;
+    stageSel.innerHTML = '<option value="">الكل</option>';
+    if (typeof stagesData !== 'undefined') {
+        Object.keys(stagesData).forEach(stage => {
+            if (typeof gradeStatus === 'undefined' || gradeStatus[`stage_active_${stage}`] !== false) {
+                stageSel.innerHTML += `<option value="${stage}">${stage}</option>`;
+            }
+        });
+    }
+    onAdminRecExamStageChange();
+}
+
+function onAdminRecExamStageChange() {
+    const stage = document.getElementById('admin-recexam-stage-filter')?.value || '';
+    const gradeSel = document.getElementById('admin-recexam-grade-filter');
+    if (!gradeSel) return;
+    gradeSel.innerHTML = '<option value="">الكل</option>';
+    if (stage && typeof stagesData !== 'undefined' && stagesData[stage]) {
+        stagesData[stage].forEach(grade => {
+            if (typeof gradeStatus === 'undefined' || gradeStatus[`${stage}_${grade}`] !== false) {
+                gradeSel.innerHTML += `<option value="${grade}">${grade}</option>`;
+            }
+        });
+    }
+    renderAdminRecordsTable();
+}
+
 function getSafeRecordScoreAndPct(rec) {
     if (!rec) return { score: 0, total: 14, pct: 0, status: 'راسب' };
     let totalScore = 0;
@@ -8364,18 +8551,46 @@ function renderAdminRecordsTable() {
     if (!tbody) return;
     tbody.innerHTML = '';
     
-    const fSt = document.getElementById('admin-rec-stage-filter')?.value || ''; 
-    const fGr = document.getElementById('admin-rec-grade-filter')?.value || ''; 
-    const fBr = document.getElementById('admin-rec-branch-filter')?.value || ''; 
-    const fTo = document.getElementById('admin-rec-topic-filter')?.value || '';
-    
-    const filtered = studentRecords.filter(r => { 
-        if(fSt && r.stage !== fSt) return false; 
-        if(fGr && r.grade !== fGr) return false; 
-        if(fBr && r.branch !== fBr) return false; 
-        if(fTo && r.topic !== fTo) return false; 
-        return true; 
-    });
+    let filtered = [];
+
+    // التصفية بحسب التبويب النشط حالياً (اختبارات الموضوعات أو الامتحانات الشهرية والنهائية)
+    const activeTab = typeof currentAdminRecordsTab !== 'undefined' ? currentAdminRecordsTab : (window._currentAdminRecordsTab || 'quizzes');
+
+    if (activeTab === 'quizzes') {
+        const fSt = document.getElementById('admin-rec-stage-filter')?.value || ''; 
+        const fGr = document.getElementById('admin-rec-grade-filter')?.value || ''; 
+        const fBr = document.getElementById('admin-rec-branch-filter')?.value || ''; 
+        const fTo = document.getElementById('admin-rec-topic-filter')?.value || '';
+        
+        filtered = studentRecords.filter(r => { 
+            const pathStr = (r.stageGrade || r.topic || '').toLowerCase();
+            // فحص شامل لضمان استبعاد أي سجل يخص الامتحانات من سجل الدرس
+            const isExamRecord = r.isMonthlyExam === true || r.isMonthlyExam === "true" || r.mexamId || r.examType || pathStr.includes('امتحان') || pathStr.includes('تقييم');
+            if (isExamRecord) return false;
+
+            if (fSt && r.stage !== fSt) return false; 
+            if (fGr && r.grade !== fGr) return false; 
+            if (fBr && r.branch !== fBr) return false; 
+            if (fTo && r.topic !== fTo) return false; 
+            return true; 
+        });
+    } else {
+        const fSt = document.getElementById('admin-recexam-stage-filter')?.value || ''; 
+        const fGr = document.getElementById('admin-recexam-grade-filter')?.value || ''; 
+        const fTy = document.getElementById('admin-recexam-type-filter')?.value || '';
+
+        filtered = studentRecords.filter(r => { 
+            const pathStr = (r.stageGrade || r.topic || '').toLowerCase();
+            // عرض الامتحانات فقط في هذا التبويب بناءً على وجود علامة أو كلمة امتحان/تقييم
+            const isExamRecord = r.isMonthlyExam === true || r.isMonthlyExam === "true" || r.mexamId || r.examType || pathStr.includes('امتحان') || pathStr.includes('تقييم');
+            if (!isExamRecord) return false;
+
+            if (fSt && r.stage !== fSt) return false; 
+            if (fGr && r.grade !== fGr) return false; 
+            if (fTy && r.examType !== fTy && r.type !== fTy) return false; 
+            return true; 
+        });
+    }
     
     // شريط تحديد الكل وحذف السجلات المحددة
     let existingTopBar = document.getElementById('records-bulk-action-bar');
@@ -8394,7 +8609,7 @@ function renderAdminRecordsTable() {
     }
 
     if (filtered.length === 0) { 
-        tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500 font-bold">لا توجد سجلات.</td></tr>'; 
+        tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500 font-bold">لا توجد سجلات مطابقة.</td></tr>'; 
         if(document.getElementById('pagination-info')) document.getElementById('pagination-info').textContent = 'الصفحة 1 من 1'; 
         if(document.getElementById('prev-page-btn')) document.getElementById('prev-page-btn').disabled = true; 
         if(document.getElementById('next-page-btn')) document.getElementById('next-page-btn').disabled = true; 
@@ -8422,15 +8637,22 @@ function renderAdminRecordsTable() {
         }
         const finalAnswered = rec.answeredCount || `${actualAnswered} من ${rec.total}`;
         
-        let hasEssay = rec.breakdown && rec.breakdown.some(b => b.type === 'essay');
         let essayBadge = "";
-        let pendingEssayCount = rec.pendingEssayCount !== undefined ? rec.pendingEssayCount : (rec.breakdown ? rec.breakdown.filter(b => b.type === 'essay' && (b.essayGrade === undefined || b.essayGrade === null)).length : 0);
-        
-        if (hasEssay) {
-            if (pendingEssayCount > 0) {
-                essayBadge = `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-lg font-black block mt-1 border border-amber-300">⚠️ مقالي (بانتظار التصحيح)</span>`;
-            } else {
-                essayBadge = `<span class="bg-indigo-100 text-indigo-800 text-[10px] px-2 py-0.5 rounded-lg font-black block mt-1 border border-indigo-200">✨ مقالي (تم التصحيح)</span>`;
+        const pathStrCheck = (rec.stageGrade || rec.topic || '').toLowerCase();
+        const isExamRec = rec.isMonthlyExam === true || rec.isMonthlyExam === "true" || rec.mexamId || rec.examType || pathStrCheck.includes('امتحان') || pathStrCheck.includes('تقييم');
+
+        if (isExamRec) {
+            essayBadge = `<span class="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded-lg font-black block mt-1 border border-purple-300">📋 امتحان (${rec.examTypeName || 'شهري/نهائي'})</span>`;
+        } else {
+            let hasEssay = rec.breakdown && rec.breakdown.some(b => b.type === 'essay');
+            let pendingEssayCount = rec.pendingEssayCount !== undefined ? rec.pendingEssayCount : (rec.breakdown ? rec.breakdown.filter(b => b.type === 'essay' && (b.essayGrade === undefined || b.essayGrade === null)).length : 0);
+            
+            if (hasEssay) {
+                if (pendingEssayCount > 0) {
+                    essayBadge = `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-lg font-black block mt-1 border border-amber-300">⚠️ مقالي (بانتظار التصحيح)</span>`;
+                } else {
+                    essayBadge = `<span class="bg-indigo-100 text-indigo-800 text-[10px] px-2 py-0.5 rounded-lg font-black block mt-1 border border-indigo-200">✨ مقالي (تم التصحيح)</span>`;
+                }
             }
         }
 
@@ -8464,6 +8686,7 @@ function renderAdminRecordsTable() {
     if(document.getElementById('prev-page-btn')) document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1; 
     if(document.getElementById('next-page-btn')) document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
 }
+
 // 💡 دالة تحديد أو إلغاء تحديد كل سجلات النتائج دفعة واحدة
 function toggleSelectAllRecords(masterCheckbox) {
     const checkboxes = document.querySelectorAll('.record-select-checkbox');
@@ -10239,19 +10462,19 @@ function renderAdminMonthlyExamsList() {
 
     // ضبط ترويسة الجدول لتشمل خانة الاختيار الشامل
     const tableHeaderRow = tbody.closest('table').querySelector('thead tr');
-    if (tableHeaderRow && !tableHeaderRow.querySelector('.mexam-master-cb')) {
-        tableHeaderRow.innerHTML = `
-            <th class="p-3 text-center w-10">
-    <input type="checkbox" id="select-all-records-checkbox" onclick="toggleSelectAllRecords(this)" class="w-4 h-4 text-sky-600 rounded cursor-pointer" title="تحديد الكل">
-</th>
-            <th class="p-3.5">عنوان الامتحان</th>
-            <th class="p-3.5">المرحلة والصف</th>
-            <th class="p-3.5 text-center">الزمن (دقيقة)</th>
-            <th class="p-3.5 text-center">الأقسام والأسئلة</th>
-            <th class="p-3.5 text-center">الحالة</th>
-            <th class="p-3.5 text-center">التحكم والإجراءات</th>
-        `;
-    }
+if (tableHeaderRow && !tableHeaderRow.querySelector('.mexam-master-cb')) {
+    tableHeaderRow.innerHTML = `
+        <th class="p-3 text-center w-10">
+            <input type="checkbox" id="select-all-mexam-checkbox" onclick="toggleSelectAllMonthlyExams(this)" class="mexam-master-cb w-4 h-4 text-purple-600 rounded cursor-pointer" title="تحديد الكل">
+        </th>
+        <th class="p-3.5">عنوان الامتحان</th>
+        <th class="p-3.5">المرحلة والالصف</th>
+        <th class="p-3.5 text-center">الزمن (دقيقة)</th>
+        <th class="p-3.5 text-center">الأقسام والأسئلة</th>
+        <th class="p-3.5 text-center">الحالة</th>
+        <th class="p-3.5 text-center">التحكم والإجراءات</th>
+    `;
+}
 
     // شريط الترقيم وحذف المحدد أسفل الجدول
     let paginationContainer = document.getElementById('monthly-exams-pagination');
@@ -11175,23 +11398,91 @@ function exportMonthlyExamsJson() {
 function importMonthlyExamsJsonFile(event) {
     const file = event.target.files[0];
     if (!file) return;
+    
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
-            const imported = JSON.parse(e.target.result);
-            if (Array.isArray(imported)) {
-                imported.forEach(item => {
-                    if (!monthlyExamsBank.some(e => e.id === item.id)) monthlyExamsBank.push(item);
-                });
-                localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
-                renderAdminMonthlyExamsList();
-                alert("تم استيراد الامتحانات بنجاح!");
+            const rawData = JSON.parse(e.target.result);
+            
+            let examsArray = [];
+            if (Array.isArray(rawData)) {
+                examsArray = rawData;
+            } else if (rawData && typeof rawData === 'object') {
+                if (Array.isArray(rawData.exams)) examsArray = rawData.exams;
+                else if (rawData.id) examsArray = [rawData];
             }
-        } catch(err) { alert("ملف JSON غير صالح."); }
+
+            if (examsArray.length > 0) {
+                if (typeof monthlyExamsBank === 'undefined') {
+                    window.monthlyExamsBank = JSON.parse(localStorage.getItem('monthlyExamsBank')) || [];
+                }
+
+                examsArray.forEach(item => {
+                    if (item && item.id) {
+                        const existingIdx = monthlyExamsBank.findIndex(e => e.id === item.id);
+                        if (existingIdx !== -1) {
+                            monthlyExamsBank[existingIdx] = item;
+                        } else {
+                            monthlyExamsBank.push(item);
+                        }
+                    }
+                });
+
+                // 1. الحفظ في الذاكرة المحلية
+                localStorage.setItem('monthlyExamsBank', JSON.stringify(monthlyExamsBank));
+                
+                // 2. التحديث المباشر والفوري لجدول الامتحانات في الواجهة
+                const tbody = document.getElementById('admin-monthly-exams-tbody');
+                if (tbody) {
+                    if (monthlyExamsBank.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-slate-400">لا توجد امتحانات مضافة حتى الآن.</td></tr>';
+                    } else {
+                        tbody.innerHTML = '';
+                        monthlyExamsBank.forEach(ex => {
+                            let examTypeName = "امتحان شهري";
+                            if (ex.examType === 'weekly') examTypeName = "تقييم أسبوعي";
+                            if (ex.examType === 'final') examTypeName = "امتحان نهائي واسترشادي";
+
+                            tbody.innerHTML += `
+                                <tr class="hover:bg-purple-50/50 transition border-b">
+                                    <td class="p-3.5 font-black text-purple-950">${escapeHTML(ex.title || 'بدون عنوان')}</td>
+                                    <td class="p-3.5">${escapeHTML(ex.stage || '')} ➔ ${escapeHTML(ex.grade || '')} <span class="text-xs text-purple-700 block mt-0.5">(${examTypeName})</span></td>
+                                    <td class="p-3.5 text-center font-mono">${ex.duration || 45} د</td>
+                                    <td class="p-3.5 text-center">${ex.sections ? ex.sections.length : 0} أقسام</td>
+                                    <td class="p-3.5 text-center"><span class="px-2.5 py-1 rounded-full text-xs ${ex.active !== false ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${ex.active !== false ? 'مفعل' : 'معطل'}</span></td>
+                                    <td class="p-3.5 text-center">
+                                        <button type="button" onclick="openMonthlyExamForm('${ex.id}')" class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer">تعديل</button>
+                                        <button type="button" onclick="deleteMonthlyExam('${ex.id}')" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer mr-1">حذف</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                }
+
+                // 3. استدعاء دالة الرسم الأصلية إن وجدت
+                if (typeof renderAdminMonthlyExamsList === 'function') {
+                    renderAdminMonthlyExamsList();
+                }
+
+                // 4. الحفظ السحابي الصامت في الخلفية
+                if (typeof saveState === 'function') {
+                    saveState(false);
+                }
+
+                alert(`تم استيراد ${examsArray.length} امتحان بنجاح وظهرت في الجدول!`);
+            } else {
+                alert("ملف الـ JSON لا يحتوي على بيانات امتحانات صالحة.");
+            }
+        } catch(err) { 
+            console.error("خطأ قراءة JSON:", err);
+            alert("ملف JSON غير صالح أو تالف."); 
+        } finally {
+            event.target.value = '';
+        }
     };
     reader.readAsText(file);
 }
-
 // ================== عرض الامتحانات للطالب في التبويب الرابع ==================
 function renderStudentMonthlyExams() {
     const container = document.getElementById('student-monthly-exams-list');
