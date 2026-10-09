@@ -8434,7 +8434,6 @@ function renderAdminRecordsTable() {
             }
         }
 
-        // 💡 استخدام دالة الحساب الآمن لضمان عدم ظهور null نهائياً
         let resData = getSafeRecordScoreAndPct(rec);
         
         let statusBadgeClass = 'bg-emerald-100 text-emerald-800';
@@ -8465,6 +8464,14 @@ function renderAdminRecordsTable() {
     if(document.getElementById('prev-page-btn')) document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1; 
     if(document.getElementById('next-page-btn')) document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
 }
+// 💡 دالة تحديد أو إلغاء تحديد كل سجلات النتائج دفعة واحدة
+function toggleSelectAllRecords(masterCheckbox) {
+    const checkboxes = document.querySelectorAll('.record-select-checkbox');
+    checkboxes.forEach(cb => {
+        cb.checked = masterCheckbox.checked;
+    });
+}
+
 // ==========================================
 // دوال قسم التصحيح السريع للمقالي (النسخة النهائية النظيفة)
 // ==========================================
@@ -10234,7 +10241,9 @@ function renderAdminMonthlyExamsList() {
     const tableHeaderRow = tbody.closest('table').querySelector('thead tr');
     if (tableHeaderRow && !tableHeaderRow.querySelector('.mexam-master-cb')) {
         tableHeaderRow.innerHTML = `
-            <th class="p-3 text-center w-10"><input type="checkbox" onclick="toggleSelectAllMonthlyExams(this)" class="mexam-master-cb w-4 h-4 text-purple-600 rounded cursor-pointer"></th>
+            <th class="p-3 text-center w-10">
+    <input type="checkbox" id="select-all-records-checkbox" onclick="toggleSelectAllRecords(this)" class="w-4 h-4 text-sky-600 rounded cursor-pointer" title="تحديد الكل">
+</th>
             <th class="p-3.5">عنوان الامتحان</th>
             <th class="p-3.5">المرحلة والصف</th>
             <th class="p-3.5 text-center">الزمن (دقيقة)</th>
