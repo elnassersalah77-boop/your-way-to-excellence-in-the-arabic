@@ -4647,6 +4647,8 @@ function backToPortalFromResult() {
 
 // 10. تشغيل الاختبار (النسخة النهائية والهيكلية الصارمة للترتيب)
 function startQuiz() {
+    document.body.style.overscrollBehaviorY = 'none'; // 💡 قفل سحب الشاشة وتحديثها أثناء الاختبار
+    
     const name = currentStudentSession.name;
     const stage = currentStudentSession.stage;
     const grade = currentStudentSession.grade;
@@ -5052,6 +5054,9 @@ window.restartHome = function() {
 
     if (quizState.timerInterval) clearInterval(quizState.timerInterval);
     
+    // 💡 إعادة تفعيل السحب والتمرير الطبيعي للشاشة فور تسليم الاختبار
+    document.body.style.overscrollBehaviorY = 'auto';
+    
     let objectiveScore = 0; 
     let answeredCount = 0; 
     let pendingEssayCount = 0; 
@@ -5067,6 +5072,7 @@ window.restartHome = function() {
         let isCorrect = false;
         let correctAnswerText = q.ans;
         let gradeText = "خطأ / صفر";
+        let essayGradeVal = undefined; // 💡 تعريف متغير لحفظ حالة درجة المقالي
 
         if (q.type === 'essay') {
             let cleanUserAns = String(userAns || "").trim().toLowerCase();
@@ -5085,15 +5091,18 @@ window.restartHome = function() {
                 gradeText = `مصحح ذكياً (${earnedScore}/${questionMaxScore})`;
                 objectiveScore += earnedScore;
                 correctAnswerText = q.modelAnswers ? q.modelAnswers.join(' أو ') : q.ans;
+                essayGradeVal = earnedScore; // 💡 إذا تطابق آلياً نثبت درجته كـ 1
             } else if (!isAnswered) {
                 earnedScore = 0;
                 isCorrect = false;
                 gradeText = "لم يُجب (صفر)";
+                essayGradeVal = 0; // 💡 إذا تركها فارغة نثبتها كـ 0
             } else {
                 earnedScore = 0;
                 isCorrect = false;
                 gradeText = "بانتظار تصحيح المعلم";
                 pendingEssayCount++;
+                essayGradeVal = undefined; // 💡 تترك فارغة لكي تظهر بانتظار تصحيح المعلم
             }
         } else {
             isCorrect = isAnswered && userAns === q.ans;
@@ -5116,6 +5125,7 @@ window.restartHome = function() {
             isCorrect,
             earnedScore: earnedScore,
             maxScore: questionMaxScore,
+            essayGrade: essayGradeVal, // 💡 إدراج القيمة المعتمدة هنا لكي تقرأها دالة العرض مباشرة
             gradeText,
             type: q.type || 'mcq',
             explanation: formatText(q.exp || "", q.tashkeel) 
@@ -5134,7 +5144,6 @@ window.restartHome = function() {
     const finalPct = Math.round((finalScore / totalQuestionsCount) * 100); 
     const durationSecs = Math.floor((Date.now() - quizState.startTime) / 1000);
 
-    // بناء كائن السجل بخصائص رقمية مؤكدة لتجنب أي ظهور لـ null
     const newRecord = { 
         id: 'rec_' + Date.now(),
         name: quizState.name || 'طالب', 
@@ -5166,7 +5175,6 @@ window.restartHome = function() {
     studentRecords = existingRecords;
     localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
-    // تحديث واجهة النتيجة للطالب
     document.getElementById('view-quiz').classList.add('hidden'); 
     const resView = document.getElementById('view-result');
     document.getElementById('quick-info-top-btn').classList.add('hidden');
@@ -8812,6 +8820,11 @@ function submitQuickGrade(recordIndex, breakdownIndex, gradeValue) {
             const isItemEssay = hasNoOpts || isMarkedPending || isExplicitEssay;
             
             if (isItemEssay) {
+                // 💡 التعديل الجذري: إذا كان السؤال المقالي صحيحاً آلياً ولم تُحدد درجته، امنحه الدرجة الكاملة تلقائياً (1)
+                if ((b.essayGrade === undefined || b.essayGrade === null || b.essayGrade === '') && b.isCorrect) {
+                    b.essayGrade = 1;
+                }
+
                 if (b.essayGrade !== undefined && b.essayGrade !== null && b.essayGrade !== '') {
                     totalEssayScore += parseFloat(b.essayGrade);
                 } else {
@@ -8875,7 +8888,7 @@ function skipQuickGradeItem() {
 // متغير لحفظ رقم الطالب الذي يتم عرض تفاصيله حالياً للطباعة إن لزم الأمر
 let currentAdminPrintIndex = -1;
 
-        // دالة عرض تفاصيل إجابة الطالب للمعلم (محدثة لدعم تصحيح المقالي وتحديث الدرجة الكلية)
+  // دالة عرض تفاصيل إجابة الطالب للمعلم (محدثة لدعم شارة التصحيح الآلي والإلكتروني بشكل صحيح)
 function openRecordDetailsModal(originalIndex) {
     currentAdminPrintIndex = originalIndex;
     
@@ -8891,76 +8904,88 @@ function openRecordDetailsModal(originalIndex) {
     });
     let finalAnsweredCount = rec.answeredCount || `${actualAnswered} من ${rec.total}`;
 
-    // 💡 1. استخدام دالة الحساب الآمن وتحديث السجل والحالة فوراً (ناجح/راسب)
     let detailsRes = getSafeRecordScoreAndPct(rec);
     rec.score = detailsRes.score;
     rec.total = detailsRes.total;
     rec.pct = detailsRes.pct;
     rec.status = detailsRes.status;
 
-    // الحفظ الفوري للتحديثات لضمان ثبات الحالة والدرجة
     localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
     if (typeof saveStudentRecordsBackground === 'function') {
         saveStudentRecordsBackground();
     }
 
-    // 💡 2. تنسيق رأس التقرير الحي بالترتيب الصحيح (درجة الطالب أولاً ثم المجموع الكلي)
-    let html = `<div class="bg-sky-50 p-6 rounded-3xl border-2 border-sky-200 text-sky-950 font-bold mb-6 space-y-2 text-lg sm:text-xl shadow-sm">
-        <div><strong>الطالب:</strong> <span class="text-sky-900">${escapeHTML(rec.name)}</span></div>
-        <div><strong>المسار:</strong> ${escapeHTML(rec.stageGrade || rec.topic)}</div>
-        <div class="flex items-center gap-2">
-            <strong>النتيجة النهائية:</strong> 
-            <span class="bg-white px-2 py-0.5 rounded-lg border text-sky-700 text-2xl font-black">${detailsRes.score} / ${detailsRes.total} (${detailsRes.pct}٪)</span> 
-            - الحالة: <span class="${rec.status === 'ناجح' ? 'text-emerald-700 bg-emerald-100 px-2 rounded-lg' : rec.status === 'راسب' ? 'text-rose-700 bg-rose-100 px-2 rounded-lg' : 'text-amber-700 bg-amber-100 px-2 rounded-lg'}">${rec.status}</span>
-        </div>
-        <div><strong>الأسئلة المُجابة:</strong> <span class="text-indigo-700 font-black">${finalAnsweredCount}</span></div>
-        <div><strong>تاريخ الاختبار:</strong> ${rec.date} (المدة: ${rec.duration})</div>
-    </div>`;
+    let html = '<div class="bg-sky-50 p-6 rounded-3xl border-2 border-sky-200 text-sky-950 font-bold mb-6 space-y-2 text-lg sm:text-xl shadow-sm">';
+    html += '<div><strong>الطالب:</strong> <span class="text-sky-900">' + escapeHTML(rec.name) + '</span></div>';
+    html += '<div><strong>المسار:</strong> ' + escapeHTML(rec.stageGrade || rec.topic) + '</div>';
+    html += '<div class="flex items-center gap-2"><strong>النتيجة النهائية:</strong> <span class="bg-white px-2 py-0.5 rounded-lg border text-sky-700 text-2xl font-black">' + detailsRes.score + ' / ' + detailsRes.total + ' (' + detailsRes.pct + '٪)</span> - الحالة: <span class="' + (rec.status === 'ناجح' ? 'text-emerald-700 bg-emerald-100 px-2 rounded-lg' : rec.status === 'راسب' ? 'text-rose-700 bg-rose-100 px-2 rounded-lg' : 'text-amber-700 bg-amber-100 px-2 rounded-lg') + '">' + rec.status + '</span></div>';
+    html += '<div><strong>الأسئلة المُجابة:</strong> <span class="text-indigo-700 font-black">' + finalAnsweredCount + '</span></div>';
+    html += '<div><strong>تاريخ الاختبار:</strong> ' + rec.date + ' (المدة: ' + rec.duration + ')</div>';
+    html += '</div>';
 
-    // تنسيق الأسئلة (مقالي واختياري)
     rec.breakdown.forEach((item, bIdx) => {
+        let qTextSafe = escapeHTML(item.qText || '');
+        let userAnswerSafe = escapeHTML(item.userAnswer || 'لم يجب');
+        let correctAnswerSafe = escapeHTML(item.correctAnswer || '');
+        let explanationSafe = escapeHTML(item.explanation || '');
+
         if (item.type === 'essay') {
             let isAnswered = item.userAnswer !== "لم يجب" && item.userAnswer !== "لم يُجب" && item.userAnswer !== "";
             
             let essayStatusBadge = "";
-            if (item.essayGrade === undefined || item.essayGrade === null || item.essayGrade === '') {
-                essayStatusBadge = '<span class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl font-black text-sm border border-amber-300">⚠️ بانتظار تصحيح المعلم</span>';
-            } else if (parseFloat(item.essayGrade) > 0) {
-                essayStatusBadge = `<span class="bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl font-black text-sm border border-emerald-300">✓ تم التصحيح (درجة: ${item.essayGrade})</span>`;
+            let currentGrade = item.essayGrade;
+
+            // 💡 معالجة حاسمة: إذا كانت الإجابة صحيحة آلياً أو حاصلة على درجة earnedScore، نتجاوز الصفر تماماً ونعتبرها صحيحة
+            let isReallyCorrect = item.isCorrect === true || (item.earnedScore !== undefined && parseFloat(item.earnedScore) > 0);
+
+            if (isReallyCorrect) {
+                let effectiveVal = (currentGrade !== undefined && currentGrade !== null && currentGrade !== '' && parseFloat(currentGrade) > 0) ? currentGrade : 1;
+                essayStatusBadge = '<span class="bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl font-black text-sm border border-emerald-300">✓ تم التصحيح (درجة: ' + effectiveVal + ')</span>';
+            } else if (currentGrade !== undefined && currentGrade !== null && currentGrade !== '') {
+                if (parseFloat(currentGrade) > 0) {
+                    essayStatusBadge = '<span class="bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl font-black text-sm border border-emerald-300">✓ تم التصحيح (درجة: ' + currentGrade + ')</span>';
+                } else {
+                    essayStatusBadge = '<span class="bg-rose-100 text-rose-800 px-3 py-1.5 rounded-xl font-black text-sm border border-rose-300">✗ تم التصحيح (صفر)</span>';
+                }
+            } else if (!isAnswered) {
+                essayStatusBadge = '<span class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl font-black text-sm border border-slate-300">ترك السؤال فارغاً</span>';
             } else {
-                essayStatusBadge = '<span class="bg-rose-100 text-rose-800 px-3 py-1.5 rounded-xl font-black text-sm border border-rose-300">✗ تم التصحيح (صفر)</span>';
+                essayStatusBadge = '<span class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl font-black text-sm border border-amber-300">⚠️ بانتظار تصحيح المعلم</span>';
             }
 
-            let teacherGradingHtml = `
-    <div class="mt-4 p-4 bg-amber-100/50 border-2 border-amber-200 rounded-xl">
-        <h5 class="font-black text-amber-900 mb-3"><i class="fa-solid fa-gavel ml-1"></i> التقييم اليدوي للمعلم (الدرجة المقالية):</h5>
-        <div class="flex flex-wrap gap-2">
-            <button type="button" onclick="gradeEssayQuestion(${originalIndex}, ${bIdx}, 1)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm ${item.essayGrade === 1 ? 'ring-4 ring-emerald-300 scale-105' : 'opacity-80'}"><i class="fa-solid fa-check ml-1"></i> درجة كاملة (1)</button>
-            <button type="button" onclick="gradeEssayQuestion(${originalIndex}, ${bIdx}, 0.5)" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm ${item.essayGrade === 0.5 ? 'ring-4 ring-amber-300 scale-105' : 'opacity-80'}"><i class="fa-solid fa-star-half-stroke ml-1"></i> نصف درجة (0.5)</button>
-            <button type="button" onclick="gradeEssayQuestion(${originalIndex}, ${bIdx}, 0)" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm ${item.essayGrade === 0 ? 'ring-4 ring-rose-300 scale-105' : 'opacity-80'}"><i class="fa-solid fa-xmark ml-1"></i> صفر (0)</button>
-        </div>
-    </div>
-`;
+            let teacherGradingHtml = '<div class="mt-4 p-4 bg-amber-100/50 border-2 border-amber-200 rounded-xl">';
+            teacherGradingHtml += '<h5 class="font-black text-amber-900 mb-3"><i class="fa-solid fa-gavel ml-1"></i> التقييم اليدوي للمعلم (الدرجة المقالية):</h5>';
+            teacherGradingHtml += '<div class="flex flex-wrap gap-2">';
+            teacherGradingHtml += '<button type="button" onclick="gradeEssayQuestion(' + originalIndex + ', ' + bIdx + ', 1)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm ' + (currentGrade === 1 ? 'ring-4 ring-emerald-300 scale-105' : 'opacity-80') + '"><i class="fa-solid fa-check ml-1"></i> درجة كاملة (1)</button>';
+            teacherGradingHtml += '<button type="button" onclick="gradeEssayQuestion(' + originalIndex + ', ' + bIdx + ', 0.5)" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm ' + (currentGrade === 0.5 ? 'ring-4 ring-amber-300 scale-105' : 'opacity-80') + '"><i class="fa-solid fa-star-half-stroke ml-1"></i> نصف درجة (0.5)</button>';
+            teacherGradingHtml += '<button type="button" onclick="gradeEssayQuestion(' + originalIndex + ', ' + bIdx + ', 0)" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm ' + (currentGrade === 0 ? 'ring-4 ring-rose-300 scale-105' : 'opacity-80') + '"><i class="fa-solid fa-xmark ml-1"></i> صفر (0)</button>';
+            teacherGradingHtml += '</div></div>';
 
-            html += `<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-amber-300 shadow-sm space-y-4 mb-6 transition">
-                <div class="flex justify-between items-start border-b border-amber-100 pb-4 gap-4">
-                    <h4 class="font-black text-xl sm:text-2xl text-amber-950 leading-relaxed"><i class="fa-solid fa-pen-nib text-amber-500 ml-2"></i>س${item.qIndex}: ${escapeHTML(item.qText)}</h4>
-                    <div class="shrink-0 mt-1">
-                        ${essayStatusBadge}
-                    </div>
-                </div>
-                <div class="text-lg text-slate-800 font-bold bg-amber-50 p-4 rounded-xl border-2 border-amber-100 whitespace-pre-line leading-loose">
-                    <strong class="text-amber-700 block mb-2 text-sm"><i class="fa-solid fa-user-pen ml-1"></i> ما كتبه الطالب:</strong>
-                    ${isAnswered ? escapeHTML(item.userAnswer) : '<span class="text-rose-500">لا توجد إجابة (تركها فارغة)</span>'}
-                </div>
-                ${item.correctAnswer && item.correctAnswer !== "إجابة مقالية (بانتظار تقييم المعلم)" ? `<div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-base font-bold text-emerald-900 mt-2"><strong>مفتاح الإجابة النموذجية:</strong> \${escapeHTML(item.correctAnswer)}</div>` : ''}
-                ${teacherGradingHtml}
-            </div>`;
+            html += '<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-amber-300 shadow-sm space-y-4 mb-6 transition">';
+            html += '<div class="flex justify-between items-start border-b border-amber-100 pb-4 gap-4">';
+            html += '<h4 class="font-black text-xl sm:text-2xl text-amber-950 leading-relaxed"><i class="fa-solid fa-pen-nib text-amber-500 ml-2"></i>س' + item.qIndex + ': ' + qTextSafe + '</h4>';
+            html += '<div class="shrink-0 mt-1">' + essayStatusBadge + '</div>';
+            html += '</div>';
+            html += '<div class="text-lg text-slate-800 font-bold bg-amber-50 p-4 rounded-xl border-2 border-amber-100 whitespace-pre-line leading-loose">';
+            html += '<strong class="text-amber-700 block mb-2 text-sm"><i class="fa-solid fa-user-pen ml-1"></i> ما كتبه الطالب:</strong>';
+            html += (isAnswered ? userAnswerSafe : '<span class="text-rose-500">لا توجد إجابة (تركها فارغة)</span>');
+            html += '</div>';
+
+            if (item.correctAnswer && item.correctAnswer !== "إجابة مقالية (بانتظار تقييم المعلم)") {
+                html += '<div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-base font-bold text-emerald-900 mt-2"><strong>مفتاح الإجابة النموذجية:</strong> ' + correctAnswerSafe + '</div>';
+            }
+
+            if (item.explanation) {
+                html += '<div class="p-4 bg-sky-50 rounded-xl border border-sky-200 text-base font-bold text-sky-950 mt-2"><strong>التعليل والشرح:</strong> ' + explanationSafe + '</div>';
+            }
+
+            html += teacherGradingHtml + '</div>';
 
         } else {
             let optsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-5">';
-            if(item.options) {
+            if (item.options) {
                 item.options.forEach(opt => {
+                    let optSafe = escapeHTML(opt);
                     let optStyle = "bg-white border-slate-200 text-slate-800";
                     let optBadge = "";
                     
@@ -8973,7 +8998,7 @@ function openRecordDetailsModal(originalIndex) {
                     } else if (opt === item.userAnswer && item.isCorrect) {
                         optBadge = '<span class="text-emerald-700 text-sm mt-2 block font-extrabold">✓ إجابة الطالب (صحيحة)</span>';
                     }
-                    optsHtml += `<div class="p-5 rounded-2xl border-2 ${optStyle} text-lg font-bold leading-relaxed">• ${escapeHTML(opt)}${optBadge}</div>`;
+                    optsHtml += '<div class="p-5 rounded-2xl border-2 ' + optStyle + ' text-lg font-bold leading-relaxed">• ' + optSafe + optBadge + '</div>';
                 });
             }
             optsHtml += '</div>';
@@ -8982,15 +9007,19 @@ function openRecordDetailsModal(originalIndex) {
                 (item.isCorrect ? '<span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-xl font-black text-sm">صحيحة ✓</span>' : '<span class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl font-black text-sm">خاطئة ✗</span>') : 
                 '<span class="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-xl font-black text-sm">لم يجب</span>';
 
-            html += `<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 shadow-sm space-y-4 mb-6 transition hover:border-sky-300">
-                <div class="flex justify-between items-start border-b border-slate-100 pb-4 gap-4">
-                    <h4 class="font-black text-xl sm:text-2xl text-sky-950 leading-relaxed">س${item.qIndex}: ${escapeHTML(item.qText)}</h4>
-                    <div class="shrink-0 mt-1">${statusBadge}</div>
-                </div>
-                <div class="text-lg text-slate-700 font-bold bg-slate-50 p-3 rounded-xl border border-slate-100 inline-block">إجابة الطالب: <strong class="text-sky-900">${escapeHTML(item.userAnswer)}</strong></div>
-                ${optsHtml}
-                ${item.explanation ? `<div class="p-5 bg-sky-50/70 rounded-2xl border-2 border-sky-200 text-lg text-sky-950 font-bold leading-relaxed mt-4"><i class="fa-solid fa-circle-info text-amber-500 ml-1"></i> <strong>التعليل والشرح:</strong> <p class="mt-2">\${escapeHTML(item.explanation)}</p></div>` : ''}
-            </div>`;
+            html += '<div class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 shadow-sm space-y-4 mb-6 transition hover:border-sky-300">';
+            html += '<div class="flex justify-between items-start border-b border-slate-100 pb-4 gap-4">';
+            html += '<h4 class="font-black text-xl sm:text-2xl text-sky-950 leading-relaxed">س' + item.qIndex + ': ' + qTextSafe + '</h4>';
+            html += '<div class="shrink-0 mt-1">' + statusBadge + '</div>';
+            html += '</div>';
+            html += '<div class="text-lg text-slate-700 font-bold bg-slate-50 p-3 rounded-xl border border-slate-100 inline-block">إجابة الطالب: <strong class="text-sky-900">' + userAnswerSafe + '</strong></div>';
+            html += optsHtml;
+
+            if (item.explanation) {
+                html += '<div class="p-5 bg-sky-50/70 rounded-2xl border-2 border-sky-200 text-lg text-sky-950 font-bold leading-relaxed mt-4"><i class="fa-solid fa-circle-info text-amber-500 ml-1"></i> <strong>التعليل والشرح:</strong> <p class="mt-2">' + explanationSafe + '</p></div>';
+            }
+
+            html += '</div>';
         }
     });
 
@@ -9861,6 +9890,14 @@ function openStudentRecordDetails(record) {
 
             let questionText = item.qText || item.question || item.text || 'سؤال';
 
+            // 💡 إضافة حقل التعليل والشرح هنا ليعمل بانتظام وبشكل صحيح
+            let explanationHtml = item.explanation ? `
+                <div class="text-xs text-sky-950 bg-sky-50/70 p-3 rounded-xl border border-sky-200 mt-2">
+                    <span class="font-bold text-sky-800 block mb-1"><i class="fa-solid fa-circle-info ml-1"></i> التعليل والشرح:</span>
+                    <p class="leading-relaxed">${escapeHTML(item.explanation)}</p>
+                </div>
+            ` : '';
+
             breakdownHtml += `
                 <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 mb-3 text-right">
                     <div class="flex justify-between items-center">
@@ -9874,6 +9911,7 @@ function openStudentRecordDetails(record) {
                     <div class="text-xs text-slate-600 bg-white p-2.5 rounded-xl border border-slate-100">
                         <span class="font-bold text-emerald-700">الإجابة النموذجية:</span> ${escapeHTML(item.correctAnswer || '--')}
                     </div>
+                    ${explanationHtml}
                 </div>
             `;
         });
@@ -9907,7 +9945,7 @@ function openStudentRecordDetails(record) {
         </div>
     `;
     modalContainer.classList.remove('hidden');
-} 
+}
 
 function openStudentFullRecordDetailsPage(recordId) {
     const record = studentRecords.find(r => r.id === recordId);
@@ -11247,6 +11285,20 @@ function startStudentMonthlyExam(examId) {
         timerInterval: null
     };
 
+    // 💡 إيقاف سحب التحديث للشاشة أثناء الامتحان
+    document.body.style.overscrollBehaviorY = 'none';
+
+    // 💡 استرجاع الإجابات المحفوظة مؤقتاً إن حدث تحديث غير متوقع للشاشة
+    try {
+        let tempSaved = localStorage.getItem('active_exam_backup_' + exam.id);
+        if (tempSaved) {
+            let parsed = JSON.parse(tempSaved);
+            if (parsed && parsed.answers) {
+                studentMonthlyExamState.answers = parsed.answers;
+            }
+        }
+    } catch(e) {}
+
     // إخفاء البوابة وإظهار شاشة الامتحان الشهري
     document.getElementById('view-student-portal').classList.add('hidden');
     document.getElementById('view-student-portal').classList.remove('flex');
@@ -11269,7 +11321,6 @@ function startStudentMonthlyExam(examId) {
     renderStudentMonthlyExamSection();
     startStudentMonthlyExamTimer(exam.duration || 45);
 }
-
   function renderStudentMonthlyExamSection() {
     const state = studentMonthlyExamState;
     const exam = state.exam;
@@ -11355,12 +11406,44 @@ function startStudentMonthlyExam(examId) {
                 let optsHtml = '';
                 if (q.options) {
                     q.options.forEach(opt => {
-                        let isChecked = userAns === opt;
+                        let isSelected = String(userAns).trim() === String(opt).trim();
+                        let safeOpt = escapeHTML(opt).replace(/'/g, "\\'");
+                        
                         optsHtml += `
-                            <label class="block p-4 bg-white rounded-2xl border-2 ${isChecked ? 'border-purple-500 bg-purple-50/50 text-purple-950 shadow-sm' : 'border-slate-200 hover:border-slate-300 text-slate-800'} font-black text-base sm:text-lg cursor-pointer transition flex items-center gap-3">
-                                <input type="radio" name="${qUniqueKey}" value="${escapeHTML(opt)}" ${isChecked ? 'checked' : ''} onchange="saveStudentMonthlyAnswer(${sIdx}, ${qIdx}, '${escapeHTML(opt).replace(/'/g, "\\'")}'); updateMonthlySectionPalette(${sIdx});" class="w-5 h-5 text-purple-600 cursor-pointer">
+                            <button type="button" onclick="
+                                let qKey = 'sec_${sIdx}_q_${qIdx}';
+                                if (!studentMonthlyExamState.answers) studentMonthlyExamState.answers = {};
+                                
+                                if (String(studentMonthlyExamState.answers[qKey]).trim() === '${safeOpt}') {
+                                    studentMonthlyExamState.answers[qKey] = ''; // إلغاء التحديد وتفريغ الإجابة
+                                } else {
+                                    studentMonthlyExamState.answers[qKey] = '${safeOpt}'; // تسجيل الاختيار الجديد
+                                }
+                                
+                                // تحديث مظهر الأزرار بصرياً لتغيير الألوان فوراً
+                                let container = this.closest('.space-y-3');
+                                if (container) {
+                                    container.querySelectorAll('button').forEach(b => {
+                                        b.className = 'w-full text-right p-4 rounded-2xl font-black text-base sm:text-lg cursor-pointer transition border-2 border-slate-200 bg-white text-slate-800 hover:border-purple-400 shadow-xs flex items-center justify-between';
+                                        let icon = b.querySelector('i');
+                                        if (icon) icon.className = 'fa-regular fa-circle text-slate-300';
+                                    });
+                                }
+                                
+                                if (String(studentMonthlyExamState.answers[qKey]).trim() === '${safeOpt}') {
+                                    this.className = 'w-full text-right p-4 rounded-2xl font-black text-base sm:text-lg cursor-pointer transition border-2 border-purple-500 bg-purple-50/50 text-purple-950 shadow-sm flex items-center justify-between';
+                                    let icon = this.querySelector('i');
+                                    if (icon) icon.className = 'fa-regular fa-circle-check text-purple-600';
+                                }
+                                
+                                // تحديث خريطة الأسئلة الجانبية لحظياً
+                                if (typeof updateMonthlySectionPalette === 'function') {
+                                    updateMonthlySectionPalette(${sIdx});
+                                }
+                            " class="w-full text-right p-4 rounded-2xl font-black text-base sm:text-lg cursor-pointer transition border-2 ${isSelected ? 'border-purple-500 bg-purple-50/50 text-purple-950 shadow-sm' : 'border-slate-200 bg-white text-slate-800 hover:border-purple-400'} shadow-xs flex items-center justify-between">
                                 <span>${escapeHTML(opt)}</span>
-                            </label>
+                                <i class="fa-regular ${isSelected ? 'fa-circle-check text-purple-600' : 'fa-circle text-slate-300'}"></i>
+                            </button>
                         `;
                     });
                 }
@@ -11880,8 +11963,17 @@ function renderMonthlyQuizQuestion() {
         optionsHtml = '<div class="space-y-3">';
         q.options.forEach(opt => {
             const isSelected = state.answers[idx] === opt;
+            const safeOpt = escapeHTML(opt).replace(/'/g, "\\'");
             optionsHtml += `
-                <button type="button" onclick="selectMonthlyExamOption('${escapeHTML(opt).replace(/'/g, "\\'")}')" class="w-full text-right p-4 rounded-2xl font-bold transition flex items-center justify-between border-2 cursor-pointer text-lg ${isSelected ? 'bg-purple-50 border-purple-600 text-purple-950 shadow-md' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}">
+                <button type="button" onclick="
+                    let currentAns = activeMonthlyExamState.answers[${idx}];
+                    if (currentAns === '${safeOpt}') {
+                        activeMonthlyExamState.answers[${idx}] = ''; // إلغاء التحديد وتفريغ الإجابة
+                    } else {
+                        activeMonthlyExamState.answers[${idx}] = '${safeOpt}'; // تسجيل الاختيار الجديد
+                    }
+                    renderMonthlyQuizQuestion(); // إعادة رسم السؤال لتحديث الألوان فوريّاً
+                " class="w-full text-right p-4 rounded-2xl font-bold transition flex items-center justify-between border-2 cursor-pointer text-lg ${isSelected ? 'bg-purple-50 border-purple-600 text-purple-950 shadow-md' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'}">
                     <span>${escapeHTML(opt)}</span>
                     <i class="fa-regular ${isSelected ? 'fa-circle-check text-purple-600' : 'fa-circle text-slate-300'}"></i>
                 </button>
