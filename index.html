@@ -4149,23 +4149,53 @@ function changeQiPreviewPage(direction) {
 
     currentQiPageIndex = newIndex;
     
-    // استهداف حاوية الطالب أولاً، ثم حاوية المعاينة لضمان التحديث الشامل
-    const container = document.getElementById('quick-info-content-container') || document.getElementById('preview-card-body-view');
-    if (container) {
-        container.innerHTML = generateQuickInfoCardHtml(activeQiDataObject, currentQiPageIndex);
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // 💡 التحقق من نوع الحاوية النشطة حالياً (معاينة المعلم أو صفحة الطالب)
+    const previewBody = document.getElementById('preview-card-body-view');
+    const studentContainer = document.getElementById('quick-info-content-container');
+
+    if (previewBody && !previewBody.closest('.admin-section-view')?.classList.contains('hidden') && previewBody.innerHTML.trim() !== '') {
+        // إذا كنا في نافذة المعاينة الخاصة بالمعلم
+        const qi = activeQiDataObject;
+        previewBody.innerHTML = `
+            <div class="text-xs font-bold text-sky-800 bg-sky-50 p-3 rounded-xl border border-sky-200 mb-4 flex items-center justify-between">
+                <span>مسار البطاقة: <strong class="text-sky-950">${qi.stage} ➔ ${qi.grade} ➔ ${qi.branch} ➔ ${qi.topic}</strong></span>
+                <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-black">${qi.active !== false ? 'مفعلة' : 'مخفية'}</span>
+            </div>
+            <div class="space-y-4">
+                ${generateQuickInfoCardHtml(qi, currentQiPageIndex)}
+            </div>
+        `;
+        previewBody.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (studentContainer) {
+        // إذا كنا في صفحة الطالب العادية
+        studentContainer.innerHTML = generateQuickInfoCardHtml(activeQiDataObject, currentQiPageIndex);
+        studentContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
-// دالة التنقل المباشر عبر أرقام الشرائح (معتمدة عالمياً لتشمل صفحة الطالب)
+// دالة التنقل المباشر عبر أرقام الشرائح (معتمدة عالمياً لتشمل صفحة الطالب والمعاينة)
 window.goToQiPage = function(pageIndex) {
     if (!activeQiDataObject) return;
     currentQiPageIndex = pageIndex;
     
-    const container = document.getElementById('quick-info-content-container') || document.getElementById('preview-card-body-view');
-    if (container) {
-        container.innerHTML = generateQuickInfoCardHtml(activeQiDataObject, currentQiPageIndex);
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const previewBody = document.getElementById('preview-card-body-view');
+    const studentContainer = document.getElementById('quick-info-content-container');
+
+    if (previewBody && !previewBody.closest('.admin-section-view')?.classList.contains('hidden') && previewBody.innerHTML.trim() !== '') {
+        const qi = activeQiDataObject;
+        previewBody.innerHTML = `
+            <div class="text-xs font-bold text-sky-800 bg-sky-50 p-3 rounded-xl border border-sky-200 mb-4 flex items-center justify-between">
+                <span>مسار البطاقة: <strong class="text-sky-950">${qi.stage} ➔ ${qi.grade} ➔ ${qi.branch} ➔ ${qi.topic}</strong></span>
+                <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-black">${qi.active !== false ? 'مفعلة' : 'مخفية'}</span>
+            </div>
+            <div class="space-y-4">
+                ${generateQuickInfoCardHtml(qi, currentQiPageIndex)}
+            </div>
+        `;
+        previewBody.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (studentContainer) {
+        studentContainer.innerHTML = generateQuickInfoCardHtml(activeQiDataObject, currentQiPageIndex);
+        studentContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 };
 
@@ -7524,24 +7554,47 @@ function importQuestionsJsonFile(event) {
         function deleteQuickInfo(idx) { if(confirm("حذف البطاقة؟")) { quickInfoList.splice(idx, 1); saveState(); renderAdminQuickInfoList(); } }
         
         // دالة معاينة المعلومة السريعة (محدثة للصفحة المستقلة)
-        function previewQuickInfo(idx) {
-            const qi = quickInfoList[idx];
-            if (!qi) return;
-            const contentHtml = generateQuickInfoCardHtml(qi);
-            
-            // الانتباه هنا للاسم الجديد للحاوية
-            const previewBody = document.getElementById('preview-card-body-view');
-            if (previewBody) {
-                previewBody.innerHTML = `<div class="text-xs font-bold text-sky-800 bg-sky-50 p-3 rounded-xl border border-sky-200 mb-4 flex items-center justify-between"><span>مسار البطاقة: <strong class="text-sky-950">${qi.stage} ➔ ${qi.grade} ➔ ${qi.branch} ➔ ${qi.topic}</strong></span><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-black">${qi.active !== false ? 'مفعلة' : 'مخفية'}</span></div><div class="space-y-4">${contentHtml}</div>`;
-            }
-            
-            // جعل زر العودة ذكياً: يعود بك لبطاقات المعلومات السريعة
-            const backBtn = document.getElementById('preview-back-btn');
-            if (backBtn) backBtn.onclick = () => openAdminSectionPage('view-admin-quickinfo');
-            
-            // فتح الصفحة المستقلة للمعاينة
-            openAdminSectionPage('view-admin-preview-card');
+       function previewQuickInfo(idx) {
+    const qi = quickInfoList[idx];
+    if (!qi) return;
+    
+    // 1. تعيين المتغيرات العامة لتدفق المحتوى
+    activeQiDataObject = qi;
+    currentQiPageIndex = 0;
+
+    // 2. حقن المحتوى داخل الحاوية المعالجة مع توحيد المعرفات لتدعم دوال التمرير
+    const previewBody = document.getElementById('preview-card-body-view');
+    if (previewBody) {
+        previewBody.innerHTML = `
+            <div class="text-xs font-bold text-sky-800 bg-sky-50 p-3 rounded-xl border border-sky-200 mb-4 flex items-center justify-between">
+                <span>مسار البطاقة: <strong class="text-sky-950">${qi.stage} ➔ ${qi.grade} ➔ ${qi.branch} ➔ ${qi.topic}</strong></span>
+                <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-black">${qi.active !== false ? 'مفعلة' : 'مخفية'}</span>
+            </div>
+            <div id="quick-info-content-container" class="space-y-4">
+                ${generateQuickInfoCardHtml(qi, 0)}
+            </div>
+        `;
+    }
+    
+    // 3. ضمان استجابة الأزرار الداخلية وتحديث العرض فوراً عند النقر
+    setTimeout(() => {
+        const container = document.getElementById('quick-info-content-container');
+        if (container) {
+            // إعادة توجيه أي تفاعل داخل حاوية المعاينة ليتطابق مع مستشعرات صفحة الطالب
+            container.querySelectorAll('button[onclick*="changeQiPreviewPage"], button[onclick*="goToQiPage"]').forEach(btn => {
+                // التأكد من تفعيل الأزرار وعدم تعطيلها
+                btn.style.pointerEvents = 'auto';
+            });
         }
+    }, 100);
+    
+    // جعل زر العودة ذكياً: يعود بك لبطاقات المعلومات السريعة
+    const backBtn = document.getElementById('preview-back-btn');
+    if (backBtn) backBtn.onclick = () => openAdminSectionPage('view-admin-quickinfo');
+    
+    // فتح الصفحة المستقلة للمعاينة
+    openAdminSectionPage('view-admin-preview-card');
+} 
 
         function populateQiModalStages() { const sel = document.getElementById('modal-qi-stage'); if(!sel) return; sel.innerHTML = '<option value="">اختر</option>'; Object.keys(stagesData).forEach(s => { if(gradeStatus[`stage_active_${s}`] !== false) sel.innerHTML += `<option value="${s}">${s}</option>`; }); }
         function populateQiModalGrades() { const st = document.getElementById('modal-qi-stage')?.value; const sel = document.getElementById('modal-qi-grade'); if(!sel) return; sel.innerHTML = '<option value="">اختر</option>'; if (st && stagesData[st]) stagesData[st].forEach(g => { if(gradeStatus[`${st}_${g}`] !== false) sel.innerHTML += `<option value="${g}">${g}</option>`; }); }
@@ -8028,44 +8081,64 @@ function changeAdminQiSectionPage(newIndex) {
             container.appendChild(div); 
         }
         
-        function exportTopicQuickInfoJson() { 
-            const fTopic = document.getElementById('filter-qi-topic')?.value; 
-            if (!fTopic) { alert("يرجى تحديد الموضوع من الفلاتر بالأعلى أولاً لتصدير بطاقاته."); return; }
-            let tq = quickInfoList.filter(q => q.topic === fTopic); 
-            if (tq.length === 0) { alert("لا توجد بطاقات في هذا الموضوع لتصديرها."); return; }
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tq, null, 2)); 
-            let a = document.createElement('a'); a.href = dataStr; a.download = `${fTopic.replace(/\s+/g, '_')}_quickinfo.json`; a.click(); 
-        }
+        function exportTopicQuickInfoJson() {
+    const fTopic = document.getElementById('filter-qi-topic')?.value; 
+    if (!fTopic) { alert("يرجى تحديد الموضوع من الفلاتر بالأعلى أولاً لتصدير بطاقاته."); return; }
+    let tq = quickInfoList.filter(q => q.topic === fTopic); 
+    if (tq.length === 0) { alert("لا توجد بطاقات في هذا الموضوع لتصديرها."); return; }
+    
+    // 💡 معالجة وتعقيم الجداول قبل التصدير لضمان حفظها واستعراضها بشكل سليم
+    let sanitizedData = sanitizeQuickInfoList(tq);
 
-        function importQuickInfoJsonFile(event) { 
-            let file = event.target.files[0]; if (!file) return; 
-            let reader = new FileReader(); 
-            reader.onload = function(e) { 
-                try { 
-                    let imp = JSON.parse(e.target.result); 
-                    let itemsArray = Array.isArray(imp) ? imp : [imp];
-                    if (itemsArray.length > 0) { 
-                        const fStage = document.getElementById('filter-qi-stage')?.value;
-                        const fGrade = document.getElementById('filter-qi-grade')?.value;
-                        const fBranch = document.getElementById('filter-qi-branch')?.value;
-                        const fTopic = document.getElementById('filter-qi-topic')?.value;
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sanitizedData, null, 2)); 
+    let a = document.createElement('a'); 
+    a.href = dataStr; 
+    a.download = `${fTopic.replace(/\s+/g, '_')}_quickinfo.json`; 
+    a.click(); 
+}
 
-                        itemsArray.forEach(qi => {
-                            if (fStage) qi.stage = fStage;
-                            if (fGrade) qi.grade = fGrade;
-                            if (fBranch) qi.branch = fBranch;
-                            if (fTopic) qi.topic = fTopic;
-                            qi.active = qi.active !== false;
-                            qi.tashkeel = qi.tashkeel !== false;
-                            quickInfoList.push(qi);
+        function importQuickInfoJsonFile(event) {
+    let file = event.target.files[0]; if (!file) return; 
+    let reader = new FileReader(); 
+    reader.onload = function(e) { 
+        try { 
+            let imp = JSON.parse(e.target.result); 
+            let itemsArray = Array.isArray(imp) ? imp : [imp];
+            if (itemsArray.length > 0) { 
+                const fStage = document.getElementById('filter-qi-stage')?.value;
+                const fGrade = document.getElementById('filter-qi-grade')?.value;
+                const fBranch = document.getElementById('filter-qi-branch')?.value;
+                const fTopic = document.getElementById('filter-qi-topic')?.value;
+
+                itemsArray.forEach(qi => {
+                    // 💡 معالجة وفك ترميز الجداول المتداخلة (tableDataJson إلى tableData) فور الاستيراد لضمان ظهورها
+                    if (qi.sections) {
+                        qi.sections.forEach(sec => {
+                            if (sec.subItems) {
+                                sec.subItems.forEach(sub => {
+                                    if (sub.tableDataJson && !sub.tableData) {
+                                        try { sub.tableData = JSON.parse(sub.tableDataJson); } catch(err) { sub.tableData = []; }
+                                    }
+                                });
+                            }
                         });
-                        saveState(); renderAdminQuickInfoList(); alert("تم الاستيراد وربط البطاقات بنجاح!"); 
-                    } else { alert("الملف فارغ أو غير صالح."); }
-                } catch(err) { alert("خطأ أثناء الاستيراد: تأكد من أن الملف بصيغة JSON صحيحة."); } 
-                event.target.value = ''; 
-            }; 
-            reader.readAsText(file); 
-        }
+                    }
+
+                    if (fStage) qi.stage = fStage;
+                    if (fGrade) qi.grade = fGrade;
+                    if (fBranch) qi.branch = fBranch;
+                    if (fTopic) qi.topic = fTopic;
+                    qi.active = qi.active !== false;
+                    qi.tashkeel = qi.tashkeel !== false;
+                    quickInfoList.push(qi);
+                });
+                saveState(); renderAdminQuickInfoList(); alert("تم الاستيراد وربط البطاقات وجداولها بنجاح!"); 
+            } else { alert("الملف فارغ أو غير صالح."); }
+        } catch(err) { alert("خطأ أثناء الاستيراد: تأكد من أن الملف بصيغة JSON صحيحة."); } 
+        event.target.value = ''; 
+    }; 
+    reader.readAsText(file); 
+}
 
        function exportSingleQuickInfoJson() {
     const editId = document.getElementById('edit-quickinfo-id').value;
@@ -8092,7 +8165,7 @@ function changeAdminQiSectionPage(newIndex) {
     downloadAnchor.remove();
 }
 
-        function importSingleQuickInfoJson(event) {
+function importSingleQuickInfoJson(event) {
     const file = event.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -8107,7 +8180,7 @@ function changeAdminQiSectionPage(newIndex) {
                 cardData.sections.forEach(sec => {
                     if (sec.subItems) {
                         sec.subItems.forEach(sub => {
-                            if (sub.tableDataJson) {
+                            if (sub.tableDataJson && !sub.tableData) {
                                 try { sub.tableData = JSON.parse(sub.tableDataJson); } catch(err) { sub.tableData = []; }
                             }
                         });
@@ -8119,9 +8192,17 @@ function changeAdminQiSectionPage(newIndex) {
                 // تعبئة حقول نموذج التعديل والإضافة بالبيانات المستوردة فوراً
                 document.getElementById('modal-qi-title').value = cardData.title || '';
                 if(document.getElementById('modal-qi-stage')) document.getElementById('modal-qi-stage').value = cardData.stage || '';
+                
+                // تحديث الصفوف والقوائم المرتبطة بالمرحلة إن وجدت
+                if(typeof populateQiModalGrades === 'function') populateQiModalGrades();
                 if(document.getElementById('modal-qi-grade')) document.getElementById('modal-qi-grade').value = cardData.grade || '';
+                
+                if(typeof populateQiModalBranches === 'function') populateQiModalBranches();
                 if(document.getElementById('modal-qi-branch')) document.getElementById('modal-qi-branch').value = cardData.branch || '';
+                
+                if(typeof populateQiModalTopics === 'function') populateQiModalTopics();
                 if(document.getElementById('modal-qi-topic-select')) document.getElementById('modal-qi-topic-select').value = cardData.topic || '';
+                
                 if(document.getElementById('modal-qi-img')) document.getElementById('modal-qi-img').value = cardData.img || '';
                 
                 if(document.getElementById('modal-qi-active')) document.getElementById('modal-qi-active').checked = cardData.active !== false;
@@ -8135,7 +8216,7 @@ function changeAdminQiSectionPage(newIndex) {
                     renderQiAttachmentsBuilder(cardData.attachments || []);
                 }
 
-                alert("تم استيراد وتعبئة بيانات البطاقة (بنظام الشرائح الجديد) بنجاح!");
+                alert("تم استيراد وتعبئة بيانات البطاقة (بنظام الشرائح الجديد وجداولها) بنجاح!");
             } else {
                 alert("ملف الـ JSON المستورد لا يحتوي على هيكل بطاقة معلومة سريعة صالح.");
             }
