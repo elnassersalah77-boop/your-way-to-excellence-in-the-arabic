@@ -8157,7 +8157,23 @@ function changeAdminQiSectionPage(newIndex) {
                 const fTopic = document.getElementById('filter-qi-topic')?.value;
 
                 itemsArray.forEach(qi => {
-                    // 💡 معالجة وفك ترميز الجداول المتداخلة (tableDataJson إلى tableData) فور الاستيراد لضمان ظهورها
+                    // 💡 المواءمة الذكية: تحويل البيانات القديمة (إن وجدت) إلى هيكل الأقسام والشرائح الحديث
+                    if (!qi.sections && qi.content) {
+                        qi.sections = [{
+                            mainHeader: qi.title || "عنوان رئيسي",
+                            headerAlign: "text-right",
+                            active: true,
+                            subItems: [{
+                                title: "",
+                                text: qi.content,
+                                img: qi.img || "",
+                                active: true,
+                                tableData: qi.tableData || []
+                            }]
+                        }];
+                    }
+
+                    // معالجة وفك ترميز الجداول المتداخلة (tableDataJson إلى tableData) فور الاستيراد لضمان ظهورها
                     if (qi.sections) {
                         qi.sections.forEach(sec => {
                             if (sec.subItems) {
@@ -8176,11 +8192,26 @@ function changeAdminQiSectionPage(newIndex) {
                     if (fTopic) qi.topic = fTopic;
                     qi.active = qi.active !== false;
                     qi.tashkeel = qi.tashkeel !== false;
-                    quickInfoList.push(qi);
+
+                    // البحث عما إذا كانت البطاقة موجودة مسبقاً لتحديثها بالتعديل الجديد بدلاً من تكرارها
+                    let existingIdx = quickInfoList.findIndex(q => q.title === qi.title && q.topic === (fTopic || qi.topic));
+                    if (existingIdx >= 0) {
+                        quickInfoList[existingIdx] = qi;
+                    } else {
+                        quickInfoList.push(qi);
+                    }
                 });
-                saveState(); renderAdminQuickInfoList(); alert("تم الاستيراد وربط البطاقات وجداولها بنجاح!"); 
-            } else { alert("الملف فارغ أو غير صالح."); }
-        } catch(err) { alert("خطأ أثناء الاستيراد: تأكد من أن الملف بصيغة JSON صحيحة."); } 
+
+                saveState(); 
+                renderAdminQuickInfoList(); 
+                alert("تم استيراد وتحديث البطاقات وجداولها بالنسخة الجديدة بنجاح!"); 
+            } else { 
+                alert("الملف فارغ أو غير صالح."); 
+            }
+        } catch(err) { 
+            console.error(err);
+            alert("خطأ أثناء الاستيراد: تأكد من أن الملف بصيغة JSON صحيحة."); 
+        } 
         event.target.value = ''; 
     }; 
     reader.readAsText(file); 
@@ -8219,9 +8250,25 @@ function importSingleQuickInfoJson(event) {
         try {
             const imported = JSON.parse(e.target.result);
             
-            // معالجة البيانات واستعادة الجداول المتداخلة من نظام الشرائح الجديد
             let cardData = Array.isArray(imported) ? imported[0] : imported;
             
+            // 💡 المواءمة الذكية: تحويل محتوى البطاقة القديمة (إن وجد) إلى هيكل الشرائح الحديث
+            if (!cardData.sections && cardData.content) {
+                cardData.sections = [{
+                    mainHeader: cardData.title || "عنوان رئيسي",
+                    headerAlign: "text-right",
+                    active: true,
+                    subItems: [{
+                        title: "",
+                        text: cardData.content,
+                        img: cardData.img || "",
+                        active: true,
+                        tableData: cardData.tableData || []
+                    }]
+                }];
+            }
+
+            // معالجة واستعادة الجداول المتداخلة من نظام الشرائح
             if (cardData && cardData.sections) {
                 cardData.sections.forEach(sec => {
                     if (sec.subItems) {
@@ -8254,15 +8301,37 @@ function importSingleQuickInfoJson(event) {
                 if(document.getElementById('modal-qi-active')) document.getElementById('modal-qi-active').checked = cardData.active !== false;
                 if(document.getElementById('modal-qi-tashkeel')) document.getElementById('modal-qi-tashkeel').checked = cardData.tashkeel !== false;
 
-                // إعادة بناء الأقسام والشرائح والجداول داخل نموذج التعديل
-                if (typeof renderQuickInfoSectionsBuilder === 'function') {
+                // 💡 تحميل الأقسام والشرائح المستوردة مباشرة إلى نظام الصفحات المؤقت الحديث
+                window.currentEditingQiSections = (cardData.sections && Array.isArray(cardData.sections)) ? JSON.parse(JSON.stringify(cardData.sections)) : [];
+                if (window.currentEditingQiSections.length === 0) {
+                    window.currentEditingQiSections.push({
+                        mainHeader: "",
+                        headerAlign: "text-right",
+                        active: true,
+                        subItems: []
+                    });
+                }
+                currentAdminQiSectionIndex = 0;
+                
+                if (typeof renderAdminQiSectionsPage === 'function') {
+                    renderAdminQiSectionsPage();
+                } else if (typeof renderQuickInfoSectionsBuilder === 'function') {
                     renderQuickInfoSectionsBuilder(cardData.sections || []);
                 }
+
                 if (typeof renderQiAttachmentsBuilder === 'function') {
                     renderQiAttachmentsBuilder(cardData.attachments || []);
+                } else {
+                    const attContainer = document.getElementById('quickinfo-attachments-builder-container');
+                    if (attContainer) {
+                        attContainer.innerHTML = "";
+                        if (cardData.attachments && Array.isArray(cardData.attachments)) {
+                            cardData.attachments.forEach(att => addQiAttachmentBlock(att.label || "", att.url || ""));
+                        }
+                    }
                 }
 
-                alert("تم استيراد وتعبئة بيانات البطاقة (بنظام الشرائح الجديد وجداولها) بنجاح!");
+                alert("تم استيراد وتعبئة بيانات البطاقة (بنظام الشرائح الحديث وجداولها) بنجاح!");
             } else {
                 alert("ملف الـ JSON المستورد لا يحتوي على هيكل بطاقة معلومة سريعة صالح.");
             }
@@ -8273,7 +8342,6 @@ function importSingleQuickInfoJson(event) {
     };
     reader.readAsText(file);
 }
-
         // --- STUDENTS ACCOUNTS MANAGEMENT ---
         function populateStudentModalGrades(selectedGrade = "") {
             const sel = document.getElementById('modal-student-grade');
