@@ -7728,10 +7728,14 @@ function importQuestionsJsonFile(event) {
             });
         }        
 
-        function openEditQuickInfoModal(idx) {
+       function openEditQuickInfoModal(idx) {
     populateQiModalStages(); 
     let qi = quickInfoList[idx]; 
     document.getElementById('edit-quickinfo-id').value = idx; 
+    
+    // 💡 تخزين العنوان القديم للبحث الذكي عند الحفظ لضمان عدم ضياع التعديل
+    window._originalEditingTitle = qi.title;
+
     document.getElementById('modal-qi-title').value = qi.title || ""; 
     document.getElementById('modal-qi-img').value = qi.img || ""; 
     document.getElementById('modal-qi-active').checked = qi.active !== false; 
@@ -7744,7 +7748,7 @@ function importQuestionsJsonFile(event) {
     populateQiModalTopics(); 
     document.getElementById('modal-qi-topic-select').value = qi.topic || "";
     
-    // 💡 تجهيز أقسام البطاقة الحالية بنظام الصفحات المؤقت
+    // تجهيز أقسام البطاقة الحالية بنظام الصفحات المؤقت
     window.currentEditingQiSections = (qi.sections && Array.isArray(qi.sections)) ? JSON.parse(JSON.stringify(qi.sections)) : [];
     if (window.currentEditingQiSections.length === 0) {
         window.currentEditingQiSections.push({
@@ -7940,67 +7944,109 @@ function changeAdminQiSectionPage(newIndex) {
     
     let titleAlign = document.getElementById('modal-qi-title-align') ? document.getElementById('modal-qi-title-align').value : 'text-right';
     
-    // فحص قيم الفلاتر والعنوان في وحدة التحكم للتاكد من عدم فراغها
-    console.log("Values check:", { title, stage, grade, branch, topic, sectionsCount: document.querySelectorAll('.qi-section-block').length });
+    // 💡 البحث الذكي عن البطاقة المراد تعديلها (إما عبر المؤشر الرقمي أو العنوان القديم)
+    let existingCardIndex = (!isNaN(idx) && idx >= 0 && quickInfoList[idx]) ? idx : -1;
+    if (existingCardIndex === -1 && window._originalEditingTitle) {
+        existingCardIndex = quickInfoList.findIndex(q => q.title === window._originalEditingTitle);
+    }
+    let existingCard = existingCardIndex >= 0 ? quickInfoList[existingCardIndex] : null;
+
+    // استعادة الفلاتر تلقائياً إذا كانت فارغة
+    if (!stage && existingCard) stage = existingCard.stage;
+    if (!grade && existingCard) grade = existingCard.grade;
+    if (!branch && existingCard) branch = existingCard.branch;
+    if (!topic && existingCard) topic = existingCard.topic;
 
     if (!title || !stage || !grade || !branch || !topic) { 
         alert("يرجى التأكد من اختيار جميع الفلاتر وعنوان البطاقة."); 
         return; 
     }
     
-    let sections = []; 
-    document.querySelectorAll('.qi-section-block').forEach(secBlock => { 
-        let mainHeader = secBlock.querySelector('.qi-sec-main-header').value.trim(); 
-        let mainActive = secBlock.querySelector('.qi-sec-active').checked; 
-        let headerAlign = secBlock.querySelector('.qi-sec-align') ? secBlock.querySelector('.qi-sec-align').value : 'text-right';
-        let subItems = [];
-        
-        secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => { 
-            let subTitle = subBlock.querySelector('.qi-sub-title').value.trim(); 
-            let subTitleAlign = subBlock.querySelector('.qi-sub-align') ? subBlock.querySelector('.qi-sub-align').value : 'text-right';
-            let subText = subBlock.querySelector('.qi-sub-text').value.trim(); 
-            let subImg = subBlock.querySelector('.qi-sub-img').value.trim(); 
-            let subActive = subBlock.querySelector('.qi-sub-active').checked; 
-            
-            let tableData = [];
-            subBlock.querySelectorAll('.qi-table-row').forEach(row => {
-                let rowCells = [];
-                row.querySelectorAll('.qi-table-cell').forEach(cell => {
-                    rowCells.push(cell.value.trim());
-                });
-                if (rowCells.some(c => c !== "")) tableData.push(rowCells);
-            });
+    // 💡 أخذ الأقسام والشرائح والجداول المحدثة من المتغير المؤقت بنظام الصفحات (أو حفظ الصفحة الحالية أولاً إن وجدت دالة حفظ مؤقتة)
+    if (typeof saveCurrentAdminQiSection === 'function') {
+        try { saveCurrentAdminQiSection(); } catch(e) {}
+    }
 
-            if (subTitle || subText || tableData.length > 0) {
-                subItems.push({ title: subTitle, titleAlign: subTitleAlign, text: subText, img: subImg, active: subActive, tableData: tableData });
+    let sections = [];
+    if (window.currentEditingQiSections && Array.isArray(window.currentEditingQiSections) && window.currentEditingQiSections.length > 0) {
+        // تنقية الأقسام الفارغة تماماً
+        sections = window.currentEditingQiSections.filter(sec => sec.mainHeader || (sec.subItems && sec.subItems.length > 0));
+    }
+
+    // إذا لم تتوفر في المتغير المؤقت، نقرأها من واجهة البناء التقليدية إن وجدت
+    if (sections.length === 0) {
+        document.querySelectorAll('.qi-section-block').forEach(secBlock => { 
+            let mainHeader = secBlock.querySelector('.qi-sec-main-header')?.value.trim() || ""; 
+            let mainActive = secBlock.querySelector('.qi-sec-active')?.checked ?? true; 
+            let headerAlign = secBlock.querySelector('.qi-sec-align') ? secBlock.querySelector('.qi-sec-align').value : 'text-right';
+            let subItems = [];
+            
+            secBlock.querySelectorAll('.qi-subitem-block').forEach(subBlock => { 
+                let subTitle = subBlock.querySelector('.qi-sub-title')?.value.trim() || ""; 
+                let subTitleAlign = subBlock.querySelector('.qi-sub-align') ? subBlock.querySelector('.qi-sub-align').value : 'text-right';
+                let subText = subBlock.querySelector('.qi-sub-text')?.value.trim() || ""; 
+                let subImg = subBlock.querySelector('.qi-sub-img')?.value.trim() || ""; 
+                let subActive = subBlock.querySelector('.qi-sub-active')?.checked ?? true; 
+                
+                let tableData = [];
+                subBlock.querySelectorAll('.qi-table-row').forEach(row => {
+                    let rowCells = [];
+                    row.querySelectorAll('.qi-table-cell').forEach(cell => {
+                        rowCells.push(cell.value.trim());
+                    });
+                    if (rowCells.some(c => c !== "")) tableData.push(rowCells);
+                });
+
+                if (subTitle || subText || tableData.length > 0) {
+                    subItems.push({ title: subTitle, titleAlign: subTitleAlign, text: subText, img: subImg, active: subActive, tableData: tableData });
+                }
+            }); 
+            
+            if (mainHeader || subItems.length > 0) {
+                sections.push({ mainHeader, headerAlign, active: mainActive, subItems }); 
             }
-        }); 
-        
-        if (mainHeader || subItems.length > 0) {
-            sections.push({ mainHeader, headerAlign, active: mainActive, subItems }); 
-        }
-    });
+        });
+    }
+
+    // الاحتفاظ بالأقسام القديمة كملجأ أخير لمنع أي فراغ
+    if (sections.length === 0 && existingCard && existingCard.sections && existingCard.sections.length > 0) {
+        sections = existingCard.sections;
+    }
     
     let attachments = []; 
     document.querySelectorAll('.qi-attachment-block').forEach(attBlock => { 
-        let label = attBlock.querySelector('.qi-att-label').value.trim(); 
-        let url = attBlock.querySelector('.qi-att-url').value.trim(); 
+        let label = attBlock.querySelector('.qi-att-label')?.value.trim() || ""; 
+        let url = attBlock.querySelector('.qi-att-url')?.value.trim() || ""; 
         if (url) attachments.push({ label: label || "اطّلع على", url }); 
     });
-    
-    let qiObj = { title, titleAlign, stage, grade, branch, topic, img, sections, attachments, active, tashkeel };
-    
-    if (isNaN(idx) || idx === -1) {
-        quickInfoList.push(qiObj); 
-    } else {
-        quickInfoList[idx] = qiObj;
+
+    if (attachments.length === 0 && existingCard && existingCard.attachments) {
+        attachments = existingCard.attachments;
     }
     
+    let qiObj = { 
+        id: existingCard ? existingCard.id : ('qi_' + Date.now()),
+        title, titleAlign, stage, grade, branch, topic, img, sections, attachments, active, tashkeel 
+    };
+    
+    if (existingCardIndex >= 0) {
+        // تحديث البطاقة الحالية مكانها بدقة وحفظ التعديلات
+        quickInfoList[existingCardIndex] = qiObj;
+    } else {
+        // إضافة كبطاقة جديدة
+        quickInfoList.push(qiObj);
+    }
+    
+    // تصفير المؤشرات المؤقتة
+    window._originalEditingTitle = null;
+    window.currentEditingQiSections = [];
+    document.getElementById('edit-quickinfo-id').value = "-1";
+
     saveState(); 
     renderAdminQuickInfoList(); 
     
     openAdminSectionPage('view-admin-quickinfo'); 
-    alert("تم الحفظ بنجاح!");
+    alert("تم حفظ وتحديث التعديلات والجداول بنجاح!");
 }
 
       function addQuickInfoSectionBlock() {
