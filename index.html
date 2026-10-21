@@ -3807,11 +3807,12 @@ async function saveQuestionsState() {
             if (!window._cloudCache) window._cloudCache = {};
             
             allowCloudLoadingOverlay = true;
-            if (textEl) textEl.textContent = "جَارِي فَحْصِ بَنْكِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
+            if (textEl) textEl.textContent = "جَارِي فَحْصِ وَتَجْزِئَةِ بَنْكِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
             if (overlay) overlay.style.display = 'flex';
 
-            // 💡 الفحص والتقسيم التلقائي لأي بطاقة ضخمة تتجاوز 800 كيلوبايت لمنع خطأ الحجم
             let processedQiList = [];
+            
+            // 💡 التجزئة الذكية والعميقة للبطاقات الضخمة بناءً على الحجم الفعلي
             (quickInfoList || []).forEach(qi => {
                 let qiCopy = JSON.parse(JSON.stringify(qi));
                 if (qiCopy.sections) {
@@ -3826,21 +3827,35 @@ async function saveQuestionsState() {
                         }
                     });
                 }
-                
+
                 let jsonStr = JSON.stringify(qiCopy);
-                if (jsonStr.length > 800000 && qiCopy.sections && qiCopy.sections.length > 1) {
-                    let sections = qiCopy.sections;
-                    let mid = Math.ceil(sections.length / 2);
-                    
-                    let qiPart1 = JSON.parse(JSON.stringify(qiCopy));
-                    qiPart1.title = (qiCopy.title || '') + " (الجزء الأول)";
-                    qiPart1.sections = sections.slice(0, mid);
-                    
-                    let qiPart2 = JSON.parse(JSON.stringify(qiCopy));
-                    qiPart2.title = (qiCopy.title || '') + " (الجزء الثاني)";
-                    qiPart2.sections = sections.slice(mid);
-                    
-                    processedQiList.push(qiPart1, qiPart2);
+                // إذا كان حجم البطاقة الواحدة يتجاوز 700 كيلوبايت، نقوم بتجزيئها بعمق
+                if (jsonStr.length > 700000) {
+                    let allSubItems = [];
+                    if (qiCopy.sections) {
+                        qiCopy.sections.forEach(sec => {
+                            if (sec.subItems) {
+                                sec.subItems.forEach(sub => {
+                                    allSubItems.push({ mainHeader: sec.mainHeader, sub });
+                                });
+                            }
+                        });
+                    }
+
+                    if (allSubItems.length > 1) {
+                        let chunkSize = Math.max(1, Math.floor(allSubItems.length / 2));
+                        for (let i = 0; i < allSubItems.length; i += chunkSize) {
+                            let chunkItems = allSubItems.slice(i, i + chunkSize);
+                            let partQi = JSON.parse(JSON.stringify(qiCopy));
+                            partQi.title = (qiCopy.title || 'معلومة سريعة') + ` (الجزء ${Math.floor(i/chunkSize) + 1})`;
+                            
+                            let newSec = { mainHeader: chunkItems[0].mainHeader || partQi.title, active: true, subItems: chunkItems.map(ci => ci.sub) };
+                            partQi.sections = [newSec];
+                            processedQiList.push(partQi);
+                        }
+                    } else {
+                        processedQiList.push(qiCopy);
+                    }
                 } else {
                     processedQiList.push(qiCopy);
                 }
@@ -3864,6 +3879,25 @@ async function saveQuestionsState() {
             let completedTasks = 0;
 
             for (let task of tasks) {
+                // فحص إضافي أخير: ضمان أن أي مستند نهائي لا يتجاوز 950 كيلوبايت
+                let taskBytes = new Blob([task.str]).size;
+                if (taskBytes > 950000) {
+                    let chunkObj = JSON.parse(task.str);
+                    if (chunkObj.chunk && chunkObj.chunk[0] && chunkObj.chunk[0].sections) {
+                        chunkObj.chunk[0].sections.forEach(sec => {
+                            if (sec.subItems) {
+                                sec.subItems.forEach(sub => {
+                                    if (sub.text && sub.text.length > 300000) {
+                                        sub.text = sub.text.substring(0, 300000) + "\n\n(تم تقصير النص لتجاوز حدود السحابة)...";
+                                    }
+                                });
+                            }
+                        });
+                        task.data = chunkObj;
+                        task.str = JSON.stringify(chunkObj);
+                    }
+                }
+
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
                 window._cloudCache[task.id] = task.str; 
                 completedTasks++;
