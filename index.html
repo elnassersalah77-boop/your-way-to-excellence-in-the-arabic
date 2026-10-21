@@ -6151,13 +6151,16 @@ async function openAdminRecordsWithLoader() {
         }
 
         // دالة الحفظ الموحدة مع رسالة التأكيد الإجبارية
-function confirmAndSaveAdminSection(sectionType) {
+async function confirmAndSaveAdminSection(sectionType) {
     if (confirm("هل أنت متأكد من حفظ التغييرات لهذه الصفحة؟")) {
-        // 💡 تفريغ الكاش القديم بالكامل وإجبار النظام على إعادة التجزئة والتقسيم الفوري من الضغطة الأولى
+        // 💡 1. تفريغ الكاش القديم وإجبار النظام على إعادة التجزئة والتقسيم الفوري والانتظار حتى اكتمالها
         window._cloudCache = {};
         if (typeof updateCloudCacheSnapshot === 'function') {
             updateCloudCacheSnapshot();
         }
+
+        // 💡 منح مهلة بسيطة جداً (معالجة الميكرو-تاسك) لضمان استقرار الأجزاء في الذاكرة المؤقتة
+        await new Promise(resolve => setTimeout(resolve, 50));
 
         if (sectionType === 'settings' && typeof saveAdminSettings === 'function') saveAdminSettings();
         else if (sectionType === 'stages' && typeof saveStagesState === 'function') saveStagesState();
@@ -6165,10 +6168,11 @@ function confirmAndSaveAdminSection(sectionType) {
         else if (sectionType === 'topics' && typeof saveTopicsState === 'function') saveTopicsState();
         else if (sectionType === 'questions' && typeof saveQuestionsState === 'function') saveQuestionsState();
         else if (sectionType === 'paragraphs' && typeof saveParagraphsState === 'function') saveParagraphsState();
-        else if (sectionType === 'quickinfo' && typeof saveQuickInfoState === 'function') saveQuickInfoState();
+        else if (sectionType === 'quickinfo' && typeof saveQuickInfoState === 'function') {
+            await saveQuickInfoState(); // انتظار حفظ المعلومات السريعة وتجزئتها
+        }
         else if (sectionType === 'students' && typeof saveStudentsState === 'function') saveStudentsState();
         else if (sectionType === 'monthlyExams') {
-            // 💡 تفعيل مؤشر التحميل المرئي والنسبة المئوية عند الضغط على حفظ القسم ككل
             allowCloudLoadingOverlay = true;
             const textEl = document.getElementById('cloud-loading-text');
             const overlay = document.getElementById('cloud-loading-overlay');
@@ -6186,11 +6190,13 @@ function confirmAndSaveAdminSection(sectionType) {
                     if (overlay) overlay.style.display = 'none';
                     alert("حدث خطأ أثناء الحفظ: " + e.message);
                 });
-                return; // الخروج لتجنب تكرار التنبيه العام
+                return;
             }
         }
         
-        alert("تم حفظ التغييرات بنجاح!");
+        if (sectionType !== 'monthlyExams' && sectionType !== 'quickinfo') {
+            alert("تم حفظ التغييرات بنجاح!");
+        }
     }
 }         
         // --- STAGES, GRADES & ACTIVATION ---
