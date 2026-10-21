@@ -3071,7 +3071,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     window._cloudCache["monthlyExams_meta"] = JSON.stringify({ totalParts: mexamTotalParts });
 
-    // 💡 التجزئة الذكية والعميقة للبطاقات الضخمة بناءً على الحجم الفعلي بغض النظر عن عدد الأقسام
+    // 💡 تجزئة سريعة وآمنة تضمن بقاء حجم البطاقة دون الحد المسموح لسحابة فايرستور
     let processedQiList = [];
     (quickInfoList || []).forEach(qi => {
         let qiCopy = JSON.parse(JSON.stringify(qi));
@@ -3089,33 +3089,17 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         
         let jsonStr = JSON.stringify(qiCopy);
-        // إذا تجاوزت البطاقة 600 كيلوبايت، نقوم بتوزيع عناصرها الفرعية (subItems) على أجزاء مستقلة وآمنة
-        if (jsonStr.length > 600000) {
-            let allSubItems = [];
-            if (qiCopy.sections) {
-                qiCopy.sections.forEach(sec => {
-                    if (sec.subItems) {
-                        sec.subItems.forEach(sub => {
-                            allSubItems.push({ mainHeader: sec.mainHeader, sub });
-                        });
-                    }
-                });
-            }
-
-            if (allSubItems.length > 1) {
-                let chunkSize = Math.max(1, Math.ceil(allSubItems.length / 2));
-                for (let i = 0; i < allSubItems.length; i += chunkSize) {
-                    let chunkItems = allSubItems.slice(i, i + chunkSize);
-                    let partQi = JSON.parse(JSON.stringify(qiCopy));
-                    partQi.title = (qiCopy.title || 'معلومة سريعة') + ` (الجزء ${Math.floor(i/chunkSize) + 1})`;
-                    
-                    let newSec = { mainHeader: chunkItems[0].mainHeader || partQi.title, active: true, subItems: chunkItems.map(ci => ci.sub) };
-                    partQi.sections = [newSec];
-                    processedQiList.push(partQi);
-                }
-            } else {
-                processedQiList.push(qiCopy);
-            }
+        if (jsonStr.length > 500000 && qiCopy.sections && qiCopy.sections.length > 0) {
+            let mid = Math.ceil(qiCopy.sections.length / 2);
+            let part1 = JSON.parse(JSON.stringify(qiCopy));
+            part1.title = (qiCopy.title || '') + " (الجزء 1)";
+            part1.sections = qiCopy.sections.slice(0, mid);
+            
+            let part2 = JSON.parse(JSON.stringify(qiCopy));
+            part2.title = (qiCopy.title || '') + " (الجزء 2)";
+            part2.sections = qiCopy.sections.slice(mid);
+            
+            processedQiList.push(part1, part2);
         } else {
             processedQiList.push(qiCopy);
         }
