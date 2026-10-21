@@ -6150,7 +6150,8 @@ async function openAdminRecordsWithLoader() {
         // دالة الحفظ الموحدة مع رسالة التأكيد الإجبارية
 function confirmAndSaveAdminSection(sectionType) {
     if (confirm("هل أنت متأكد من حفظ التغييرات لهذه الصفحة؟")) {
-        // 💡 تحديث وتجزئة الكاش السحابي فوراً قبل بدء الحفظ لتفادي أخطاء الحجم من الضغطة الأولى
+        // 💡 تفريغ الكاش القديم بالكامل وإجبار النظام على إعادة التجزئة والتقسيم الفوري من الضغطة الأولى
+        window._cloudCache = {};
         if (typeof updateCloudCacheSnapshot === 'function') {
             updateCloudCacheSnapshot();
         }
@@ -6188,7 +6189,7 @@ function confirmAndSaveAdminSection(sectionType) {
         
         alert("تم حفظ التغييرات بنجاح!");
     }
-}           
+}         
         // --- STAGES, GRADES & ACTIVATION ---
         function renderAdminStagesList() {
             const container = document.getElementById('admin-stages-list'); if (!container) return; container.innerHTML = '';
