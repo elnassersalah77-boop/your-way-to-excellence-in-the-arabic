@@ -3798,7 +3798,7 @@ async function saveQuestionsState() {
     }
 }
 
-           async function saveQuickInfoState() {
+          async function saveQuickInfoState() {
     try {
         if (window.firebaseLoadedSuccessfully && window.firebaseDb && window.firebaseDoc && window.firebaseSetDoc) {
             const db = window.firebaseDb; 
@@ -3806,10 +3806,45 @@ async function saveQuestionsState() {
             const overlay = document.getElementById('cloud-loading-overlay');
             if (!window._cloudCache) window._cloudCache = {};
             
-            // تفعيل مؤشر التحميل وظهوره على الشاشة
             allowCloudLoadingOverlay = true;
             if (textEl) textEl.textContent = "جَارِي فَحْصِ بَنْكِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
             if (overlay) overlay.style.display = 'flex';
+
+            // 💡 الفحص والتقسيم التلقائي لأي بطاقة ضخمة تتجاوز 800 كيلوبايت لمنع خطأ الحجم
+            let processedQiList = [];
+            (quickInfoList || []).forEach(qi => {
+                let qiCopy = JSON.parse(JSON.stringify(qi));
+                if (qiCopy.sections) {
+                    qiCopy.sections.forEach(sec => {
+                        if (sec.subItems) {
+                            sec.subItems.forEach(sub => {
+                                if (sub.tableData) {
+                                    sub.tableDataJson = JSON.stringify(sub.tableData);
+                                    delete sub.tableData;
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                let jsonStr = JSON.stringify(qiCopy);
+                if (jsonStr.length > 800000 && qiCopy.sections && qiCopy.sections.length > 1) {
+                    let sections = qiCopy.sections;
+                    let mid = Math.ceil(sections.length / 2);
+                    
+                    let qiPart1 = JSON.parse(JSON.stringify(qiCopy));
+                    qiPart1.title = (qiCopy.title || '') + " (الجزء الأول)";
+                    qiPart1.sections = sections.slice(0, mid);
+                    
+                    let qiPart2 = JSON.parse(JSON.stringify(qiCopy));
+                    qiPart2.title = (qiCopy.title || '') + " (الجزء الثاني)";
+                    qiPart2.sections = sections.slice(mid);
+                    
+                    processedQiList.push(qiPart1, qiPart2);
+                } else {
+                    processedQiList.push(qiCopy);
+                }
+            });
 
             let tasks = [];
             const addTask = (id, data) => {
@@ -3817,27 +3852,13 @@ async function saveQuestionsState() {
                 tasks.push({ id, data, str });
             };
 
-            const qiChunkSize = 300; 
-            let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
+            const qiChunkSize = 1; 
+            let qiTotalParts = Math.ceil(processedQiList.length / qiChunkSize) || 1;
             
-            const sanitizedQi = sanitizeQuickInfoList(quickInfoList);
             for (let i = 0; i < qiTotalParts; i++) {
-                addTask(`quickinfo_part_${i}`, { chunk: sanitizedQi.slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
+                addTask(`quickinfo_part_${i}`, { chunk: processedQiList.slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
             }
-            addTask("quickinfo_meta", { totalParts: qiTotalParts, totalCount: (quickInfoList || []).length });
-
-            // الفحص القبلي (Delta Check) لمنع الرفع المتكرر إذا لم تقم بتغييرات
-            let currentCacheKey = JSON.stringify(quickInfoList || []);
-            let cacheKeyMeta = "quickinfo_full_cache_string";
-            
-            if (window._cloudCache[cacheKeyMeta] === currentCacheKey) {
-                if (textEl) textEl.textContent = "لَمْ يَتَمَّ إِضَافَةُ مِلَفَّاتٍ جَدِيدَةٍ لِحِفْظِهَا";
-                setTimeout(() => {
-                    allowCloudLoadingOverlay = false;
-                    if (overlay) overlay.style.display = 'none';
-                }, 1500);
-                return;
-            }
+            addTask("quickinfo_meta", { totalParts: qiTotalParts, totalCount: processedQiList.length });
 
             let totalTasks = tasks.length;
             let completedTasks = 0;
@@ -3847,14 +3868,11 @@ async function saveQuestionsState() {
                 window._cloudCache[task.id] = task.str; 
                 completedTasks++;
                 
-                // تحديث النسبة المئوية وعدد الملفات أمام عينك مباشرة على الشاشة
                 let pct = Math.round((completedTasks / totalTasks) * 100);
                 if (textEl) {
                     textEl.textContent = `جَارِي رَفْع الْمَعْلُومَات... ${pct}% (${completedTasks}/${totalTasks})`;
                 }
             }
-            
-            window._cloudCache[cacheKeyMeta] = currentCacheKey;
 
             if (textEl) textEl.textContent = "تَمَّ حِفْظُ الْمَعْلُومَاتِ بِنَجَاح!";
             setTimeout(() => {
