@@ -3805,12 +3805,12 @@ async function saveQuestionsState() {
             if (!window._cloudCache) window._cloudCache = {};
             
             allowCloudLoadingOverlay = true;
-            if (textEl) textEl.textContent = "جَارِي فَحْصِ وَتَجْزِئَةِ بَنْكِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
+            if (textEl) textEl.textContent = "جَارِي فَحْصِ وَتَجْزِئَةِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
             if (overlay) overlay.style.display = 'flex';
 
             let processedQiList = [];
             
-            // 💡 التجزئة الذكية والعميقة للبطاقات الضخمة بناءً على الحجم الفعلي
+            // 💡 التجزئة الذكية والعميقة للبطاقات الضخمة فوراً عند الضغط
             (quickInfoList || []).forEach(qi => {
                 let qiCopy = JSON.parse(JSON.stringify(qi));
                 if (qiCopy.sections) {
@@ -3827,8 +3827,7 @@ async function saveQuestionsState() {
                 }
 
                 let jsonStr = JSON.stringify(qiCopy);
-                // إذا كان حجم البطاقة الواحدة يتجاوز 700 كيلوبايت، نقوم بتجزيئها بعمق
-                if (jsonStr.length > 700000) {
+                if (jsonStr.length > 600000) {
                     let allSubItems = [];
                     if (qiCopy.sections) {
                         qiCopy.sections.forEach(sec => {
@@ -3877,7 +3876,6 @@ async function saveQuestionsState() {
             let completedTasks = 0;
 
             for (let task of tasks) {
-                // فحص إضافي أخير: ضمان أن أي مستند نهائي لا يتجاوز 950 كيلوبايت
                 let taskBytes = new Blob([task.str]).size;
                 if (taskBytes > 950000) {
                     let chunkObj = JSON.parse(task.str);
