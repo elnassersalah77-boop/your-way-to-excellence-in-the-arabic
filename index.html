@@ -3807,7 +3807,6 @@ async function saveQuestionsState() {
             const db = window.firebaseDb; 
             const textEl = document.getElementById('cloud-loading-text');
             const overlay = document.getElementById('cloud-loading-overlay');
-            if (!window._cloudCache) window._cloudCache = {};
             
             allowCloudLoadingOverlay = true;
             if (textEl) textEl.textContent = "جَارِي فَحْصِ وَتَجْزِئَةِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
@@ -3815,7 +3814,7 @@ async function saveQuestionsState() {
 
             let processedQiList = [];
             
-            // 💡 التجزئة الذكية والعميقة للبطاقات الضخمة فوراً عند الضغط
+            // 💡 التجزئة الفورية والعميقة لبطاقة "العلم نور" والبطاقات الضخمة بالبايت
             (quickInfoList || []).forEach(qi => {
                 let qiCopy = JSON.parse(JSON.stringify(qi));
                 if (qiCopy.sections) {
@@ -3832,17 +3831,15 @@ async function saveQuestionsState() {
                 }
 
                 let jsonStr = JSON.stringify(qiCopy);
-                if (jsonStr.length > 600000) {
+                if (jsonStr.length > 500000 && qiCopy.sections && qiCopy.sections.length > 0) {
                     let allSubItems = [];
-                    if (qiCopy.sections) {
-                        qiCopy.sections.forEach(sec => {
-                            if (sec.subItems) {
-                                sec.subItems.forEach(sub => {
-                                    allSubItems.push({ mainHeader: sec.mainHeader, sub });
-                                });
-                            }
-                        });
-                    }
+                    qiCopy.sections.forEach(sec => {
+                        if (sec.subItems) {
+                            sec.subItems.forEach(sub => {
+                                allSubItems.push({ mainHeader: sec.mainHeader, sub });
+                            });
+                        }
+                    });
 
                     if (allSubItems.length > 1) {
                         let chunkSize = Math.max(1, Math.floor(allSubItems.length / 2));
@@ -3900,7 +3897,6 @@ async function saveQuestionsState() {
                 }
 
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
-                window._cloudCache[task.id] = task.str; 
                 completedTasks++;
                 
                 let pct = Math.round((completedTasks / totalTasks) * 100);
@@ -3913,7 +3909,7 @@ async function saveQuestionsState() {
             setTimeout(() => {
                 allowCloudLoadingOverlay = false;
                 if (overlay) overlay.style.display = 'none';
-            }, 1200);
+            }, 1000);
         }
     } catch (e) {
         allowCloudLoadingOverlay = false;
