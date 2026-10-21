@@ -3125,6 +3125,11 @@ window.addEventListener('DOMContentLoaded', () => {
     window._cloudCache["records_meta"] = JSON.stringify({ totalParts: rTotalParts });
 }
 
+// 💡 تفعيل التجزئة المسبقة وتحديث الكاش تلقائياً بمجرد تحميل الصفحة
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(updateCloudCacheSnapshot, 800);
+});
+
        async function loadDataFromCloud() {
     if (typeof toggleCloudLoading === 'function') {
         toggleCloudLoading(true, "جَارِي تَحْوِيلُ وَتَجْهِيزُ الْمَنْصَةِ...");
