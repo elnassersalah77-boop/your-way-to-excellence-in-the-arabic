@@ -5317,7 +5317,7 @@ function applyManualEssayGrade(recordId, questionIndex, scoreVal, maxVal = 1) {
 
     if (!rec.breakdown) rec.breakdown = [];
 
-    // 1. تحديث درجة السؤال المحدد في الـ breakdown بدقة (تدعم 1، 0.5، و 0)
+    // 1. تحديث درجة السؤال المحدد في الـ breakdown بدقة (تدعم 1، 0.5، 0، أو أي قيمة جزئية)
     if (rec.breakdown[questionIndex]) {
         rec.breakdown[questionIndex].earnedScore = parseFloat(scoreVal);
         rec.breakdown[questionIndex].maxScore = parseFloat(maxVal || 1);
@@ -5329,6 +5329,7 @@ function applyManualEssayGrade(recordId, questionIndex, scoreVal, maxVal = 1) {
     let totalObjectiveScore = 0;
     let totalEssayScore = 0;
     let pendingCount = 0;
+    let pendingScorePossible = 0;
     let totalQ = rec.total || rec.breakdown.length || 31;
 
     rec.breakdown.forEach(b => {
@@ -5337,6 +5338,8 @@ function applyManualEssayGrade(recordId, questionIndex, scoreVal, maxVal = 1) {
         const isExplicitEssay = b.type === 'essay' || b.type === 'passage_standalone' || b.type === 'passage_sub';
         const isItemEssay = hasNoOpts || isMarkedPending || isExplicitEssay;
         
+        let maxM = parseFloat(b.maxScore) || 1;
+
         if (isItemEssay) {
             if (b.earnedScore !== undefined && b.earnedScore !== null && !isNaN(b.earnedScore)) {
                 totalEssayScore += parseFloat(b.earnedScore);
@@ -5344,12 +5347,13 @@ function applyManualEssayGrade(recordId, questionIndex, scoreVal, maxVal = 1) {
                 totalEssayScore += parseFloat(b.essayGrade);
             } else {
                 pendingCount++;
+                pendingScorePossible += maxM;
             }
         } else {
             if (b.earnedScore !== undefined && b.earnedScore !== null && !isNaN(b.earnedScore)) {
                 totalObjectiveScore += parseFloat(b.earnedScore);
             } else if (b.isCorrect) {
-                totalObjectiveScore += 1;
+                totalObjectiveScore += maxM;
             }
         }
     });
@@ -5362,15 +5366,21 @@ function applyManualEssayGrade(recordId, questionIndex, scoreVal, maxVal = 1) {
     rec.pendingEssayCount = pendingCount;
     rec.pct = totalQ > 0 ? Math.round((rec.score / totalQ) * 100) : 0;
 
-    // 3. تحديد الحالة النهائية فوراً (ناجح / راسب) أو بقائها بانتظار التصحيح
-    const halfTotal = totalQ / 2;
-    if (pendingCount === 0) {
-        rec.status = rec.score >= halfTotal ? "ناجح" : "راسب";
+    // 3. المنطق الرياضي الذكي لتعيين الحالة بدقة تامة:
+    const passThreshold = totalQ / 2;
+
+    if (rec.score >= passThreshold) {
+        // إذا تجاوزت النتيجة الحالية حد النجاح، يتم تثبيت الحالة كـ (ناجح) فوراً
+        rec.status = "ناجح";
+    } else if (rec.score + pendingScorePossible < passThreshold) {
+        // إذا كانت النتيجة الحالية مع درجات الباقي غير المكتملة تقل عن نصف الدرجة، فهو راسب قطعاً
+        rec.status = "راسب";
     } else {
+        // ما لم ينتهِ التصحيح والنتيجة تقل عن النصف، تظل الحالة معلقة بانتظار تصحيح المعلم
         rec.status = "بانتظار التصحيح";
     }
 
-    // ضمان عدم وجود أي قيم null أو NaN نهائياً في خصائص العرض
+    // ضمان عدم وجود أي قيم تالفة في العرض
     if (rec.score === null || isNaN(rec.score)) rec.score = 0;
     if (rec.pct === null || isNaN(rec.pct)) rec.pct = 0;
     if (!rec.status || rec.status === "null") rec.status = "بانتظار التصحيح";
@@ -5384,7 +5394,7 @@ function applyManualEssayGrade(recordId, questionIndex, scoreVal, maxVal = 1) {
 
     alert(`تم اعتماد درجة السؤال (${scoreVal}/${maxVal || 1}) وتحديث النتيجة الإجمالية للطالب (${rec.score} / ${totalQ}) بنجاح!`);
     
-    // تحديث جداول العرض في لوحة المعلم وسجل الطالب فوراً دون إعادة تحميل
+    // تحديث جداول العرض في لوحة المعلم وسجل الطالب فوراً
     if (typeof renderAdminRecordsTable === 'function') {
         renderAdminRecordsTable();
     }
@@ -5392,7 +5402,6 @@ function applyManualEssayGrade(recordId, questionIndex, scoreVal, maxVal = 1) {
         renderStudentPersonalRecords();
     }
 }
-
     function openCertModal() {
         if (!quizState.name) return;
         const totalQ = quizState.questions ? quizState.questions.length : 1;
@@ -8775,14 +8784,32 @@ function renderAdminRecordsTable() {
         const fTy = document.getElementById('admin-recexam-type-filter')?.value || '';
 
         filtered = studentRecords.filter(r => { 
-            const pathStr = (r.stageGrade || r.topic || '').toLowerCase();
+            const pathStr = (r.stageGrade || r.topic || r.branch || '').toLowerCase();
             // عرض الامتحانات فقط في هذا التبويب بناءً على وجود علامة أو كلمة امتحان/تقييم
             const isExamRecord = r.isMonthlyExam === true || r.isMonthlyExam === "true" || r.mexamId || r.examType || pathStr.includes('امتحان') || pathStr.includes('تقييم');
             if (!isExamRecord) return false;
 
             if (fSt && r.stage !== fSt) return false; 
             if (fGr && r.grade !== fGr) return false; 
-            if (fTy && r.examType !== fTy && r.type !== fTy) return false; 
+            
+            // 💡 التعديل الذكي لفلترة أنواع الامتحانات (مطابقة مرنة بين العربية والإنجليزية)
+            if (fTy) {
+                let matchType = false;
+                let recordTypeVal = (r.examType || r.type || r.branch || '').toLowerCase();
+                
+                if (fTy === 'weekly') {
+                    if (recordTypeVal.includes('weekly') || recordTypeVal.includes('أسبوعي') || pathStr.includes('أسبوعي')) matchType = true;
+                } else if (fTy === 'monthly') {
+                    if (recordTypeVal.includes('monthly') || recordTypeVal.includes('شهري') || pathStr.includes('شهري')) matchType = true;
+                } else if (fTy === 'final') {
+                    if (recordTypeVal.includes('final') || recordTypeVal.includes('نهائي') || recordTypeVal.includes('استرشادي') || pathStr.includes('نهائي')) matchType = true;
+                } else {
+                    if (recordTypeVal === fTy) matchType = true;
+                }
+                
+                if (!matchType) return false;
+            }
+
             return true; 
         });
     }
@@ -8881,7 +8908,6 @@ function renderAdminRecordsTable() {
     if(document.getElementById('prev-page-btn')) document.getElementById('prev-page-btn').disabled = currentRecordsPage === 1; 
     if(document.getElementById('next-page-btn')) document.getElementById('next-page-btn').disabled = currentRecordsPage === totalPages;
 }
-
 // 💡 دالة تحديد أو إلغاء تحديد كل سجلات النتائج دفعة واحدة
 function toggleSelectAllRecords(masterCheckbox) {
     const checkboxes = document.querySelectorAll('.record-select-checkbox');
@@ -12301,22 +12327,18 @@ function submitStudentMonthlyExam() {
                 let correctAnswerText = q.ans || (q.options ? q.options[0] : "إجابة نموذجية");
 
                 if (q.type === 'essay') {
-                    // استخدام دالة التنظيف اللغوي الذكي مع تخصيص سياق الامتحانات الشهرية ومرونة تفعيل/تعطيل التصحيح لكل سؤال
-let cleanUserAns = isAnswered ? cleanArabicText(String(userAns), 'monthly', q.disableCorrection) : "";
+                    let cleanUserAns = isAnswered ? cleanArabicText(String(userAns), 'monthly', q.disableCorrection) : "";
 
-// التعديل الشامل: تجميع ومناظرة إجابة الطالب مع كافة الإجابات النموذجية المتعددة المضافة
-let validAnswers = [];
-if (Array.isArray(q.modelAnswers) && q.modelAnswers.length > 0) {
-    validAnswers = q.modelAnswers.map(a => cleanArabicText(String(a), 'monthly', q.disableCorrection)).filter(Boolean);
-} else if (q.ans) {
-    validAnswers = String(q.ans).split(/[\u060C,;|/]| أو /).map(a => cleanArabicText(a, 'monthly', q.disableCorrection)).filter(Boolean);
-}
+                    let validAnswers = [];
+                    if (Array.isArray(q.modelAnswers) && q.modelAnswers.length > 0) {
+                        validAnswers = q.modelAnswers.map(a => cleanArabicText(String(a), 'monthly', q.disableCorrection)).filter(Boolean);
+                    } else if (q.ans) {
+                        validAnswers = String(q.ans).split(/[\u060C,;|/]| أو /).map(a => cleanArabicText(a, 'monthly', q.disableCorrection)).filter(Boolean);
+                    }
 
-                    // فحص مطابقة إجابة الطالب مع أي نموذج من الإجابات المضافة
                     let matchedModel = validAnswers.length > 0 && validAnswers.some(ansOpt => ansOpt === cleanUserAns);
 
                     if (matchedModel) {
-                        // تطابقت مع أحد النماذج المضافة! منح الدرجة الكاملة فوراً تلقائياً
                         isCorrect = true;
                         essayGrade = true;
                         totalScore += markVal;
@@ -12325,7 +12347,6 @@ if (Array.isArray(q.modelAnswers) && q.modelAnswers.length > 0) {
                         isCorrect = false;
                         essayGrade = false;
                     } else {
-                        // لم تتطابق مع أي نموذج صحيح مضاف ➔ تُرحّل فوراً إلى طابور مراجعة المعلم
                         isCorrect = false;
                         essayGrade = undefined;
                         pendingEssayCount++;
@@ -12346,8 +12367,10 @@ if (Array.isArray(q.modelAnswers) && q.modelAnswers.length > 0) {
                     correctAnswer: formatText(correctAnswerText, true),
                     isCorrect,
                     type: q.type || 'mcq',
+                    earnedScore: isCorrect ? markVal : 0,
+                    maxScore: markVal,
                     essayGrade,
-                    explanation: formatText(q.exp || "", true), // 💡 تمرير التعليل والشرح لكي يظهر بوضوح في صفحة مراجعة الطالب
+                    explanation: formatText(q.exp || "", true),
                     sectionTitle: sec.title || `القسم ${sIdx + 1}`
                 });
             });
@@ -12370,7 +12393,7 @@ if (Array.isArray(q.modelAnswers) && q.modelAnswers.length > 0) {
         name: currentStudentSession.name,
         stage: currentStudentSession.stage,
         grade: currentStudentSession.grade,
-        branch: "امتحان شهري وشامل",
+        branch: exam.type || "monthly", // نوع الامتحان لكي يفرزه تبويب المعلم بدقة
         topic: exam.title,
         stageGrade: `${currentStudentSession.stage} ➔ ${currentStudentSession.grade} ➔ امتحان (${exam.title})`,
         score: totalScore,
@@ -12382,7 +12405,8 @@ if (Array.isArray(q.modelAnswers) && q.modelAnswers.length > 0) {
         date: new Date().toLocaleString('ar-EG'),
         duration: `${Math.floor(durationSecs / 60)}د و ${durationSecs % 60}ث`,
         answeredCount: `${totalAnswered} من ${totalQuestionsCount}`,
-        breakdown: breakdownDetails
+        breakdown: breakdownDetails,
+        isMonthlyExam: true // علامة لتمييز الامتحانات الشهرية
     };
 
     let existingRecords = [];
@@ -12393,6 +12417,8 @@ if (Array.isArray(q.modelAnswers) && q.modelAnswers.length > 0) {
     }
     existingRecords.unshift(newRecord);
     studentRecords = existingRecords;
+    
+    // الحفظ المحلي الفوري
     localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
 
     const examView = document.getElementById('view-student-monthly-exam');
@@ -12425,6 +12451,7 @@ if (Array.isArray(q.modelAnswers) && q.modelAnswers.length > 0) {
     document.getElementById('cert-btn-container').classList.add('hidden');
     document.getElementById('student-pdf-btn').classList.add('hidden');
 
+    // مزامنة خلفية سريعة لكي تظهر النتيجة في سجل المعلم فوراً
     setTimeout(() => { saveStudentRecordsBackground(); }, 10);
 }
 
