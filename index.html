@@ -3064,7 +3064,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     window._cloudCache["passages_meta"] = JSON.stringify({ totalParts: passTotalParts });
 
-    // تجزئة وحفظ الامتحانات الشهرية والشاملة سحابياً ومحلياً
     const currentMonthlyExams = (typeof monthlyExamsBank !== 'undefined' ? monthlyExamsBank : JSON.parse(localStorage.getItem('monthlyExamsBank'))) || [];
     const mexamChunkSize = 300; let mexamTotalParts = Math.ceil(currentMonthlyExams.length / mexamChunkSize) || 1;
     for (let i = 0; i < mexamTotalParts; i++) {
@@ -3072,27 +3071,46 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     window._cloudCache["monthlyExams_meta"] = JSON.stringify({ totalParts: mexamTotalParts });
 
-    // 💡 تقطيع المعلومات السريعة إلى أجزاء آمنة وصغيرة (2 بطاقة لكل جزء) لتجنب تجاوز حد 1 ميجابايت نهائياً
-    const qiChunkSize = 2; 
-    let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
+    // 💡 الفحص والتقسيم التلقائي للبطاقات الكبيرة جداً للحفاظ على الحجم آمنًا دون تجاوز 1 ميجابايت
+    let processedQiList = [];
+    (quickInfoList || []).forEach(qi => {
+        let qiCopy = JSON.parse(JSON.stringify(qi));
+        if (qiCopy.sections) {
+            qiCopy.sections.forEach(sec => {
+                if (sec.subItems) {
+                    sec.subItems.forEach(sub => {
+                        if (sub.tableData) {
+                            sub.tableDataJson = JSON.stringify(sub.tableData);
+                            delete sub.tableData;
+                        }
+                    });
+                }
+            });
+        }
+        
+        let jsonStr = JSON.stringify(qiCopy);
+        if (jsonStr.length > 900000 && qiCopy.sections && qiCopy.sections.length > 1) {
+            let sections = qiCopy.sections;
+            let mid = Math.ceil(sections.length / 2);
+            
+            let qiPart1 = JSON.parse(JSON.stringify(qiCopy));
+            qiPart1.title = (qiCopy.title || '') + " (الجزء الأول)";
+            qiPart1.sections = sections.slice(0, mid);
+            
+            let qiPart2 = JSON.parse(JSON.stringify(qiCopy));
+            qiPart2.title = (qiCopy.title || '') + " (الجزء الثاني)";
+            qiPart2.sections = sections.slice(mid);
+            
+            processedQiList.push(qiPart1, qiPart2);
+        } else {
+            processedQiList.push(qiCopy);
+        }
+    });
+
+    const qiChunkSize = 1; 
+    let qiTotalParts = Math.ceil(processedQiList.length / qiChunkSize) || 1;
     for (let i = 0; i < qiTotalParts; i++) {
-        const qiChunk = (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize).map(qi => {
-            let qiCopy = JSON.parse(JSON.stringify(qi));
-            if (qiCopy.sections) {
-                qiCopy.sections.forEach(sec => {
-                    if (sec.subItems) {
-                        sec.subItems.forEach(sub => {
-                            if (sub.tableData) {
-                                sub.tableDataJson = JSON.stringify(sub.tableData);
-                                delete sub.tableData;
-                            }
-                        });
-                    }
-                });
-            }
-            return qiCopy;
-        });
-        window._cloudCache[`quickinfo_part_${i}`] = JSON.stringify({ chunk: qiChunk });
+        window._cloudCache[`quickinfo_part_${i}`] = JSON.stringify({ chunk: processedQiList.slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
     }
     window._cloudCache["quickinfo_meta"] = JSON.stringify({ totalParts: qiTotalParts });
 
