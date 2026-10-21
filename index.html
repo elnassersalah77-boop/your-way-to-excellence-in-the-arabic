@@ -3072,7 +3072,9 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     window._cloudCache["monthlyExams_meta"] = JSON.stringify({ totalParts: mexamTotalParts });
 
-    const qiChunkSize = 300; let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
+    // 💡 تقطيع المعلومات السريعة إلى أجزاء آمنة وصغيرة (2 بطاقة لكل جزء) لتجنب تجاوز حد 1 ميجابايت نهائياً
+    const qiChunkSize = 2; 
+    let qiTotalParts = Math.ceil((quickInfoList || []).length / qiChunkSize) || 1;
     for (let i = 0; i < qiTotalParts; i++) {
         const qiChunk = (quickInfoList || []).slice(i * qiChunkSize, (i + 1) * qiChunkSize).map(qi => {
             let qiCopy = JSON.parse(JSON.stringify(qi));
