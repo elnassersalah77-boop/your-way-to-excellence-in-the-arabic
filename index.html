@@ -3071,7 +3071,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     window._cloudCache["monthlyExams_meta"] = JSON.stringify({ totalParts: mexamTotalParts });
 
-    // 💡 الفحص والتقسيم التلقائي للبطاقات الكبيرة جداً للحفاظ على الحجم آمنًا دون تجاوز 1 ميجابايت
+    // 💡 التجزئة الذكية والعميقة للبطاقات الضخمة بناءً على الحجم الفعلي بغض النظر عن عدد الأقسام
     let processedQiList = [];
     (quickInfoList || []).forEach(qi => {
         let qiCopy = JSON.parse(JSON.stringify(qi));
@@ -3089,19 +3089,33 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         
         let jsonStr = JSON.stringify(qiCopy);
-        if (jsonStr.length > 900000 && qiCopy.sections && qiCopy.sections.length > 1) {
-            let sections = qiCopy.sections;
-            let mid = Math.ceil(sections.length / 2);
-            
-            let qiPart1 = JSON.parse(JSON.stringify(qiCopy));
-            qiPart1.title = (qiCopy.title || '') + " (الجزء الأول)";
-            qiPart1.sections = sections.slice(0, mid);
-            
-            let qiPart2 = JSON.parse(JSON.stringify(qiCopy));
-            qiPart2.title = (qiCopy.title || '') + " (الجزء الثاني)";
-            qiPart2.sections = sections.slice(mid);
-            
-            processedQiList.push(qiPart1, qiPart2);
+        // إذا تجاوزت البطاقة 600 كيلوبايت، نقوم بتوزيع عناصرها الفرعية (subItems) على أجزاء مستقلة وآمنة
+        if (jsonStr.length > 600000) {
+            let allSubItems = [];
+            if (qiCopy.sections) {
+                qiCopy.sections.forEach(sec => {
+                    if (sec.subItems) {
+                        sec.subItems.forEach(sub => {
+                            allSubItems.push({ mainHeader: sec.mainHeader, sub });
+                        });
+                    }
+                });
+            }
+
+            if (allSubItems.length > 1) {
+                let chunkSize = Math.max(1, Math.ceil(allSubItems.length / 2));
+                for (let i = 0; i < allSubItems.length; i += chunkSize) {
+                    let chunkItems = allSubItems.slice(i, i + chunkSize);
+                    let partQi = JSON.parse(JSON.stringify(qiCopy));
+                    partQi.title = (qiCopy.title || 'معلومة سريعة') + ` (الجزء ${Math.floor(i/chunkSize) + 1})`;
+                    
+                    let newSec = { mainHeader: chunkItems[0].mainHeader || partQi.title, active: true, subItems: chunkItems.map(ci => ci.sub) };
+                    partQi.sections = [newSec];
+                    processedQiList.push(partQi);
+                }
+            } else {
+                processedQiList.push(qiCopy);
+            }
         } else {
             processedQiList.push(qiCopy);
         }
