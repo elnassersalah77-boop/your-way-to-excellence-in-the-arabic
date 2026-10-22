@@ -3810,43 +3810,40 @@ async function saveQuestionsState() {
             if (!window._cloudCache) window._cloudCache = {};
             
             allowCloudLoadingOverlay = true;
-            if (textEl) textEl.textContent = "جَارِي فَحْصِ وَتَفْكِيكِ أَقْسَامِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
+            if (textEl) textEl.textContent = "جَارِي فَحْصِ وَتَجْهِيزِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
             if (overlay) overlay.style.display = 'flex';
 
             let processedQiList = [];
             
-            // 💡 تفصيل الأقسام الأصلية إلى شرائح مستقلة وآمنة تماماً لتجنب تضخم حجم المستند
+            // 💡 معالجة نسخة مؤقتة (Deep Copy) للرفع السحابي فقط دون المساس ببيانات الصفحة أو العرض نهائياً
             (quickInfoList || []).forEach(qi => {
                 let qiCopy = JSON.parse(JSON.stringify(qi));
-                if (qiCopy.sections && qiCopy.sections.length > 1) {
-                    qiCopy.sections.forEach((sec, idx) => {
-                        let singleSecQi = JSON.parse(JSON.stringify(qi));
-                        singleSecQi.title = (qiCopy.title || 'معلومة سريعة') + ` (قسم ${idx + 1})`;
-                        singleSecQi.sections = [sec];
-                        
-                        if (singleSecQi.sections[0].subItems) {
-                            singleSecQi.sections[0].subItems.forEach(sub => {
+                
+                // تنظيف الجداول وتجهيز البيانات للرفع
+                if (qiCopy.sections) {
+                    qiCopy.sections.forEach(sec => {
+                        if (sec.subItems) {
+                            sec.subItems.forEach(sub => {
                                 if (sub.tableData) {
                                     sub.tableDataJson = JSON.stringify(sub.tableData);
                                     delete sub.tableData;
                                 }
                             });
                         }
+                    });
+                }
+
+                let jsonStr = JSON.stringify(qiCopy);
+                
+                // إذا كانت البطاقة ضخمة جداً، نقوم بتجزيئها للرفع السحابي فقط بحسب الأقسام لتجاوز حد 1 ميجابايت
+                if (jsonStr.length > 500000 && qiCopy.sections && qiCopy.sections.length > 1) {
+                    qiCopy.sections.forEach((sec, idx) => {
+                        let singleSecQi = JSON.parse(JSON.stringify(qi));
+                        singleSecQi.title = (qiCopy.title || 'معلومة سريعة') + ` (قسم ${idx + 1})`;
+                        singleSecQi.sections = [sec];
                         processedQiList.push(singleSecQi);
                     });
                 } else {
-                    if (qiCopy.sections) {
-                        qiCopy.sections.forEach(sec => {
-                            if (sec.subItems) {
-                                sec.subItems.forEach(sub => {
-                                    if (sub.tableData) {
-                                        sub.tableDataJson = JSON.stringify(sub.tableData);
-                                        delete sub.tableData;
-                                    }
-                                });
-                            }
-                        });
-                    }
                     processedQiList.push(qiCopy);
                 }
             });
@@ -3854,7 +3851,7 @@ async function saveQuestionsState() {
             let tasks = [];
             const addTask = (id, data) => {
                 const str = JSON.stringify(data);
-                // 💡 التحديث التفاضلي الذكي: مقارنة الجزء الحالي بما هو مخزن في الكاش، ورفع التغييرات فقط
+                // 💡 التحديث التفاضلي الذكي: مقارنة الجزء الحالي بما هو مخزن في الكاش، ورفع التغييرات أو الإضافات أو الحذف فقط
                 if (window._cloudCache[id] !== str) {
                     tasks.push({ id, data, str });
                 }
@@ -3871,9 +3868,9 @@ async function saveQuestionsState() {
 
             let totalTasks = tasks.length;
             
-            // إذا لم تقم بأي تعديل، فلن يتم إهدار أي وقت أو رفع ملفات بلا داعٍ
+            // إذا لم تقم بأي تعديل أو حذف، فلن يتم إهدار أي وقت أو رفع ملفات بلا داعٍ
             if (totalTasks === 0) {
-                if (textEl) textEl.textContent = "لَمْ يَحْدُثْ أَيُّ تَغْيِيرٍ لِحِفْظِهِ!";
+                if (textEl) textEl.textContent = "لَمْ يَحْدُثْ أَيُّ تَغْيِيرٍ لِحِفْظِهِ!";
                 setTimeout(() => {
                     allowCloudLoadingOverlay = false;
                     if (overlay) overlay.style.display = 'none';
