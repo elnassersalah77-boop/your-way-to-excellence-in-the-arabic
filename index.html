@@ -3810,16 +3810,14 @@ async function saveQuestionsState() {
             if (!window._cloudCache) window._cloudCache = {};
             
             allowCloudLoadingOverlay = true;
-            if (textEl) textEl.textContent = "جَارِي فَحْصِ وَتَجْهِيزِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
+            if (textEl) textEl.textContent = "جَارِي فَحْصِ وَتَجْزِئَةِ الْمَعْلُومَاتِ السَّرِيعَةِ...";
             if (overlay) overlay.style.display = 'flex';
 
             let processedQiList = [];
             
-            // 💡 معالجة نسخة مؤقتة (Deep Copy) للرفع السحابي فقط دون المساس ببيانات الصفحة أو العرض نهائياً
+            // 💡 التجزئة الذكية والعميقة للبطاقات الضخمة فوراً عند الضغط
             (quickInfoList || []).forEach(qi => {
                 let qiCopy = JSON.parse(JSON.stringify(qi));
-                
-                // تنظيف الجداول وتجهيز البيانات للرفع
                 if (qiCopy.sections) {
                     qiCopy.sections.forEach(sec => {
                         if (sec.subItems) {
@@ -3834,15 +3832,32 @@ async function saveQuestionsState() {
                 }
 
                 let jsonStr = JSON.stringify(qiCopy);
-                
-                // إذا كانت البطاقة ضخمة جداً، نقوم بتجزيئها للرفع السحابي فقط بحسب الأقسام لتجاوز حد 1 ميجابايت
-                if (jsonStr.length > 500000 && qiCopy.sections && qiCopy.sections.length > 1) {
-                    qiCopy.sections.forEach((sec, idx) => {
-                        let singleSecQi = JSON.parse(JSON.stringify(qi));
-                        singleSecQi.title = (qiCopy.title || 'معلومة سريعة') + ` (قسم ${idx + 1})`;
-                        singleSecQi.sections = [sec];
-                        processedQiList.push(singleSecQi);
-                    });
+                if (jsonStr.length > 600000) {
+                    let allSubItems = [];
+                    if (qiCopy.sections) {
+                        qiCopy.sections.forEach(sec => {
+                            if (sec.subItems) {
+                                sec.subItems.forEach(sub => {
+                                    allSubItems.push({ mainHeader: sec.mainHeader, sub });
+                                });
+                            }
+                        });
+                    }
+
+                    if (allSubItems.length > 1) {
+                        let chunkSize = Math.max(1, Math.floor(allSubItems.length / 2));
+                        for (let i = 0; i < allSubItems.length; i += chunkSize) {
+                            let chunkItems = allSubItems.slice(i, i + chunkSize);
+                            let partQi = JSON.parse(JSON.stringify(qiCopy));
+                            partQi.title = (qiCopy.title || 'معلومة سريعة') + ` (الجزء ${Math.floor(i/chunkSize) + 1})`;
+                            
+                            let newSec = { mainHeader: chunkItems[0].mainHeader || partQi.title, active: true, subItems: chunkItems.map(ci => ci.sub) };
+                            partQi.sections = [newSec];
+                            processedQiList.push(partQi);
+                        }
+                    } else {
+                        processedQiList.push(qiCopy);
+                    }
                 } else {
                     processedQiList.push(qiCopy);
                 }
@@ -3851,51 +3866,54 @@ async function saveQuestionsState() {
             let tasks = [];
             const addTask = (id, data) => {
                 const str = JSON.stringify(data);
-                // 💡 التحديث التفاضلي الذكي: مقارنة الجزء الحالي بما هو مخزن في الكاش، ورفع التغييرات أو الإضافات أو الحذف فقط
-                if (window._cloudCache[id] !== str) {
-                    tasks.push({ id, data, str });
-                }
+                tasks.push({ id, data, str });
             };
 
             const qiChunkSize = 1; 
             let qiTotalParts = Math.ceil(processedQiList.length / qiChunkSize) || 1;
             
             for (let i = 0; i < qiTotalParts; i++) {
-                let chunkData = { chunk: processedQiList.slice(i * qiChunkSize, (i + 1) * qiChunkSize) };
-                addTask(`quickinfo_part_${i}`, chunkData);
+                addTask(`quickinfo_part_${i}`, { chunk: processedQiList.slice(i * qiChunkSize, (i + 1) * qiChunkSize) });
             }
             addTask("quickinfo_meta", { totalParts: qiTotalParts, totalCount: processedQiList.length });
 
             let totalTasks = tasks.length;
-            
-            // إذا لم تقم بأي تعديل أو حذف، فلن يتم إهدار أي وقت أو رفع ملفات بلا داعٍ
-            if (totalTasks === 0) {
-                if (textEl) textEl.textContent = "لَمْ يَحْدُثْ أَيُّ تَغْيِيرٍ لِحِفْظِهِ!";
-                setTimeout(() => {
-                    allowCloudLoadingOverlay = false;
-                    if (overlay) overlay.style.display = 'none';
-                }, 1000);
-                return;
-            }
-
             let completedTasks = 0;
 
             for (let task of tasks) {
+                let taskBytes = new Blob([task.str]).size;
+                if (taskBytes > 950000) {
+                    let chunkObj = JSON.parse(task.str);
+                    if (chunkObj.chunk && chunkObj.chunk[0] && chunkObj.chunk[0].sections) {
+                        chunkObj.chunk[0].sections.forEach(sec => {
+                            if (sec.subItems) {
+                                sec.subItems.forEach(sub => {
+                                    if (sub.text && sub.text.length > 300000) {
+                                        sub.text = sub.text.substring(0, 300000) + "\n\n(تم تقصير النص لتجاوز حدود السحابة)...";
+                                    }
+                                });
+                            }
+                        });
+                        task.data = chunkObj;
+                        task.str = JSON.stringify(chunkObj);
+                    }
+                }
+
                 await window.firebaseSetDoc(window.firebaseDoc(db, "platformData", task.id), task.data);
-                window._cloudCache[task.id] = task.str; // تحديث الكاش المحلي فوراً بعد الرفع الناجح
+                window._cloudCache[task.id] = task.str; 
                 completedTasks++;
                 
                 let pct = Math.round((completedTasks / totalTasks) * 100);
                 if (textEl) {
-                    textEl.textContent = `جَارِي رَفْع التَّغْيِيرَاتِ فَقَط... ${pct}% (${completedTasks}/${totalTasks})`;
+                    textEl.textContent = `جَارِي رَفْع الْمَعْلُومَات... ${pct}% (${completedTasks}/${totalTasks})`;
                 }
             }
 
-            if (textEl) textEl.textContent = "تَمَّ حِفْظُ التَّغْيِيرَاتِ بِنَجَاح!";
+            if (textEl) textEl.textContent = "تَمَّ حِفْظُ الْمَعْلُومَاتِ بِنَجَاح!";
             setTimeout(() => {
                 allowCloudLoadingOverlay = false;
                 if (overlay) overlay.style.display = 'none';
-            }, 1000);
+            }, 1200);
         }
     } catch (e) {
         allowCloudLoadingOverlay = false;
